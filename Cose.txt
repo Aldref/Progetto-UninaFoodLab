@@ -1,0 +1,9 @@
+UML cose da ricordare
+1) Luogo attributo composto
+2) IngredientiSingoli attributo composto da quantità e nome ingrediente
+3) IngredientTotali da calcolare
+
+
+DOMANDE
+1) attributi composti in UML non ristrutturato
+2) Utente adesione, relazione con sessione o presenza
