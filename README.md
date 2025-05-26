@@ -9,3 +9,7 @@ git add .
 git commit -m ""
 
 git push
+
+# Comando bash per latex
+
+./compila.sh

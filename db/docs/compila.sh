@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Crea la cartella per i file temporanei
+mkdir -p build
+
+# Compilazione (due volte per sicurezza)
+pdflatex -output-directory=build Documentazione_BaseDiDati.tex
+pdflatex -output-directory=build Documentazione_BaseDiDati.tex
+
+# Copia solo il PDF accanto al .tex
+mv build/Documentazione_BaseDiDati.pdf .
