@@ -9,3 +9,4 @@ DOMANDE
 1) attributi composti in UML non ristrutturato
 2) Utente adesione, relazione con sessione o presenza
 3) propic UML tipo
+4) Enum ha senso metterla se ce altro
