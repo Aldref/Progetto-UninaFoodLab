@@ -1,6 +1,6 @@
-# Progetto-UninaFoodLab
+## Progetto-UninaFoodLab
 
-#comandi per git-hub
+# comandi per git-hub
 
 git pull
 
@@ -12,4 +12,8 @@ git push
 
 # Comando bash per latex
 
+per attivarlo: chmod +x compila.sh
+
 ./compila.sh
+
+alternativa fare il comando nella directory docs: pdflatex -output-directory=build Documentazione_BaseDiDati.tex
