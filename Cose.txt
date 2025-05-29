@@ -5,9 +5,237 @@ UML cose da ricordare
 4) in "e preparata" bisogna aggiungere le chiavi primarie di idingriente e idricetta
 
 
+colori
+ sfondo: #2C56C9
+ bottoni: #253555
+altro sfondo:  #F5F5F5
 
-DOMANDE
-1) attributi composti in UML non ristrutturato
-2) Utente adesione, relazione con sessione o presenza
-3) propic UML tipo
-4) Enum ha senso metterla se ce altro
+Schema logico
+
+CARTA(IdCarta(pk), Intestatario, DataScadenza, UltimeQuattroCifre, Circuito)
+
+PARTECIPANTE(IdPartecipante(pk), Nome, Cognome, Email, Password, numeroditelefono, DataDiNascita, Propic, cf)
+
+POSSiEDE(IdPartecipante(fk), IdCarta(fk))
+
+CHEF(IdChef(pk), Nome, Cognome, Email, password, numeroditelefono, DataDiNascita, Descrizione, Propic, annidiesperienza, cf)
+
+CORSO(IdCorso(pk), Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, Propic, MaxPersone, Prezzo)
+
+CHEF_CORSO(IdChef(fk), IdCorso(fk))
+
+RICHIESTAPAGAMENTO(IdRichiesta(pk), DataRichiesta, StatoPagamento, ImportoPagato, IdCorso(fk), IdPartecipante(fk))
+
+TIPODICUCINA(Nome, IDtipocucina(pk))
+
+TIPODICUCINA_CORSO(IDtipocucina(fk), IDcorso(fk)
+
+SESSIONE_PRESENZA(IdSessionePresenza(pk), giorno, Data, Orario, Durata, citta, via, cap, Attrezzatura, IDcorso(fk))
+
+SESSIONE_PRESENZA_CHEF(IDchef(fk), IDsessionepresenza(fk))
+
+SESSIONE_TELEMATICA(IdSessioneTelematica(pk), Applicazione, Codicechiamata, Data, Orario, Durata, giorno, Descrizione, IDcorso(fk))
+
+PARTECIPANTE_SESSIONETELEMATICA(IdPartecipante(fk), IdSessioneTelematica(fk))
+
+SESSIONE_TELEMATICA_CHEF(IDchef(fk), IDsessionetelematica(fk))
+
+ADESIONE_SESSIONEPRESENZA(Conferma, Idsessionepresenza(fk), IDpartecipante(fk))
+
+RICETTA(IdRicetta(pk), Nome)
+
+SESSIONE_PRESENZA_RICETTA(Idricetta(fk), idsessionepresenza(fk)
+
+INGREDIENTE(IdIngrediente(pk), Nome, UnitaDiMisura, Quanitita)
+
+PREPARAZIONEINGREDIENTE(IdRicetta(fk), IdIngrediente(fk), QuantitaTotale)
+
+
+CREATE TYPE Circuito AS ENUM ('Visa', 'Mastercard');
+
+CREATE TYPE StatoPagamento AS ENUM ('In attesa', 'Pagato', 'Fallito');
+
+CREATE TYPE FDS AS ENUM (
+  'Giornaliera',
+  'Ogni due giorni',
+  'Ogni quattro giorni',
+  'Ogni sei giorni',
+  'Settimanale',
+  'Mensile'
+);
+
+CREATE TYPE Giorno AS ENUM (
+  'Lunedì',
+  'Martedì',
+  'Mercoledì',
+  'Giovedì',
+  'Venerdì',
+  'Sabato',
+  'Domenica'
+);
+
+CREATE TYPE UnitaDiMisura AS ENUM ('Grammi', 'Kilogrammi', 'Litro', 'Centilitro');
+
+
+
+CREATE TABLE Carta (
+  IdCarta SERIAL PRIMARY KEY,
+  Intestatario TEXT,
+  DataScadenza DATE,
+  UltimeQuattroCifre CHAR(4),
+  Circuito Circuito
+);
+
+CREATE TABLE Partecipante (
+  IdPartecipante SERIAL PRIMARY KEY,
+  Nome TEXT,
+  Cognome TEXT,
+  Email TEXT,
+  Password TEXT,
+  NumeroDiTelefono TEXT,
+  DataDiNascita DATE,
+  Propic BYTEA,
+  CF TEXT
+);
+
+CREATE TABLE Possiede (
+  IdPartecipante INT REFERENCES Partecipante(IdPartecipante),
+  IdCarta INT REFERENCES Carta(IdCarta),
+  PRIMARY KEY (IdPartecipante, IdCarta)
+);
+
+CREATE TABLE Chef (
+  IdChef SERIAL PRIMARY KEY,
+  Nome TEXT,
+  Cognome TEXT,
+  Email TEXT,
+  Password TEXT,
+  NumeroDiTelefono TEXT,
+  DataDiNascita DATE,
+  Descrizione TEXT,
+  Propic BYTEA,
+  AnniDiEsperienza INT,
+  CF TEXT
+);
+
+CREATE TABLE Corso (
+  IdCorso SERIAL PRIMARY KEY,
+  Nome TEXT,
+  Descrizione TEXT,
+  DataInizio DATE,
+  DataFine DATE,
+  FrequenzaDelleSessioni FDS,
+  Propic BYTEA,
+  MaxPersone INT,
+  Prezzo FLOAT
+);
+
+CREATE TABLE Chef_Corso (
+  IdChef INT REFERENCES Chef(IdChef),
+  IdCorso INT REFERENCES Corso(IdCorso),
+  PRIMARY KEY (IdChef, IdCorso)
+);
+
+CREATE TABLE RichiestaPagamento (
+  IdRichiesta SERIAL PRIMARY KEY,
+  DataRichiesta DATE,
+  StatoPagamento StatoPagamento,
+  ImportoPagato INT,
+  IdCorso INT REFERENCES Corso(IdCorso),
+  IdPartecipante INT REFERENCES Partecipante(IdPartecipante)
+);
+
+CREATE TABLE TipoDiCucina (
+  IdTipoCucina SERIAL PRIMARY KEY,
+  Nome TEXT
+);
+
+CREATE TABLE TipoDiCucina_Corso (
+  IdTipoCucina INT REFERENCES TipoDiCucina(IdTipoCucina),
+  IdCorso INT REFERENCES Corso(IdCorso),
+  PRIMARY KEY (IdTipoCucina, IdCorso)
+);
+
+CREATE TABLE Sessione_Presenza (
+  IdSessionePresenza SERIAL PRIMARY KEY,
+  Giorno Giorno,
+  Data DATE,
+  Orario TIME,
+  Durata INTERVAL,
+  Citta TEXT,
+  Via TEXT,
+  CAP TEXT,
+  Attrezzatura TEXT,
+  IdCorso INT REFERENCES Corso(IdCorso)
+);
+
+CREATE TABLE Sessione_Presenza_Chef (
+  IdChef INT REFERENCES Chef(IdChef),
+  IdSessionePresenza INT REFERENCES Sessione_Presenza(IdSessionePresenza),
+  PRIMARY KEY (IdChef, IdSessionePresenza)
+);
+
+CREATE TABLE Sessione_Telematica (
+  IdSessioneTelematica SERIAL PRIMARY KEY,
+  Applicazione TEXT,
+  CodiceChiamata TEXT,
+  Data DATE,
+  Orario TIME,
+  Durata INTERVAL,
+  Giorno Giorno,
+  Descrizione TEXT,
+  IdCorso INT REFERENCES Corso(IdCorso)
+);
+
+CREATE TABLE Partecipante_SessioneTelematica (
+  IdPartecipante INT REFERENCES Partecipante(IdPartecipante),
+  IdSessioneTelematica INT REFERENCES Sessione_Telematica(IdSessioneTelematica),
+  PRIMARY KEY (IdPartecipante, IdSessioneTelematica)
+);
+
+CREATE TABLE Sessione_Telematica_Chef (
+  IdChef INT REFERENCES Chef(IdChef),
+  IdSessioneTelematica INT REFERENCES Sessione_Telematica(IdSessioneTelematica),
+  PRIMARY KEY (IdChef, IdSessioneTelematica)
+);
+
+CREATE TABLE Adesione_SessionePresenza (
+  Conferma BOOLEAN,
+  IdSessionePresenza INT REFERENCES Sessione_Presenza(IdSessionePresenza),
+  IdPartecipante INT REFERENCES Partecipante(IdPartecipante),
+  PRIMARY KEY (IdSessionePresenza, IdPartecipante)
+);
+
+CREATE TABLE Ricetta (
+  IdRicetta SERIAL PRIMARY KEY,
+  Nome TEXT
+);
+
+CREATE TABLE Sessione_Presenza_Ricetta (
+  IdRicetta INT REFERENCES Ricetta(IdRicetta),
+  IdSessionePresenza INT REFERENCES Sessione_Presenza(IdSessionePresenza),
+  PRIMARY KEY (IdRicetta, IdSessionePresenza)
+);
+
+CREATE TABLE Ingrediente (
+  IdIngrediente SERIAL PRIMARY KEY,
+  Nome TEXT,
+  UnitaDiMisura UnitaDiMisura,
+  Quantita INT
+);
+
+CREATE TABLE PreparazioneIngrediente (
+  IdRicetta INT REFERENCES Ricetta(IdRicetta),
+  IdIngrediente INT REFERENCES Ingrediente(IdIngrediente),
+  QuantitaTotale INT,
+  PRIMARY KEY (IdRicetta, IdIngrediente)
+);
+
+
+
+
+
+
+
+
+

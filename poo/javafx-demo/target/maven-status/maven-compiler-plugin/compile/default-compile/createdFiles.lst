@@ -1,1 +1,2 @@
-com/progetto/App.class
+com/progetto/controller/App.class
+com/progetto/controller/LoginController.class
