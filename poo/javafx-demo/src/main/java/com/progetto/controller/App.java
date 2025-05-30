@@ -16,7 +16,9 @@ public class App extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/loginpage.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setTitle("Login");
+        stage.setTitle("UninaFoodLab Login");
+        stage.setResizable(false);
+        stage.centerOnScreen();
         stage.show();
     }
 }

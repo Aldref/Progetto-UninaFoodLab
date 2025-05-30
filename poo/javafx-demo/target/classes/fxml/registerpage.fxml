@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.controller.RegisterController">
+   <top>
+      <AnchorPane prefHeight="156.0" prefWidth="497.0" style="-fx-background-color: #2C56C9;" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="225.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../immagini/logo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+   </top>
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #F5F5F5;" BorderPane.alignment="CENTER">
+         <children>
+            <TextField layoutX="25.0" layoutY="41.0" promptText="Nome" />
+            <TextField layoutX="219.0" layoutY="41.0" promptText="Email" />
+            <TextField layoutX="25.0" layoutY="96.0" promptText="Cognome" />
+            <PasswordField layoutX="219.0" layoutY="96.0" promptText="Password" />
+            <PasswordField layoutX="219.0" layoutY="147.0" promptText="Conferma Password" />
+            <DatePicker layoutX="25.0" layoutY="147.0" prefHeight="26.0" prefWidth="163.0" promptText="Data di nascita" />
+            <CheckBox fx:id="checkBoxUtente" layoutX="424.0" layoutY="67.0" mnemonicParsing="false" text="Utente" />
+            <CheckBox fx:id="checkBoxChef" layoutX="518.0" layoutY="67.0" mnemonicParsing="false" text="Chef" />
+            <Label layoutX="424.0" layoutY="41.0" text="Sei un utente o uno chef?" />
+            <TextField fx:id="textFieldDescrizione" layoutX="421.0" layoutY="96.0" promptText="Descrizione" />
+         </children>
+      </AnchorPane>
+   </center>
+</BorderPane>

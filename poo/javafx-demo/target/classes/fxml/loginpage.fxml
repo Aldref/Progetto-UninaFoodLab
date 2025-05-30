@@ -37,8 +37,8 @@
             </ImageView>
             <PasswordField layoutX="103.0" layoutY="225.0" promptText="Password" />
             <TextField layoutX="103.0" layoutY="175.0" promptText="Email" />
-            <Button layoutX="103.0" layoutY="273.0" mnemonicParsing="false" onAction="#Loginclick" style="-fx-background-color: #253555;" text="Log In" textFill="WHITE" />
-            <Button layoutX="195.0" layoutY="273.0" mnemonicParsing="false" style="-fx-background-color: #253555;" text="Sign up" textFill="WHITE" />
+            <Button layoutX="103.0" layoutY="273.0" mnemonicParsing="false" onAction="#LoginClick" style="-fx-background-color: #253555;" text="Log In" textFill="WHITE" />
+            <Button layoutX="201.0" layoutY="273.0" mnemonicParsing="false" onAction="#RegisterClick" style="-fx-background-color: #253555;" text="Sign up" textFill="WHITE" />
             <Label layoutX="103.0" layoutY="139.0" prefHeight="25.0" prefWidth="64.0" text="Log In">
                <font>
                   <Font size="17.0" />
