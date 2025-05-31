@@ -1,0 +1,48 @@
+\section{Introduzione}
+\subsection{Descrizione del progetto}
+Il seguente progetto, denominato UninaFoodLab, nasce con l'obiettivo di progettare e implementare un sistema informativo per la gestione di corsi di cucina tematici. Il sistema si propone di supportare gli chef nella creazione e 
+gestione di corsi articolati in sessioni teoriche e pratiche, facilitando al contempo l’iscrizione e la partecipazione degli utenti. \\
+La documentazione che segue illustra in dettaglio tutte le fasi della progettazione, analizzando le scelte architetturali, i modelli concettuali e logici, e le soluzioni tecniche adottate per garantire la correttezza, la coerenza e l'efficienza del sistema.
+
+\subsection{Analisi dei Requisiti rilenvanti per il Database}
+
+I seguenti requisiti funzionali sono stati analizzati ai fini della progettazione della base di dati. Essi definiscono le informazioni da memorizzare e le relazioni tra le entità del sistema.
+
+\begin{enumerate}
+    \item Registrazione e autenticazione degli utenti.
+    \begin{itemize}
+        \item Gli utenti devono poter creare un account con email e password.
+        \item Gli utenti devono poter effettuare il login.
+        \item Gli utenti devono poter recuperare la password dimenticata.
+    \end{itemize}
+
+    \item Gestione dei profili utente.
+    \begin{itemize}
+        \item Gli utenti devono poter visualizzare e modificare le proprie informazioni personali.
+        \item Gli utenti devono poter visualizzare i propri corsi.
+        \item Gli utenti devono poter visualizzare i propri dati di pagamento.
+        \item Gli utenti devono poter visualizzare le proprie sessioni pratiche.
+    \end{itemize}
+
+    \item Creazione e gestione dei corsi da parte degli chef.
+    \begin{itemize}
+        \item Gli chef devono poter creare nuovi corsi.
+        \item Gli chef devono poter definire le sessioni teoriche e pratiche.
+        \item Gli chef devono poter modificare o cancellare i corsi.
+    \end{itemize}
+
+    \item Iscrizione ai corsi da parte degli utenti.
+    \begin{itemize}
+        \item Gli utenti devono poter consultare l’elenco dei corsi disponibili.
+        \item Gli utenti devono poter iscriversi a un corso.
+        \item Gli utenti devono ricevere conferma dell’iscrizione.
+    \end{itemize}
+
+    \item Gestione delle presenze e dei pagamenti.
+    \begin{itemize}
+        \item Gli chef devono poter registrare la presenza alle sessioni.
+        \item Il sistema deve gestire i pagamenti degli utenti.
+        \item Gli utenti devono poter visualizzare lo stato dei loro pagamenti.
+    \end{itemize}
+\end{enumerate}
+
