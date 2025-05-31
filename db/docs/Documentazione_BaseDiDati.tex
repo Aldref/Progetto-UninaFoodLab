@@ -5,21 +5,21 @@
 \usepackage{geometry}
 \usepackage{xcolor}
 \usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+\usepackage{float}
 
 \geometry{margin=2.5cm}
 
-\usepackage{fancyhdr}
-%da rimuovere quando insrisco i capitoli
-\usepackage{titling} 
-\usepackage{lipsum}  
+
 \definecolor{myblue}{HTML}{2C56C9}
 \definecolor{myline}{HTML}{253555}
 
 \titleformat{\section}
-  {\color{myblue}\normalfont\Large\bfseries}
-  {\thesection}{1em}{}
+{\color{myblue}\normalfont\Large\bfseries}
+{\thesection}{1em}{}
 
-  \fancypagestyle{normal}{
+\fancypagestyle{normal}{
     \fancyhf{}
     \fancyhead[L]{\textcolor{myblue}{Corsi di Studi in Informatica}}
     \fancyhead[R]{\textcolor{myblue}{00BD58}}
@@ -45,6 +45,8 @@
 
 
 \renewcommand{\contentsname}{Indice}
+\renewcommand{\cftsecfont}{\color{myblue}\bfseries}
+
 \begin{document}
 
 
@@ -80,17 +82,14 @@
 
 
 \newpage
+
 \pagestyle{normal}
 
 \tableofcontents
+\thispagestyle{normal}
 
-\section{Introduzione}
-\lipsum[1-2]
+\input{latex/capitoli/capitolo1.tex}
 
-\section{Sviluppo}
-\lipsum[3-4]
-
-\section{Conclusione}
-\lipsum[5]
+\input{latex/capitoli/capitolo2.tex}
 
 \end{document}

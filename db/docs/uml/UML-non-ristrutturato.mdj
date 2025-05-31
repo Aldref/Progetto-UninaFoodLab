@@ -8832,20 +8832,6 @@
 							"width": 100,
 							"height": 25,
 							"text": "1.*"
-						},
-						{
-							"_type": "UMLTextView",
-							"_id": "AAAAAAGXIju3d8oUVkM=",
-							"_parent": {
-								"$ref": "AAAAAAFF+qBtyKM79qY="
-							},
-							"font": "Arial;13;0",
-							"parentStyle": false,
-							"left": 1646,
-							"top": 1286,
-							"width": 100,
-							"height": 25,
-							"text": "Text"
 						}
 					]
 				},
