@@ -22,36 +22,29 @@ public class LoginController implements Initializable {
         // Eventuali inizializzazioni future per loginpage.fxml
     }
     @FXML
-private void LoginClick(ActionEvent event) {
-    try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/homepageutente.fxml"));
-        Parent homepageRoot = loader.load();
+    private void LoginClick(ActionEvent event) {
+        try {
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-        HomepageUtenteController controller = loader.getController();
+            HomepageUtenteController controller = SceneSwitcher.switchScene(
+                stage,
+                "/fxml/homepageutente.fxml",
+                "Homepage Utente - UninaFoodLab",
+                true  
+            );
 
-        
-        for (int i = 0; i < 3; i++) {
-            FXMLLoader cardLoader = new FXMLLoader(getClass().getResource("/fxml/cardcorso2.fxml"));
-            Parent card = cardLoader.load();
-            card.getStylesheets().add(getClass().getResource("/css/cardcorso.css").toExternalForm());
-            controller.addCard(card);
+
+            for (int i = 0; i < 3; i++) {
+                FXMLLoader cardLoader = new FXMLLoader(getClass().getResource("/fxml/cardcorso2.fxml"));
+                Parent card = cardLoader.load();
+                card.getStylesheets().add(getClass().getResource("/css/cardcorso.css").toExternalForm());
+                controller.addCard(card);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(homepageRoot);
-        scene.getStylesheets().add(getClass().getResource("/css/cardcorso.css").toExternalForm());
-
-        stage.setTitle("Homepage - UninaFoodLab");
-        stage.setScene(scene);
-        stage.setResizable(true); 
-        stage.centerOnScreen();
-        stage.show();
-
-    } catch (IOException e) {
-        e.printStackTrace();
     }
-}
-
     @FXML
     private void RegisterClick(ActionEvent event) {
         try {

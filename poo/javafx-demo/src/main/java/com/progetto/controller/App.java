@@ -17,20 +17,12 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/loginpage.fxml"));
-        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+        // Usa SceneSwitcher per caricare la scena iniziale
+        SceneSwitcher.switchScene(stage, "/fxml/loginpage.fxml", "UninaFoodLab Login", false);
 
-        stage.setScene(scene);
-        stage.setTitle("UninaFoodLab Login");
+        
 
-        // Imposta dimensioni fisse
-        stage.setResizable(false);
-        stage.setMinWidth(WINDOW_WIDTH);
-        stage.setMaxWidth(WINDOW_WIDTH);
-        stage.setMinHeight(WINDOW_HEIGHT);
-        stage.setMaxHeight(WINDOW_HEIGHT);
-
-        stage.show();              
-        stage.centerOnScreen();   
+        stage.centerOnScreen();
     }
+
 }

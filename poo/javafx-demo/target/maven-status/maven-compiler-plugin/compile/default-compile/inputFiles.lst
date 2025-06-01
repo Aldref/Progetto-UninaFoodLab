@@ -1,8 +1,9 @@
-/mnt/c/Users/mario/OneDrive/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/HomepageUtenteController.java
-/mnt/c/Users/mario/OneDrive/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/App.java
-/mnt/c/Users/mario/OneDrive/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/LoginController.java
-/mnt/c/Users/mario/OneDrive/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/entity/UtenteDao.java
-/mnt/c/Users/mario/OneDrive/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/RegisterController.java
-/mnt/c/Users/mario/OneDrive/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/jdbc/ConnectionJavaDb.java
-/mnt/c/Users/mario/OneDrive/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/errori/ErroriEmail.java
-/mnt/c/Users/mario/OneDrive/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/CardCorsoController.java
+/home/mario/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/App.java
+/home/mario/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/HomepageUtenteController.java
+/home/mario/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/SceneSwitcher.java
+/home/mario/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/CardCorsoController.java
+/home/mario/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/RegisterController.java
+/home/mario/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/entity/UtenteDao.java
+/home/mario/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/errori/ErroriEmail.java
+/home/mario/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/controller/LoginController.java
+/home/mario/Desktop/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/jdbc/ConnectionJavaDb.java

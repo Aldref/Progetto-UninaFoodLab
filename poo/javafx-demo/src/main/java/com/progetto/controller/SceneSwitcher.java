@@ -1,4 +1,4 @@
-package com.progetto.util;
+package com.progetto.controller;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,24 +9,18 @@ import java.io.IOException;
 
 public class SceneSwitcher {
 
-    public static void switchScene(Stage stage, String fxmlPath, String title, boolean resizable) throws IOException {
+    public static <T> T switchScene(Stage stage, String fxmlPath, String title, boolean resizable) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource(fxmlPath));
         Parent root = loader.load();
+        T controller = loader.getController();
 
         Scene scene = new Scene(root);
-
-        stage.setTitle(title);
         stage.setScene(scene);
-        stage.setResizable(resizable);
-
-        if (!resizable) {
-            stage.setMinWidth(scene.getWidth());
-            stage.setMaxWidth(scene.getWidth());
-            stage.setMinHeight(scene.getHeight());
-            stage.setMaxHeight(scene.getHeight());
-        }
-
+        stage.setTitle(title);
+        stage.setResizable(resizable); 
         stage.centerOnScreen();
         stage.show();
+
+        return controller;
     }
 }
