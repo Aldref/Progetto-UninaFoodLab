@@ -8,8 +8,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.stage.StageStyle;
+import javafx.scene.Node;
 
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -19,12 +21,39 @@ public class LoginController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // Eventuali inizializzazioni future per loginpage.fxml
     }
-
     @FXML
     private void LoginClick(ActionEvent event) {
-        System.out.println("Login button clicked!");
-    }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/homepageutente.fxml"));
+            Parent homepageRoot = loader.load();
 
+            HomepageUtenteController controller = loader.getController();
+
+            
+            for (int i = 0; i < 3; i++) {
+                FXMLLoader cardLoader = new FXMLLoader(getClass().getResource("/fxml/cardcorso2.fxml"));
+                Parent card = cardLoader.load();
+                
+                
+                card.getStylesheets().add(getClass().getResource("/css/cardcorso.css").toExternalForm());
+                
+                controller.addCard(card);
+            }
+
+            
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(homepageRoot);
+            
+            
+            scene.getStylesheets().add(getClass().getResource("/css/cardcorso.css").toExternalForm());
+            
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void RegisterClick(ActionEvent event) {
         try {

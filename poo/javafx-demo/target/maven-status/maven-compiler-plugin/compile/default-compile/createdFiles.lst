@@ -1,3 +1,8 @@
-com/progetto/controller/LoginController.class
+com/progetto/controller/CardCorsoController.class
 com/progetto/controller/App.class
+com/progetto/controller/LoginController.class
 com/progetto/controller/RegisterController.class
+com/progetto/controller/HomepageUtenteController.class
+com/progetto/entity/UtenteDao.class
+com/progetto/jdbc/ConnectionJavaDb.class
+com/progetto/errori/ErroriEmail.class

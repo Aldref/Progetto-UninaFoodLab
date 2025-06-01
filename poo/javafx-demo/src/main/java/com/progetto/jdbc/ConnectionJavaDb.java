@@ -1,3 +1,4 @@
+package com.progetto.jdbc;
 import java.sql.*;
 public class ConnectionJavaDb{
     private static String driver="org.postgresql.Driver";

@@ -1,0 +1,123 @@
+.background-container {
+    -fx-background-color: linear-gradient(to bottom right, #667eea);
+    -fx-min-height: 100vh;
+    -fx-min-width: 100vw;
+}
+
+/* Main card */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0, 0, 10);
+    -fx-max-width: 400;
+}
+
+.card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0, 0, 15);
+}
+
+
+.card-image {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ff6b6b 0%, #ff8e53 100%);
+    -fx-pref-height: 200;
+    -fx-background-image: url("/immagini/corsi/cracco.png");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+   
+}
+
+.chef-icon {
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 2, 2);
+}
+
+
+.card-content {
+    -fx-spacing: 10;
+}
+
+
+.course-title {
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+
+.course-description {
+    -fx-text-fill: #555555;
+    -fx-font-size: 13px;
+    -fx-line-spacing: 0.1em;
+    -fx-text-alignment: justify;
+}
+
+
+.course-details {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 12;
+    -fx-spacing: 8;
+}
+
+.detail-row {
+    -fx-alignment: center-left;
+    -fx-border-color: transparent transparent #e9ecef transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 5 0 5 0;
+}
+
+.detail-row:last-child {
+    -fx-border-color: transparent;
+}
+
+.detail-label {
+    -fx-text-fill: #495057;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.detail-value {
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 12px;
+}
+
+/* Price section */
+.price-section {
+    -fx-alignment: center;
+}
+
+.price {
+    -fx-text-fill: #2C56C9;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+}
+
+.price-note {
+    -fx-text-fill: #999999;
+    -fx-font-size: 12px;
+}
+
+
+.buy-button {
+    -fx-background-color: #253555;
+    -fx-text-fill: white;
+    -fx-background-radius: 50;
+    -fx-padding: 15;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(37, 53, 85, 0.3), 15, 0, 0, 8);
+    -fx-border-color: transparent;
+}
+
+.buy-button:hover {
+    -fx-background-color: #1e2a42;
+    -fx-effect: dropshadow(gaussian, rgba(37, 53, 85, 0.4), 25, 0, 0, 12);
+    -fx-scale-y: 1.02;
+    -fx-scale-x: 1.02;
+}
+
+.buy-button:pressed {
+    -fx-scale-y: 0.98;
+    -fx-scale-x: 0.98;
+}

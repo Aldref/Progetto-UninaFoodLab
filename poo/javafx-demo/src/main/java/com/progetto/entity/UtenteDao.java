@@ -1,4 +1,7 @@
+package com.progetto.entity;
+import com.progetto.jdbc.ConnectionJavaDb;
 import java.sql.*;
+
 public class UtenteDao {
     public boolean ControlloEmailUtente(String Email){
         try{
