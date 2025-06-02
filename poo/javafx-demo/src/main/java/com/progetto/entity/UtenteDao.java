@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.DbUtils;
 
-public class UtenteDao {
+abstract public class UtenteDao {
     public boolean ControlloEmailUtente(String Email){
           String query="SELECT EXISTS (SELECT 1 FROM Partecipante WHERE Email = ?) OR EXISTS (SELECT 1 FROM Chef WHERE Email = ?) AS Esistenza";
           DbUtils dbu= new DbUtils();
@@ -31,30 +31,6 @@ public class UtenteDao {
         }
         return  true;
     }
-    
-    public void RegistrazioneUtente(String nome,String Cognome,String email , String password , String NumeroDiTelefono, LocalDate DataDiNascita){
-        String query="Insert INTO Partecipante  (Nome,Cognome,Email,Password,NumeroDiTelefono,DataDiNAscita,) Values (?,?,?,?,?,?)";
-          DbUtils dbu= new DbUtils();
-          Connection conn=null;
-          PreparedStatement ps=null;
-          try{
-            conn = ConnectionJavaDb.getConnection();
-            ps=conn.prepareStatement(query);
-            java.sql.Date sqlData = java.sql.Date.valueOf(DataDiNascita);
-            ps.setString(1, nome);
-            ps.setString(2, Cognome);
-            ps.setString(3, email);
-            ps.setString(4, password);
-            ps.setString(5, NumeroDiTelefono);
-            ps.setDate(6, sqlData);
-            } catch (SQLException sqe){
-            //inserire errore 
-            }finally {
-                dbu.closeStatement(ps);
-                dbu.closeConnection(conn);
-        }
-    
-
-    }
-    
+    abstract public void RegistrazioneUtente(String nome, String cognome, String email, String password, String numeroDiTelefono, LocalDate dataDiNascita);
+    abstract public void RegistrazioneUtente(String nome, String cognome, String email, String password, String numeroDiTelefono, LocalDate dataDiNascita,String AnniDiEsperienza);
 }   
