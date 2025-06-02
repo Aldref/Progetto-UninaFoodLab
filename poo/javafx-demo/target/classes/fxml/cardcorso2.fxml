@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.controller.CardCorsoController">
+<StackPane xmlns="http://javafx.com/javafx/11.0.1" stylesheets="css/cardcorso.css" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.controller.CardCorsoController">
    <children>
       <!-- Background container -->
       <VBox styleClass="background-container" />
@@ -97,7 +97,7 @@
                               <Font name="System Bold" size="30.0" />
                            </font>
                         </Label>
-                        <Label styleClass="price-note" text="Include materiali e ingredienti" />
+                        <Label styleClass="price-note" text="Include ricette e ingredienti" />
                      </children>
                   </VBox>
                   

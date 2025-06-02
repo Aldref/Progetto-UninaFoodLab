@@ -33,11 +33,9 @@ public class LoginController implements Initializable {
                 true  
             );
 
-
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 11; i++) {
                 FXMLLoader cardLoader = new FXMLLoader(getClass().getResource("/fxml/cardcorso2.fxml"));
                 Parent card = cardLoader.load();
-                card.getStylesheets().add(getClass().getResource("/css/cardcorso.css").toExternalForm());
                 controller.addCard(card);
             }
 
@@ -45,6 +43,7 @@ public class LoginController implements Initializable {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void RegisterClick(ActionEvent event) {
         try {

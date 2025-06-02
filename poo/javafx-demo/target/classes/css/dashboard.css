@@ -1,0 +1,128 @@
+/* Sidebar */
+.sidebar {
+    -fx-background-color: #2C56C9;
+    -fx-padding: 30 10;
+}
+
+.profile-image {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0.2, 0, 2);
+    -fx-clip-shape: "circle";
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+}
+
+.user-name {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.user-role {
+    -fx-font-size: 12px;
+    -fx-text-fill: lightgray;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10 15;
+    -fx-font-size: 14px;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10 15;
+    -fx-font-size: 14px;
+}
+
+.logout-button:hover {
+    -fx-background-color: rgba(255, 179, 102, 0.2);
+}
+
+/* Utente info */
+.user-name {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.user-role {
+    -fx-text-fill: #bdc3c7;
+    -fx-font-size: 12px;
+}
+
+/* Top filters */
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 10 0;
+}
+
+.filter-combobox {
+    -fx-pref-width: 150;
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+}
+
+.search-button {
+    -fx-background-color: #253555;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.search-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.area-corsi-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C56C9;
+    -fx-padding: 0 0 10 0; 
+}
+.area-corsi-image {
+    -fx-effect: dropshadow(gaussian, #2C56C9, 20, 0.2, 0, 4);
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Area corsi */
+.courses-area {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+}
+
+.area-corsi-title {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C56C9;
+    -fx-padding: 40 0 20 0; 
+}
+
+.area-description {
+    -fx-text-fill: #7f8c8d;
+}

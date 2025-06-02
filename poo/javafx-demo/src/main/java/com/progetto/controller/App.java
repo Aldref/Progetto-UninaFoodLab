@@ -17,7 +17,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        // Usa SceneSwitcher per caricare la scena iniziale
+        
         SceneSwitcher.switchScene(stage, "/fxml/loginpage.fxml", "UninaFoodLab Login", false);
 
         

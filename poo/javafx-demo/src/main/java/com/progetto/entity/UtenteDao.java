@@ -10,12 +10,12 @@ import com.progetto.jdbc.DbUtils;
 
 abstract public class UtenteDao {
     public boolean ControlloEmailUtente(String Email){
-          String query="SELECT EXISTS (SELECT 1 FROM Partecipante WHERE Email = ?) OR EXISTS (SELECT 1 FROM Chef WHERE Email = ?) AS Esistenza";
-          DbUtils dbu= new DbUtils();
-          Connection conn=null;
-          PreparedStatement ps=null;
-          ResultSet rs=null;
-          try{
+        String query="SELECT EXISTS (SELECT 1 FROM Partecipante WHERE Email = ?) OR EXISTS (SELECT 1 FROM Chef WHERE Email = ?) AS Esistenza";
+        DbUtils dbu= new DbUtils();
+        Connection conn=null;
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try{
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
             ps.setString(1,Email);

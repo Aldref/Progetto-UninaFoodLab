@@ -1,61 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Separator?>
 
-<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.progetto.controller.HomepageUtenteController">
+<HBox stylesheets="@../css/dashboard.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="com.progetto.controller.HomepageUtenteController">
+    <VBox fx:id="sidebar" spacing="20" alignment="TOP_CENTER" minWidth="180" maxWidth="300" prefWidth="220" styleClass="sidebar" HBox.hgrow="NEVER" VBox.vgrow="ALWAYS">
+        <VBox spacing="10" alignment="CENTER">
+            <ImageView fx:id="avatar" fitWidth="80" fitHeight="80" styleClass="profile-image"/>
+            <Label text="Mario Rossi" styleClass="user-name"/>
+            <Label text="Utente" styleClass="user-role"/>
+        </VBox>
 
-    <!-- Sidebar sinistra -->
-    <left>
-        <AnchorPane style="-fx-background-color: #2C56C9;" prefWidth="176.0" BorderPane.alignment="CENTER">
-            <children>
-                <ImageView fitHeight="90.0" fitWidth="112.0" layoutX="32.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@../immagini/login_image.png" />
-                    </image>
-                </ImageView>
-            </children>
-        </AnchorPane>
-    </left>
+        <VBox fx:id="buttonContainer" spacing="15" alignment="CENTER" VBox.vgrow="ALWAYS">
+            <Button text="Tutti i Corsi" graphicTextGap="10" styleClass="sidebar-button">
+                <graphic>
+                    <ImageView fitWidth="16" fitHeight="16">
+                        <Image url="/immagini/homepage/icon_corsi.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button text="Corsi Iscritto" graphicTextGap="10" styleClass="sidebar-button">
+                <graphic>
+                    <ImageView fitWidth="16" fitHeight="16">
+                        <Image url="/immagini/homepage/icon_corsi_iscritti.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button text="Dettagli Account" graphicTextGap="10" styleClass="sidebar-button">
+                <graphic>
+                    <ImageView fitWidth="16" fitHeight="16">
+                        <Image url="/immagini/homepage/icon_dettagli_account.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </VBox>
 
-    <!-- Contenuto centrale -->
-    <center>
-        <AnchorPane BorderPane.alignment="CENTER">
-            <children>
+        <VBox alignment="BOTTOM_CENTER">
+            <Button text="Logout" onAction="#LogoutClick" graphicTextGap="10" styleClass="logout-button">
+                <graphic>
+                    <ImageView fitWidth="16" fitHeight="16">
+                        <Image url="/immagini/homepage/icon_logout.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </VBox>
+    </VBox>
 
-                <!-- Barra superiore -->
-                <VBox AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                      prefHeight="133.0" style="-fx-background-color: #2C56C9;">
-                    <children>
-                        <Label text="qualcosa" />
-                    </children>
-                </VBox>
-
-                <!-- Scroll dei contenuti -->
-                <ScrollPane AnchorPane.topAnchor="133.0" AnchorPane.bottomAnchor="0.0"
-                            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                            fitToWidth="true" fitToHeight="true">
-                    <content>
-                        <FlowPane fx:id="cardcontainer"
-                                  hgap="30" vgap="30"
-                                  prefWrapLength="1600">
-                            <padding>
-                                <Insets top="20" right="20" bottom="20" left="20"/>
-                            </padding>
-                        </FlowPane>
-                    </content>
-                </ScrollPane>
-
-            </children>
-        </AnchorPane>
-    </center>
-
-</BorderPane>
+    <!-- Main content area -->
+    <VBox spacing="0" alignment="TOP_CENTER" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+    <!-- Spazio per abbassare la barra di ricerca -->
+        <VBox minHeight="40"/>
+        <!-- Top bar -->
+        <VBox alignment="CENTER" spacing="10">
+            <Label styleClass="section-title" text="Trova i tuoi corsi" />
+            <HBox alignment="CENTER" spacing="10">
+                <ComboBox fx:id="cbCategoria" promptText="Categoria" styleClass="filter-combobox" />
+                <ComboBox fx:id="cbFrequenza" promptText="Frequenza" styleClass="filter-combobox" />
+                <ComboBox fx:id="cbTipoLezione" promptText="Tipo lezione" styleClass="filter-combobox" />
+                <Button onAction="#handleSearch" styleClass="search-button" text="Cerca Corsi" />
+            </HBox>
+        </VBox>
+        <!-- Spazio extra e divisore -->
+        <VBox minHeight="50"/>
+        <HBox style="-fx-background-color: transparent; -fx-padding: 0 0 10 0;">
+            
+        </HBox>
+        <!-- Center content -->
+        <VBox alignment="CENTER" spacing="10" VBox.vgrow="NEVER">
+            <ImageView fitHeight="80" fitWidth="80" styleClass="area-corsi-image">
+                <Image url="/immagini/logo.png"/>
+            </ImageView>
+            <Label text="UninaFoodLab" styleClass="area-corsi-title" />
+        </VBox>
+        
+        <!-- ScrollPane per le card, che si espande -->
+        <ScrollPane fitToWidth="true" prefHeight="600" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
+            <FlowPane fx:id="mainContentArea" hgap="20" vgap="20" prefWrapLength="800" styleClass="courses-area" />
+        </ScrollPane>
+        
+        <!-- Barra di paginazione sempre in basso -->
+        <HBox alignment="CENTER" spacing="10" styleClass="pagination-bar">
+            <Button text="&lt;" onAction="#prevPage"/>
+            <Label fx:id="pageLabel" text="Pagina 1"/>
+            <Button text="&gt;" onAction="#nextPage"/>
+        </HBox>
+        <VBox minHeight="20"/>
+    </VBox>
+</HBox>
