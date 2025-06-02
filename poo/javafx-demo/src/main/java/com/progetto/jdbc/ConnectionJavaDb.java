@@ -1,5 +1,7 @@
 package com.progetto.jdbc;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 public class ConnectionJavaDb{
     private static String driver="org.postgresql.Driver";
     private static String URL="";//Aggiungere url del db con localhost:5432
