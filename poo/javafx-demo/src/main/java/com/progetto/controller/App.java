@@ -16,14 +16,14 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        // Configura la scena di login con dimensioni minime e massime
+        
         SceneSwitcher.switchScene(
             stage,
             "/fxml/loginpage.fxml",
             "UninaFoodLab Login",
-            false, // Non resizable
-            MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, // Dimensioni minime
-            MAX_WINDOW_WIDTH, MAX_WINDOW_HEIGHT  // Dimensioni massime
+            false, 
+            MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, 
+            MAX_WINDOW_WIDTH, MAX_WINDOW_HEIGHT  
         );
 
         stage.centerOnScreen();
