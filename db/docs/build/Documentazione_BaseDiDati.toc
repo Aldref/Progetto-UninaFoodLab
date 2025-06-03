@@ -8,3 +8,7 @@
 \contentsline {subsubsection}{\numberline {2.2.2}Gerarchie e generalizzazioni}{5}{}%
 \contentsline {subsubsection}{\numberline {2.2.3}Relazioni tra le entità}{5}{}%
 \contentsline {subsubsection}{\numberline {2.2.4}Motivazione delle scelte progettuali}{6}{}%
+\contentsline {subsection}{\numberline {2.3}UML ristrutturato}{7}{}%
+\contentsline {subsubsection}{\numberline {2.3.1}Modifiche rispetto al modello non ristrutturato}{8}{}%
+\contentsline {subsubsection}{\numberline {2.3.2}Comportamento del modello ristrutturato con le modifiche}{8}{}%
+\contentsline {subsubsection}{\numberline {2.3.3}Motivazioni delle scelte del modello ristrutturato}{8}{}%

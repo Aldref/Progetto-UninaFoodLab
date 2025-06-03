@@ -44,4 +44,41 @@ Le relazioni tra le entità sono state definite come segue:
 \end{itemize}
 \subsubsection{Motivazione delle scelte progettuali}
 Le scelte progettuali sono state guidate dalla necessità di garantire una rappresentazione chiara e coerente delle informazioni, facilitando la gestione dei corsi, delle sessioni e delle partecipazioni. La specializzazione delle sessioni in Presenza e Telematica consente di gestire le specificità di ciascun tipo di sessione, mentre la distinzione tra Partecipante e Chef permette di differenziare i ruoli degli utenti nel sistema. Inoltre, l'uso di relazioni molti-a-molti per gestire le adesioni alle sessioni pratiche e le associazioni tra ricette e ingredienti garantisce flessibilità e scalabilità nel modello.
+\subsection{UML ristrutturato}
+\begin{figure}[H]
+    \noindent\makebox[\linewidth]{%
+        \includegraphics[height=0.9\textheight,width=2\textwidth]{latex/immagini/uml_ristrutturato.pdf}
+    }
+    \caption{Diagramma UML ristrutturato del sistema}
+\end{figure}
+\subsubsection{Modifiche rispetto al modello non ristrutturato}
+Il modello ristrutturato presenta alcune modifiche rispetto al modello non ristrutturato, adattandolo a un database relazionale. Le principali modifiche includono:
+\begin{itemize}
+    \item \textbf{Rimozione delle gerarchie}: Le gerarchie tra le entità sono state rimosse, trasformando le specializzazioni in entità separate. Ad esempio, le sessioni di tipo Presenza e Telematica sono state trasformate in due entità distinte, mantenendo gli attributi specifici per ciascun tipo.
+    \item \textbf{Attributi composti e multivalore}: Gli attributi composti e multivalore sono stati normalizzati. Ad esempio, l'attributo \textit{Luogo} è stato suddiviso in attributi separati per \textit{Città}, \textit{Indirizzo} e \textit{Cap}.
+    \item \textbf{Aggiunta di chiavi primarie e esterne}: Ogni entità ha una chiave primaria univoca, e le relazioni tra le entità sono definite tramite chiavi esterne, garantendo l'integrità referenziale del database.
+\end{itemize}
 
+\subsubsection{Comportamento del modello ristrutturato con le modifiche}
+Il modello ristrutturato mantiene le proprietà di specializzazione totale e disgiunta, adattandosi alle modifiche apportate. In particolare:
+\begin{itemize}
+    \item \textbf{Specializzazione totale e disgiunta}: Le entità separate per le sessioni di tipo Presenza e Telematica garantiscono che ogni sessione appartenga esclusivamente a uno dei due tipi, rispettando la disgiunzione. Inoltre, ogni utente è classificato come Partecipante o Chef, assicurando che la specializzazione sia totale e disgiunta.
+    \item \textbf{Integrità referenziale}: L'uso di chiavi primarie, esterne e l'aggiunta di chiavi surrogate garantisce che le relazioni tra le entità siano coerenti e che non si verifichino violazioni di integrità nel database.
+\end{itemize}
+
+\subsubsection{Motivazioni delle scelte del modello ristrutturato}
+Le motivazioni alla base delle scelte progettuali del modello ristrutturato derivano dalla necessità di garantire una rappresentazione chiara, coerente e scalabile delle informazioni, adattandosi alle esigenze di un database relazionale. Una delle principali considerazioni riguarda la gestione delle specializzazioni totali e disgiunte, che hanno permesso di semplificare il modello concettuale senza perdere la coerenza logica.
+
+Nel modello ristrutturato, le specializzazioni totali e disgiunte sono state gestite trasformando la classe generale in entità separate per ciascuna specializzazione. Questo approccio consente di incorporare gli attributi della classe generale direttamente nelle entità specializzate, eliminando la necessità di mantenere una gerarchia tra le entità. Ad esempio, nel caso delle sessioni, la classe generale "\textbf{Sessione}" è stata suddivisa in due entità distinte: "\textbf{Sessione\_Presenza}" e "\textbf{Sessione\_Telematica}". Ogni entità specializzata include gli attributi specifici del proprio tipo, come il luogo e le attrezzature richieste per le sessioni in presenza, e l'app utilizzata e il codice di accesso per quelle telematiche. In questo modo, si garantisce che ogni sessione appartenga esclusivamente a uno dei due tipi, rispettando la disgiunzione, e che tutte le sessioni siano rappresentate nel modello, rispettando la totalità, facilitando anche le associazioni tra le varie entità.
+
+La stessa logica è stata applicata alla specializzazione dell'entità "Utente", suddivisa in "Partecipante" e "Chef". Ogni utente è classificato come Partecipante o Chef, ma non può appartenere a entrambe le categorie contemporaneamente. Gli attributi comuni agli utenti, come nome, cognome, email e data di nascita, sono stati incorporati direttamente nelle entità specializzate, mentre gli attributi specifici, come la descrizione e gli anni di esperienza per gli Chef, sono stati aggiunti solo alla rispettiva entità. Questo approccio semplifica la gestione delle entità nel database, eliminando la necessità di un'entità generale "Utente" e garantendo che la specializzazione rimanga totale e disgiunta.
+
+Per quanto riguarda le associazioni tra le entità, il modello ristrutturato utilizza chiavi primarie e chiavi esterne per definire le relazioni, garantendo l'integrità referenziale del database. Ad esempio, la relazione tra "Corso" e "Sessione" è uno-a-molti, con l'identificativo del corso utilizzato come chiave esterna nelle entità "Presenza" e "Telematica". Questo approccio consente di mantenere la coerenza delle informazioni e di semplificare le operazioni di query e aggiornamento. Analogamente, la relazione molti-a-molti tra "Sessione" e "Partecipante" è mediata dall'entità "Adesione", che include un attributo booleano di conferma per gestire la partecipazione alle sessioni pratiche.
+
+Un altro esempio significativo riguarda la relazione tra "Ricetta" e "Ingrediente". Nel modello ristrutturato, questa relazione è stata normalizzata utilizzando un'entità associativa che include l'attributo "QuantitàTotale". Questo approccio consente di calcolare facilmente la quantità necessaria di ciascun ingrediente in base alle adesioni alle sessioni pratiche, garantendo flessibilità e scalabilità nel modello.
+\begin{figure}[H]
+    \noindent\makebox[\linewidth]{
+        \includegraphics[height=0.8\textheight,width=1\textwidth]{latex/immagini/uml_ristrutturato_sessioni.png}
+    }
+    \caption{Scelte ristrutturato}
+\end{figure}
