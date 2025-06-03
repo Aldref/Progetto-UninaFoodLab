@@ -14,12 +14,23 @@
 
 <HBox stylesheets="@../css/dashboard.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="com.progetto.controller.HomepageUtenteController">
     <VBox fx:id="sidebar" spacing="20" alignment="TOP_CENTER" minWidth="180" maxWidth="300" prefWidth="220" styleClass="sidebar" HBox.hgrow="NEVER" VBox.vgrow="ALWAYS">
+    <!-- Logo e titolo -->
         <VBox spacing="10" alignment="CENTER">
-            <ImageView fx:id="avatar" fitWidth="80" fitHeight="80" styleClass="profile-image"/>
+            <ImageView fitHeight="80" fitWidth="80" styleClass="area-corsi-image">
+                <Image url="/immagini/logo.png"/>
+            </ImageView>
+            <Label text="UninaFoodLab" styleClass="area-corsi-title" />
+            <Separator prefWidth="175" />
+        </VBox>
+        <!-- Informazioni utente -->
+        <VBox spacing="10" alignment="CENTER">
+            <ImageView fx:id="avatar" fitWidth="80" fitHeight="80" styleClass="profile-image">
+                <Image url="/immagini/login_image.png"/>
+            </ImageView>
             <Label text="Mario Rossi" styleClass="user-name"/>
             <Label text="Utente" styleClass="user-role"/>
         </VBox>
-
+        <!-- Bottoni centrati -->
         <VBox fx:id="buttonContainer" spacing="15" alignment="CENTER" VBox.vgrow="ALWAYS">
             <Button text="Tutti i Corsi" graphicTextGap="10" styleClass="sidebar-button">
                 <graphic>
@@ -43,7 +54,7 @@
                 </graphic>
             </Button>
         </VBox>
-
+        <!-- Logout -->
         <VBox alignment="BOTTOM_CENTER">
             <Button text="Logout" onAction="#LogoutClick" graphicTextGap="10" styleClass="logout-button">
                 <graphic>
@@ -57,10 +68,12 @@
 
     <!-- Main content area -->
     <VBox spacing="0" alignment="TOP_CENTER" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-    <!-- Spazio per abbassare la barra di ricerca -->
+        
+        <!-- Spazio per abbassare la barra di ricerca -->
         <VBox minHeight="40"/>
-        <!-- Top bar -->
-        <VBox alignment="CENTER" spacing="10">
+
+        <!-- Top bar con filtri -->
+        <VBox alignment="CENTER" spacing="10" styleClass="search-bar-container">
             <Label styleClass="section-title" text="Trova i tuoi corsi" />
             <HBox alignment="CENTER" spacing="10">
                 <ComboBox fx:id="cbCategoria" promptText="Categoria" styleClass="filter-combobox" />
@@ -69,30 +82,25 @@
                 <Button onAction="#handleSearch" styleClass="search-button" text="Cerca Corsi" />
             </HBox>
         </VBox>
-        <!-- Spazio extra e divisore -->
-        <VBox minHeight="50"/>
-        <HBox style="-fx-background-color: transparent; -fx-padding: 0 0 10 0;">
-            
-        </HBox>
-        <!-- Center content -->
-        <VBox alignment="CENTER" spacing="10" VBox.vgrow="NEVER">
-            <ImageView fitHeight="80" fitWidth="80" styleClass="area-corsi-image">
-                <Image url="/immagini/logo.png"/>
-            </ImageView>
-            <Label text="UninaFoodLab" styleClass="area-corsi-title" />
+
+        <!-- Spazio extra -->
+        <VBox minHeight="30"/>
+
+        <!-- ScrollPane con le card dei corsi -->
+        <VBox spacing="0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+            <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane">
+                <FlowPane fx:id="mainContentArea" hgap="20" vgap="20" prefWrapLength="800" alignment="CENTER" styleClass="courses-container"/>
+            </ScrollPane>
         </VBox>
-        
-        <!-- ScrollPane per le card, che si espande -->
-        <ScrollPane fitToWidth="true" prefHeight="600" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
-            <FlowPane fx:id="mainContentArea" hgap="20" vgap="20" prefWrapLength="800" styleClass="courses-area" />
-        </ScrollPane>
-        
-        <!-- Barra di paginazione sempre in basso -->
+
+        <!-- Barra di paginazione -->
         <HBox alignment="CENTER" spacing="10" styleClass="pagination-bar">
             <Button text="&lt;" onAction="#prevPage"/>
             <Label fx:id="pageLabel" text="Pagina 1"/>
             <Button text="&gt;" onAction="#nextPage"/>
         </HBox>
+        
         <VBox minHeight="20"/>
     </VBox>
+
 </HBox>

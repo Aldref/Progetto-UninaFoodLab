@@ -1,25 +1,10 @@
-/* Sidebar */
+/* -------------------- Sidebar -------------------- */
 .sidebar {
     -fx-background-color: #2C56C9;
     -fx-padding: 30 10;
-}
-
-.profile-image {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0.2, 0, 2);
-    -fx-clip-shape: "circle";
-    -fx-border-radius: 50%;
-    -fx-background-radius: 50%;
-}
-
-.user-name {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-}
-
-.user-role {
-    -fx-font-size: 12px;
-    -fx-text-fill: lightgray;
+    -fx-min-width: 180px;
+    -fx-max-width: 300px;
+    -fx-alignment: center;
 }
 
 .sidebar-button {
@@ -30,6 +15,7 @@
     -fx-background-radius: 10;
     -fx-padding: 10 15;
     -fx-font-size: 14px;
+    -fx-alignment: center;
 }
 
 .sidebar-button:hover {
@@ -50,25 +36,44 @@
     -fx-background-color: rgba(255, 179, 102, 0.2);
 }
 
-/* Utente info */
+/* -------------------- Profilo Utente -------------------- */
+.profile-image {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 5, 0.2, 0, 2);
+    -fx-clip-shape: "circle";
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+}
+
 .user-name {
-    -fx-text-fill: white;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
+    -fx-text-fill: white;
 }
 
 .user-role {
-    -fx-text-fill: #bdc3c7;
     -fx-font-size: 12px;
+    -fx-text-fill: lightgray;
 }
 
-/* Top filters */
+/* -------------------- Barra di Ricerca -------------------- */
 .section-title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: #2c3e50;
     -fx-padding: 0 0 10 0;
 }
+
+.search-bar-container {
+    -fx-background-color: white;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0.1, 0, 4);
+    -fx-spacing: 10;
+    -fx-alignment: center;
+    -fx-margin: 20;
+}
+
 
 .filter-combobox {
     -fx-pref-width: 150;
@@ -89,38 +94,65 @@
     -fx-background-color: #2980b9;
 }
 
-.area-corsi-title {
-    -fx-font-size: 28px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2C56C9;
-    -fx-padding: 0 0 10 0; 
-}
-.area-corsi-image {
-    -fx-effect: dropshadow(gaussian, #2C56C9, 20, 0.2, 0, 4);
+/* -------------------- Area Corsi -------------------- */
+.courses-area {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 2%;
+    -fx-alignment: center;
+    -fx-hgap: 2%;
+    -fx-vgap: 2%;
+    -fx-pref-wrap-length: 600;
 }
 
+.courses-container {
+    -fx-padding: 20;
+}
+
+.course-card {
+    -fx-background-color: white;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0.1, 0, 4);
+    -fx-padding: 20;
+    -fx-spacing: 10;
+    -fx-pref-width: 300;
+}
+
+.course-card-header {
+    -fx-background-color: linear-gradient(to right, #ff6a8d, #ffa07a);
+    -fx-background-radius: 15 15 0 0;
+    -fx-pref-height: 100;
+}
+
+.course-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.course-description {
+    -fx-text-fill: #7f8c8d;
+    -fx-wrap-text: true;
+    -fx-font-size: 13px;
+}
+
+/* -------------------- ScrollPane -------------------- */
 .scroll-pane {
     -fx-background-color: transparent;
+    -fx-pref-width: 100%;
+    -fx-pref-height: 100%;
 }
 
 .scroll-pane .viewport {
     -fx-background-color: transparent;
 }
 
-/* Area corsi */
-.courses-area {
-    -fx-background-color: white;
-    -fx-border-color: #bdc3c7;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
-    -fx-padding: 10;
-}
-
-.area-corsi-title {
-    -fx-font-size: 36px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2C56C9;
-    -fx-padding: 40 0 20 0; 
+/* -------------------- Effetti e Ombre -------------------- */
+.area-corsi-image {
+    -fx-effect: dropshadow(gaussian, #2C56C9, 20, 0.2, 0, 4);
 }
 
 .area-description {

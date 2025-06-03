@@ -2,8 +2,12 @@ package com.progetto.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import javafx.event.ActionEvent;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -75,6 +79,23 @@ public class RegisterController implements Initializable {
             labelErrore.setVisible(false);
             System.out.println("Registrazione valida. Procedo...");
             // TODO: salva dati, cambia scena, ecc.
+        }
+    }
+
+    @FXML
+    private void onIndietroClick(ActionEvent event) {
+        try {
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            SceneSwitcher.switchScene(
+                stage,
+                "/fxml/loginpage.fxml",
+                "UninaFoodLab Login",
+                false, 
+                600, 400,
+                800, 600  
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
