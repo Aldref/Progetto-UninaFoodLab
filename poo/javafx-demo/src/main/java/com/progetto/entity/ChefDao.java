@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import com.progetto.jdbc.ConnectionJavaDb;
-import com.progetto.jdbc.DbUtils;
+import com.progetto.jdbc.SupportDb;
 
 public class ChefDao extends UtenteDao  {
     private String nome;
@@ -16,7 +16,7 @@ public class ChefDao extends UtenteDao  {
     private String numeroDiTelefono;
     private LocalDate dataDiNascita;
     private int anniDiEsperienza;
-    private String id_Utete;// aggiustare tipo di dato in seguito 
+    private String id_Chef;// aggiustare tipo di dato in seguito 
 
 
     
@@ -25,44 +25,14 @@ public class ChefDao extends UtenteDao  {
         this.anniDiEsperienza = anniDiEsperienza;
 
     }
-
-
-
-
-
-    public void setid_Utete() {
-        String query = "Select Id_Utente as ID from Chef where Email = ? ";
-        DbUtils dbu = new DbUtils();
-        Connection  conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            conn = ConnectionJavaDb.getConnection();
-            ps = conn.prepareStatement(query);
-            ps.setString(1, email);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-            id_Utete = rs.getString("ID");
-            }
-        } catch (SQLException sqe) {
-            sqe.printStackTrace(); // Per debug
-        } finally {
-            dbu.closeAll(conn, ps, rs);
-        }
-    }
-
-
-
-
-
-
-
+    
     @Override
     public void RegistrazioneUtente() {
         String query = "INSERT INTO Chef (Nome, Cognome, Email, Password, NumeroDiTelefono, DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        DbUtils dbu = new DbUtils();
+        SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
 
         try {
             conn = ConnectionJavaDb.getConnection();
@@ -78,8 +48,12 @@ public class ChefDao extends UtenteDao  {
             ps.setDate(6, sqlData);
             ps.setInt(7, anniDiEsperienza);
             ps.execute(); 
+            generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                id_Chef = generatedKeys.getString(1);
+            }
         } catch (SQLException sqe) {
-            // Per debug
+            sqe.printStackTrace();
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
@@ -87,39 +61,24 @@ public class ChefDao extends UtenteDao  {
     }
 
 
-
-     // passaggio classe corso invece di tutti sti parametri
-    public void CreaCorso(String nome,String descrizione, LocalDate dataInizio, LocalDate dataFine,String FrequenzaDelleSessioni,int MaxPersone, float  Prezzo, String Url_Propic ){
-        String query = "INSERT INTO Corso (Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, MaxPersone, Prezzo, Url_Propic) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        String querryN_N = "INSERT INTO Chef_Corso (IdChef, IdCorso) VALUES (?, ?)";
-        DbUtils dbu = new DbUtils();
+    public void AssegnaCorso(Corso corso){
+    String query = "INSERT INTO  Chef_Corso (id_Chef, id_Corso) VALUES (?, ?)";
+        SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
-        PreparedStatement AddN_N= null;// continua da qui 
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
-            java.sql.Date sqlDataInizio= java.sql.Date.valueOf(dataInizio);
-            java.sql.Date sqlDataFine = java.sql.Date.valueOf(dataFine);
-            ps.setString(1, nome);
-            ps.setString(2, descrizione);
-            ps.setDate(3, sqlDataInizio);
-            ps.setDate(4, sqlDataFine);
-            ps.setString(5, FrequenzaDelleSessioni);
-            ps.setInt(6, MaxPersone);
-            ps.setFloat(7, Prezzo);
-            ps.setString(8, Url_Propic);
+
+            ps.setString(1, id_Chef);
+            ps.setInt(2, corso.getId_Corso());
             ps.execute();
 
         } catch (SQLException sqe) {
-            sqe.printStackTrace(); // Per debug
+            sqe.printStackTrace();
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
         }
     }
-
-
-
-    
 }

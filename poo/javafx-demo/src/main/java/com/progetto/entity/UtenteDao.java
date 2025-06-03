@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import com.progetto.jdbc.ConnectionJavaDb;
-import com.progetto.jdbc.DbUtils;
+import com.progetto.jdbc.SupportDb;
 
 public abstract class UtenteDao {
     protected  LocalDate dataDiNascita;
@@ -29,7 +29,7 @@ public abstract class UtenteDao {
 
     public boolean ControlloEmailUtente(){
         String query="SELECT EXISTS (SELECT 1 FROM Partecipante WHERE Email = ?) OR EXISTS (SELECT 1 FROM Chef WHERE Email = ?) AS Esistenza";
-        DbUtils dbu= new DbUtils();
+        SupportDb dbu= new SupportDb();
         Connection conn=null;
         PreparedStatement ps=null;
         ResultSet rs=null;

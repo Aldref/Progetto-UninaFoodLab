@@ -1,13 +1,15 @@
 package com.progetto.entity;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
 import com.progetto.jdbc.ConnectionJavaDb;
-import com.progetto.jdbc.DbUtils;
+import com.progetto.jdbc.SupportDb;
 
 public class UtenteVisitatoreDao extends UtenteDao {
+    private int id_Utente;
     public UtenteVisitatoreDao(String nome, String cognome, String email, String password, String numeroDiTelefono, LocalDate dataDiNascita) {
         super(nome, cognome, email, password, numeroDiTelefono, dataDiNascita);
     }
@@ -15,9 +17,10 @@ public class UtenteVisitatoreDao extends UtenteDao {
     @Override
     public void RegistrazioneUtente() {
         String query = "INSERT INTO Partecipante (Nome, Cognome, Email, Password, NumeroDiTelefono, DataDiNascita) VALUES (?, ?, ?, ?, ?, ?)";
-        DbUtils dbu = new DbUtils();
+        SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
+        ResultSet generatedKeys=null;
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
@@ -31,6 +34,10 @@ public class UtenteVisitatoreDao extends UtenteDao {
             ps.setString(5, numeroDiTelefono);
             ps.setDate(6, sqlData);
             ps.execute(); 
+            generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                id_Utente = generatedKeys.getInt(1);
+            }
         } catch (SQLException sqe) {
             //gestire errore
         } finally {
