@@ -2,6 +2,7 @@ package com.progetto.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.ComboBox;
@@ -25,7 +26,7 @@ public class HomepageUtenteController {
 
     private List<Node> allCards = new ArrayList<>();
     private int currentPage = 0;
-    private final int CARDS_PER_PAGE = 9;
+    private final int CARDS_PER_PAGE = 12;
 
     
     public void setCards(List<Node> cards) {
@@ -80,40 +81,38 @@ public class HomepageUtenteController {
 
     @FXML
     private void LogoutClick() {
-        // Creazione dell'alert di conferma
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Conferma Logout");
-        alert.setHeaderText(null);
-        alert.setContentText("Sei sicuro di voler uscire dal tuo account?");
-
-        // Gestione della risposta dell'utente
-        java.util.Optional<javafx.scene.control.ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
-            try {
-                // Ottieni la finestra corrente
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/logoutdialog.fxml"));
+            VBox dialogContent = loader.load();
+            LogoutDialogController dialogController = loader.getController();
+            
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            dialogStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            dialogStage.setTitle("Conferma Logout");
+            
+            javafx.scene.Scene dialogScene = new javafx.scene.Scene(dialogContent);
+            dialogScene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            
+            dialogStage.setScene(dialogScene);
+            dialogStage.showAndWait();
+            
+            if (dialogController.isConfirmed()) {
                 javafx.stage.Stage stage = (javafx.stage.Stage) mainContentArea.getScene().getWindow();
-
-                // Forza il ritorno alla modalità finestra
                 stage.setMaximized(false);
-
-                // Passa dimensioni minime e massime per la pagina di login
+                
                 SceneSwitcher.switchScene(
                     stage,
                     "/fxml/loginpage.fxml",
                     "UninaFoodLab - Login",
                     false, 
-                    500, 400,
+                    600, 400,
                     -1, -1  
                 );
-            } catch (Exception e) {
-                // Log dell'errore e messaggio all'utente
-                System.err.println("Errore durante il logout: " + e.getMessage());
-                javafx.scene.control.Alert errorAlert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-                errorAlert.setTitle("Errore");
-                errorAlert.setHeaderText(null);
-                errorAlert.setContentText("Si è verificato un errore durante il logout. Riprova.");
-                errorAlert.showAndWait();
             }
+        } catch (Exception e) {
+            System.err.println("Errore durante il logout: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

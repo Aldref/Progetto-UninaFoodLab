@@ -22,32 +22,32 @@ public class LoginController implements Initializable {
 
     @FXML
     private void LoginClick(ActionEvent event) {
-        try {
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+    try {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            // Passa dimensioni minime e massime per la homepage
-            HomepageUtenteController controller = SceneSwitcher.switchScene(
-                stage,
-                "/fxml/homepageutente.fxml",
-                "Homepage Utente - UninaFoodLab",
-                true, // Resizable
-                800, 600,
-                1920, 1080  
-            );
-            
-            stage.setMaximized(true);
         
-            // Carica le card nella homepage DA TOGLIERE ASSOLUTAMENTE
-            for (int i = 0; i < 11; i++) {
-                FXMLLoader cardLoader = new FXMLLoader(getClass().getResource("/fxml/cardcorso2.fxml"));
-                Parent card = cardLoader.load();
-                controller.addCard(card);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        HomepageUtenteController controller = SceneSwitcher.switchScene(
+            stage,
+            "/fxml/homepageutente.fxml", 
+            "Homepage Utente - UninaFoodLab",
+            true, 
+            800, 600,
+            2560, 1440  
+        );
+        
+        stage.setMaximized(true);
+    
+        
+        for (int i = 0; i < 15; i++) {
+            FXMLLoader cardLoader = new FXMLLoader(getClass().getResource("/fxml/cardcorso2.fxml"));
+            Parent card = cardLoader.load();
+            controller.addCard(card);
         }
+
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+}
 
     @FXML
     private void RegisterClick(ActionEvent event) {

@@ -28,18 +28,18 @@
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #F5F5F5;" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="textFieldNome" layoutX="25.0" layoutY="41.0" promptText="Nome*" />
-            <TextField fx:id="textFieldEmail" layoutX="219.0" layoutY="41.0" promptText="Email*" />
-            <TextField fx:id="textFieldCognome" layoutX="25.0" layoutY="96.0" promptText="Cognome*" />
-            <PasswordField fx:id="textFieldPassword" layoutX="219.0" layoutY="96.0" promptText="Password*" />
-            <PasswordField fx:id="textFieldConfermaPassword" layoutX="219.0" layoutY="147.0" promptText="Conferma Password*" />
-            <DatePicker fx:id="datePickerDataNascita" layoutX="25.0" layoutY="147.0" prefHeight="26.0" prefWidth="163.0" promptText="Data di nascita*" />
-            <ComboBox fx:id="comboBoxGenere" layoutX="25.0" layoutY="200.0" prefWidth="163.0" promptText="Genere*" />
+            <TextField fx:id="textFieldNome" layoutX="25.0" layoutY="41.0" promptText="Nome*" focusTraversable="false"/>
+            <TextField fx:id="textFieldEmail" layoutX="219.0" layoutY="41.0" promptText="Email*" focusTraversable="false"/>
+            <TextField fx:id="textFieldCognome" layoutX="25.0" layoutY="96.0" promptText="Cognome*" focusTraversable="false"/>
+            <PasswordField fx:id="textFieldPassword" layoutX="219.0" layoutY="96.0" promptText="Password*" focusTraversable="false"/>
+            <PasswordField fx:id="textFieldConfermaPassword" layoutX="219.0" layoutY="147.0" promptText="Conferma Password*" focusTraversable="false"/>
+            <DatePicker fx:id="datePickerDataNascita" layoutX="25.0" layoutY="147.0" prefHeight="26.0" prefWidth="163.0" promptText="Data di nascita*" focusTraversable="false"/>
+            <ComboBox fx:id="comboBoxGenere" layoutX="25.0" layoutY="200.0" prefWidth="163.0" promptText="Genere*" focusTraversable="false"/>
 
-            <CheckBox fx:id="checkBoxUtente" layoutX="424.0" layoutY="67.0" mnemonicParsing="false" text="Utente" />
-            <CheckBox fx:id="checkBoxChef" layoutX="518.0" layoutY="67.0" mnemonicParsing="false" text="Chef" />
+            <CheckBox fx:id="checkBoxUtente" layoutX="424.0" layoutY="67.0" mnemonicParsing="false" text="Utente" focusTraversable="false"/>
+            <CheckBox fx:id="checkBoxChef" layoutX="518.0" layoutY="67.0" mnemonicParsing="false" text="Chef" focusTraversable="false"/>
             <Label layoutX="424.0" layoutY="41.0" text="Sei un utente o uno chef?*" />
-            <TextField fx:id="textFieldDescrizione" layoutX="421.0" layoutY="96.0" promptText="Descrizione" />
+            <TextField fx:id="textFieldDescrizione" layoutX="421.0" layoutY="96.0" promptText="Descrizione" focusTraversable="false" />
             
             <!-- Bottoni Registrati e Indietro -->
             <Button fx:id="btnRegistrati" layoutX="460.0" layoutY="145.0" mnemonicParsing="false" onAction="#onRegistratiClick" style="-fx-background-color: #253555;" text="Registrati" textFill="WHITE" />

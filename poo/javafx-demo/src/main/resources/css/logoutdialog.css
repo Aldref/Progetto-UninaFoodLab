@@ -1,0 +1,50 @@
+.dialog-container {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.0), 20, 0, 0, 5);
+    -fx-min-width: 400;
+    -fx-pref-width: 400;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.dialog-icon {
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.4), 10, 0, 0, 2);
+    -fx-color-input: #2C56C9;
+    -fx-blend-mode: multiply;
+}
+
+.dialog-title {
+    -fx-text-fill: #2c3e50;
+}
+
+.dialog-message {
+    -fx-text-fill: #555555;
+}
+
+.cancel-button {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-background-radius: 25;
+    -fx-padding: 10 20 10 20;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #5a6268;
+}
+
+.confirm-button {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+    -fx-background-radius: 25;
+    -fx-padding: 10 20 10 20;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.confirm-button:hover {
+    -fx-background-color: #c82333;
+}

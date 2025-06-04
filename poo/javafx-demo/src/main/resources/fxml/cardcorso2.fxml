@@ -105,7 +105,7 @@
                   <VBox alignment="CENTER" spacing="10">
                         <Button fx:id="buyButton" mnemonicParsing="false" onAction="#handlePurchase" styleClass="buy-button" text="ACQUISTA ORA">
                             <font>
-                                <Font name="System Bold" size="16.0" />
+                              <Font name="System Bold" size="16.0" />
                             </font>
                         </Button>
                     </VBox>
