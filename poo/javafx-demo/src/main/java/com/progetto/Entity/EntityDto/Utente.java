@@ -57,6 +57,6 @@ import java.time.LocalDate;
         this.dataDiNascita = dataDiNascita;
     }       
 
-    abstract public void RegistrazioneUtente();
+    
     
     }

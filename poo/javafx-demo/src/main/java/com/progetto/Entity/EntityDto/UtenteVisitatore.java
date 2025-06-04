@@ -13,10 +13,12 @@ public class UtenteVisitatore extends Utente {
         this.utenteVisitatoreDao = new UtenteVisitatoreDao();
     }
 
-    @Override
-    public void RegistrazioneUtente() {
-        utenteVisitatoreDao.RegistrazioneUtente(this);
+    public UtenteVisitatore() {
+        super("", "", "", "", "", null);
+        this.utenteVisitatoreDao = new UtenteVisitatoreDao();
     }
+
+    
 
     public int getId_UtenteVisitatore() {
         return id_UtenteVisitatore;

@@ -71,7 +71,9 @@
     -fx-border-radius: 15;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);
     -fx-padding: 30;
+    -fx-max-width: 900px;
     -fx-alignment: center;
+    -fx-pref-width: 900px;
 }
 
 .enrolled-title {
@@ -90,6 +92,16 @@
 .nav-button-active {
     -fx-background-color: rgba(255,255,255,0.2);
     -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 20 12 20;
+    -fx-alignment: CENTER-LEFT;
+    -fx-graphic-text-gap: 12;
+    -fx-cursor: hand;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(255,255,255,0.3);
+    -fx-border-width: 2;
 }
 
 .nav-button-active:hover {
@@ -122,11 +134,13 @@
     -fx-border-radius: 15;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);
     -fx-padding: 30;
+    -fx-max-width: 900px;
     -fx-alignment: center;
+    -fx-pref-width: 900px;
 }
 
 .search-title {
-    -fx-font-size: 20px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #2C56C9;
 }
@@ -173,6 +187,8 @@
     -fx-background-color: #192238;
 }
 
+
+
 /* === COURSES SECTION === */
 .courses-scroll-pane {
     -fx-background-color: transparent;
@@ -194,7 +210,9 @@
     -fx-alignment: center;
     -fx-hgap: 30;
     -fx-vgap: 30;
+    -fx-pref-width: 1200;
 }
+
 
 /* === PAGINATION === */
 .pagination-section {

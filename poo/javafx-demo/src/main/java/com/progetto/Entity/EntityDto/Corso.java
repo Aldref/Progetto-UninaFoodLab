@@ -24,6 +24,18 @@ public class Corso {
         this.Url_Propic = url_Propic;
     }
 
+    public Corso() {
+        this.nome = "";
+        this.descrizione = "";
+        this.dataInizio = LocalDate.now();
+        this.dataFine = LocalDate.now();
+        this.FrequenzaDelleSessioni = "";
+        this.MaxPersone = 0;
+        this.Prezzo = 0.0f;
+        this.Url_Propic = "";
+        this.id_Corso = 0;
+    }
+
     public String getNome() {
         return nome;
     }
