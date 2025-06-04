@@ -1,5 +1,7 @@
 package com.progetto.controller;
 
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -11,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
+import javafx.util.Duration;
 
 public class HomepageUtenteController {
     @FXML
@@ -28,7 +31,25 @@ public class HomepageUtenteController {
     private int currentPage = 0;
     private final int CARDS_PER_PAGE = 12;
 
-    
+    @FXML
+    public void initialize() {
+        loadCards();
+    }
+
+    private void loadCards() {
+        allCards.clear();
+        try {
+            for (int i = 1; i <= 15; i++) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso2.fxml"));
+                Node card = loader.load();
+                allCards.add(card);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        updateCards();
+    }
+
     public void setCards(List<Node> cards) {
         this.allCards = cards;
         this.currentPage = 0;
@@ -48,6 +69,26 @@ public class HomepageUtenteController {
             mainContentArea.getChildren().add(allCards.get(i));
         }
         pageLabel.setText("Pagina " + (currentPage + 1));
+    }
+
+    // Esempio per cambiare scena
+    @FXML
+    private void goToEnrolledCourses() {
+        try {
+            Stage stage = (Stage) mainContentArea.getScene().getWindow();
+            SceneSwitcher.switchScene(
+                stage,
+                "/fxml/enrolledcourses.fxml",
+                "UninaFoodLab - Corsi a cui sei iscritto",
+                true,
+                800, 600,
+                -1, -1 
+            );
+            javafx.application.Platform.runLater(() -> stage.setMaximized(true));
+        } catch (IOException e) {
+            System.err.println("Errore nel cambio pagina: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -107,8 +148,9 @@ public class HomepageUtenteController {
                     "UninaFoodLab - Login",
                     false, 
                     600, 400,
-                    -1, -1  
+                    800, 600 
                 );
+                
             }
         } catch (Exception e) {
             System.err.println("Errore durante il logout: " + e.getMessage());

@@ -1,3 +1,4 @@
+
 .background-container {
     -fx-background-color: transparent;
 }
@@ -10,7 +11,6 @@
     -fx-min-width: 350;
     -fx-pref-width: 380;
 }
-
 
 .card:hover {
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0, 0, 15);
@@ -28,27 +28,48 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 2, 2);
 }
 
+/* Nuovo stile per la categoria */
+.course-category {
+    -fx-text-fill: white;
+    -fx-background-color: #2C56C9;
+    -fx-background-radius: 15;
+    -fx-padding: 6 12 6 12;
+    -fx-font-size: 11;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
 .course-title {
     -fx-text-fill: #2c3e50;
-    -fx-font-size: 22;
+    -fx-font-size: 24;
     -fx-font-weight: bold;
+    -fx-wrap-text: true;
 }
+
 
 .course-description {
     -fx-text-fill: #555555;
     -fx-font-size: 13;
     -fx-text-alignment: justify;
+    -fx-line-spacing: 2;
 }
 
 .course-details {
     -fx-background-color: #f8f9fa;
     -fx-background-radius: 12;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
 }
 
 .detail-row {
     -fx-border-color: transparent transparent #e9ecef transparent;
     -fx-border-width: 0 0 1 0;
-    -fx-padding: 5 0 5 0;
+    -fx-padding: 8 0 8 0;
+}
+
+.detail-row:last-child {
+    -fx-border-width: 0;
 }
 
 .detail-label {
@@ -60,10 +81,14 @@
 .detail-value {
     -fx-text-fill: #6c757d;
     -fx-font-size: 12;
+    -fx-font-weight: bold;
 }
 
 .price-section {
     -fx-alignment: center;
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
 }
 
 .price {
@@ -77,16 +102,19 @@
     -fx-text-fill: #999999;
     -fx-font-size: 12;
     -fx-alignment: center;
+    -fx-font-style: italic;
 }
+
 .buy-button {
     -fx-background-color: #253555;
     -fx-text-fill: white;
     -fx-background-radius: 50;
-    -fx-padding: 15;
+    -fx-padding: 15 30 15 30;
     -fx-font-size: 16;
     -fx-font-weight: bold;
     -fx-effect: dropshadow(gaussian, rgba(37, 53, 85, 0.3), 15, 0, 0, 8);
     -fx-border-color: transparent;
+    -fx-cursor: hand;
 }
 
 .buy-button:hover {

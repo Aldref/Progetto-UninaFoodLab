@@ -29,12 +29,23 @@
             </StackPane>
             
             <!-- Content section -->
-            <VBox styleClass="card-content" spacing="10.0">
+            <VBox styleClass="card-content" spacing="12.0">
                <children>
+                  <!-- Category tag -->
+                  <HBox>
+                     <children>
+                        <Label styleClass="course-category" text="Cucina Italiana">
+                           <font>
+                              <Font name="System Bold" size="11.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  
                   <!-- Title -->
-                  <Label styleClass="course-title" text="Cucina Italiana Tradizionale">
+                  <Label styleClass="course-title" text="Corso Avanzato di Cucina Tradizionale">
                      <font>
-                        <Font name="System Bold" size="22.0" />
+                        <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
                   

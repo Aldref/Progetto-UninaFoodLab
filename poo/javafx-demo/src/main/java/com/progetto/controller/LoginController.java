@@ -29,7 +29,7 @@ public class LoginController implements Initializable {
         HomepageUtenteController controller = SceneSwitcher.switchScene(
             stage,
             "/fxml/homepageutente.fxml", 
-            "Homepage Utente - UninaFoodLab",
+            "UninaFoodLab - Homepage",
             true, 
             800, 600,
             2560, 1440  
@@ -37,13 +37,6 @@ public class LoginController implements Initializable {
         
         stage.setMaximized(true);
     
-        
-        for (int i = 0; i < 15; i++) {
-            FXMLLoader cardLoader = new FXMLLoader(getClass().getResource("/fxml/cardcorso2.fxml"));
-            Parent card = cardLoader.load();
-            controller.addCard(card);
-        }
-
     } catch (IOException e) {
         e.printStackTrace();
     }

@@ -25,8 +25,8 @@ public class SceneSwitcher {
             // Imposta dimensioni minime e massime per la finestra
             stage.setMinWidth(minWidth);
             stage.setMinHeight(minHeight);
-            if (maxWidth > 0) stage.setMaxWidth(maxWidth); // Imposta solo se specificato
-            if (maxHeight > 0) stage.setMaxHeight(maxHeight); // Imposta solo se specificato
+            if (maxWidth > 0) stage.setMaxWidth(maxWidth); 
+            if (maxHeight > 0) stage.setMaxHeight(maxHeight); 
 
             stage.centerOnScreen();
             stage.show();

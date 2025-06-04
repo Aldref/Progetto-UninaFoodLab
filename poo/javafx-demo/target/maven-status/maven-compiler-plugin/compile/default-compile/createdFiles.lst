@@ -1,6 +1,7 @@
 com\progetto\Entity\EntityDto\Chef.class
 com\progetto\Entity\entityDao\UtenteVisitatoreDao.class
 com\progetto\Entity\entityDao\ChefDao.class
+com\progetto\controller\EnrolledCoursesController.class
 com\progetto\Entity\entityDao\UtenteDao.class
 com\progetto\Entity\EntityDto\UtenteVisitatore.class
 com\progetto\controller\HomepageUtenteController.class
