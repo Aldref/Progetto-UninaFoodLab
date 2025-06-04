@@ -1,21 +1,17 @@
-package com.progetto.entity;
+package com.progetto.Entity.entityDao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 
+import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
 
 public class UtenteVisitatoreDao extends UtenteDao {
-    private int id_Utente;
-    public UtenteVisitatoreDao(String nome, String cognome, String email, String password, String numeroDiTelefono, LocalDate dataDiNascita) {
-        super(nome, cognome, email, password, numeroDiTelefono, dataDiNascita);
-    }
-
-    @Override
-    public void RegistrazioneUtente() {
+   
+   
+    public void RegistrazioneUtente(UtenteVisitatore utenteVisitatore) {
         String query = "INSERT INTO Partecipante (Nome, Cognome, Email, Password, NumeroDiTelefono, DataDiNascita) VALUES (?, ?, ?, ?, ?, ?)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -25,18 +21,18 @@ public class UtenteVisitatoreDao extends UtenteDao {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
 
-            java.sql.Date sqlData = java.sql.Date.valueOf(dataDiNascita);
+            java.sql.Date sqlData = java.sql.Date.valueOf(utenteVisitatore.getDataDiNascita());
 
-            ps.setString(1, nome);
-            ps.setString(2, cognome);
-            ps.setString(3, email);
-            ps.setString(4, password);
-            ps.setString(5, numeroDiTelefono);
+            ps.setString(1, utenteVisitatore.getNome());
+            ps.setString(2, utenteVisitatore.getCognome());
+            ps.setString(3, utenteVisitatore.getEmail());
+            ps.setString(4, utenteVisitatore.getPassword());
+            ps.setString(5, utenteVisitatore.getNumeroDiTelefono());
             ps.setDate(6, sqlData);
             ps.execute(); 
             generatedKeys = ps.getGeneratedKeys();
             if (generatedKeys.next()) {
-                id_Utente = generatedKeys.getInt(1);
+                utenteVisitatore.setId_UtenteVisitatore(generatedKeys.getInt(1));
             }
         } catch (SQLException sqe) {
             //gestire errore

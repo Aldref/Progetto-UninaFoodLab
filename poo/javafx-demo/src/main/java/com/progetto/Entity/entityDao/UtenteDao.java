@@ -1,33 +1,17 @@
-package com.progetto.entity;
+package com.progetto.Entity.entityDao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 
+import com.progetto.Entity.EntityDto.Utente;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
 
 public abstract class UtenteDao {
-    protected  LocalDate dataDiNascita;
-    protected String nome;
-    protected String cognome;
-    protected  String email;
-    protected  String password;
-    protected  String numeroDiTelefono;
-
-
-    public UtenteDao(String nome, String cognome, String email, String password, String numeroDiTelefono, LocalDate dataDiNascita) {
-        this.nome = nome;
-        this.cognome = cognome;
-        this.email = email;
-        this.password = password;
-        this.numeroDiTelefono = numeroDiTelefono;
-        this.dataDiNascita = dataDiNascita;
     
-    }
 
-    public boolean ControlloEmailUtente(){
+    public boolean ControlloEmailUtente(Utente utente) {
         String query="SELECT EXISTS (SELECT 1 FROM Partecipante WHERE Email = ?) OR EXISTS (SELECT 1 FROM Chef WHERE Email = ?) AS Esistenza";
         SupportDb dbu= new SupportDb();
         Connection conn=null;
@@ -36,9 +20,9 @@ public abstract class UtenteDao {
         try{
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
-            
-            ps.setString(1,email);
-            ps.setString(2,email);
+
+            ps.setString(1,utente.getEmail());
+            ps.setString(2,utente.getEmail());
             rs = ps.executeQuery();
             if(rs.next()){
                 return rs.getBoolean("Esistenza");
@@ -51,6 +35,6 @@ public abstract class UtenteDao {
         return  true;
     }
             
-    public abstract void RegistrazioneUtente();
+
     
 }

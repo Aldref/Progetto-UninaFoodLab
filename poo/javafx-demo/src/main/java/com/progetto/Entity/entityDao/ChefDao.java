@@ -1,33 +1,18 @@
-package com.progetto.entity;
+package com.progetto.Entity.entityDao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 
+import com.progetto.Entity.EntityDto.Chef;
+import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
 
 public class ChefDao extends UtenteDao  {
-    private String nome;
-    private String cognome;
-    private String email;
-    private String password;
-    private String numeroDiTelefono;
-    private LocalDate dataDiNascita;
-    private int anniDiEsperienza;
-    private String id_Chef;// aggiustare tipo di dato in seguito 
-
-
+   
     
-    public ChefDao(String nome, String cognome, String email, String password, String numeroDiTelefono, LocalDate dataDiNascita, int anniDiEsperienza) {
-        super(nome, cognome, email, password, numeroDiTelefono, dataDiNascita);
-        this.anniDiEsperienza = anniDiEsperienza;
-
-    }
-    
-    @Override
-    public void RegistrazioneUtente() {
+    public void memorizzaUtente(Chef chef1) {
         String query = "INSERT INTO Chef (Nome, Cognome, Email, Password, NumeroDiTelefono, DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?, ?)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -38,19 +23,19 @@ public class ChefDao extends UtenteDao  {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
 
-            java.sql.Date sqlData = java.sql.Date.valueOf(dataDiNascita);
+            java.sql.Date sqlData = java.sql.Date.valueOf(chef1.getDataDiNascita());
 
-            ps.setString(1, nome);
-            ps.setString(2, cognome);
-            ps.setString(3, email);
-            ps.setString(4, password);
-            ps.setString(5, numeroDiTelefono);
+            ps.setString(1, chef1.getNome());
+            ps.setString(2, chef1.getCognome());
+            ps.setString(3, chef1.getEmail());
+            ps.setString(4, chef1.getPassword());
+            ps.setString(5, chef1.getNumeroDiTelefono());
             ps.setDate(6, sqlData);
-            ps.setInt(7, anniDiEsperienza);
+            ps.setInt(7, chef1.getAnniDiEsperienza());
             ps.execute(); 
             generatedKeys = ps.getGeneratedKeys();
             if (generatedKeys.next()) {
-                id_Chef = generatedKeys.getString(1);
+                chef1.setId_Chef(generatedKeys.getInt(1));
             }
         } catch (SQLException sqe) {
             sqe.printStackTrace();
@@ -61,7 +46,7 @@ public class ChefDao extends UtenteDao  {
     }
 
 
-    public void AssegnaCorso(Corso corso){
+    public void AssegnaCorso(Corso corso, Chef chef1) {
     String query = "INSERT INTO  Chef_Corso (id_Chef, id_Corso) VALUES (?, ?)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -70,7 +55,7 @@ public class ChefDao extends UtenteDao  {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
 
-            ps.setString(1, id_Chef);
+            ps.setInt(1, chef1.getId_Chef());
             ps.setInt(2, corso.getId_Corso());
             ps.execute();
 
@@ -81,4 +66,6 @@ public class ChefDao extends UtenteDao  {
             dbu.closeConnection(conn);
         }
     }
+
+
 }
