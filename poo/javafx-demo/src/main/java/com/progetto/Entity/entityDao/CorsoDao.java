@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.progetto.Entity.EntityDto.Chef;
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
@@ -13,8 +12,7 @@ import com.progetto.jdbc.SupportDb;
 public class CorsoDao{
     
 
-
-    public void memorizzaCorsoERicavaId(Corso corso) {
+    public void  memorizzaCorsoERicavaId(Corso corso) {
     String query = "INSERT INTO Corso (Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, MaxPersone, Prezzo, Url_Propic) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     SupportDb dbu = new SupportDb();
     Connection conn = null;
@@ -47,34 +45,7 @@ public class CorsoDao{
         dbu.closeStatement(ps);
         dbu.closeConnection(conn);
     }
-    }
-    
 
 
-
-    
-    public void eliminaCorso(Corso corso,Chef chef) {
-        String query = "DELETE FROM Corso WHERE id_Chef = ? and dataInizio = ? and dataFine = ? and nome = ?";
-        SupportDb dbu = new SupportDb();
-        Connection conn = null;
-        PreparedStatement ps = null;
-
-        try {
-            conn = ConnectionJavaDb.getConnection();
-            ps = conn.prepareStatement(query);
-            ps.setInt(1, chef.getId_Chef());
-            ps.setDate(2, java.sql.Date.valueOf(corso.getDataInizio()));
-            ps.setDate(3, java.sql.Date.valueOf(corso.getDataFine()));
-            ps.setString(4, corso.getNome());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            dbu.closeConnection(conn);
-            dbu.closeStatement(ps);
-        
-        }
-    }
-
-
+}
 }

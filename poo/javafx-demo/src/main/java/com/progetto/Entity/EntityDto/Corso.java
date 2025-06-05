@@ -1,6 +1,6 @@
 package com.progetto.Entity.EntityDto;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Corso {
     private String nome;
@@ -12,7 +12,9 @@ public class Corso {
     private float  Prezzo;
     private String Url_Propic;
     private int  id_Corso;
+    private ArrayList<Sessione> sessioni = new ArrayList<>();
 
+    
     public Corso(String nome, String descrizione, LocalDate dataInizio, LocalDate dataFine, String frequenzaDelleSessioni, int maxPersone, float prezzo, String url_Propic) {
         this.nome = nome;
         this.descrizione = descrizione;
@@ -106,6 +108,10 @@ public class Corso {
 
     public void setId_Corso(int id_Corso) {
         this.id_Corso = id_Corso;
+    }
+
+    public void setSessioni(ArrayList<Sessione> sessioni) {
+        this.sessioni = sessioni;
     }
 
     

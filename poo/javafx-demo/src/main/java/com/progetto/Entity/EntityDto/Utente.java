@@ -20,6 +20,10 @@ import java.time.LocalDate;
         this.dataDiNascita = dataDiNascita;
     
     }
+    public Utente() {
+    }
+
+    
     public String getNome() {
         return nome;
     }
