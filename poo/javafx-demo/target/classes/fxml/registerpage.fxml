@@ -1,56 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.controller.RegisterController">
-   <top>
-      <AnchorPane prefHeight="156.0" prefWidth="497.0" style="-fx-background-color: #2C56C9;" BorderPane.alignment="CENTER">
-         <children>
-            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="225.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../immagini/logo.png" />
-               </image>
-            </ImageView>
-         </children>
-      </AnchorPane>
-   </top>
-   <center>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #F5F5F5;" BorderPane.alignment="CENTER">
-         <children>
-            <TextField fx:id="textFieldNome" layoutX="25.0" layoutY="41.0" promptText="Nome*" focusTraversable="false"/>
-            <TextField fx:id="textFieldEmail" layoutX="219.0" layoutY="41.0" promptText="Email*" focusTraversable="false"/>
-            <TextField fx:id="textFieldCognome" layoutX="25.0" layoutY="96.0" promptText="Cognome*" focusTraversable="false"/>
-            <PasswordField fx:id="textFieldPassword" layoutX="219.0" layoutY="96.0" promptText="Password*" focusTraversable="false"/>
-            <PasswordField fx:id="textFieldConfermaPassword" layoutX="219.0" layoutY="147.0" promptText="Conferma Password*" focusTraversable="false"/>
-            <DatePicker fx:id="datePickerDataNascita" layoutX="25.0" layoutY="147.0" prefHeight="26.0" prefWidth="163.0" promptText="Data di nascita*" focusTraversable="false"/>
-            <ComboBox fx:id="comboBoxGenere" layoutX="25.0" layoutY="200.0" prefWidth="163.0" promptText="Genere*" focusTraversable="false"/>
-
-            <CheckBox fx:id="checkBoxUtente" layoutX="424.0" layoutY="67.0" mnemonicParsing="false" text="Utente" focusTraversable="false"/>
-            <CheckBox fx:id="checkBoxChef" layoutX="518.0" layoutY="67.0" mnemonicParsing="false" text="Chef" focusTraversable="false"/>
-            <Label layoutX="424.0" layoutY="41.0" text="Sei un utente o uno chef?*" />
-            <TextField fx:id="textFieldDescrizione" layoutX="421.0" layoutY="96.0" promptText="Descrizione" focusTraversable="false" />
-            
-            <!-- Bottoni Registrati e Indietro -->
-            <Button fx:id="btnRegistrati" layoutX="460.0" layoutY="145.0" mnemonicParsing="false" onAction="#onRegistratiClick" style="-fx-background-color: #253555;" text="Registrati" textFill="WHITE" />
-            <Button fx:id="btnIndietro" layoutX="465.0" layoutY="196.0" mnemonicParsing="false" onAction="#onIndietroClick" style="-fx-background-color: #253555;" text="Indietro" textFill="WHITE" />
-
-            <Label fx:id="labelErrore" layoutX="217.0" layoutY="194.0" style="-fx-text-fill: #FF0000;" text="Compila tutti i campi con *" textFill="RED" visible="false">
-               <font>
-                  <Font size="10.0" />
-               </font>
-            </Label>
-         </children>
-      </AnchorPane>
-   </center>
+<BorderPane stylesheets="@../css/registerpage.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="com.progetto.controller.RegisterController"
+    prefHeight="700" prefWidth="1000" styleClass="register-container">
+    
+    <!-- LEFT SIDE - Brand Section -->
+    <left>
+        <VBox styleClass="brand-section" alignment="CENTER" spacing="30">
+            <children>
+                <!-- Logo e Brand -->
+                <VBox alignment="CENTER" spacing="15" styleClass="brand-header">
+                    <children>
+                        <ImageView fitHeight="120.0" fitWidth="200.0" preserveRatio="true" styleClass="brand-logo">
+                            <image>
+                                <Image url="/immagini/logo.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="UninaFoodLab" styleClass="brand-title"/>
+                    </children>
+                </VBox>
+                
+                <!-- Welcome Message -->
+                <VBox alignment="CENTER" spacing="15" styleClass="welcome-section">
+                    <children>
+                        <Label text="Unisciti a noi!" styleClass="welcome-title"/>
+                        <Label text="Crea il tuo account e inizia subito a esplorare il mondo della cucina con i nostri corsi professionali." 
+                               styleClass="welcome-message" wrapText="true"/>
+                    </children>
+                </VBox>
+            </children>
+            <padding>
+                <Insets top="50" bottom="50" left="40" right="40"/>
+            </padding>
+        </VBox>
+    </left>
+    
+    <!-- RIGHT SIDE - Registration Form -->
+    <center>
+        <ScrollPane styleClass="register-scroll-pane" fitToWidth="true">
+            <content>
+                <VBox styleClass="register-section" alignment="CENTER" spacing="0">
+                    <children>
+                        <!-- Form Container -->
+                        <VBox styleClass="form-container" alignment="CENTER" spacing="25" maxWidth="500">
+                            <children>
+                                <!-- Form Title -->
+                                <Label text="Crea il tuo account" styleClass="form-title"/>
+                                
+                                <!-- Registration Form -->
+                                <VBox spacing="20" styleClass="input-section">
+                                    <children>
+                                        <!-- Nome e Cognome sulla stessa riga -->
+                                        <HBox spacing="15">
+                                            <children>
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Nome*" styleClass="field-label"/>
+                                                        <TextField fx:id="textFieldNome" styleClass="form-input" promptText="Inserisci il nome"/>
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Cognome*" styleClass="field-label"/>
+                                                        <TextField fx:id="textFieldCognome" styleClass="form-input" promptText="Inserisci il cognome"/>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        
+                                        <!-- Email -->
+                                        <VBox spacing="8">
+                                            <children>
+                                                <Label text="Email*" styleClass="field-label"/>
+                                                <TextField fx:id="textFieldEmail" styleClass="form-input" promptText="Inserisci la tua email"/>
+                                            </children>
+                                        </VBox>
+                                        
+                                        <!-- Password e Conferma Password -->
+                                        <HBox spacing="15">
+                                            <children>
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Password*" styleClass="field-label"/>
+                                                        <PasswordField fx:id="textFieldPassword" styleClass="form-input" promptText="Crea password"/>
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Conferma Password*" styleClass="field-label"/>
+                                                        <PasswordField fx:id="textFieldConfermaPassword" styleClass="form-input" promptText="Conferma password"/>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        
+                                        <!-- Data Nascita e Genere -->
+                                        <HBox spacing="15">
+                                            <children>
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Data di Nascita*" styleClass="field-label"/>
+                                                        <DatePicker fx:id="datePickerDataNascita" styleClass="form-input" promptText="Seleziona data"/>
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Genere*" styleClass="field-label"/>
+                                                        <ComboBox fx:id="comboBoxGenere" styleClass="form-input" promptText="Seleziona genere" maxWidth="Infinity"/>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        
+                                        <!-- Tipo Account -->
+                                        <VBox spacing="12" styleClass="account-type-section">
+                                            <children>
+                                                <Label text="Tipo di Account*" styleClass="field-label"/>
+                                                <HBox spacing="20" alignment="CENTER_LEFT">
+                                                    <children>
+                                                        <RadioButton fx:id="radioUtente" text="Utente" styleClass="account-radio" selected="true"/>
+                                                        <RadioButton fx:id="radioChef" text="Chef" styleClass="account-radio"/>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+                                        
+                                        <!-- Descrizione (solo per Chef) -->
+                                        <VBox fx:id="descrizioneSection" spacing="8" visible="false" managed="false">
+                                            <children>
+                                                <Label text="Descrizione" styleClass="field-label"/>
+                                                <TextArea fx:id="textFieldDescrizione" styleClass="form-textarea" promptText="Descrivi la tua esperienza culinaria..." prefRowCount="3"/>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                                
+                                <!-- Error Label -->
+                                <Label fx:id="labelErrore" text="Compila tutti i campi obbligatori" styleClass="error-label" visible="false"/>
+                                
+                                <!-- Action Buttons -->
+                                <VBox spacing="15" styleClass="button-section">
+                                    <children>
+                                        <Button fx:id="btnRegistrati" text="Registrati" styleClass="register-button" maxWidth="Infinity" onAction="#onRegistratiClick"/>
+                                        <Button fx:id="btnIndietro" text="Torna al Login" styleClass="back-button" maxWidth="Infinity" onAction="#onIndietroClick"/>
+                                    </children>
+                                </VBox>
+                            </children>
+                            <padding>
+                                <Insets top="40" bottom="40" left="40" right="40"/>
+                            </padding>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
 </BorderPane>

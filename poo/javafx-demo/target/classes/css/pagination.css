@@ -1,0 +1,38 @@
+.pagination-section {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-padding: 15 30 15 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+.pagination-button {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+    -fx-cursor: hand;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.pagination-button:hover {
+    -fx-background-color: #1e3f8f;
+}
+
+.pagination-button:pressed {
+    -fx-background-color: #1a3675;
+}
+
+.pagination-button:disabled {
+    -fx-background-color: #ccc;
+    -fx-text-fill: #999;
+    -fx-cursor: default;
+}
+
+.page-info {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666;
+    -fx-font-weight: bold;
+    -fx-padding: 0 20 0 20;
+}

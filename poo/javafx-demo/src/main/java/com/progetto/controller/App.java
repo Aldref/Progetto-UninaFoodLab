@@ -2,6 +2,7 @@ package com.progetto.controller;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
 
 public class App extends Application {
 
@@ -16,7 +17,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/immagini/logo.png")));
         SceneSwitcher.switchScene(
             stage,
             "/fxml/loginpage.fxml",

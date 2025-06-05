@@ -40,8 +40,11 @@ public class HomepageUtenteController {
         allCards.clear();
         try {
             for (int i = 1; i <= 15; i++) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso2.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
                 Node card = loader.load();
+                CardCorsoController controller = loader.getController();
+                controller.setAcquistato(false); 
+                
                 allCards.add(card);
             }
         } catch (IOException e) {
@@ -76,21 +79,65 @@ public class HomepageUtenteController {
     private void goToEnrolledCourses() {
         try {
             Stage stage = (Stage) mainContentArea.getScene().getWindow();
-            SceneSwitcher.switchScene(
+            SceneSwitcher.switchSceneKeepCurrentState(
                 stage,
                 "/fxml/enrolledcourses.fxml",
-                "UninaFoodLab - Corsi a cui sei iscritto",
-                true,
-                800, 600,
-                -1, -1 
+                "UninaFoodLab - Corsi a cui sei iscritto"
             );
-            javafx.application.Platform.runLater(() -> stage.setMaximized(true));
         } catch (IOException e) {
             System.err.println("Errore nel cambio pagina: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    @FXML
+    private void goToAccountManagement() {
+        try {
+            Stage stage = (Stage) mainContentArea.getScene().getWindow();
+            SceneSwitcher.switchSceneKeepCurrentState(
+                stage,
+                "/fxml/accountmanagement.fxml",
+                "UninaFoodLab - Gestione Account"
+            );
+        } catch (IOException e) {
+            System.err.println("Errore nel cambio pagina: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void LogoutClick() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/logoutdialog.fxml"));
+            VBox dialogContent = loader.load();
+            LogoutDialogController dialogController = loader.getController();
+            
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            dialogStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            dialogStage.setTitle("Conferma Logout");
+            
+            javafx.scene.Scene dialogScene = new javafx.scene.Scene(dialogContent);
+            dialogScene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            
+            dialogStage.setScene(dialogScene);
+            dialogStage.showAndWait();
+            
+            if (dialogController.isConfirmed()) {
+                Stage stage = (Stage) mainContentArea.getScene().getWindow();
+                SceneSwitcher.switchSceneToWindow(
+                    stage,
+                    "/fxml/loginpage.fxml",
+                    "UninaFoodLab - Login",
+                    600, 400,
+                    800, 600
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("Errore durante il logout: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void nextPage() {
         if ((currentPage + 1) * CARDS_PER_PAGE < allCards.size()) {
@@ -120,41 +167,4 @@ public class HomepageUtenteController {
         // Qui inserisci la logica per filtrare i corsi con il db
     }
 
-    @FXML
-    private void LogoutClick() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/logoutdialog.fxml"));
-            VBox dialogContent = loader.load();
-            LogoutDialogController dialogController = loader.getController();
-            
-            Stage dialogStage = new Stage();
-            dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            dialogStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
-            dialogStage.setTitle("Conferma Logout");
-            
-            javafx.scene.Scene dialogScene = new javafx.scene.Scene(dialogContent);
-            dialogScene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-            
-            dialogStage.setScene(dialogScene);
-            dialogStage.showAndWait();
-            
-            if (dialogController.isConfirmed()) {
-                javafx.stage.Stage stage = (javafx.stage.Stage) mainContentArea.getScene().getWindow();
-                stage.setMaximized(false);
-                
-                SceneSwitcher.switchScene(
-                    stage,
-                    "/fxml/loginpage.fxml",
-                    "UninaFoodLab - Login",
-                    false, 
-                    600, 400,
-                    800, 600 
-                );
-                
-            }
-        } catch (Exception e) {
-            System.err.println("Errore durante il logout: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
 }

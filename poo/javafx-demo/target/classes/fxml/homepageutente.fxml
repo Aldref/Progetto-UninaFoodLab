@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 
 
-<BorderPane stylesheets="@../css/homepageutente.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.controller.HomepageUtenteController">
+<BorderPane stylesheets="@../css/root.css,@../css/navbar.css,@../css/courses.css,@../css/pagination.css,@../css/scrollbar.css,@../css/searchisland.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.controller.HomepageUtenteController">
    <left>
       <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="280.0">
          <children>
@@ -48,7 +48,7 @@
             <!-- Navigation Buttons -->
             <VBox styleClass="navigation-section" spacing="15.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="viewCoursesBtn" text="Visualizza i corsi" styleClass="nav-button" maxWidth="Infinity">
+                  <Button fx:id="viewCoursesBtn" text="Visualizza i corsi" styleClass="nav-button-active" maxWidth="Infinity">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
                            <image>
@@ -68,7 +68,7 @@
                      </graphic>
                   </Button>
                   
-                  <Button fx:id="accountManagementBtn" text="Gestione account" styleClass="nav-button" maxWidth="Infinity">
+                  <Button fx:id="accountManagementBtn" text="Gestione account" styleClass="nav-button" maxWidth="Infinity" onAction="#goToAccountManagement">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
                            <image>

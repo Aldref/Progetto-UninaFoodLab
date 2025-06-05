@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="com.progetto.controller.CalendarDialogController"
+    styleClass="calendar-dialog" stylesheets="@../css/calendardialog.css"
+    spacing="0" prefWidth="1000" prefHeight="600">
+
+    <!-- Header -->
+    <HBox styleClass="calendar-header" alignment="CENTER" spacing="20">
+        <padding>
+            <Insets top="20" bottom="20" left="20" right="20"/>
+        </padding>
+        <children>
+            <Button fx:id="prevMonthBtn" text="◀" styleClass="nav-button" onAction="#prevMonth"/>
+            <Label fx:id="monthYearLabel" text="Gennaio 2025" styleClass="month-title">
+                <font>
+                    <Font name="System Bold" size="24"/>
+                </font>
+            </Label>
+            <Button fx:id="nextMonthBtn" text="▶" styleClass="nav-button" onAction="#nextMonth"/>
+        </children>
+    </HBox>
+
+    <!-- Days of week header -->
+    <GridPane styleClass="days-header-grid">
+        <padding>
+            <Insets top="10" bottom="10" left="10" right="10"/>
+        </padding>
+        <columnConstraints>
+            <ColumnConstraints minWidth="110" prefWidth="110" maxWidth="110" hgrow="NEVER"/>
+            <ColumnConstraints minWidth="110" prefWidth="110" maxWidth="110" hgrow="NEVER"/>
+            <ColumnConstraints minWidth="110" prefWidth="110" maxWidth="110" hgrow="NEVER"/>
+            <ColumnConstraints minWidth="110" prefWidth="110" maxWidth="110" hgrow="NEVER"/>
+            <ColumnConstraints minWidth="110" prefWidth="110" maxWidth="110" hgrow="NEVER"/>
+            <ColumnConstraints minWidth="110" prefWidth="110" maxWidth="110" hgrow="NEVER"/>
+            <ColumnConstraints minWidth="110" prefWidth="110" maxWidth="110" hgrow="NEVER"/>
+        </columnConstraints>
+        <children>
+            <Label text="LUN" styleClass="day-header" GridPane.columnIndex="0"/>
+            <Label text="MAR" styleClass="day-header" GridPane.columnIndex="1"/>
+            <Label text="MER" styleClass="day-header" GridPane.columnIndex="2"/>
+            <Label text="GIO" styleClass="day-header" GridPane.columnIndex="3"/>
+            <Label text="VEN" styleClass="day-header" GridPane.columnIndex="4"/>
+            <Label text="SAB" styleClass="day-header" GridPane.columnIndex="5"/>
+            <Label text="DOM" styleClass="day-header" GridPane.columnIndex="6"/>
+        </children>
+    </GridPane>
+
+    <!-- Main content area: Calendar + Details side by side -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
+        <children>
+            <!-- Calendar grid -->
+            <VBox styleClass="calendar-container" HBox.hgrow="ALWAYS">
+                <children>
+                    <GridPane fx:id="calendarGrid" styleClass="calendar-grid" VBox.vgrow="ALWAYS">
+                        <padding>
+                            <Insets top="10" bottom="10" left="10" right="10"/>
+                        </padding>
+                    </GridPane>
+                </children>
+            </VBox>
+            
+            <!-- Lesson details sidebar -->
+            <VBox fx:id="lessonDetailsArea" styleClass="lesson-details-sidebar" spacing="15" visible="false" 
+                  prefWidth="350" minWidth="350" maxWidth="350">
+                <padding>
+                    <Insets top="20" bottom="20" left="20" right="20"/>
+                </padding>
+                <children>
+                    <Label fx:id="selectedDateLabel" text="Seleziona un giorno" styleClass="selected-date-title">
+                        <font>
+                            <Font name="System Bold" size="18"/>
+                        </font>
+                    </Label>
+                    
+                    <ScrollPane fx:id="lessonsScrollPane" styleClass="lessons-scroll" VBox.vgrow="ALWAYS">
+                        <content>
+                            <VBox fx:id="lessonsContainer" spacing="12"/>
+                        </content>
+                    </ScrollPane>
+                </children>
+            </VBox>
+        </children>
+    </HBox>
+
+    <!-- Footer buttons -->
+    <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="15">
+        <padding>
+            <Insets top="15" bottom="20" left="20" right="20"/>
+        </padding>
+        <children>
+            <Button fx:id="closeBtn" text="Chiudi" styleClass="close-button" onAction="#closeDialog"/>
+        </children>
+    </HBox>
+
+</VBox>

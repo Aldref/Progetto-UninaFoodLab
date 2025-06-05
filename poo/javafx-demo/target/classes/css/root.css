@@ -1,0 +1,14 @@
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-background-color: #f5f7fa;
+}
+
+@media (max-width: 1200px) {
+    .search-island {
+        -fx-max-width: 100%;
+    }
+    
+    .search-dropdown {
+        -fx-pref-width: 120px;
+    }
+}

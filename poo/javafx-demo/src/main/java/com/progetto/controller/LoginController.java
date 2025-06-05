@@ -52,8 +52,8 @@ public class LoginController implements Initializable {
                 "/fxml/registerpage.fxml",
                 "Registrazione - UninaFoodLab",
                 false, 
-                500, 400,
-                -1, -1   
+                900, 700,
+                1200, 800
             );
         } catch (IOException e) {
             e.printStackTrace();

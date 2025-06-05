@@ -1,0 +1,111 @@
+.account-scroll-pane {
+    -fx-background-color: #f8f9fa;
+}
+
+.account-container {
+    -fx-background-color: transparent;
+}
+
+.profile-header {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.profile-image-large {
+    -fx-background-radius: 60;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);
+}
+
+.account-title {
+    -fx-font-size: 28;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C56C9;
+}
+
+.change-photo-btn {
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #2C56C9;
+    -fx-background-radius: 20;
+    -fx-padding: 8 20 8 20;
+    -fx-font-size: 12;
+    -fx-cursor: hand;
+}
+
+.change-photo-btn:hover {
+    -fx-background-color: #bbdefb;
+}
+
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.section-title {
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.field-label {
+    -fx-font-size: 14;
+    -fx-font-weight: 600;
+    -fx-text-fill: #555;
+}
+
+.form-field {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+    -fx-font-size: 14;
+}
+
+.form-field:focused {
+    -fx-border-color: #2C56C9;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.3), 5, 0, 0, 2);
+}
+
+.form-field.field-error {
+    -fx-border-color: #dc3545;
+    -fx-background-color: #fff5f5;
+}
+
+.form-field.field-error:focused {
+    -fx-border-color: #dc3545;
+    -fx-effect: dropshadow(gaussian, rgba(220,53,69,0.3), 5, 0, 0, 2);
+}
+
+.save-button {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+    -fx-background-radius: 25;
+    -fx-padding: 12 30 12 30;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.save-button:hover {
+    -fx-background-color: #1e3a8a;
+}
+
+.cancel-button {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-background-radius: 25;
+    -fx-padding: 12 30 12 30;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #5a6268;
+}

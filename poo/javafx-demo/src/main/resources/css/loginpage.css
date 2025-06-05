@@ -1,0 +1,162 @@
+/* Main Container */
+.login-container {
+    -fx-background-color: linear-gradient(45deg, #2C56C9 0%, #1e3a8a 100%);
+}
+
+/* LEFT SIDE - Brand Section */
+.brand-section {
+    -fx-background-color: #2C56C9;
+    -fx-min-width: 450;
+    -fx-pref-width: 450;
+}
+
+.brand-header {
+    -fx-alignment: center;
+}
+
+.brand-logo {
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.3), 15, 0, 0, 5);
+}
+
+.brand-title {
+    -fx-font-size: 36;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+.brand-subtitle {
+    -fx-font-size: 16;
+    -fx-text-fill: rgba(255,255,255,0.9);
+    -fx-font-style: italic;
+}
+
+.welcome-section {
+    -fx-alignment: center;
+    -fx-padding: 20 0 20 0;
+}
+
+.welcome-title {
+    -fx-font-size: 28;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.welcome-message {
+    -fx-font-size: 14;
+    -fx-text-fill: rgba(255,255,255,0.9);
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+    -fx-max-width: 350;
+}
+
+/* RIGHT SIDE - Login Form */
+.login-section {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 0 0 0 30;
+}
+
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0, 0, 10);
+}
+
+.user-avatar {
+    -fx-background-radius: 40;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+.form-title {
+    -fx-font-size: 24;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C56C9;
+    -fx-text-alignment: center;
+}
+
+.input-section {
+    -fx-alignment: center;
+}
+
+.field-label {
+    -fx-font-size: 14;
+    -fx-font-weight: 600;
+    -fx-text-fill: #555;
+}
+
+.form-input {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 15 20 15 20;
+    -fx-font-size: 14;
+    -fx-min-width: 300;
+    -fx-pref-width: 300;
+}
+
+.form-input:focused {
+    -fx-border-color: #2C56C9;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.3), 8, 0, 0, 3);
+}
+
+.button-section {
+    -fx-alignment: center;
+}
+
+.login-button {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+    -fx-background-radius: 25;
+    -fx-padding: 15 30 15 30;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-min-width: 300;
+    -fx-pref-width: 300;
+}
+
+.login-button:hover {
+    -fx-background-color: #1e3a8a;
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.4), 10, 0, 0, 5);
+}
+
+.register-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2C56C9;
+    -fx-border-color: #2C56C9;
+    -fx-border-width: 2;
+    -fx-background-radius: 25;
+    -fx-border-radius: 25;
+    -fx-padding: 15 30 15 30;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-min-width: 300;
+    -fx-pref-width: 300;
+}
+
+.register-button:hover {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 800px) {
+    .brand-section {
+        -fx-min-width: 300;
+        -fx-pref-width: 300;
+    }
+    
+    .form-input {
+        -fx-min-width: 250;
+        -fx-pref-width: 250;
+    }
+    
+    .login-button, .register-button {
+        -fx-min-width: 250;
+        -fx-pref-width: 250;
+    }
+}

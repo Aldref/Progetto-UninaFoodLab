@@ -40,26 +40,25 @@ public class EnrolledCoursesController {
         lessonTypeComboBox.getItems().clear();
 
         searchBtn.setOnAction(e -> handleSearch());
-
+        
         loadEnrolledCourses();
     }
 
     private void loadEnrolledCourses() {
-        // TODO: Qui dovrai caricare le card reali dal database in futuro
-        createExampleCards(); // Rimuovi questa riga quando implementi il caricamento dal DB
-        updateCards();
-    }
-
-    private void createExampleCards() {
+        allCards.clear();
         try {
-            for (int i = 1; i <= 8; i++) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso2.fxml"));
+            for (int i = 1; i <= 5; i++) { 
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
                 Node card = loader.load();
+                CardCorsoController controller = loader.getController();
+                controller.setAcquistato(true);        
+                controller.setEnrolledPage(true);      
                 allCards.add(card);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        updateCards();
     }
 
     private void updateCards() {
@@ -111,15 +110,26 @@ public class EnrolledCoursesController {
     private void viewCoursesClick(){
         try {
             Stage stage = (Stage) enrolledCoursesArea.getScene().getWindow();
-            SceneSwitcher.switchScene(
+            SceneSwitcher.switchSceneKeepCurrentState(
                 stage,
                 "/fxml/homepageutente.fxml",
-                "UninaFoodLab - homepage",
-                true,
-                800, 600,
-                -1, -1  
+                "UninaFoodLab - homepage"
             );
-            javafx.application.Platform.runLater(() -> stage.setMaximized(true));
+        } catch (IOException e) {
+            System.err.println("Errore nel cambio pagina: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void goToAccountManagement() {
+        try {
+            Stage stage = (Stage) enrolledCoursesArea.getScene().getWindow();
+            SceneSwitcher.switchSceneKeepCurrentState(
+                stage,
+                "/fxml/accountmanagement.fxml",
+                "UninaFoodLab - Gestione Account"
+            );
         } catch (IOException e) {
             System.err.println("Errore nel cambio pagina: " + e.getMessage());
             e.printStackTrace();
@@ -146,13 +156,10 @@ public class EnrolledCoursesController {
 
             if (dialogController.isConfirmed()) {
                 Stage stage = (Stage) enrolledCoursesArea.getScene().getWindow();
-                stage.setMaximized(false);
-
-                SceneSwitcher.switchScene(
+                SceneSwitcher.switchSceneToWindow(
                     stage,
                     "/fxml/loginpage.fxml",
                     "UninaFoodLab - Login",
-                    false,
                     600, 400,
                     800, 600
                 );

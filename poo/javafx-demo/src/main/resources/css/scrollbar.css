@@ -1,0 +1,28 @@
+.scroll-bar:horizontal,
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-padding: 2;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(44,86,201,0.3);
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(44,86,201,0.5);
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: rgba(44,86,201,0.7);
+}
+
+.scroll-bar .track {
+    -fx-background-color: rgba(0,0,0,0.05);
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}

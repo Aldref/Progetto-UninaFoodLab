@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane stylesheets="@../css/enrolledcourses.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.controller.EnrolledCoursesController">
+<BorderPane stylesheets="@../css/enrolledcourses.css,@../css/root.css,@../css/navbar.css,@../css/courses.css,@../css/pagination.css,@../css/scrollbar.css,@../css/searchisland.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.controller.EnrolledCoursesController">
    <left>
       <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="280.0">
          <children>
@@ -67,7 +67,7 @@
                      </graphic>
                   </Button>
                   
-                  <Button fx:id="accountManagementBtn" text="Gestione account" styleClass="nav-button" maxWidth="Infinity">
+                  <Button fx:id="accountManagementBtn" text="Gestione account" styleClass="nav-button" maxWidth="Infinity" onAction="#goToAccountManagement">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
                            <image>
