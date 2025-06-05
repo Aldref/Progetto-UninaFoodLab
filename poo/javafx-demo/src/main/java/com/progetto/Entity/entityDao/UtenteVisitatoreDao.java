@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import com.progetto.Entity.EntityDto.Corso;
+import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
@@ -98,5 +99,24 @@ public class UtenteVisitatoreDao extends UtenteDao {
         }
     }
      
- 
+     public void partecipaAllaSessioneDalVivo(SessioniInPresenza sessione,UtenteVisitatore UtenteVisitatore) {
+        String query = "INSERT INTO ADESIONE_SESSIONEPRESENZA (id_Sessione, id_Utente,Conferma) VALUES (?, ?,TRUE)";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, sessione.getId_Sessione());
+            ps.setInt(2, UtenteVisitatore.getId_UtenteVisitatore());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeConnection(conn);
+            dbu.closeStatement(ps);
+        }
+    }
+
 }

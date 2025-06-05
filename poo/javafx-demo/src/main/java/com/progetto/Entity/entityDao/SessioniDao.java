@@ -1,5 +1,4 @@
 package com.progetto.Entity.entityDao;
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,8 +8,6 @@ import java.util.ArrayList;
 import com.progetto.Entity.EntityDto.Chef;
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.Sessione;
-import com.progetto.Entity.EntityDto.SessioneOnline;
-import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.jdbc.ConnectionJavaDb;
 
 abstract public class SessioniDao {

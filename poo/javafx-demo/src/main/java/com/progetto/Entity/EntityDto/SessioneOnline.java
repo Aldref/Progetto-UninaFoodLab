@@ -9,6 +9,7 @@ public class SessioneOnline extends Sessione {
         this.Applicazione = applicazione;
         this.Codicechiamata = codicechiamata;
         this.Descrizione = descrizione;
+        
     }
 
 

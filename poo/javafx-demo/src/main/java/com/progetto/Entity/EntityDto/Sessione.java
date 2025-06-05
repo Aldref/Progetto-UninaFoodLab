@@ -87,4 +87,6 @@ abstract public class Sessione {
     public void setId_Sessione(int id_Sessione) {
         this.id_Sessione = id_Sessione;
     }
+    
+
 }
