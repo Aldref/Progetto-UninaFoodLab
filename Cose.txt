@@ -32,9 +32,9 @@ TIPODICUCINA_CORSO(IDtipocucina(fk), IDcorso(fk)
 
 SESSIONE_PRESENZA(IdSessionePresenza(pk), giorno, Data, Orario, Durata, citta, via, cap, Attrezzatura, IDcorso(fk))
 
-SESSIONE_PRESENZA_CHEF(IDchef(fk), IDsessionepresenza(fk))
+SESSIONE_PRESENZA_CHEF(IDchef(fk), IDsessionepresenza(fk)) //Rimuovere dal db
 
-SESSIONE_TELEMATICA(IdSessioneTelematica(pk), Applicazione, Codicechiamata, Data, Orario, Durata, giorno, Descrizione, IDcorso(fk))
+SESSIONE_TELEMATICA(IdSessioneTelematica(pk), Applicazione, Codicechiamata, Data, Orario, Durata, giorno, Descrizione, IDcorso(fk),IdChef(Fk))
 
 PARTECIPANTE_SESSIONETELEMATICA(IdPartecipante(fk), IdSessioneTelematica(fk))
 

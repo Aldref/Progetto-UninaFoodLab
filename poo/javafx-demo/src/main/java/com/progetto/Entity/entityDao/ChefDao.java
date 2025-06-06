@@ -8,12 +8,14 @@ import java.util.List;
 
 import com.progetto.Entity.EntityDto.Chef;
 import com.progetto.Entity.EntityDto.Corso;
+import com.progetto.Entity.EntityDto.Utente;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
 
 public class ChefDao extends UtenteDao  {
    
-    public void RegistrazioneUtente(Chef chef1) {
+    @Override
+    public void RegistrazioneUtente(Utente chef1) {
         String query = "INSERT INTO Chef (Nome, Cognome, Email, Password, NumeroDiTelefono, DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?, ?)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -32,11 +34,11 @@ public class ChefDao extends UtenteDao  {
             ps.setString(4, chef1.getPassword());
             ps.setString(5, chef1.getNumeroDiTelefono());
             ps.setDate(6, sqlData);
-            ps.setInt(7, chef1.getAnniDiEsperienza());
+            ps.setInt(7, ((Chef)chef1).getAnniDiEsperienza());
             ps.execute(); 
             generatedKeys = ps.getGeneratedKeys();
             if (generatedKeys.next()) {
-                chef1.setId_Chef(generatedKeys.getInt(1));
+                ((Chef)chef1).setId_Chef(generatedKeys.getInt(1));
             }
         } catch (SQLException sqe) {
             // aggiungi errore 
@@ -46,8 +48,8 @@ public class ChefDao extends UtenteDao  {
         }
     }
 
-
-    public void AssegnaCorso(Corso corso, Chef chef1) {
+    @Override
+    public void AssegnaCorso(Corso corso, Utente chef1) {
     String query = "INSERT INTO  Chef_Corso (id_Chef, id_Corso) VALUES (?, ?)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -56,7 +58,7 @@ public class ChefDao extends UtenteDao  {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
 
-            ps.setInt(1, chef1.getId_Chef());
+            ps.setInt(1, ((Chef) chef1).getId_Chef());
             ps.setInt(2, corso.getId_Corso());
             ps.execute();
 
@@ -68,7 +70,8 @@ public class ChefDao extends UtenteDao  {
         }
     }
      
-    public void  recuperaDatiChef(Chef chef) {
+    @Override
+    public void  recuperaDatiUtente(Utente chef) {
         String query = "SELECT * FROM Chef WHERE id_Chef = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -78,7 +81,7 @@ public class ChefDao extends UtenteDao  {
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
-            ps.setInt(1, chef.getId_Chef());
+            ps.setInt(1, ((Chef)chef).getId_Chef());
             rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -88,7 +91,7 @@ public class ChefDao extends UtenteDao  {
                 chef.setPassword(rs.getString("Password"));
                 chef.setNumeroDiTelefono(rs.getString("NumeroDiTelefono"));
                 chef.setDataDiNascita(rs.getDate("DataDiNascita").toLocalDate());
-                chef.setAnniDiEsperienza(rs.getInt("AnniDiEsperienza"));
+                ((Chef)chef).setAnniDiEsperienza(rs.getInt("AnniDiEsperienza"));
             }
         } catch (SQLException sqe) {
             // aggiungi errore
@@ -160,6 +163,10 @@ public class ChefDao extends UtenteDao  {
         
         }
     }
+    
+        
 
 
-}
+    }
+
+

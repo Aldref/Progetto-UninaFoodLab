@@ -6,13 +6,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.progetto.Entity.EntityDto.Corso;
+import com.progetto.Entity.EntityDto.Sessione;
 import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
 
 
 public class SessioneInPresenzaDao extends SessioniDao {
-  public ArrayList<SessioniInPresenza> recuperoSessioniInPresenzaPerCorso(Corso corso){
+    
+    public ArrayList<SessioniInPresenza> recuperoSessionCorsoTelematiche(Corso corso){
       ArrayList<SessioniInPresenza> sessioni = new ArrayList<>();
       String query = "SELECT * FROM SESSIONE_PRESENZA WHERE id_Corso = ?";
       Connection conn = null;
@@ -38,6 +40,39 @@ public class SessioneInPresenzaDao extends SessioniDao {
         }
         return sessioni;
     }
+    
+
+  @Override
+  public void MemorizzaSessione(Sessione sessione) {
+        String query = "INSERT INTO SESSIONE_TELEMATICA ( giorno, Data, Orario, Durata, citta, via, cap, Attrezzatura, IDcorso, IdChef) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        SupportDb dbu = new SupportDb();
+    
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            
+            ps.setString(1, sessione.getGiorno());
+            ps.setDate(2, java.sql.Date.valueOf(sessione.getData()));
+            ps.setFloat(3, sessione.getOrario());
+            ps.setInt(4, sessione.getDurata());
+            ps.setString(5, ((SessioniInPresenza) sessione).getCitta());
+            ps.setString(6, ((SessioniInPresenza) sessione).getVia());
+            ps.setString(7, ((SessioniInPresenza) sessione).getCap());
+            ps.setString(8, ((SessioniInPresenza) sessione).getAttrezzatura());
+            ps.setInt(9, ((SessioniInPresenza) sessione).getId_Corso());
+            ps.setInt(10, ((SessioniInPresenza) sessione).getChef().getId_Chef());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeStatement(ps);
+            dbu.closeConnection(conn);
+        }
+    }
+
+
   }
 
 

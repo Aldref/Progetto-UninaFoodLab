@@ -7,14 +7,15 @@ import java.time.LocalDate;
 
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.SessioniInPresenza;
+import com.progetto.Entity.EntityDto.Utente;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
 
 public class UtenteVisitatoreDao extends UtenteDao {
    
-
-    public void RegistrazioneUtente(UtenteVisitatore utenteVisitatore) {
+    @Override
+    public void RegistrazioneUtente(Utente utenteVisitatore) {
         String query = "INSERT INTO Partecipante (Nome, Cognome, Email, Password, NumeroDiTelefono, DataDiNascita) VALUES (?, ?, ?, ?, ?, ?)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -26,16 +27,16 @@ public class UtenteVisitatoreDao extends UtenteDao {
 
             java.sql.Date sqlData = java.sql.Date.valueOf(utenteVisitatore.getDataDiNascita());
 
-            ps.setString(1, utenteVisitatore.getNome());
-            ps.setString(2, utenteVisitatore.getCognome());
-            ps.setString(3, utenteVisitatore.getEmail());
-            ps.setString(4, utenteVisitatore.getPassword());
-            ps.setString(5, utenteVisitatore.getNumeroDiTelefono());
+            ps.setString(1, ((UtenteVisitatore) utenteVisitatore).getNome());
+            ps.setString(2, ((UtenteVisitatore) utenteVisitatore).getCognome());
+            ps.setString(3, ((UtenteVisitatore) utenteVisitatore).getEmail());
+            ps.setString(4, ((UtenteVisitatore) utenteVisitatore).getPassword());
+            ps.setString(5, ((UtenteVisitatore) utenteVisitatore).getNumeroDiTelefono());
             ps.setDate(6, sqlData);
             ps.execute(); 
             generatedKeys = ps.getGeneratedKeys();
             if (generatedKeys.next()) {
-                utenteVisitatore.setId_UtenteVisitatore(generatedKeys.getInt(1));
+                ((UtenteVisitatore)utenteVisitatore).setId_UtenteVisitatore(generatedKeys.getInt(1));
             }
         } catch (SQLException sqe) {
             //gestire errore
@@ -44,8 +45,8 @@ public class UtenteVisitatoreDao extends UtenteDao {
             dbu.closeConnection(conn);
         }
     }
-
-    public void recuperaDatiVistatore    (UtenteVisitatore utenteVisitatore) {
+    @Override
+    public void recuperaDatiUtente   (Utente utenteVisitatore) {
         String query = "SELECT * FROM Partecipante WHERE id_UtenteVisitatore = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -55,7 +56,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
-            ps.setInt(1, utenteVisitatore.getId_UtenteVisitatore());
+            ps.setInt(1, ((UtenteVisitatore) utenteVisitatore).getId_UtenteVisitatore());
             rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -74,8 +75,8 @@ public class UtenteVisitatoreDao extends UtenteDao {
     }
 
 
-
-    public void AssegnaCorso(Corso corso, UtenteVisitatore utente1) {
+    @Override
+    public void AssegnaCorso(Corso corso, Utente utente1) {
     String query = "INSERT INTO  RICHIESTAPAGAMENTO (idPartecipante, idCorso, DataRichiesta,ImportoPagato,StatoPagamento) VALUES (?, ?,?, ?,'Pagato')";
         LocalDate DataRichiesta= LocalDate.now();
         SupportDb dbu = new SupportDb();
@@ -85,7 +86,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
             java.sql.Date sqlData = java.sql.Date.valueOf(DataRichiesta);
-            ps.setInt(1, utente1.getId_UtenteVisitatore());
+            ps.setInt(1, ((UtenteVisitatore)utente1).getId_UtenteVisitatore());
             ps.setInt(2, corso.getId_Corso());
             ps.setDate(3, sqlData);
             ps.setDouble(4, corso.getPrezzo());

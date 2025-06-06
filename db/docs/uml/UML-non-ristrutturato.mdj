@@ -8813,11 +8813,11 @@
 							},
 							"font": "Arial;13;0",
 							"parentStyle": false,
-							"left": 1112,
-							"top": 744,
+							"left": 1104,
+							"top": 728,
 							"width": 100,
 							"height": 25,
-							"text": "1.*"
+							"text": "1"
 						},
 						{
 							"_type": "UMLTextView",
@@ -8831,7 +8831,7 @@
 							"top": 816,
 							"width": 100,
 							"height": 25,
-							"text": "1.*"
+							"text": "1"
 						}
 					]
 				},

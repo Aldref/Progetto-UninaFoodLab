@@ -11,6 +11,30 @@ public class SessioneOnline extends Sessione {
         this.Descrizione = descrizione;
         
     }
+    public String getApplicazione() {
+        return Applicazione;
+    }           
+    
+    public String getCodicechiamata() {
+        return Codicechiamata;
+    }
 
+    public String getDescrizione() {
+        return Descrizione;
+    }
+
+    public void setApplicazione(String applicazione) {
+        this.Applicazione = applicazione;
+    }
+
+    public void setCodicechiamata(String codicechiamata) {
+        this.Codicechiamata = codicechiamata;
+    }
+
+    public void setDescrizione(String descrizione) {
+        this.Descrizione = descrizione;
+    }
+
+   
 
 }

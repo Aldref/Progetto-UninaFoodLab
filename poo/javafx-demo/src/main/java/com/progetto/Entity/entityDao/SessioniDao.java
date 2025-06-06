@@ -45,8 +45,10 @@ abstract public class SessioniDao {
         SessioneInPresenzaDao sessioneInPresenzaDao = new SessioneInPresenzaDao();
         SessioneOnlineDao sessioneOnlineDao = new SessioneOnlineDao();
         ArrayList<Sessione> sessioni = new ArrayList<>();
-        sessioni.addAll(sessioneInPresenzaDao.recuperoSessioniInPresenzaPerCorso(corso));
-        sessioni.addAll(sessioneOnlineDao.recuperoSessioniOnlinePerCorso(corso));
+        sessioni.addAll(sessioneInPresenzaDao.recuperoSessionCorsoTelematiche(corso));
+        sessioni.addAll(sessioneOnlineDao.recuperoSessioniCorsoOnline(corso));
             return sessioni;
         }
+
+        abstract public void  MemorizzaSessione(Sessione sessione);
     }

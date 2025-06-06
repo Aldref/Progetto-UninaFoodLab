@@ -23,7 +23,7 @@ import java.time.LocalDate;
     public Utente() {
     }
 
-    
+
     public String getNome() {
         return nome;
     }
@@ -64,3 +64,7 @@ import java.time.LocalDate;
     
     
     }
+
+
+
+    

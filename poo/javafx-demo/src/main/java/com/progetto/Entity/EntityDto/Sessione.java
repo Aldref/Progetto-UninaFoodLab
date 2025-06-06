@@ -1,16 +1,16 @@
 package com.progetto.Entity.EntityDto;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 abstract public class Sessione {
-    private ArrayList<Chef> chefList;
-    private ArrayList<UtenteVisitatore> corsoList;
+    private Chef chefList;
     private LocalDate  data;
     private float orario;
     private String giorno;
     private int durata;
     private int id_Sessione;
+    private int id_Corso;
+    private Chef chef;
 
     
 
@@ -19,24 +19,16 @@ abstract public class Sessione {
         this.data = data;
         this.orario = orario;
         this.durata = durata;
-        this.chefList = new ArrayList<>();
-        this.corsoList = new ArrayList<>();
+        this.chef = new Chef();
+
     }
 
-    public ArrayList<Chef> getChefList() {
-        return chefList;
+    public Chef getChef() {
+        return chef;
     }
 
-    public void setChefList(ArrayList<Chef> chefList) {
+    public void setChefList(Chef chefList) {
         this.chefList = chefList;
-    }
-
-    public ArrayList<UtenteVisitatore> getCorsoList() {
-        return corsoList;
-    }
-
-    public void setCorsoList(ArrayList<UtenteVisitatore> corsoList) {
-        this.corsoList = corsoList;
     }
 
     public String getGiorno() {
@@ -57,6 +49,13 @@ abstract public class Sessione {
 
     public float getOrario() {
         return orario;
+    }
+
+    public int getId_Corso() {
+        return id_Corso;
+    }
+    public void setId_Corso(int id_Corso) {
+        this.id_Corso = id_Corso;
     }
 
 
