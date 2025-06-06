@@ -1,4 +1,4 @@
-package com.progetto.errori;
+package com.progetto.utils;
 
 public class ErroriEmail extends RuntimeException {
 

@@ -1,50 +1,67 @@
 package com.progetto.controller;
 
-import javafx.animation.PauseTransition;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.progetto.boundary.CardCorsoBoundary;
+import com.progetto.boundary.LogoutDialogBoundary;
+import com.progetto.utils.SceneSwitcher;
+
 import java.io.IOException;
-import javafx.util.Duration;
 
 public class HomepageUtenteController {
-    @FXML
     private ComboBox<String> cbCategoria;
-    @FXML
     private ComboBox<String> cbFrequenza;
-    @FXML
     private ComboBox<String> cbTipoLezione;
-    @FXML
     private FlowPane mainContentArea;
-    @FXML
     private Label pageLabel;
 
     private List<Node> allCards = new ArrayList<>();
     private int currentPage = 0;
     private final int CARDS_PER_PAGE = 12;
 
-    @FXML
-    public void initialize() {
-        loadCards();
+    public HomepageUtenteController(FlowPane mainContentArea, Label pageLabel, ComboBox<String> cbCategoria, ComboBox<String> cbFrequenza, ComboBox<String> cbTipoLezione) {
+        this.mainContentArea = mainContentArea;
+        this.pageLabel = pageLabel;
+        this.cbCategoria = cbCategoria;
+        this.cbFrequenza = cbFrequenza;
+        this.cbTipoLezione = cbTipoLezione;
     }
-
-    private void loadCards() {
+    //dati temporanei per le card dei corsi
+    public void loadCards() {
         allCards.clear();
         try {
             for (int i = 1; i <= 15; i++) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
                 Node card = loader.load();
-                CardCorsoController controller = loader.getController();
-                controller.setAcquistato(false); 
-                
+                CardCorsoBoundary boundary = loader.getController();
+
+                String img = "/immagini/corsi/esempio.png";
+                String titolo = "Corso Avanzato di Cucina Tradizionale " + i;
+                String descrizione = "L’applicazione utilizza attualmente dati di esempio in attesa dell’integrazione con il database. È stata avviata una separazione tra boundary e controller, utile per gestire la UI e le azioni dell’utente. Anche se il controller contiene ancora riferimenti a componenti JavaFX, la struttura è pensata per evolvere verso un’architettura più pulita e modulare.";
+                String inizio = "15/07/2025";
+                String fine = "30/09/2025";
+                String frequenza = "2 volte a settimana";
+                String tipoLezione = (i % 2 == 0) ? "Online" : "Presenza";
+                String prezzo = (i % 2 == 0) ? "250€" : "380€";
+
+                boundary.setCourseImage(img);
+                boundary.setCourseTitle(titolo);
+                boundary.setCourseDescription(descrizione);
+                boundary.setStartDate(inizio);
+                boundary.setEndDate(fine);
+                boundary.setFrequency(frequenza);
+                boundary.setLessonType(tipoLezione);
+                boundary.setPrice(prezzo);
+                boundary.setAcquistato(false);
+
                 allCards.add(card);
             }
         } catch (IOException e) {
@@ -74,9 +91,7 @@ public class HomepageUtenteController {
         pageLabel.setText("Pagina " + (currentPage + 1));
     }
 
-    // Esempio per cambiare scena
-    @FXML
-    private void goToEnrolledCourses() {
+    public void goToEnrolledCourses() {
         try {
             Stage stage = (Stage) mainContentArea.getScene().getWindow();
             SceneSwitcher.switchScene(stage, "/fxml/enrolledcourses.fxml", "UninaFoodLab - Corsi Iscritti");
@@ -85,8 +100,7 @@ public class HomepageUtenteController {
         }
     }
 
-    @FXML
-    private void goToAccountManagement() {
+    public void goToAccountManagement() {
         try {
             Stage stage = (Stage) mainContentArea.getScene().getWindow();
             SceneSwitcher.switchScene(stage, "/fxml/accountmanagement.fxml", "UninaFoodLab - Gestione Account");
@@ -95,26 +109,12 @@ public class HomepageUtenteController {
         }
     }
 
-    @FXML
-    private void LogoutClick() {
+    public void LogoutClick() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/logoutdialog.fxml"));
-            VBox dialogContent = loader.load();
-            LogoutDialogController dialogController = loader.getController();
+            Stage stage = (Stage) mainContentArea.getScene().getWindow();
+            LogoutDialogBoundary dialogBoundary = SceneSwitcher.showLogoutDialog(stage);
 
-            Stage dialogStage = new Stage();
-            dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            dialogStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
-            dialogStage.setTitle("Conferma Logout");
-
-            javafx.scene.Scene dialogScene = new javafx.scene.Scene(dialogContent);
-            dialogScene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-
-            dialogStage.setScene(dialogScene);
-            dialogStage.showAndWait();
-
-            if (dialogController.isConfirmed()) {
-                Stage stage = (Stage) mainContentArea.getScene().getWindow();
+            if (dialogBoundary.isConfirmed()) {
                 SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
             }
         } catch (Exception e) {
@@ -122,24 +122,21 @@ public class HomepageUtenteController {
         }
     }
 
-    @FXML
-    private void nextPage() {
+    public void nextPage() {
         if ((currentPage + 1) * CARDS_PER_PAGE < allCards.size()) {
             currentPage++;
             updateCards();
         }
     }
 
-    @FXML
-    private void prevPage() {
+    public void prevPage() {
         if (currentPage > 0) {
             currentPage--;
             updateCards();
         }
     }
 
-    @FXML
-    private void handleSearch() {
+    public void handleSearch() {
         String categoria = cbCategoria.getValue();
         String frequenza = cbFrequenza.getValue();
         String tipoLezione = cbTipoLezione.getValue();
@@ -150,5 +147,4 @@ public class HomepageUtenteController {
 
         // Qui inserisci la logica per filtrare i corsi con il db
     }
-
 }

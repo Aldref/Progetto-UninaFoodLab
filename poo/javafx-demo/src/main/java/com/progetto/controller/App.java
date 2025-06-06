@@ -1,5 +1,7 @@
 package com.progetto.controller;
 
+import com.progetto.utils.SceneSwitcher;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;

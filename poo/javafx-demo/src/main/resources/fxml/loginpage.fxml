@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 
 <BorderPane stylesheets="@../css/loginpage.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
-    fx:controller="com.progetto.controller.LoginController"
+    fx:controller="com.progetto.boundary.LoginBoundary"
     prefHeight="600" prefWidth="900" styleClass="login-container">
     
     <left>

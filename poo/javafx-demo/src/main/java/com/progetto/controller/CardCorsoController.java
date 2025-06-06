@@ -1,42 +1,46 @@
 package com.progetto.controller;
 
+import com.progetto.utils.SceneSwitcher;
+
 import javafx.animation.ScaleTransition;
-import javafx.animation.Timeline;
-
-import java.io.IOException;
-
-import javafx.animation.KeyFrame;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.util.Duration;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class CardCorsoController {
 
-    @FXML
-    private Button buyButton;
-    @FXML
-    private HBox buttonsBox; 
-    @FXML
-    private VBox priceSection;
-    @FXML
-    private Label acquistatoBadge;
-    @FXML
-    private Label priceLabel;
-    @FXML
-    private Button calendarButton;
+    private final Button buyButton;
+    private final HBox buttonsBox;
+    private final VBox priceSection;
+    private final Label acquistatoBadge;
+    private final Label priceLabel;
+    private final Button calendarButton;
 
-    private boolean isAcquistato = false;
     private boolean isEnrolledPage = false;
 
-    public void setAcquistato(boolean acquistato) {
-        this.isAcquistato = acquistato;
+    public CardCorsoController(Button buyButton, HBox buttonsBox, VBox priceSection, Label acquistatoBadge, Label priceLabel, Button calendarButton) {
+        this.buyButton = buyButton;
+        this.buttonsBox = buttonsBox;
+        this.priceSection = priceSection;
+        this.acquistatoBadge = acquistatoBadge;
+        this.priceLabel = priceLabel;
+        this.calendarButton = calendarButton;
+    }
+
+    public void initialize() {
         updateCardState();
+    }
+
+    public void setAcquistato(boolean acquistato) {
+        acquistatoBadge.setVisible(acquistato);
     }
 
     public void setEnrolledPage(boolean enrolledPage) {
@@ -44,57 +48,47 @@ public class CardCorsoController {
         updateCardState();
     }
 
+
     private void updateCardState() {
         if (isEnrolledPage) {
-            // In enrolledcourses: rimuovi completamente il bottone acquista dall'HBox
-            if (priceSection != null) priceSection.setVisible(false);
+            if (buyButton != null) {
+                buyButton.setVisible(false);
+                buyButton.setManaged(false); // Importante: rimuove completamente dallo spazio
+            }
             if (acquistatoBadge != null) acquistatoBadge.setVisible(true);
-            if (calendarButton != null) calendarButton.setVisible(true);
-            
-            // Rimuovi il bottone acquista dall'HBox invece di renderlo invisibile
-            if (buttonsBox != null && buyButton != null) {
-                if (buttonsBox.getChildren().contains(buyButton)) {
-                    buttonsBox.getChildren().remove(buyButton);
-                }
-                buttonsBox.setAlignment(javafx.geometry.Pos.CENTER);
+            if (buttonsBox != null) {
+                buttonsBox.getStyleClass().removeAll("centered-calendar");
+                buttonsBox.getStyleClass().add("centered-calendar");
+                calendarButton.setVisible(true);
             }
         } else {
-            if (priceSection != null) priceSection.setVisible(true);
-            if (acquistatoBadge != null) acquistatoBadge.setVisible(isAcquistato);
-            if (calendarButton != null) calendarButton.setVisible(true);
-            
-            if (buttonsBox != null && buyButton != null) {
-                if (!buttonsBox.getChildren().contains(buyButton)) {
-                    buttonsBox.getChildren().add(0, buyButton); 
-                }
+            if (buyButton != null) {
                 buyButton.setVisible(true);
-                buttonsBox.setAlignment(javafx.geometry.Pos.CENTER);
+                buyButton.setManaged(true);
+            }
+            if (acquistatoBadge != null) acquistatoBadge.setVisible(false);
+            if (buttonsBox != null) {
+                buttonsBox.getStyleClass().removeAll("centered-calendar");
+                calendarButton.setVisible(true);
             }
         }
     }
 
-    @FXML
-    private void initialize() {
-        updateCardState();
-    }
 
-    @FXML
-    private void handlePurchase() {
-        // Animazione del bottone
+    public void handlePurchase() {
         ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), buyButton);
         scaleDown.setToX(0.95);
         scaleDown.setToY(0.95);
-        
+
         scaleDown.setOnFinished(e -> {
             ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), buyButton);
             scaleUp.setToX(1.0);
             scaleUp.setToY(1.0);
             scaleUp.play();
         });
-        
+
         scaleDown.play();
-        
-        // Qui aggiungerai la logica di acquisto
+
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Acquisto completato");
         alert.setHeaderText("Corso acquistato con successo!");
@@ -102,39 +96,28 @@ public class CardCorsoController {
         alert.showAndWait();
     }
 
-    @FXML
-    private void handleShowCalendar() {
+    public void handleShowCalendar() {
+        showCalendarDialog();
+    }
+
+    public void showCalendarDialog() {
         try {
-            Stage dialogStage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/calendardialog.fxml"));
-            VBox dialogContent = loader.load();
-    
-            CalendarDialogController controller = loader.getController();
-            // Qui puoi passare i dati specifici del corso
-    
-            dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            dialogStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
-            dialogStage.setTitle("Calendario Lezioni");
-    
-            javafx.scene.Scene dialogScene = new javafx.scene.Scene(dialogContent);
-            dialogScene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-    
-            dialogStage.setScene(dialogScene);
-    
-            // USA calendarButton invece di buyButton per ottenere la finestra principale
+            Parent root = loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setTitle("Calendario lezioni");
+            dialogStage.setScene(new Scene(root));
+            dialogStage.setResizable(false);
+
             Stage mainStage = (Stage) calendarButton.getScene().getWindow();
+            dialogStage.initOwner(mainStage);
+
             
-            // Controllo di sicurezza nel caso anche calendarButton non abbia una scena
-            if (mainStage != null) {
-                dialogStage.setX(mainStage.getX() + (mainStage.getWidth() - dialogStage.getWidth()) / 2);
-                dialogStage.setY(mainStage.getY() + (mainStage.getHeight() - dialogStage.getHeight()) / 2);
-            } else {
-                // Fallback: centra il dialog sullo schermo
-                dialogStage.centerOnScreen();
-            }
-    
-            dialogStage.showAndWait();
-        } catch (IOException e) {
+            SceneSwitcher.showDialogCentered(mainStage, dialogStage);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

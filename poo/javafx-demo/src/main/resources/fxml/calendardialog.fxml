@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 
 <VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
-    fx:controller="com.progetto.controller.CalendarDialogController"
+    fx:controller="com.progetto.boundary.CalendarDialogBoundary"
     styleClass="calendar-dialog" stylesheets="@../css/calendardialog.css"
     spacing="0" prefWidth="1000" prefHeight="600">
 

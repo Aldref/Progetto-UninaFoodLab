@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 
 <BorderPane stylesheets="@../css/registerpage.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
-    fx:controller="com.progetto.controller.RegisterController"
+    fx:controller="com.progetto.boundary.RegisterBoundary"
     prefHeight="700" prefWidth="1000" styleClass="register-container">
     
     <left>

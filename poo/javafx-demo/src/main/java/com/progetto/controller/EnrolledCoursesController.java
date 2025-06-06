@@ -1,8 +1,5 @@
 package com.progetto.controller;
 
-import javafx.animation.PauseTransition;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -12,48 +9,89 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.util.Duration;
 
+import com.progetto.boundary.CardCorsoBoundary;
+import com.progetto.boundary.LogoutDialogBoundary;
+import com.progetto.utils.SceneSwitcher;
 
 public class EnrolledCoursesController {
 
-    @FXML private Label userNameLabel;
-    @FXML private ComboBox<String> categoryComboBox;
-    @FXML private ComboBox<String> frequencyComboBox;
-    @FXML private ComboBox<String> lessonTypeComboBox;
-    @FXML private Button searchBtn;
-    @FXML private FlowPane enrolledCoursesArea;
-    @FXML private ScrollPane enrolledCoursesScrollPane;
-    @FXML private Label enrolledCountLabel;
-    @FXML private Button prevPageBtn;
-    @FXML private Button nextPageBtn;
-    @FXML private Label pageLabel;
+    private Label userNameLabel;
+    private ComboBox<String> categoryComboBox;
+    private ComboBox<String> frequencyComboBox;
+    private ComboBox<String> lessonTypeComboBox;
+    private Button searchBtn;
+    private FlowPane enrolledCoursesArea;
+    private ScrollPane enrolledCoursesScrollPane;
+    private Label enrolledCountLabel;
+    private Button prevPageBtn;
+    private Button nextPageBtn;
+    private Label pageLabel;
 
     private List<Node> allCards = new ArrayList<>();
     private int currentPage = 0;
     private final int CARDS_PER_PAGE = 12;
 
-    @FXML
+    public EnrolledCoursesController(
+        Label userNameLabel, ComboBox<String> categoryComboBox, ComboBox<String> frequencyComboBox,
+        ComboBox<String> lessonTypeComboBox, Button searchBtn, FlowPane enrolledCoursesArea,
+        ScrollPane enrolledCoursesScrollPane, Label enrolledCountLabel, Button prevPageBtn,
+        Button nextPageBtn, Label pageLabel
+    ) {
+        this.userNameLabel = userNameLabel;
+        this.categoryComboBox = categoryComboBox;
+        this.frequencyComboBox = frequencyComboBox;
+        this.lessonTypeComboBox = lessonTypeComboBox;
+        this.searchBtn = searchBtn;
+        this.enrolledCoursesArea = enrolledCoursesArea;
+        this.enrolledCoursesScrollPane = enrolledCoursesScrollPane;
+        this.enrolledCountLabel = enrolledCountLabel;
+        this.prevPageBtn = prevPageBtn;
+        this.nextPageBtn = nextPageBtn;
+        this.pageLabel = pageLabel;
+    }
+
     public void initialize() {
         categoryComboBox.getItems().clear();
         frequencyComboBox.getItems().clear();
         lessonTypeComboBox.getItems().clear();
 
         searchBtn.setOnAction(e -> handleSearch());
-        
+
         loadEnrolledCourses();
-
     }
-
+    //temporanei
     private void loadEnrolledCourses() {
         allCards.clear();
         try {
-            for (int i = 1; i <= 5; i++) { 
+            for (int i = 1; i <= 5; i++) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
                 Node card = loader.load();
-                CardCorsoController controller = loader.getController();
-                controller.setAcquistato(true);        
-                controller.setEnrolledPage(true);      
+                CardCorsoBoundary boundary = loader.getController();
+
+                // Dati di esempio personalizzabili
+                String img = "/immagini/corsi/esempio.png";
+                String titolo = "Corso Iscritto " + i;
+                String descrizione = "Attualmente l’applicazione utilizza dati di esempio per simulare il comportamento dell’interfaccia utente in attesa dell’integrazione con il database. È stata implementata una prima separazione tra boundary e controller, dove il boundary gestisce gli elementi grafici tramite FXML e il controller elabora le azioni dell’utente. Anche se il controller utilizza ancora componenti JavaFX, questa struttura è pensata per facilitare la successiva sostituzione con logica basata su dati reali. In futuro, il controller sarà rifattorizzato per lavorare solo con oggetti dati (DTO), migliorando così l’architettura secondo i principi MVC o Clean Architecture.";
+                String inizio = "01/09/2025";
+                String fine = "30/11/2025";
+                String frequenza = (i % 2 == 0) ? "1 volta a settimana" : "2 volte a settimana";
+                String tipoLezione = (i % 2 == 0) ? "Online" : "Presenza";
+                String prezzo = (i % 2 == 0) ? "200€" : "350€";
+
+                boundary.setCourseImage(img);
+                boundary.setCourseTitle(titolo);
+                boundary.setCourseDescription(descrizione);
+                boundary.setStartDate(inizio);
+                boundary.setEndDate(fine);
+                boundary.setFrequency(frequenza);
+                boundary.setLessonType(tipoLezione);
+                boundary.setPrice(prezzo);
+                boundary.setAcquistato(true);
+
+                CardCorsoController controller = boundary.getController();
+                controller.setEnrolledPage(true);
+
                 allCards.add(card);
             }
         } catch (IOException e) {
@@ -75,24 +113,21 @@ public class EnrolledCoursesController {
         nextPageBtn.setDisable((currentPage + 1) * CARDS_PER_PAGE >= allCards.size());
     }
 
-    @FXML
-    private void nextPage() {
+    public void nextPage() {
         if ((currentPage + 1) * CARDS_PER_PAGE < allCards.size()) {
             currentPage++;
             updateCards();
         }
     }
 
-    @FXML
-    private void prevPage() {
+    public void prevPage() {
         if (currentPage > 0) {
             currentPage--;
             updateCards();
         }
     }
 
-    @FXML
-    private void handleSearch() {
+    public void handleSearch() {
         String categoria = categoryComboBox.getValue();
         String frequenza = frequencyComboBox.getValue();
         String tipoLezione = lessonTypeComboBox.getValue();
@@ -107,8 +142,7 @@ public class EnrolledCoursesController {
         updateCards();
     }
 
-    @FXML
-    private void viewCoursesClick() {
+    public void viewCoursesClick() {
         try {
             Stage stage = (Stage) enrolledCoursesArea.getScene().getWindow();
             SceneSwitcher.switchScene(stage, "/fxml/homepageutente.fxml", "UninaFoodLab - Homepage");
@@ -118,8 +152,7 @@ public class EnrolledCoursesController {
         }
     }
 
-    @FXML
-    private void goToAccountManagement() {
+    public void goToAccountManagement() {
         try {
             Stage stage = (Stage) enrolledCoursesArea.getScene().getWindow();
             SceneSwitcher.switchScene(stage, "/fxml/accountmanagement.fxml", "UninaFoodLab - Gestione Account");
@@ -129,30 +162,15 @@ public class EnrolledCoursesController {
         }
     }
 
-    @FXML
-    private void LogoutClick() {
+    public void LogoutClick() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/logoutdialog.fxml"));
-            VBox dialogContent = loader.load();
-            LogoutDialogController dialogController = loader.getController();
+            Stage stage = (Stage) enrolledCoursesArea.getScene().getWindow();
+            LogoutDialogBoundary dialogBoundary = SceneSwitcher.showLogoutDialog(stage);
 
-            Stage dialogStage = new Stage();
-            dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            dialogStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
-            dialogStage.setTitle("Conferma Logout");
-
-            javafx.scene.Scene dialogScene = new javafx.scene.Scene(dialogContent);
-            dialogScene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-
-            dialogStage.setScene(dialogScene);
-            dialogStage.showAndWait();
-
-            if (dialogController.isConfirmed()) {
-                Stage stage = (Stage) enrolledCoursesArea.getScene().getWindow();
+            if (dialogBoundary.isConfirmed()) {
                 SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
             }
         } catch (Exception e) {
-            System.err.println("Errore durante il logout: " + e.getMessage());
             e.printStackTrace();
         }
     }
