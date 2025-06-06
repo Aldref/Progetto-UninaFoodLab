@@ -10,7 +10,6 @@
     styleClass="calendar-dialog" stylesheets="@../css/calendardialog.css"
     spacing="0" prefWidth="1000" prefHeight="600">
 
-    <!-- Header -->
     <HBox styleClass="calendar-header" alignment="CENTER" spacing="20">
         <padding>
             <Insets top="20" bottom="20" left="20" right="20"/>
@@ -26,7 +25,6 @@
         </children>
     </HBox>
 
-    <!-- Days of week header -->
     <GridPane styleClass="days-header-grid">
         <padding>
             <Insets top="10" bottom="10" left="10" right="10"/>
@@ -51,10 +49,8 @@
         </children>
     </GridPane>
 
-    <!-- Main content area: Calendar + Details side by side -->
     <HBox VBox.vgrow="ALWAYS" spacing="0">
         <children>
-            <!-- Calendar grid -->
             <VBox styleClass="calendar-container" HBox.hgrow="ALWAYS">
                 <children>
                     <GridPane fx:id="calendarGrid" styleClass="calendar-grid" VBox.vgrow="ALWAYS">
@@ -65,9 +61,7 @@
                 </children>
             </VBox>
             
-            <!-- Lesson details sidebar -->
-            <VBox fx:id="lessonDetailsArea" styleClass="lesson-details-sidebar" spacing="15" visible="false" 
-                  prefWidth="350" minWidth="350" maxWidth="350">
+            <VBox fx:id="lessonDetailsArea" styleClass="lesson-details-sidebar" spacing="15" visible="false" prefWidth="350" minWidth="350" maxWidth="350">
                 <padding>
                     <Insets top="20" bottom="20" left="20" right="20"/>
                 </padding>
@@ -88,7 +82,6 @@
         </children>
     </HBox>
 
-    <!-- Footer buttons -->
     <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="15">
         <padding>
             <Insets top="15" bottom="20" left="20" right="20"/>

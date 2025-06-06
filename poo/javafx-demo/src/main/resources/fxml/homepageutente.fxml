@@ -6,12 +6,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-
 <BorderPane stylesheets="@../css/root.css,@../css/navbar.css,@../css/courses.css,@../css/pagination.css,@../css/scrollbar.css,@../css/searchisland.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.controller.HomepageUtenteController">
    <left>
       <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="280.0">
          <children>
-            <!-- Logo Section -->
             <VBox styleClass="logo-section" alignment="CENTER">
                <children>
                   <ImageView fx:id="logoImage" fitHeight="60.0" fitWidth="200.0" preserveRatio="true">
@@ -26,10 +24,8 @@
                </VBox.margin>
             </VBox>
             
-            <!-- Separator Line -->
             <Separator styleClass="sidebar-separator" />
             
-            <!-- User Profile Section -->
             <VBox styleClass="user-section" alignment="CENTER" spacing="10.0">
                <children>
                   <ImageView fx:id="userProfileImage" fitHeight="80.0" fitWidth="80.0" preserveRatio="true">
@@ -45,7 +41,6 @@
                </VBox.margin>
             </VBox>
             
-            <!-- Navigation Buttons -->
             <VBox styleClass="navigation-section" spacing="15.0" VBox.vgrow="ALWAYS">
                <children>
                   <Button fx:id="viewCoursesBtn" text="Visualizza i corsi" styleClass="nav-button-active" maxWidth="Infinity">
@@ -83,7 +78,6 @@
                </VBox.margin>
             </VBox>
             
-            <!-- Logout Button -->
             <VBox styleClass="logout-section">
                <children>
                   <Button fx:id="logoutBtn" text="Logout" styleClass="logout-button" maxWidth="Infinity"  onAction="#LogoutClick">
@@ -105,73 +99,69 @@
    </left>
    
    <center>
-    <VBox spacing="30.0" alignment="TOP_CENTER">
-        <children>
-            <!-- Search Section -->
+   <VBox spacing="30.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+      <children>
             <VBox styleClass="search-island" alignment="CENTER" spacing="20.0">
-                <children>
-                <Label text="Cerca qui i corsi" styleClass="search-title" />
-                
-                <HBox spacing="15.0" alignment="CENTER">
-                    <children>
+               <children>
+               <Label text="Cerca qui i corsi" styleClass="search-title" />
+               
+               <HBox spacing="15.0" alignment="CENTER">
+                  <children>
                         <VBox spacing="5.0">
-                            <children>
-                            <Label text="Categoria" styleClass="dropdown-label" />
-                            <ComboBox fx:id="categoryComboBox" styleClass="search-dropdown" prefWidth="150.0" promptText="Seleziona..." />
-                            </children>
+                        <children>
+                           <Label text="Categoria" styleClass="dropdown-label" />
+                           <ComboBox fx:id="categoryComboBox" styleClass="search-dropdown" prefWidth="150.0" promptText="Seleziona..." />
+                           </children>
                         </VBox>
                         
                         <VBox spacing="5.0">
-                            <children>
-                            <Label text="Frequenza" styleClass="dropdown-label" />
-                            <ComboBox fx:id="frequencyComboBox" styleClass="search-dropdown" prefWidth="150.0" promptText="Seleziona..." />
-                            </children>
+                           <children>
+                           <Label text="Frequenza" styleClass="dropdown-label" />
+                           <ComboBox fx:id="frequencyComboBox" styleClass="search-dropdown" prefWidth="150.0" promptText="Seleziona..." />
+                           </children>
                         </VBox>
                         
                         <VBox spacing="5.0">
-                            <children>
-                            <Label text="Tipo lezione" styleClass="dropdown-label" />
-                            <ComboBox fx:id="lessonTypeComboBox" styleClass="search-dropdown" prefWidth="150.0" promptText="Seleziona..." />
-                            </children>
+                           <children>
+                           <Label text="Tipo lezione" styleClass="dropdown-label" />
+                           <ComboBox fx:id="lessonTypeComboBox" styleClass="search-dropdown" prefWidth="150.0" promptText="Seleziona..." />
+                           </children>
                         </VBox>
                         
                         <VBox spacing="5.0" alignment="BOTTOM_CENTER">
-                            <children>
-                            <Button fx:id="searchBtn" text="Cerca corso" styleClass="search-button" />
-                            </children>
+                           <children>
+                           <Button fx:id="searchBtn" text="Cerca corso" styleClass="search-button" />
+                           </children>
                         </VBox>
-                    </children>
-                </HBox>
-                </children>
-                <VBox.margin>
-                <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
-                </VBox.margin>
+                  </children>
+               </HBox>
+               </children>
+               <VBox.margin>
+               <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
+               </VBox.margin>
             </VBox>
             
-            <!-- Course Cards ScrollPane -->
             <ScrollPane fx:id="coursesScrollPane" styleClass="courses-scroll-pane" VBox.vgrow="ALWAYS" fitToWidth="true">
-                <content>
-                <FlowPane fx:id="mainContentArea" hgap="30.0" vgap="30.0" styleClass="courses-flow-pane" alignment="CENTER">
-                    <padding>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                    </padding>
-                    <!-- Le card verranno aggiunte dinamicamente qui tramite addCard() -->
-                </FlowPane>
-                </content>
+               <content>
+               <FlowPane fx:id="mainContentArea" hgap="30.0" vgap="30.0" styleClass="courses-flow-pane" alignment="CENTER">
+                  <padding>
+                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                  </padding>
+               </FlowPane>
+               </content>
             </ScrollPane>
             
-            <!-- Pagination Section -->
             <HBox styleClass="pagination-section" alignment="CENTER" spacing="10.0">
-                <children>
-                <Button fx:id="prevPageBtn" text="◀ Precedente" styleClass="pagination-button" onAction="#prevPage" />
-                <Label fx:id="pageLabel" text="Pagina 1 di 5" styleClass="page-info" />
-                <Button fx:id="nextPageBtn" text="Successiva ▶" styleClass="pagination-button" onAction="#nextPage" />
-                </children>
-                <VBox.margin>
-                <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
-                </VBox.margin>
+               <children>
+               <Button fx:id="prevPageBtn" text="◀ Precedente" styleClass="pagination-button" onAction="#prevPage" />
+               <Label fx:id="pageLabel" text="Pagina 1 di 5" styleClass="page-info" />
+               <Button fx:id="nextPageBtn" text="Successiva ▶" styleClass="pagination-button" onAction="#nextPage" />
+               </children>
+               <VBox.margin>
+               <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
+               </VBox.margin>
             </HBox>
-        </children>
-    </VBox>
-    </center>
+      </children>
+   </VBox>
+   </center>
 </BorderPane>

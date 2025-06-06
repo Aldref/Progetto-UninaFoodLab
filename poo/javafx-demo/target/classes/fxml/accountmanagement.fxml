@@ -10,11 +10,9 @@
     xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
     fx:controller="com.progetto.controller.AccountManagementController">
     
-    <!-- SIDEBAR IDENTICA alle altre pagine -->
     <left>
         <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="280.0">
             <children>
-                <!-- Logo Section -->
                 <VBox styleClass="logo-section" alignment="CENTER">
                     <children>
                         <ImageView fx:id="logoImage" fitHeight="60.0" fitWidth="200.0" preserveRatio="true">
@@ -29,10 +27,8 @@
                     </VBox.margin>
                 </VBox>
                 
-                <!-- Separator Line -->
                 <Separator styleClass="sidebar-separator" />
                 
-                <!-- User Profile Section -->
                 <VBox styleClass="user-section" alignment="CENTER" spacing="10.0">
                     <children>
                         <ImageView fx:id="userProfileImage" fitHeight="80.0" fitWidth="80.0" preserveRatio="true">
@@ -48,7 +44,6 @@
                     </VBox.margin>
                 </VBox>
                 
-                <!-- Navigation Buttons -->
                 <VBox styleClass="navigation-section" spacing="15.0" VBox.vgrow="ALWAYS">
                     <children>
                         <Button fx:id="viewCoursesBtn" text="Visualizza i corsi" styleClass="nav-button" maxWidth="Infinity" onAction="#goToHomepage">
@@ -86,8 +81,7 @@
                     </VBox.margin>
                 </VBox>
                 
-                <!-- Logout Button -->
-                <VBox styleClass="logout-section" alignment="CENTER">
+                <VBox styleClass="logout-section">
                     <children>
                         <Button fx:id="logoutBtn" text="Logout" styleClass="logout-button" maxWidth="Infinity" onAction="#LogoutClick">
                             <graphic>
@@ -100,27 +94,24 @@
                         </Button>
                     </children>
                     <VBox.margin>
-                        <Insets bottom="30.0" left="20.0" right="20.0" top="20.0" />
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                     </VBox.margin>
                 </VBox>
             </children>
         </VBox>
     </left>
     
-    <!-- AREA CENTRALE - Gestione Account -->
     <center>
-        <ScrollPane styleClass="account-scroll-pane" fitToWidth="true">
+        <ScrollPane styleClass="account-scroll-pane" fitToWidth="true" VBox.vgrow="ALWAYS">
             <content>
                 <VBox spacing="30.0" alignment="TOP_CENTER" styleClass="account-container">
                     <padding>
                         <Insets top="40" bottom="40" left="40" right="40"/>
                     </padding>
                     
-                    <!-- Header Profilo -->
                     <VBox styleClass="profile-header" alignment="CENTER" spacing="20.0">
                         <children>
-                            <ImageView fx:id="profileImageLarge" fitHeight="120.0" fitWidth="120.0" 
-                                      preserveRatio="true" styleClass="profile-image-large">
+                            <ImageView fx:id="profileImageLarge" fitHeight="120.0" fitWidth="120.0" preserveRatio="true" styleClass="profile-image-large">
                                 <image>
                                     <Image url="/immagini/login_image.png" />
                                 </image>
@@ -130,12 +121,10 @@
                         </children>
                     </VBox>
                     
-                    <!-- Form Dati Personali -->
                     <VBox styleClass="form-container" spacing="20.0" maxWidth="600">
                         <children>
                             <Label text="Informazioni Personali" styleClass="section-title"/>
                             
-                            <!-- Nome e Cognome sulla stessa riga -->
                             <HBox spacing="20.0">
                                 <children>
                                     <VBox spacing="8.0" HBox.hgrow="ALWAYS">
@@ -153,7 +142,6 @@
                                 </children>
                             </HBox>
                             
-                            <!-- Email -->
                             <VBox spacing="8.0">
                                 <children>
                                     <Label text="Email" styleClass="field-label"/>
@@ -161,7 +149,6 @@
                                 </children>
                             </VBox>
                             
-                            <!-- Data di Nascita -->
                             <VBox spacing="8.0">
                                 <children>
                                     <Label text="Data di Nascita" styleClass="field-label"/>
@@ -171,12 +158,10 @@
                         </children>
                     </VBox>
                     
-                    <!-- Sezione Sicurezza -->
                     <VBox styleClass="form-container" spacing="20.0" maxWidth="600">
                         <children>
                             <Label text="Sicurezza" styleClass="section-title"/>
                             
-                            <!-- Password Attuale -->
                             <VBox spacing="8.0">
                                 <children>
                                     <Label text="Password Attuale" styleClass="field-label"/>
@@ -184,7 +169,6 @@
                                 </children>
                             </VBox>
                             
-                            <!-- Nuova Password -->
                             <VBox spacing="8.0">
                                 <children>
                                     <Label text="Nuova Password" styleClass="field-label"/>
@@ -192,7 +176,6 @@
                                 </children>
                             </VBox>
                             
-                            <!-- Conferma Password -->
                             <VBox spacing="8.0">
                                 <children>
                                     <Label text="Conferma Nuova Password" styleClass="field-label"/>
@@ -202,7 +185,6 @@
                         </children>
                     </VBox>
                     
-                    <!-- Pulsanti Azione -->
                     <HBox spacing="20.0" alignment="CENTER">
                         <children>
                             <Button fx:id="saveBtn" text="Salva Modifiche" styleClass="save-button" onAction="#saveChanges"/>

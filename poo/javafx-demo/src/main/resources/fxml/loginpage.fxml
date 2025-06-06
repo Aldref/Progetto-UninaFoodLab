@@ -10,11 +10,9 @@
     fx:controller="com.progetto.controller.LoginController"
     prefHeight="600" prefWidth="900" styleClass="login-container">
     
-    <!-- LEFT SIDE - Brand Section -->
     <left>
         <VBox styleClass="brand-section" alignment="CENTER" spacing="30">
             <children>
-                <!-- Logo e Brand -->
                 <VBox alignment="CENTER" spacing="15" styleClass="brand-header">
                     <children>
                         <ImageView fitHeight="120.0" fitWidth="200.0" preserveRatio="true" styleClass="brand-logo">
@@ -25,13 +23,10 @@
                         <Label text="UninaFoodLab" styleClass="brand-title"/>
                     </children>
                 </VBox>
-                
-                <!-- Welcome Message -->
                 <VBox alignment="CENTER" spacing="15" styleClass="welcome-section">
                     <children>
                         <Label text="Benvenuto!" styleClass="welcome-title"/>
-                        <Label text="Accedi per scoprire i nostri corsi di cucina e iniziare il tuo viaggio gastronomico." 
-                               styleClass="welcome-message" wrapText="true"/>
+                        <Label text="Accedi per scoprire i nostri corsi di cucina." styleClass="welcome-message" wrapText="true"/>
                     </children>
                 </VBox>
             </children>
@@ -41,35 +36,25 @@
         </VBox>
     </left>
     
-    <!-- RIGHT SIDE - Login Form -->
     <center>
         <VBox styleClass="login-section" alignment="CENTER" spacing="0">
             <children>
-                <!-- Form Container -->
                 <VBox styleClass="form-container" alignment="CENTER" spacing="25" maxWidth="400">
                     <children>
-                        <!-- User Avatar -->
                         <ImageView fitHeight="80.0" fitWidth="80.0" preserveRatio="true" styleClass="user-avatar">
                             <image>
                                 <Image url="/immagini/login_image.png" />
                             </image>
                         </ImageView>
-                        
-                        <!-- Form Title -->
                         <Label text="Accedi al tuo account" styleClass="form-title"/>
-                        
-                        <!-- Login Form -->
                         <VBox spacing="20" styleClass="input-section">
                             <children>
-                                <!-- Email Field -->
                                 <VBox spacing="8">
                                     <children>
                                         <Label text="Email" styleClass="field-label"/>
                                         <TextField fx:id="emailField" styleClass="form-input" promptText="Inserisci la tua email"/>
                                     </children>
                                 </VBox>
-                                
-                                <!-- Password Field -->
                                 <VBox spacing="8">
                                     <children>
                                         <Label text="Password" styleClass="field-label"/>
@@ -78,8 +63,6 @@
                                 </VBox>
                             </children>
                         </VBox>
-                        
-                        <!-- Action Buttons -->
                         <VBox spacing="15" styleClass="button-section">
                             <children>
                                 <Button fx:id="loginBtn" text="Accedi" styleClass="login-button" maxWidth="Infinity" onAction="#LoginClick"/>

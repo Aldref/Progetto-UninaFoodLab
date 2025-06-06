@@ -42,6 +42,7 @@ public class EnrolledCoursesController {
         searchBtn.setOnAction(e -> handleSearch());
         
         loadEnrolledCourses();
+
     }
 
     private void loadEnrolledCourses() {
@@ -107,14 +108,10 @@ public class EnrolledCoursesController {
     }
 
     @FXML
-    private void viewCoursesClick(){
+    private void viewCoursesClick() {
         try {
             Stage stage = (Stage) enrolledCoursesArea.getScene().getWindow();
-            SceneSwitcher.switchSceneKeepCurrentState(
-                stage,
-                "/fxml/homepageutente.fxml",
-                "UninaFoodLab - homepage"
-            );
+            SceneSwitcher.switchScene(stage, "/fxml/homepageutente.fxml", "UninaFoodLab - Homepage");
         } catch (IOException e) {
             System.err.println("Errore nel cambio pagina: " + e.getMessage());
             e.printStackTrace();
@@ -125,11 +122,7 @@ public class EnrolledCoursesController {
     private void goToAccountManagement() {
         try {
             Stage stage = (Stage) enrolledCoursesArea.getScene().getWindow();
-            SceneSwitcher.switchSceneKeepCurrentState(
-                stage,
-                "/fxml/accountmanagement.fxml",
-                "UninaFoodLab - Gestione Account"
-            );
+            SceneSwitcher.switchScene(stage, "/fxml/accountmanagement.fxml", "UninaFoodLab - Gestione Account");
         } catch (IOException e) {
             System.err.println("Errore nel cambio pagina: " + e.getMessage());
             e.printStackTrace();
@@ -156,13 +149,7 @@ public class EnrolledCoursesController {
 
             if (dialogController.isConfirmed()) {
                 Stage stage = (Stage) enrolledCoursesArea.getScene().getWindow();
-                SceneSwitcher.switchSceneToWindow(
-                    stage,
-                    "/fxml/loginpage.fxml",
-                    "UninaFoodLab - Login",
-                    600, 400,
-                    800, 600
-                );
+                SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
             }
         } catch (Exception e) {
             System.err.println("Errore durante il logout: " + e.getMessage());

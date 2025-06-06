@@ -10,7 +10,6 @@
    <left>
       <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="280.0">
          <children>
-            <!-- Logo Section -->
             <VBox styleClass="logo-section" alignment="CENTER">
                <children>
                   <ImageView fx:id="logoImage" fitHeight="60.0" fitWidth="200.0" preserveRatio="true">
@@ -25,10 +24,8 @@
                </VBox.margin>
             </VBox>
             
-            <!-- Separator Line -->
             <Separator styleClass="sidebar-separator" />
             
-            <!-- User Profile Section -->
             <VBox styleClass="user-section" alignment="CENTER" spacing="10.0">
                <children>
                   <ImageView fx:id="userProfileImage" fitHeight="80.0" fitWidth="80.0" preserveRatio="true">
@@ -44,7 +41,6 @@
                </VBox.margin>
             </VBox>
             
-            <!-- Navigation Buttons -->
             <VBox styleClass="navigation-section" spacing="15.0" VBox.vgrow="ALWAYS">
                <children>
                   <Button fx:id="viewCoursesBtn" text="Visualizza i corsi" styleClass="nav-button" maxWidth="Infinity" onAction="#viewCoursesClick">
@@ -82,7 +78,6 @@
                </VBox.margin>
             </VBox>
             
-            <!-- Logout Button -->
             <VBox styleClass="logout-section">
                <children>
                   <Button fx:id="logoutBtn" text="Logout" styleClass="logout-button" maxWidth="Infinity" onAction="#LogoutClick">
@@ -104,19 +99,15 @@
    </left>
    
    <center>
-   <VBox spacing="30.0" alignment="TOP_CENTER">
+   <VBox spacing="30.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
       <children>
-            <!-- Header Section for Enrolled Courses -->
             <VBox styleClass="enrolled-header" alignment="CENTER" spacing="20.0">
                <children>
                   <Label text="I Miei Corsi" styleClass="enrolled-title" />
                   <Label fx:id="enrolledCountLabel" text="Hai 3 corsi attivi" styleClass="enrolled-subtitle" />
                   
-                  <!-- Filter Section -->
                   <HBox spacing="15.0" alignment="CENTER">
                         <children>
-                           <!-- RIMOSSO FILTRO STATO -->
-                           <!-- Barra di ricerca identica a homepageutente.fxml -->
                            <VBox alignment="CENTER" spacing="20.0">
                               <children>
                                  <HBox spacing="15.0" alignment="CENTER">
@@ -159,19 +150,16 @@
                </VBox.margin>
             </VBox>
             
-            <!-- Enrolled Course Cards ScrollPane -->
             <ScrollPane fx:id="enrolledCoursesScrollPane" styleClass="courses-scroll-pane" VBox.vgrow="ALWAYS" fitToWidth="true">
                <content>
                   <FlowPane fx:id="enrolledCoursesArea" hgap="30.0" vgap="30.0" styleClass="courses-flow-pane" alignment="CENTER">
                         <padding>
                            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                         </padding>
-                        <!-- Le card dei corsi iscritti verranno aggiunte dinamicamente qui -->
                   </FlowPane>
                </content>
             </ScrollPane>
             
-            <!-- Pagination Section -->
             <HBox styleClass="pagination-section" alignment="CENTER" spacing="10.0">
                <children>
                   <Button fx:id="prevPageBtn" text="◀ Precedente" styleClass="pagination-button" onAction="#prevPage" />

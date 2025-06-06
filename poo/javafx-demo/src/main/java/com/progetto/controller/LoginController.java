@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.application.Platform;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,39 +23,21 @@ public class LoginController implements Initializable {
 
     @FXML
     private void LoginClick(ActionEvent event) {
-    try {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-        
-        HomepageUtenteController controller = SceneSwitcher.switchScene(
-            stage,
-            "/fxml/homepageutente.fxml", 
-            "UninaFoodLab - Homepage",
-            true, 
-            800, 600,
-            2560, 1440  
-        );
-        
-        stage.setMaximized(true);
-    
-    } catch (IOException e) {
-        e.printStackTrace();
+        try {
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            // Va a schermo intero
+            SceneSwitcher.switchToMainApp(stage, "/fxml/homepageutente.fxml", "UninaFoodLab - Homepage");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-}
-
+    
     @FXML
     private void RegisterClick(ActionEvent event) {
         try {
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            SceneSwitcher.switchScene(
-                stage,
-                "/fxml/registerpage.fxml",
-                "Registrazione - UninaFoodLab",
-                false, 
-                900, 700,
-                1200, 800
-            );
+            
+            SceneSwitcher.switchToRegister(stage, "/fxml/registerpage.fxml", "Registrazione - UninaFoodLab");
         } catch (IOException e) {
             e.printStackTrace();
         }

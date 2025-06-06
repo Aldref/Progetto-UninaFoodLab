@@ -108,20 +108,32 @@ public class CardCorsoController {
             Stage dialogStage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/calendardialog.fxml"));
             VBox dialogContent = loader.load();
-            
+    
             CalendarDialogController controller = loader.getController();
             // Qui puoi passare i dati specifici del corso
-            
+    
             dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             dialogStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
             dialogStage.setTitle("Calendario Lezioni");
-            
+    
             javafx.scene.Scene dialogScene = new javafx.scene.Scene(dialogContent);
             dialogScene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-            
+    
             dialogStage.setScene(dialogScene);
-            dialogStage.showAndWait();
+    
+            // USA calendarButton invece di buyButton per ottenere la finestra principale
+            Stage mainStage = (Stage) calendarButton.getScene().getWindow();
             
+            // Controllo di sicurezza nel caso anche calendarButton non abbia una scena
+            if (mainStage != null) {
+                dialogStage.setX(mainStage.getX() + (mainStage.getWidth() - dialogStage.getWidth()) / 2);
+                dialogStage.setY(mainStage.getY() + (mainStage.getHeight() - dialogStage.getHeight()) / 2);
+            } else {
+                // Fallback: centra il dialog sullo schermo
+                dialogStage.centerOnScreen();
+            }
+    
+            dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }

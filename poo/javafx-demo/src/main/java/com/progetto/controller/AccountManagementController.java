@@ -1,5 +1,6 @@
 package com.progetto.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -139,12 +140,8 @@ public class AccountManagementController {
     @FXML
     private void goToHomepage() {
         try {
-            Stage stage = (Stage) nameField.getScene().getWindow();
-            SceneSwitcher.switchSceneKeepCurrentState(
-                stage,
-                "/fxml/homepageutente.fxml",
-                "UninaFoodLab - Homepage"
-            );
+            Stage stage = (Stage) nameField.getScene().getWindow(); 
+            SceneSwitcher.switchScene(stage, "/fxml/homepageutente.fxml", "UninaFoodLab - Homepage");
         } catch (IOException e) {
             System.err.println("Errore nel cambio pagina: " + e.getMessage());
             e.printStackTrace();
@@ -155,11 +152,7 @@ public class AccountManagementController {
     private void goToEnrolledCourses() {
         try {
             Stage stage = (Stage) nameField.getScene().getWindow();
-            SceneSwitcher.switchSceneKeepCurrentState(
-                stage,
-                "/fxml/enrolledcourses.fxml",
-                "UninaFoodLab - Corsi Iscritti"
-            );
+            SceneSwitcher.switchScene(stage, "/fxml/enrolledcourses.fxml", "UninaFoodLab - Corsi Iscritti");
         } catch (IOException e) {
             System.err.println("Errore nel cambio pagina: " + e.getMessage());
             e.printStackTrace();
@@ -185,14 +178,8 @@ public class AccountManagementController {
             dialogStage.showAndWait();
 
             if (dialogController.isConfirmed()) {
-                Stage stage = (Stage) nameField.getScene().getWindow();
-                SceneSwitcher.switchSceneToWindow(
-                    stage,
-                    "/fxml/loginpage.fxml",
-                    "UninaFoodLab - Login",
-                    600, 400,
-                    800, 600
-                );
+                Stage stage = (Stage) nameField.getScene().getWindow(); // Cambiato da profileImageView
+                SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
             }
         } catch (Exception e) {
             System.err.println("Errore durante il logout: " + e.getMessage());

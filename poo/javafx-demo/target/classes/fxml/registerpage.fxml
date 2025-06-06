@@ -10,11 +10,9 @@
     fx:controller="com.progetto.controller.RegisterController"
     prefHeight="700" prefWidth="1000" styleClass="register-container">
     
-    <!-- LEFT SIDE - Brand Section -->
     <left>
         <VBox styleClass="brand-section" alignment="CENTER" spacing="30">
             <children>
-                <!-- Logo e Brand -->
                 <VBox alignment="CENTER" spacing="15" styleClass="brand-header">
                     <children>
                         <ImageView fitHeight="120.0" fitWidth="200.0" preserveRatio="true" styleClass="brand-logo">
@@ -25,13 +23,10 @@
                         <Label text="UninaFoodLab" styleClass="brand-title"/>
                     </children>
                 </VBox>
-                
-                <!-- Welcome Message -->
                 <VBox alignment="CENTER" spacing="15" styleClass="welcome-section">
                     <children>
                         <Label text="Unisciti a noi!" styleClass="welcome-title"/>
-                        <Label text="Crea il tuo account e inizia subito a esplorare il mondo della cucina con i nostri corsi professionali." 
-                               styleClass="welcome-message" wrapText="true"/>
+                        <Label text="Crea il tuo account e inizia subito a esplorare il mondo della cucina con i nostri corsi professionali." styleClass="welcome-message" wrapText="true"/>
                     </children>
                 </VBox>
             </children>
@@ -41,22 +36,16 @@
         </VBox>
     </left>
     
-    <!-- RIGHT SIDE - Registration Form -->
     <center>
         <ScrollPane styleClass="register-scroll-pane" fitToWidth="true">
             <content>
                 <VBox styleClass="register-section" alignment="CENTER" spacing="0">
                     <children>
-                        <!-- Form Container -->
                         <VBox styleClass="form-container" alignment="CENTER" spacing="25" maxWidth="500">
                             <children>
-                                <!-- Form Title -->
                                 <Label text="Crea il tuo account" styleClass="form-title"/>
-                                
-                                <!-- Registration Form -->
                                 <VBox spacing="20" styleClass="input-section">
                                     <children>
-                                        <!-- Nome e Cognome sulla stessa riga -->
                                         <HBox spacing="15">
                                             <children>
                                                 <VBox spacing="8" HBox.hgrow="ALWAYS">
@@ -73,16 +62,12 @@
                                                 </VBox>
                                             </children>
                                         </HBox>
-                                        
-                                        <!-- Email -->
                                         <VBox spacing="8">
                                             <children>
                                                 <Label text="Email*" styleClass="field-label"/>
                                                 <TextField fx:id="textFieldEmail" styleClass="form-input" promptText="Inserisci la tua email"/>
                                             </children>
                                         </VBox>
-                                        
-                                        <!-- Password e Conferma Password -->
                                         <HBox spacing="15">
                                             <children>
                                                 <VBox spacing="8" HBox.hgrow="ALWAYS">
@@ -99,8 +84,6 @@
                                                 </VBox>
                                             </children>
                                         </HBox>
-                                        
-                                        <!-- Data Nascita e Genere -->
                                         <HBox spacing="15">
                                             <children>
                                                 <VBox spacing="8" HBox.hgrow="ALWAYS">
@@ -117,8 +100,6 @@
                                                 </VBox>
                                             </children>
                                         </HBox>
-                                        
-                                        <!-- Tipo Account -->
                                         <VBox spacing="12" styleClass="account-type-section">
                                             <children>
                                                 <Label text="Tipo di Account*" styleClass="field-label"/>
@@ -130,8 +111,6 @@
                                                 </HBox>
                                             </children>
                                         </VBox>
-                                        
-                                        <!-- Descrizione (solo per Chef) -->
                                         <VBox fx:id="descrizioneSection" spacing="8" visible="false" managed="false">
                                             <children>
                                                 <Label text="Descrizione" styleClass="field-label"/>
@@ -140,11 +119,7 @@
                                         </VBox>
                                     </children>
                                 </VBox>
-                                
-                                <!-- Error Label -->
                                 <Label fx:id="labelErrore" text="Compila tutti i campi obbligatori" styleClass="error-label" visible="false"/>
-                                
-                                <!-- Action Buttons -->
                                 <VBox spacing="15" styleClass="button-section">
                                     <children>
                                         <Button fx:id="btnRegistrati" text="Registrati" styleClass="register-button" maxWidth="Infinity" onAction="#onRegistratiClick"/>

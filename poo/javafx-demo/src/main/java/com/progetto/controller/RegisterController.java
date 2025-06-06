@@ -150,19 +150,11 @@ public class RegisterController implements Initializable {
     }
 
     @FXML
-    private void onIndietroClick(ActionEvent event) {
+    private void onIndietroClick(ActionEvent event) { // Aggiungi il parametro ActionEvent
         try {
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            SceneSwitcher.switchScene(
-                stage,
-                "/fxml/loginpage.fxml",
-                "UninaFoodLab - Login",
-                false, 
-                600, 400,
-                800, 600  
-            );
+            Stage stage = (Stage) textFieldNome.getScene().getWindow(); // Usa un elemento FXML esistente
+            SceneSwitcher.switchScene(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
         } catch (IOException e) {
-            System.err.println("Errore nel cambio pagina: " + e.getMessage());
             e.printStackTrace();
         }
     }
