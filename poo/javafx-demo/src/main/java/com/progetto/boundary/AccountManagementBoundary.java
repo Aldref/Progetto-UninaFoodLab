@@ -3,7 +3,6 @@ package com.progetto.boundary;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 import javafx.event.ActionEvent;
 import com.progetto.controller.AccountManagementController;
 
@@ -22,20 +21,17 @@ public class AccountManagementBoundary {
     @FXML private PasswordField confirmPasswordField;
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
+    @FXML private Button viewUserCardsBtn;
 
     private AccountManagementController controller;
 
     @FXML
     public void initialize() {
-        controller = new AccountManagementController(
-            userNameLabel, userProfileImage, profileImageLarge, changePhotoBtn,
-            nameField, surnameField, emailField, birthDatePicker,
-            currentPasswordField, newPasswordField, confirmPasswordField,
-            saveBtn, cancelBtn
-        );
+        controller = new AccountManagementController(this);
         controller.initialize();
     }
 
+    // Metodi per delegare al controller
     @FXML
     private void changePhoto(ActionEvent event) {
         controller.changePhoto();
@@ -64,5 +60,49 @@ public class AccountManagementBoundary {
     @FXML
     private void LogoutClick(ActionEvent event) {
         controller.LogoutClick();
+    }
+    
+    @FXML
+    private void goToUserCards(ActionEvent event) {
+        controller.goToUserCards();
+    }
+
+    public Label getUserNameLabel() { return userNameLabel; }
+    public ImageView getUserProfileImage() { return userProfileImage; }
+    public ImageView getProfileImageLarge() { return profileImageLarge; }
+    public Button getChangePhotoBtn() { return changePhotoBtn; }
+    public TextField getNameField() { return nameField; }
+    public TextField getSurnameField() { return surnameField; }
+    public TextField getEmailField() { return emailField; }
+    public DatePicker getBirthDatePicker() { return birthDatePicker; }
+    public PasswordField getCurrentPasswordField() { return currentPasswordField; }
+    public PasswordField getNewPasswordField() { return newPasswordField; }
+    public PasswordField getConfirmPasswordField() { return confirmPasswordField; }
+    public Button getSaveBtn() { return saveBtn; }
+    public Button getCancelBtn() { return cancelBtn; }
+    public Button getViewUserCardsBtn() { return viewUserCardsBtn; }
+
+    public void showErrorMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Errore");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public void showSuccessMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Successo");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public void showInfoMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

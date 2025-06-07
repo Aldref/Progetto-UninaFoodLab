@@ -5,44 +5,38 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
 import com.progetto.boundary.LogoutDialogBoundary;
 
 public class SceneSwitcher {
 
-    private static void applyPlatformWindowFix(Stage stage) {
+    private static void applyPlatformWindowFix(Stage stage, boolean forceMaximized) {
         Platform.runLater(() -> {
             String os = System.getProperty("os.name").toLowerCase();
 
-            
-            if (os.contains("linux")) {
-                stage.setMaximized(true);
-
-                // Trigger di ridisegno
-                stage.setWidth(stage.getWidth() + 1);
-                stage.setWidth(stage.getWidth() - 1);
-                stage.setHeight(stage.getHeight() + 1);
-                stage.setHeight(stage.getHeight() - 1);
+            if (forceMaximized) {
+                if (os.contains("linux")) {
+                    stage.setMaximized(true);
+                    // Trigger di ridisegno
+                    stage.setWidth(stage.getWidth() + 1);
+                    stage.setWidth(stage.getWidth() - 1);
+                    stage.setHeight(stage.getHeight() + 1);
+                    stage.setHeight(stage.getHeight() - 1);
+                }
+                else if (os.contains("mac")) {
+                    javafx.geometry.Rectangle2D bounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+                    stage.setX(bounds.getMinX());
+                    stage.setY(bounds.getMinY());
+                    stage.setWidth(bounds.getWidth());
+                    stage.setHeight(bounds.getHeight());
+                }
+                else if (os.contains("win")) {
+                    stage.setMaximized(true);
+                }
             }
-
-            
-            else if (os.contains("mac")) {
-
-                // stage.setFullScreen(true);
-
-                javafx.geometry.Rectangle2D bounds = javafx.stage.Screen.getPrimary().getVisualBounds();
-                stage.setX(bounds.getMinX());
-                stage.setY(bounds.getMinY());
-                stage.setWidth(bounds.getWidth());
-                stage.setHeight(bounds.getHeight());
-            }
-            else if (os.contains("win")) {
-                stage.setMaximized(true);
-            }
-        System.out.println("OS Detected: " + System.getProperty("os.name"));
         });
     }
 
@@ -50,7 +44,13 @@ public class SceneSwitcher {
      * Metodo principale per cambiare scena - MANTIENE LO STATO ATTUALE DELLA FINESTRA
      */
     public static <T> T switchScene(Stage stage, String fxmlPath, String title) throws IOException {
+        
         boolean wasMaximized = stage.isMaximized();
+        double savedWidth = stage.getWidth();
+        double savedHeight = stage.getHeight();
+        double savedX = stage.getX();
+        double savedY = stage.getY();
+        boolean wasResizable = stage.isResizable();
     
         FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource(fxmlPath));
         Parent root = loader.load();
@@ -60,23 +60,35 @@ public class SceneSwitcher {
         stage.setScene(scene);
         stage.setTitle(title);
     
+        
+        stage.setResizable(wasResizable);
+        
+        if (!wasMaximized) {
+            stage.setWidth(savedWidth);
+            stage.setHeight(savedHeight);
+            stage.setX(savedX);
+            stage.setY(savedY);
+        }
+        
         stage.show();
     
-        // Solo se era già massimizzato, forza di nuovo maximized dopo il cambio scena
         if (wasMaximized) {
             Platform.runLater(() -> {
                 stage.setMaximized(true);
-                // Forza il ridisegno della scena
-                stage.setWidth(stage.getWidth() + 1);
-                stage.setWidth(stage.getWidth() - 1);
-                stage.setHeight(stage.getHeight() + 1);
-                stage.setHeight(stage.getHeight() - 1);
+                
+                String os = System.getProperty("os.name").toLowerCase();
+                if (os.contains("linux")) {
+                    stage.setWidth(stage.getWidth() + 1);
+                    stage.setWidth(stage.getWidth() - 1);
+                    stage.setHeight(stage.getHeight() + 1);
+                    stage.setHeight(stage.getHeight() - 1);
+                }
             });
         }
-        applyPlatformWindowFix(stage);
     
         return controller;
     }
+
     /**
      * Metodo per passare da login a homepage - VA A SCHERMO INTERO
      */
@@ -91,7 +103,8 @@ public class SceneSwitcher {
         stage.setResizable(true);
 
         stage.show();
-        Platform.runLater(() -> applyPlatformWindowFix(stage));
+        // QUI forza massimizzazione perché stiamo entrando nell'app principale
+        applyPlatformWindowFix(stage, true);
 
         return controller;
     }
@@ -108,16 +121,14 @@ public class SceneSwitcher {
         stage.setScene(scene);
         stage.setTitle(title);
         
-        stage.show();
         // Forza finestra piccola
-        Platform.runLater(() -> {
-            stage.setMaximized(false);
-            stage.setResizable(false);
-            stage.setWidth(800);
-            stage.setHeight(600);
-            stage.centerOnScreen();
-        });
-
+        stage.setMaximized(false);
+        stage.setResizable(false);
+        stage.setWidth(800);
+        stage.setHeight(600);
+        
+        stage.show();
+        Platform.runLater(() -> stage.centerOnScreen());
 
         return controller;
     }
@@ -134,17 +145,18 @@ public class SceneSwitcher {
         stage.setScene(scene);
         stage.setTitle(title);
         
-        
+        // Forza finestra media
         stage.setMaximized(false);
         stage.setResizable(true);
         stage.setWidth(1000);  
         stage.setHeight(700);  
-        stage.centerOnScreen();
 
         stage.show();
+        Platform.runLater(() -> stage.centerOnScreen());
 
         return controller;
     }
+
     public static void showDialogCentered(Stage owner, Stage dialogStage) {
         dialogStage.show();
         if (owner != null) {
@@ -157,6 +169,45 @@ public class SceneSwitcher {
         }
     }
 
+    public static void switchToScene(Stage stage, String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource(fxmlPath));
+            Parent root = loader.load();
+            
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Errore nel caricamento della scena: " + fxmlPath);
+        }
+    }
+
+    public static void showCalendarDialog(Stage owner) throws IOException {
+        FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource("/fxml/calendardialog.fxml"));
+        Parent dialogContent = loader.load();
+
+        Stage dialogStage = new Stage();
+        dialogStage.initModality(Modality.APPLICATION_MODAL);
+        dialogStage.initOwner(owner);
+        
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("mac")) {
+            dialogStage.initStyle(javafx.stage.StageStyle.UTILITY);
+        } else {
+            dialogStage.initStyle(javafx.stage.StageStyle.DECORATED);
+        }
+
+        dialogStage.setTitle("Calendario lezioni");
+        dialogStage.setResizable(false);
+
+        Scene dialogScene = new Scene(dialogContent);
+        dialogStage.setScene(dialogScene);
+
+        showDialogCentered(owner, dialogStage);
+    }
+
     public static LogoutDialogBoundary showLogoutDialog(Stage owner) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource("/fxml/logoutdialog.fxml"));
         VBox dialogContent = loader.load();
@@ -165,9 +216,8 @@ public class SceneSwitcher {
         Stage dialogStage = new Stage();
 
         dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-        dialogStage.initOwner(owner); // <-- fondamentale per macOS
+        dialogStage.initOwner(owner);
 
-        // Controlla lo stile in base al sistema
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("mac")) {
             dialogStage.initStyle(javafx.stage.StageStyle.UTILITY);

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="com.progetto.boundary.SuccessDialogBoundary"
+    styleClass="success-dialog" stylesheets="@../css/successdialog.css"
+    spacing="0" prefWidth="450" prefHeight="320">
+
+    <!-- Contenuto principale -->
+    <VBox styleClass="success-content" alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="40" bottom="30" left="40" right="40"/>
+        </padding>
+        <children>
+            <!-- Icona di successo -->
+            <VBox alignment="CENTER" spacing="10">
+                <children>
+                    <!-- Solo la tua immagine -->
+                    <ImageView fx:id="successImage" fitWidth="80" fitHeight="80" preserveRatio="true">
+                        <image>
+                            <Image url="@../immagini/icon_success.png"/>
+                        </image> 
+                    </ImageView>
+                </children>
+            </VBox>
+            
+            <!-- Titolo -->
+            <Label text="Pagamento Completato!" styleClass="success-title">
+                <font>
+                    <Font name="System Bold" size="24"/>
+                </font>
+            </Label>
+            
+            <!-- Messaggio -->
+            <VBox alignment="CENTER" spacing="8">
+                <children>
+                    <Label text="Il pagamento è stato elaborato con successo." styleClass="success-message"/>
+                    <Label fx:id="courseAddedMessage" text="Il corso è stato aggiunto ai tuoi corsi iscritti." styleClass="success-submessage"/>
+                </children>
+            </VBox>
+            
+            <!-- Nome corso acquistato -->
+            <VBox styleClass="course-info" spacing="5">
+                <children>
+                    <Label text="Corso acquistato:" styleClass="course-label"/>
+                    <Label fx:id="courseNameLabel" text="Corso di Cucina Italiana" styleClass="course-name"/>
+                </children>
+            </VBox>
+        </children>
+    </VBox>
+
+    <!-- Footer con pulsante -->
+    <HBox styleClass="success-footer" alignment="CENTER">
+        <padding>
+            <Insets top="20" bottom="25" left="40" right="40"/>
+        </padding>
+        <children>
+            <Button fx:id="okButton" text="Continua" styleClass="ok-button" onAction="#closeDialog" HBox.hgrow="ALWAYS"/>
+        </children>
+    </HBox>
+
+</VBox>

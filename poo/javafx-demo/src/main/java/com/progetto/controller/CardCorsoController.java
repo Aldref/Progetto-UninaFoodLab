@@ -3,15 +3,12 @@ package com.progetto.controller;
 import com.progetto.utils.SceneSwitcher;
 
 import javafx.animation.ScaleTransition;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -48,12 +45,11 @@ public class CardCorsoController {
         updateCardState();
     }
 
-
     private void updateCardState() {
         if (isEnrolledPage) {
             if (buyButton != null) {
                 buyButton.setVisible(false);
-                buyButton.setManaged(false); // Importante: rimuove completamente dallo spazio
+                buyButton.setManaged(false);
             }
             if (acquistatoBadge != null) acquistatoBadge.setVisible(true);
             if (buttonsBox != null) {
@@ -74,8 +70,8 @@ public class CardCorsoController {
         }
     }
 
-
     public void handlePurchase() {
+        // Animazione del pulsante
         ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), buyButton);
         scaleDown.setToX(0.95);
         scaleDown.setToY(0.95);
@@ -84,39 +80,50 @@ public class CardCorsoController {
             ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), buyButton);
             scaleUp.setToX(1.0);
             scaleUp.setToY(1.0);
+            
+            scaleUp.setOnFinished(event -> {
+                // Usa Platform.runLater e delega tutto a SceneSwitcher
+                Platform.runLater(this::showPaymentDialog);
+            });
+            
             scaleUp.play();
         });
 
         scaleDown.play();
+    }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Acquisto completato");
-        alert.setHeaderText("Corso acquistato con successo!");
-        alert.setContentText("Il corso è stato aggiunto ai tuoi corsi iscritti.");
-        alert.showAndWait();
+    private void showPaymentDialog() {
+        try {
+            Stage stage = (Stage) buyButton.getScene().getWindow(); 
+            SceneSwitcher.switchToScene(stage, "/fxml/paymentpage.fxml"); 
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert();
+        }
+    }
+
+    private void handleSuccessfulPurchase() {
+        setAcquistato(true);
+        
+        Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+        successAlert.setTitle("Acquisto Completato");
+        successAlert.setHeaderText("Corso acquistato con successo!");
+        successAlert.setContentText("Il corso è stato aggiunto ai tuoi corsi iscritti. Ora puoi visualizzare il calendario delle lezioni.");
+        successAlert.showAndWait();
+    }
+
+    private void showErrorAlert() {
+        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+        errorAlert.setTitle("Errore");
+        errorAlert.setHeaderText("Errore nell'apertura del pagamento");
+        errorAlert.setContentText("Si è verificato un errore. Riprova più tardi.");
+        errorAlert.showAndWait();
     }
 
     public void handleShowCalendar() {
-        showCalendarDialog();
-    }
-
-    public void showCalendarDialog() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/calendardialog.fxml"));
-            Parent root = loader.load();
-
-            Stage dialogStage = new Stage();
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.setTitle("Calendario lezioni");
-            dialogStage.setScene(new Scene(root));
-            dialogStage.setResizable(false);
-
             Stage mainStage = (Stage) calendarButton.getScene().getWindow();
-            dialogStage.initOwner(mainStage);
-
-            
-            SceneSwitcher.showDialogCentered(mainStage, dialogStage);
-
+            SceneSwitcher.showCalendarDialog(mainStage);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="com.progetto.boundary.PaymentPageBoundary"
+    stylesheets="@../css/paymentpage.css"
+    styleClass="payment-page">
+
+    <!-- Header -->
+    <top>
+        <VBox styleClass="payment-header-section">
+            <children>
+                <!-- Navbar di navigazione -->
+                <HBox styleClass="payment-navbar" alignment="CENTER_LEFT" spacing="20">
+                    <padding>
+                        <Insets top="15" bottom="15" left="40" right="40"/>
+                    </padding>
+                    <children>
+                        <Button fx:id="backBtn" text="← Indietro" styleClass="back-button" onAction="#goBack"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="UninaFoodLab" styleClass="brand-name"/>
+                    </children>
+                </HBox>
+                
+                <!-- Titolo sezione -->
+                <HBox styleClass="payment-title-section" alignment="CENTER" spacing="15">
+                    <padding>
+                        <Insets top="40" bottom="40" left="40" right="40"/>
+                    </padding>
+                    <children>
+                        <Label text="💳" styleClass="payment-icon">
+                            <font>
+                                <Font size="40"/>
+                            </font>
+                        </Label>
+                        <VBox alignment="CENTER_LEFT">
+                            <children>
+                                <Label text="Completa il Pagamento" styleClass="payment-main-title"/>
+                                <Label text="Accettiamo solo carte Visa e Mastercard" styleClass="payment-subtitle"/>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </top>
+
+    <!-- Contenuto principale -->
+    <center>
+        <ScrollPane styleClass="payment-scroll" fitToWidth="true">
+            <content>
+                <HBox styleClass="payment-content" alignment="TOP_CENTER" spacing="40">
+                    <padding>
+                        <Insets top="40" bottom="60" left="40" right="40"/>
+                    </padding>
+                    <children>
+                        <!-- Form di pagamento -->
+                        <VBox styleClass="payment-form-container" spacing="30" HBox.hgrow="NEVER">
+                            <children>
+                                <Label text="Dati della Carta" styleClass="section-title"/>
+                                
+                                <!-- Nome e Cognome -->
+                                <VBox spacing="8">
+                                    <children>
+                                        <Label text="Nome e Cognome dell'Intestatario *" styleClass="field-label"/>
+                                        <TextField fx:id="nomeField" promptText="Inserisci nome e cognome" styleClass="payment-field"/>
+                                        <Label fx:id="nomeErrorLabel" styleClass="error-label" visible="false"/>
+                                    </children>
+                                </VBox>
+
+                                <!-- Numero Carta -->
+                                <VBox spacing="8">
+                                    <children>
+                                        <Label text="Numero Carta *" styleClass="field-label"/>
+                                        <TextField fx:id="numeroCartaField" promptText="1234 5678 9012 3456" styleClass="payment-field"/>
+                                        <Label fx:id="numeroCartaErrorLabel" styleClass="error-label" visible="false"/>
+                                    </children>
+                                </VBox>
+
+                                <!-- Scadenza e CVC -->
+                                <HBox spacing="20">
+                                    <children>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Scadenza *" styleClass="field-label"/>
+                                                <TextField fx:id="scadenzaField" promptText="MM/AA" styleClass="payment-field"/>
+                                                <Label fx:id="scadenzaErrorLabel" styleClass="error-label" visible="false"/>
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="CVC *" styleClass="field-label"/>
+                                                <TextField fx:id="cvcField" promptText="123" styleClass="payment-field"/>
+                                                <Label fx:id="cvcErrorLabel" styleClass="error-label" visible="false"/>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+
+                                <!-- Separatore -->
+                                <Separator styleClass="form-separator"/>
+
+                                <!-- Opzioni aggiuntive -->
+                                <VBox spacing="15">
+                                    <children>
+                                        <CheckBox fx:id="salvaCartaCheckBox" text="Salva questa carta per pagamenti futuri" styleClass="save-card-checkbox"/>
+                                        <Label text="La tua carta verrà salvata in modo sicuro per rendere più veloci i tuoi prossimi acquisti." 
+                                               styleClass="info-text" wrapText="true"/>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
+                        
+                        <!-- Riepilogo ordine -->
+                        <VBox styleClass="order-summary-container" spacing="20" HBox.hgrow="NEVER">
+                            <children>
+                                <Label text="Riepilogo Ordine" styleClass="section-title"/>
+                                
+                                <VBox styleClass="order-summary-card" spacing="15">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="15">
+                                            <children>
+                                                <Label text="📚" styleClass="course-icon"/>
+                                                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label fx:id="courseTitle" text="Corso di Cucina Italiana" styleClass="course-title"/>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        
+                                        <Separator styleClass="summary-separator"/>
+                                        
+                                        <VBox spacing="8">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT">
+                                                    <children>
+                                                        <Label text="Prezzo corso:" styleClass="price-label"/>
+                                                        <Region HBox.hgrow="ALWAYS"/>
+                                                        <Label fx:id="coursePrice" text="€99.99" styleClass="price-value"/>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT">
+                                                    <children>
+                                                        <Label text="Totale:" styleClass="total-label"/>
+                                                        <Region HBox.hgrow="ALWAYS"/>
+                                                        <Label fx:id="totalPrice" text="€99.99" styleClass="total-value"/>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <!-- Footer con pulsanti -->
+    <bottom>
+        <HBox styleClass="payment-footer" alignment="CENTER" spacing="20">
+            <padding>
+                <Insets top="25" bottom="25" left="40" right="40"/>
+            </padding>
+            <children>
+                <Button fx:id="annullaBtn" text="Annulla" styleClass="cancel-button" onAction="#cancelPayment"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="confermaBtn" text="Conferma Pagamento" styleClass="confirm-button" onAction="#processPayment"/>
+            </children>
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -1,0 +1,220 @@
+.payment-page {
+    -fx-background-color: #f8f9fa;
+}
+
+.payment-header-section {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+.payment-navbar {
+    -fx-background-color: white;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 0 0 1 0;
+}
+
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2C56C9;
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+    -fx-cursor: hand;
+    -fx-padding: 8 15;
+    -fx-background-radius: 20;
+}
+
+.back-button:hover {
+    -fx-background-color: #f0f7ff;
+}
+
+.brand-name {
+    -fx-text-fill: #2C56C9;
+    -fx-font-weight: bold;
+    -fx-font-size: 18;
+}
+
+.payment-title-section {
+    -fx-background-color: linear-gradient(to right, #2C56C9, #1e3a8a);
+}
+
+.payment-icon {
+    -fx-text-fill: white;
+}
+
+.payment-main-title {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 28;
+}
+
+.payment-subtitle {
+    -fx-text-fill: #e3f2fd;
+    -fx-font-size: 16;
+}
+
+.payment-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.payment-content {
+    -fx-background-color: transparent;
+}
+
+.payment-form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 40;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);
+    -fx-max-width: 500;
+    -fx-min-width: 500;
+}
+
+.order-summary-container {
+    -fx-max-width: 350;
+    -fx-min-width: 350;
+}
+
+.order-summary-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);
+}
+
+.section-title {
+    -fx-text-fill: #2C56C9;
+    -fx-font-weight: bold;
+    -fx-font-size: 20;
+}
+
+.field-label {
+    -fx-text-fill: #2C56C9;
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+}
+
+.payment-field {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 15 20;
+    -fx-font-size: 14;
+    -fx-text-fill: #495057;
+}
+
+.payment-field:focused {
+    -fx-border-color: #2C56C9;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.2), 5, 0, 0, 0);
+}
+
+.payment-field:hover {
+    -fx-border-color: #2C56C9;
+    -fx-background-color: white;
+}
+
+.error-label {
+    -fx-text-fill: #dc3545;
+    -fx-font-size: 12;
+    -fx-font-style: italic;
+}
+
+.form-separator {
+    -fx-background-color: #e9ecef;
+}
+
+.summary-separator {
+    -fx-background-color: #e9ecef;
+}
+
+.save-card-checkbox {
+    -fx-text-fill: #495057;
+    -fx-font-size: 14;
+}
+
+.save-card-checkbox:selected .box {
+    -fx-background-color: #2C56C9;
+    -fx-border-color: #2C56C9;
+}
+
+.info-text {
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 12;
+    -fx-font-style: italic;
+}
+
+.course-icon {
+    -fx-font-size: 24;
+}
+
+.course-title {
+    -fx-text-fill: #2C56C9;
+    -fx-font-weight: bold;
+    -fx-font-size: 16;
+}
+
+.course-details {
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 12;
+}
+
+.price-label {
+    -fx-text-fill: #495057;
+    -fx-font-size: 14;
+}
+
+.price-value {
+    -fx-text-fill: #495057;
+    -fx-font-size: 14;
+}
+
+.total-label {
+    -fx-text-fill: #2C56C9;
+    -fx-font-weight: bold;
+    -fx-font-size: 16;
+}
+
+.total-value {
+    -fx-text-fill: #2C56C9;
+    -fx-font-weight: bold;
+    -fx-font-size: 18;
+}
+
+.payment-footer {
+    -fx-background-color: white;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 1 0 0 0;
+}
+
+.cancel-button {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-background-radius: 25;
+    -fx-padding: 15 30;
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+    -fx-cursor: hand;
+    -fx-min-width: 120;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #5a6268;
+}
+
+.confirm-button {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+    -fx-background-radius: 25;
+    -fx-padding: 15 40;
+    -fx-font-weight: bold;
+    -fx-font-size: 16;
+    -fx-cursor: hand;
+    -fx-min-width: 200;
+}
+
+.confirm-button:hover {
+    -fx-background-color: #1e3a8a;
+}

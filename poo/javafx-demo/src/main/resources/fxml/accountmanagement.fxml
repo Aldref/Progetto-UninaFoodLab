@@ -185,12 +185,20 @@
                         </children>
                     </VBox>
                     
+
                     <HBox spacing="20.0" alignment="CENTER">
                         <children>
                             <Button fx:id="saveBtn" text="Salva Modifiche" styleClass="save-button" onAction="#saveChanges"/>
                             <Button fx:id="cancelBtn" text="Annulla" styleClass="cancel-button" onAction="#cancelChanges"/>
                         </children>
                     </HBox>
+
+                    <VBox styleClass="form-container" spacing="15.0" maxWidth="600" alignment="CENTER">
+                        <children>
+                            <Label text="Altre Azioni" styleClass="section-title"/>
+                            <Button fx:id="viewUserCardsBtn" text="Visualizza le tue carte" styleClass="save-button" onAction="#goToUserCards" maxWidth="300"/>
+                        </children>
+                    </VBox>
                 </VBox>
             </content>
         </ScrollPane>

@@ -47,7 +47,7 @@ public class CardCorsoBoundary {
         controller.handleShowCalendar();
     }
 
-    // Metodi di supporto per impostare stato e dati da altri controller
+   
     public void setAcquistato(boolean acquistato) {
         controller.setAcquistato(acquistato);
     }
