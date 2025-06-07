@@ -13,6 +13,39 @@ import com.progetto.boundary.LogoutDialogBoundary;
 
 public class SceneSwitcher {
 
+    private static void applyPlatformWindowFix(Stage stage) {
+        Platform.runLater(() -> {
+            String os = System.getProperty("os.name").toLowerCase();
+
+            
+            if (os.contains("linux")) {
+                stage.setMaximized(true);
+
+                // Trigger di ridisegno
+                stage.setWidth(stage.getWidth() + 1);
+                stage.setWidth(stage.getWidth() - 1);
+                stage.setHeight(stage.getHeight() + 1);
+                stage.setHeight(stage.getHeight() - 1);
+            }
+
+            
+            else if (os.contains("mac")) {
+
+                // stage.setFullScreen(true);
+
+                javafx.geometry.Rectangle2D bounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+                stage.setX(bounds.getMinX());
+                stage.setY(bounds.getMinY());
+                stage.setWidth(bounds.getWidth());
+                stage.setHeight(bounds.getHeight());
+            }
+            else if (os.contains("win")) {
+                stage.setMaximized(true);
+            }
+        System.out.println("OS Detected: " + System.getProperty("os.name"));
+        });
+    }
+
     /**
      * Metodo principale per cambiare scena - MANTIENE LO STATO ATTUALE DELLA FINESTRA
      */
@@ -40,6 +73,7 @@ public class SceneSwitcher {
                 stage.setHeight(stage.getHeight() - 1);
             });
         }
+        applyPlatformWindowFix(stage);
     
         return controller;
     }
@@ -57,7 +91,8 @@ public class SceneSwitcher {
         stage.setResizable(true);
 
         stage.show();
-        Platform.runLater(() -> stage.setMaximized(true));
+        Platform.runLater(() -> applyPlatformWindowFix(stage));
+
         return controller;
     }
 
@@ -74,7 +109,6 @@ public class SceneSwitcher {
         stage.setTitle(title);
         
         stage.show();
-
         // Forza finestra piccola
         Platform.runLater(() -> {
             stage.setMaximized(false);
@@ -84,7 +118,6 @@ public class SceneSwitcher {
             stage.centerOnScreen();
         });
 
-        
 
         return controller;
     }
@@ -101,11 +134,11 @@ public class SceneSwitcher {
         stage.setScene(scene);
         stage.setTitle(title);
         
-        // Finestra più grande per la registrazione
+        
         stage.setMaximized(false);
         stage.setResizable(true);
-        stage.setWidth(1000);  // Più largo
-        stage.setHeight(700);  // Più alto
+        stage.setWidth(1000);  
+        stage.setHeight(700);  
         stage.centerOnScreen();
 
         stage.show();
@@ -130,8 +163,18 @@ public class SceneSwitcher {
         LogoutDialogBoundary dialogBoundary = loader.getController();
 
         Stage dialogStage = new Stage();
+
         dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-        dialogStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+        dialogStage.initOwner(owner); // <-- fondamentale per macOS
+
+        // Controlla lo stile in base al sistema
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("mac")) {
+            dialogStage.initStyle(javafx.stage.StageStyle.UTILITY);
+        } else {
+            dialogStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+        }
+
         dialogStage.setTitle("Conferma Logout");
 
         javafx.scene.Scene dialogScene = new javafx.scene.Scene(dialogContent);
@@ -139,7 +182,6 @@ public class SceneSwitcher {
 
         dialogStage.setScene(dialogScene);
 
-        // CENTRA PRIMA DI MOSTRARE LA FINESTRA
         dialogStage.setOnShown(e -> {
             if (owner != null) {
                 double centerX = owner.getX() + (owner.getWidth() - dialogStage.getWidth()) / 2;
