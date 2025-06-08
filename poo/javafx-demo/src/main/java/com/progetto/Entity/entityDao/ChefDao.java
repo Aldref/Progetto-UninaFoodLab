@@ -164,9 +164,41 @@ public class ChefDao extends UtenteDao  {
         }
     }
     
+    
+    
+     @Override
+    public void ModificaUtente(Utente chef) {
+        String query = "UPDATE CHEF SET Nome = COALESCE(?, Nome), Cognome = COALESCE(?, Cognome), Email = COALESCE(?, Email), Password = COALESCE(?, Password), NumeroDiTelefono = COALESCE(?, NumeroDiTelefono), DataDiNascita = COALESCE(?, DataDiNascita) WHERE id_Chef = ?";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+
+        try {
+        conn = ConnectionJavaDb.getConnection();
+        ps = conn.prepareStatement(query);
+        java.sql.Date sqlDataDiNascita = null;
+        if (chef.getDataDiNascita() != null) {
+            sqlDataDiNascita = java.sql.Date.valueOf(chef.getDataDiNascita());
+        }
+
+        ps.setString(1, chef.getNome());
+        ps.setString(2, chef.getCognome());
+        ps.setString(3, chef.getEmail());
+        ps.setString(4, chef.getPassword());
+        ps.setString(5, chef.getNumeroDiTelefono());
+        ps.setDate(6, sqlDataDiNascita);
+        ps.setInt(7, ((Chef)chef).getId_Chef());
+
+        ps.executeUpdate();
+    } catch (SQLException e) {
+       // Gestire l'errore
+    } finally {
+        dbu.closeStatement(ps);
+        dbu.closeConnection(conn);
+    }
         
 
-
+    }
     }
 
 

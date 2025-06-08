@@ -41,8 +41,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
         } catch (SQLException sqe) {
             //gestire errore
         } finally {
-            dbu.closeStatement(ps);
-            dbu.closeConnection(conn);
+            dbu.closeAll(conn, ps, generatedKeys);
         }
     }
     @Override
@@ -120,4 +119,36 @@ public class UtenteVisitatoreDao extends UtenteDao {
         }
     }
 
+    @Override
+    public void ModificaUtente(Utente utenteVisitatore) {
+        String query = "UPDATE Partecipante SET Nome = COALESCE(?, Nome), Cognome = COALESCE(?, Cognome), Email = COALESCE(?, Email), Password = COALESCE(?, Password), NumeroDiTelefono = COALESCE(?, NumeroDiTelefono), DataDiNascita = COALESCE(?, DataDiNascita) WHERE id_UtenteVisitatore = ?";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+
+        try {
+        conn = ConnectionJavaDb.getConnection();
+        ps = conn.prepareStatement(query);
+        java.sql.Date sqlDataDiNascita = null;
+        if (utenteVisitatore.getDataDiNascita() != null) {
+            sqlDataDiNascita = java.sql.Date.valueOf(utenteVisitatore.getDataDiNascita());
+        }
+
+        ps.setString(1, utenteVisitatore.getNome());
+        ps.setString(2, utenteVisitatore.getCognome());
+        ps.setString(3, utenteVisitatore.getEmail());
+        ps.setString(4, utenteVisitatore.getPassword());
+        ps.setString(5, utenteVisitatore.getNumeroDiTelefono());
+        ps.setDate(6, sqlDataDiNascita);
+        ps.setInt(7, ((UtenteVisitatore)utenteVisitatore).getId_UtenteVisitatore());
+
+        ps.executeUpdate();
+    } catch (SQLException e) {
+       // Gestire l'errore
+    } finally {
+        dbu.closeStatement(ps);
+        dbu.closeConnection(conn);
+    }
 }
+
+    }

@@ -73,4 +73,5 @@ public abstract class UtenteDao {
     public abstract  void AssegnaCorso(Corso corso, Utente utente1);
     public abstract  void recuperaDatiUtente   (Utente utenteVisitatore);
     public abstract void RegistrazioneUtente(Utente utenteVisitatore);
+    public abstract void ModificaUtente(Utente utenteVisitatore);
 }
