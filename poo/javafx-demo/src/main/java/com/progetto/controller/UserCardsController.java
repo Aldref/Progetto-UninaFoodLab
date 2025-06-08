@@ -3,6 +3,7 @@ package com.progetto.controller;
 import com.progetto.boundary.UserCardsBoundary;
 import com.progetto.utils.CardValidator;
 import com.progetto.utils.SceneSwitcher;
+import com.progetto.utils.SuccessDialogUtils;
 
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
@@ -25,11 +26,28 @@ public class UserCardsController {
     public void saveNewCard() {
         boundary.clearAllErrors();
         if (validateAllFields()) {
-            // In futuro: salva la carta nel DB
-            boundary.showSuccessMessage("Carta salvata con successo!");
+            // Simula il salvataggio della carta
+            showCardSaveSuccessDialog();
+            
             boundary.clearFieldsFromController();
             // Dopo il salvataggio, aggiorna la lista:
             // loadCardsFromDb();
+        }
+    }
+    
+    // Nuovo metodo per gestire il dialog di successo
+    private void showCardSaveSuccessDialog() {
+        try {
+            Stage parentStage = null; 
+            
+            SuccessDialogUtils.showGenericSuccessDialog(parentStage, 
+                "Carta Salvata!", 
+                "La carta è stata aggiunta con successo al tuo account.");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Fallback al messaggio semplice
+            boundary.showSuccessMessage("Carta salvata con successo!");
         }
     }
     

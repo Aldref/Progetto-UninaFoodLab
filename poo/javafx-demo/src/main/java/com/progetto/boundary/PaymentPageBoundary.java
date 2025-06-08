@@ -7,9 +7,17 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import javafx.geometry.Insets;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class PaymentPageBoundary implements Initializable {
@@ -33,7 +41,16 @@ public class PaymentPageBoundary implements Initializable {
     @FXML private Label coursePrice;
     @FXML private Label totalPrice;
     
+    // Nuovi elementi per le carte salvate
+    @FXML private VBox savedCardsSection;
+    @FXML private VBox savedCardsContainer;
+    @FXML private VBox newCardSection;
+    @FXML private Button addNewCardBtn;
+    @FXML private Button useSavedCardBtn;
+    @FXML private Button backToSavedCardsBtn;
+    
     private PaymentPageController controller;
+    private Map<String, Object> selectedCard; // Usa Map generica invece di SavedCard
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -42,13 +59,14 @@ public class PaymentPageBoundary implements Initializable {
         
         // Imposta i dati del corso di default
         setCourseDetails("Corso di Cucina Italiana", "Livello Avanzato • 12 lezioni", "€99.99");
+        
+        // Carica le carte salvate (simulazione - da sostituire con chiamata DB)
+        loadSavedCards();
     }
     
     private void setupFieldListeners() {
         // Filtro per il nome
         nomeField.textProperty().addListener((obs, oldText, newText) -> {
-            // Qui puoi mettere la logica di filtro direttamente, se vuoi
-            // Ad esempio: solo lettere e spazi
             if (!newText.matches("[a-zA-ZÀ-ÿ\\s]*")) {
                 nomeField.setText(oldText);
             }
@@ -56,21 +74,20 @@ public class PaymentPageBoundary implements Initializable {
 
         // Formattazione automatica numero carta
         numeroCartaField.textProperty().addListener((obs, oldText, newText) -> {
-        String digits = newText.replaceAll("[^0-9]", "");
-        if (digits.length() > 19) digits = digits.substring(0, 16);
-        StringBuilder formatted = new StringBuilder();
-        for (int i = 0; i < digits.length(); i++) {
-            if (i > 0 && i % 4 == 0) {
-                formatted.append(" ");
+            String digits = newText.replaceAll("[^0-9]", "");
+            if (digits.length() > 16) digits = digits.substring(0, 16);
+            StringBuilder formatted = new StringBuilder();
+            for (int i = 0; i < digits.length(); i++) {
+                if (i > 0 && i % 4 == 0) {
+                    formatted.append(" ");
+                }
+                formatted.append(digits.charAt(i));
             }
-            formatted.append(digits.charAt(i));
-        }
-        // Evita loop infinito di setText
-        if (!numeroCartaField.getText().equals(formatted.toString())) {
-            numeroCartaField.setText(formatted.toString());
-            numeroCartaField.positionCaret(formatted.length());
-        }
-    });
+            if (!numeroCartaField.getText().equals(formatted.toString())) {
+                numeroCartaField.setText(formatted.toString());
+                numeroCartaField.positionCaret(formatted.length());
+            }
+        });
 
         // Formattazione automatica scadenza
         scadenzaField.textProperty().addListener((obs, oldText, newText) -> {
@@ -88,6 +105,150 @@ public class PaymentPageBoundary implements Initializable {
             if (filtered.length() > 4) filtered = filtered.substring(0, 4);
             cvcField.setText(filtered);
         });
+    }
+    
+    private void loadSavedCards() {
+        // TODO: Sostituire con chiamata al DB
+        List<Map<String, Object>> cards = getSavedCardsFromDatabase();
+        
+        if (cards != null && !cards.isEmpty()) {
+            populateSavedCards(cards);
+            showSavedCards();
+        } else {
+            showNewCardForm();
+        }
+    }
+    
+    // Metodo stub per simulare il recupero dal DB
+    private List<Map<String, Object>> getSavedCardsFromDatabase() {
+        // TEMPORANEO: Simulazione carte per testare l'UI
+        List<Map<String, Object>> cards = new ArrayList<>();
+        
+        Map<String, Object> card1 = new HashMap<>();
+        card1.put("id", "1");
+        card1.put("maskedNumber", "**** **** **** 1234");
+        card1.put("holderName", "Mario Rossi");
+        card1.put("expiryDate", "12/25");
+        card1.put("cardType", "visa");
+        card1.put("isDefault", true);
+        cards.add(card1);
+        
+        Map<String, Object> card2 = new HashMap<>();
+        card2.put("id", "2");
+        card2.put("maskedNumber", "**** **** **** 5678");
+        card2.put("holderName", "Mario Rossi");
+        card2.put("expiryDate", "06/26");
+        card2.put("cardType", "mastercard");
+        card2.put("isDefault", false);
+        cards.add(card2);
+        
+        return cards;
+    }
+    
+    private void populateSavedCards(List<Map<String, Object>> cards) {
+        savedCardsContainer.getChildren().clear();
+        
+        for (Map<String, Object> card : cards) {
+            HBox cardItem = createSavedCardItem(card);
+            savedCardsContainer.getChildren().add(cardItem);
+        }
+    }
+    
+    private HBox createSavedCardItem(Map<String, Object> card) {
+        HBox cardItem = new HBox(15);
+        cardItem.getStyleClass().add("saved-card-item");
+        cardItem.setPadding(new Insets(15));
+        
+        // Icona tipo carta
+        Label cardIcon = new Label(getCardTypeIcon((String) card.get("cardType")));
+        cardIcon.getStyleClass().add("card-type-icon");
+        
+        // Informazioni carta
+        VBox cardInfo = new VBox(5);
+        cardInfo.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(cardInfo, javafx.scene.layout.Priority.ALWAYS);
+        
+        Label cardNumber = new Label((String) card.get("maskedNumber"));
+        cardNumber.getStyleClass().add("card-number");
+        
+        Label cardHolder = new Label((String) card.get("holderName"));
+        cardHolder.getStyleClass().add("card-holder");
+        
+        Label cardExpiry = new Label("Scade: " + card.get("expiryDate"));
+        cardExpiry.getStyleClass().add("card-expiry");
+        
+        cardInfo.getChildren().addAll(cardNumber, cardHolder, cardExpiry);
+        
+        // Badge default se applicabile
+        VBox rightSection = new VBox(5);
+        if (Boolean.TRUE.equals(card.get("isDefault"))) {
+            Label defaultBadge = new Label("PREDEFINITA");
+            defaultBadge.getStyleClass().add("default-badge");
+            rightSection.getChildren().add(defaultBadge);
+        }
+        
+        cardItem.getChildren().addAll(cardIcon, cardInfo, rightSection);
+        
+        // Gestione click
+        cardItem.setOnMouseClicked(e -> selectCard(cardItem, card));
+        
+        return cardItem;
+    }
+    
+    private String getCardTypeIcon(String cardType) {
+        if (cardType == null) return "💳";
+        switch (cardType.toLowerCase()) {
+            case "visa": return "💳";
+            case "mastercard": return "💰";
+            default: return "💳";
+        }
+    }
+    
+    private void selectCard(HBox cardItem, Map<String, Object> card) {
+        // Rimuovi selezione precedente
+        savedCardsContainer.getChildren().forEach(node -> 
+            node.getStyleClass().remove("selected"));
+        
+        // Seleziona carta corrente
+        cardItem.getStyleClass().add("selected");
+        selectedCard = card;
+        useSavedCardBtn.setDisable(false);
+    }
+    
+    @FXML
+    private void showSavedCards() {
+        savedCardsSection.setVisible(true);
+        savedCardsSection.setManaged(true);
+        newCardSection.setVisible(false);
+        newCardSection.setManaged(false);
+        backToSavedCardsBtn.setVisible(false);
+        backToSavedCardsBtn.setManaged(false);
+    }
+    
+    @FXML
+    private void showNewCardForm() {
+        savedCardsSection.setVisible(false);
+        savedCardsSection.setManaged(false);
+        newCardSection.setVisible(true);
+        newCardSection.setManaged(true);
+        
+        // Mostra il pulsante "torna alle carte salvate" solo se ci sono carte salvate
+        if (savedCardsContainer.getChildren().size() > 0) {
+            backToSavedCardsBtn.setVisible(true);
+            backToSavedCardsBtn.setManaged(true);
+        }
+        
+        // Reset selezione carta
+        selectedCard = null;
+        useSavedCardBtn.setDisable(true);
+    }
+    
+    @FXML
+    private void useSavedCard() {
+        if (selectedCard != null) {
+            String cardId = (String) selectedCard.get("id");
+            controller.processPaymentWithSavedCard(cardId);
+        }
     }
     
     @FXML
@@ -110,13 +271,13 @@ public class PaymentPageBoundary implements Initializable {
         return (Stage) confermaBtn.getScene().getWindow();
     }
     
-
     // Getter per i campi
     public String getNome() { return nomeField.getText().trim(); }
     public String getNumeroCarta() { return numeroCartaField.getText().replaceAll("\\s+", ""); }
     public String getScadenza() { return scadenzaField.getText().trim(); }
     public String getCvc() { return cvcField.getText().trim(); }
     public boolean isSalvaCarta() { return salvaCartaCheckBox.isSelected(); }
+    public Map<String, Object> getSelectedCard() { return selectedCard; }
     
     // Metodi per mostrare errori
     public void showError(String field, String message) {
@@ -170,7 +331,11 @@ public class PaymentPageBoundary implements Initializable {
     }
     
     public void navigateToSuccess() {
-    Stage stage = (Stage) confermaBtn.getScene().getWindow();
-    SceneSwitcher.switchToScene(stage, "/fxml/homepageutente.fxml"); 
-}
+        Stage stage = (Stage) confermaBtn.getScene().getWindow();
+        SceneSwitcher.switchToScene(stage, "/fxml/homepageutente.fxml"); 
+    }
+    
+    public void refreshSavedCards() {
+        loadSavedCards();
+    }
 }

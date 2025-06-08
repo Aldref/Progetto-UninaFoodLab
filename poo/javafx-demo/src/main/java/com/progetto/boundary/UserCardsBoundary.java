@@ -1,6 +1,7 @@
 package com.progetto.boundary;
 
 import com.progetto.controller.UserCardsController;
+import com.progetto.utils.CardValidator;
 import com.progetto.utils.SceneSwitcher;
 
 import javafx.collections.FXCollections;
@@ -55,7 +56,6 @@ public class UserCardsBoundary {
             }
         });
 
-        // Solo numeri, massimo 16 cifre per numero carta, con spazi ogni 4 cifre
         cardNumberField.textProperty().addListener((obs, oldText, newText) -> {
             String digits = newText.replaceAll("[^0-9]", "");
             if (digits.length() > 16) digits = digits.substring(0, 16);
@@ -68,16 +68,20 @@ public class UserCardsBoundary {
                 cardNumberField.setText(formatted.toString());
                 cardNumberField.positionCaret(formatted.length());
             }
+            // Validazione tipo carta
+            if (digits.length() >= 4 && !CardValidator.isValidCardType(digits)) {
+                showFieldError("cardNumber", "Tipo carta non supportato");
+            } else {
+                clearAllErrors();
+            }
         });
 
-        // Solo numeri, massimo 4 cifre per CVV
         cvvField.textProperty().addListener((obs, oldText, newText) -> {
             String filtered = newText.replaceAll("[^0-9]", "");
             if (filtered.length() > 4) filtered = filtered.substring(0, 4);
             cvvField.setText(filtered);
         });
 
-        // Solo formato MM/YY per scadenza
         expiryField.textProperty().addListener((obs, oldText, newText) -> {
             String filtered = newText.replaceAll("[^0-9]", "");
             if (filtered.length() > 4) filtered = filtered.substring(0, 4);
@@ -88,6 +92,12 @@ public class UserCardsBoundary {
             if (!expiryField.getText().equals(formatted.toString())) {
                 expiryField.setText(formatted.toString());
                 expiryField.positionCaret(formatted.length());
+            }
+            
+            if (formatted.length() == 5 && !CardValidator.isValidExpiryDate(formatted.toString())) {
+                showFieldError("expiry", "Data di scadenza non valida");
+            } else {
+                clearAllErrors();
             }
         });
     }

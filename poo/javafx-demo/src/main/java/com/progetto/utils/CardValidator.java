@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class CardValidator {
 
-    // Controllo tipo carta (Visa e Mastercard)
+    
     public static boolean isValidCardType(String cardNumber) {
         if (cardNumber == null) return false;
         if (cardNumber.startsWith("4")) {
@@ -27,7 +27,6 @@ public class CardValidator {
         return false;
     }
 
-    // Validazione data di scadenza
     public static boolean isValidExpiryDate(String expiry) {
         try {
             String[] parts = expiry.split("/");

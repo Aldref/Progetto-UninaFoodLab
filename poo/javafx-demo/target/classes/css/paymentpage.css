@@ -218,3 +218,107 @@
 .confirm-button:hover {
     -fx-background-color: #1e3a8a;
 }
+
+.saved-cards-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.saved-card-item {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 10;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-padding: 15;
+    -fx-cursor: hand;
+}
+
+.saved-card-item:hover {
+    -fx-background-color: #e3f2fd;
+    -fx-border-color: #2C56C9;
+}
+
+.saved-card-item.selected {
+    -fx-background-color: #e3f2fd;
+    -fx-border-color: #2C56C9;
+    -fx-border-width: 3;
+}
+
+.card-type-icon {
+    -fx-font-size: 20;
+}
+
+.card-number {
+    -fx-text-fill: #2C56C9;
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+}
+
+.card-holder {
+    -fx-text-fill: #495057;
+    -fx-font-size: 12;
+}
+
+.card-expiry {
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 11;
+}
+
+.default-badge {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+    -fx-font-size: 10;
+    -fx-padding: 2 8;
+    -fx-background-radius: 10;
+}
+
+.add-card-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2C56C9;
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+    -fx-cursor: hand;
+    -fx-padding: 8 15;
+    -fx-background-radius: 20;
+    -fx-border-color: #2C56C9;
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+}
+
+.add-card-button:hover {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+}
+
+.use-card-button {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 8 20;
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+    -fx-cursor: hand;
+}
+
+.use-card-button:hover {
+    -fx-background-color: #2C56C9;
+}
+
+.use-card-button:disabled {
+    -fx-background-color: #6c757d;
+    -fx-cursor: default;
+}
+
+.back-to-saved-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2C56C9;
+    -fx-font-size: 12;
+    -fx-cursor: hand;
+    -fx-padding: 5 10;
+    -fx-background-radius: 15;
+}
+
+.back-to-saved-button:hover {
+    -fx-background-color: #f0f7ff;
+}

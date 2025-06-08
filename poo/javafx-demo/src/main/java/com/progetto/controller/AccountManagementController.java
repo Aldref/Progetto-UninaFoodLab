@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import com.progetto.boundary.AccountManagementBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
 import com.progetto.utils.SceneSwitcher;
+import com.progetto.utils.SuccessDialogUtils;
+
 
 public class AccountManagementController {
 
@@ -81,7 +83,9 @@ public class AccountManagementController {
             boundary.getNewPasswordField().clear();
             boundary.getConfirmPasswordField().clear();
 
-            boundary.showSuccessMessage("Dati aggiornati con successo!");
+            // Sostituisci il messaggio semplice con il dialog
+            Stage stage = (Stage) boundary.getNameField().getScene().getWindow();
+            SuccessDialogUtils.showSaveSuccessDialog(stage);
 
         } catch (Exception e) {
             boundary.showErrorMessage("Errore durante il salvataggio: " + e.getMessage());

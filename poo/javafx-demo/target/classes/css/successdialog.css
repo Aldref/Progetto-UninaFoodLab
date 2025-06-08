@@ -14,18 +14,25 @@
     -fx-text-fill: #2C56C9;
     -fx-font-weight: bold;
     -fx-font-size: 24;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+    -fx-max-width: 400;
 }
 
 .success-message {
     -fx-text-fill: #495057;
     -fx-font-size: 16;
     -fx-text-alignment: center;
+    -fx-wrap-text: true;
+    -fx-max-width: 400;
 }
 
 .success-submessage {
     -fx-text-fill: #6c757d;
     -fx-font-size: 14;
     -fx-text-alignment: center;
+    -fx-wrap-text: true;
+    -fx-max-width: 400;
 }
 
 .course-info {
@@ -47,6 +54,9 @@
     -fx-font-size: 16;
     -fx-font-weight: bold;
     -fx-text-alignment: center;
+    -fx-wrap-text: true;
+    -fx-max-width: 350;
+    -fx-alignment: center;
 }
 
 .success-footer {

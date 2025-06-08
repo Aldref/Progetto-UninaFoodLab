@@ -61,55 +61,86 @@
                         <!-- Form di pagamento -->
                         <VBox styleClass="payment-form-container" spacing="30" HBox.hgrow="NEVER">
                             <children>
-                                <Label text="Dati della Carta" styleClass="section-title"/>
-                                
-                                <!-- Nome e Cognome -->
-                                <VBox spacing="8">
+                                <!-- Sezione carte salvate -->
+                                <VBox fx:id="savedCardsSection" spacing="20" visible="false" managed="false">
                                     <children>
-                                        <Label text="Nome e Cognome dell'Intestatario *" styleClass="field-label"/>
-                                        <TextField fx:id="nomeField" promptText="Inserisci nome e cognome" styleClass="payment-field"/>
-                                        <Label fx:id="nomeErrorLabel" styleClass="error-label" visible="false"/>
+                                        <Label text="Carte Salvate" styleClass="section-title"/>
+                                        <ScrollPane styleClass="saved-cards-scroll" maxHeight="200" fitToWidth="true">
+                                            <content>
+                                                <VBox fx:id="savedCardsContainer" spacing="10"/>
+                                            </content>
+                                        </ScrollPane>
+                                        <HBox alignment="CENTER_LEFT" spacing="10">
+                                            <children>
+                                                <Button fx:id="addNewCardBtn" text="Usa nuova carta" styleClass="add-card-button" onAction="#showNewCardForm"/>
+                                                <Region HBox.hgrow="ALWAYS"/>
+                                                <Button fx:id="useSavedCardBtn" text="Usa carta selezionata" styleClass="use-card-button" onAction="#useSavedCard" disable="true"/>
+                                            </children>
+                                        </HBox>
+                                        <Separator styleClass="form-separator"/>
                                     </children>
                                 </VBox>
 
-                                <!-- Numero Carta -->
-                                <VBox spacing="8">
+                                <!-- Form nuova carta -->
+                                <VBox fx:id="newCardSection" spacing="20">
                                     <children>
-                                        <Label text="Numero Carta *" styleClass="field-label"/>
-                                        <TextField fx:id="numeroCartaField" promptText="1234 5678 9012 3456" styleClass="payment-field"/>
-                                        <Label fx:id="numeroCartaErrorLabel" styleClass="error-label" visible="false"/>
-                                    </children>
-                                </VBox>
-
-                                <!-- Scadenza e CVC -->
-                                <HBox spacing="20">
-                                    <children>
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <HBox alignment="CENTER_LEFT" spacing="10">
                                             <children>
-                                                <Label text="Scadenza *" styleClass="field-label"/>
-                                                <TextField fx:id="scadenzaField" promptText="MM/AA" styleClass="payment-field"/>
-                                                <Label fx:id="scadenzaErrorLabel" styleClass="error-label" visible="false"/>
+                                                <Label text="Dati della Carta" styleClass="section-title"/>
+                                                <Region HBox.hgrow="ALWAYS"/>
+                                                <Button fx:id="backToSavedCardsBtn" text="← Carte salvate" styleClass="back-to-saved-button" onAction="#showSavedCards" visible="false" managed="false"/>
+                                            </children>
+                                        </HBox>
+                                        
+                                        <!-- Nome e Cognome -->
+                                        <VBox spacing="8">
+                                            <children>
+                                                <Label text="Nome e Cognome dell'Intestatario *" styleClass="field-label"/>
+                                                <TextField fx:id="nomeField" promptText="Inserisci nome e cognome" styleClass="payment-field"/>
+                                                <Label fx:id="nomeErrorLabel" styleClass="error-label" visible="false"/>
                                             </children>
                                         </VBox>
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+
+                                        <!-- Numero Carta -->
+                                        <VBox spacing="8">
                                             <children>
-                                                <Label text="CVC *" styleClass="field-label"/>
-                                                <TextField fx:id="cvcField" promptText="123" styleClass="payment-field"/>
-                                                <Label fx:id="cvcErrorLabel" styleClass="error-label" visible="false"/>
+                                                <Label text="Numero Carta *" styleClass="field-label"/>
+                                                <TextField fx:id="numeroCartaField" promptText="1234 5678 9012 3456" styleClass="payment-field"/>
+                                                <Label fx:id="numeroCartaErrorLabel" styleClass="error-label" visible="false"/>
                                             </children>
                                         </VBox>
-                                    </children>
-                                </HBox>
 
-                                <!-- Separatore -->
-                                <Separator styleClass="form-separator"/>
+                                        <!-- Scadenza e CVC -->
+                                        <HBox spacing="20">
+                                            <children>
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Scadenza *" styleClass="field-label"/>
+                                                        <TextField fx:id="scadenzaField" promptText="MM/AA" styleClass="payment-field"/>
+                                                        <Label fx:id="scadenzaErrorLabel" styleClass="error-label" visible="false"/>
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="CVC *" styleClass="field-label"/>
+                                                        <TextField fx:id="cvcField" promptText="123" styleClass="payment-field"/>
+                                                        <Label fx:id="cvcErrorLabel" styleClass="error-label" visible="false"/>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
 
-                                <!-- Opzioni aggiuntive -->
-                                <VBox spacing="15">
-                                    <children>
-                                        <CheckBox fx:id="salvaCartaCheckBox" text="Salva questa carta per pagamenti futuri" styleClass="save-card-checkbox"/>
-                                        <Label text="La tua carta verrà salvata in modo sicuro per rendere più veloci i tuoi prossimi acquisti." 
-                                               styleClass="info-text" wrapText="true"/>
+                                        <!-- Separatore -->
+                                        <Separator styleClass="form-separator"/>
+
+                                        <!-- Opzioni aggiuntive -->
+                                        <VBox spacing="15">
+                                            <children>
+                                                <CheckBox fx:id="salvaCartaCheckBox" text="Salva questa carta per pagamenti futuri" styleClass="save-card-checkbox"/>
+                                                <Label text="La tua carta verrà salvata in modo sicuro per rendere più veloci i tuoi prossimi acquisti." 
+                                                       styleClass="info-text" wrapText="true"/>
+                                            </children>
+                                        </VBox>
                                     </children>
                                 </VBox>
                             </children>

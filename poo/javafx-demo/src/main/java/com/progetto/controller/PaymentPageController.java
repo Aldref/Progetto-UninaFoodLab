@@ -3,7 +3,9 @@ package com.progetto.controller;
 import com.progetto.boundary.PaymentPageBoundary;
 import com.progetto.boundary.SuccessDialogBoundary;
 import com.progetto.utils.CardValidator;
+import com.progetto.utils.SuccessDialogUtils;
 
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -28,12 +30,76 @@ public class PaymentPageController {
         this.boundary = boundary;
     }
     
+    // Metodo per pagamento con carta salvata (pronto per integrazione DB)
+    public void processPaymentWithSavedCard(String cardId) {
+        // TODO: Implementare logica pagamento con carta salvata
+        // Validazione minima e simulazione pagamento
+        
+        if (cardId == null || cardId.isEmpty()) {
+            showErrorAlert("Errore", "Carta non valida");
+            return;
+        }
+        
+        // Simula elaborazione pagamento
+        try {
+            // TODO: Chiamata al servizio di pagamento con carta salvata
+            // paymentService.processPaymentWithSavedCard(cardId, amount);
+            
+            // Sostituisci showSuccessDialog() con:
+            showPaymentSuccessDialog();
+            
+        } catch (Exception e) {
+            showErrorAlert("Errore Pagamento", "Si è verificato un errore durante l'elaborazione del pagamento.");
+        }
+    }
+    
     public void processPayment() {
+        // Pulisci errori precedenti
         boundary.clearAllErrors();
         
-        if (validateAllFields()) {
-            showSuccessDialog();
-            boundary.navigateToSuccess();
+        // Se è selezionata una carta salvata, usa quella
+        if (boundary.getSelectedCard() != null) {
+            String cardId = (String) boundary.getSelectedCard().get("id");
+            processPaymentWithSavedCard(cardId);
+            return;
+        }
+        
+        // Altrimenti valida e processa nuova carta
+        if (!validateAllFields()) {
+            return;
+        }
+        
+        try {
+            // Simula elaborazione pagamento
+            // TODO: Implementare chiamata al servizio di pagamento reale
+            // PaymentResult result = paymentService.processPayment(paymentData);
+            
+            // Se l'utente ha scelto di salvare la carta
+            if (boundary.isSalvaCarta()) {
+                // TODO: Salvare la carta nel database
+                // cardService.saveCard(userId, cardData);
+            }
+            
+            // Sostituisci showSuccessDialog() con:
+            showPaymentSuccessDialog();
+            
+        } catch (Exception e) {
+            showErrorAlert("Errore Pagamento", "Si è verificato un errore durante l'elaborazione del pagamento.");
+        }
+    }
+    
+    // Nuovo metodo privato per gestire il dialog di successo
+    private void showPaymentSuccessDialog() {
+        try {
+            // Usa null come parentStage - il dialog si centrerà sullo schermo
+            Stage parentStage = null;
+            String courseName = "Corso di Cucina Italiana"; // TODO: Sostituire con il nome reale del corso
+            
+            SuccessDialogUtils.showPaymentSuccessDialog(parentStage, courseName);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            showSuccessAlert(); // Fallback al dialog semplice
         }
     }
     
@@ -97,56 +163,20 @@ public class PaymentPageController {
         
         return isValid;
     }
-    
-    private void showSuccessDialog() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/successdialog.fxml"));
-            Parent root = loader.load();
-            
-            SuccessDialogBoundary dialogBoundary = loader.getController();
-            
-            // dialogBoundary.setCourseName("Nome del corso acquistato"); // TODO: Passa il nome reale del corso
-            
-            Stage dialogStage = new Stage();
-            dialogBoundary.setDialogStage(dialogStage);
-            
-            // Configura il dialog
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.initStyle(StageStyle.UNDECORATED); 
-            dialogStage.setTitle("Pagamento Completato");
-            dialogStage.setResizable(false);
-            
-            Scene scene = new Scene(root);
-            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-            dialogStage.setScene(scene);
-            
-            // Centra il dialog
-            Stage parentStage = boundary.getStage();
-            if (parentStage != null) {
-                dialogStage.initOwner(parentStage);
-                dialogStage.setOnShown(e -> {
-                    double centerX = parentStage.getX() + (parentStage.getWidth() - dialogStage.getWidth()) / 2;
-                    double centerY = parentStage.getY() + (parentStage.getHeight() - dialogStage.getHeight()) / 2;
-                    dialogStage.setX(centerX);
-                    dialogStage.setY(centerY);
-                });
-            } else {
-                dialogStage.centerOnScreen();
-            }
-            
-            dialogStage.showAndWait();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            showSuccessAlert();
-        }
-    }
 
     private void showSuccessAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Pagamento Completato");
         alert.setHeaderText("Successo!");
         alert.setContentText("Il pagamento è stato elaborato con successo.\nIl corso è stato aggiunto ai tuoi corsi iscritti.");
+        alert.showAndWait();
+    }
+    
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText("Errore");
+        alert.setContentText(message);
         alert.showAndWait();
     }
 }

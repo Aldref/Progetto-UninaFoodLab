@@ -35,6 +35,7 @@ com\progetto\Entity\EntityDto\Sessione.class
 com\progetto\Entity\entityDao\SessioneInPresenzaDao.class
 com\progetto\Entity\entityDao\UtenteDao.class
 com\progetto\Entity\EntityDto\UtenteVisitatore.class
+com\progetto\utils\SuccessDialogUtils.class
 com\progetto\controller\CardCorsoController.class
 com\progetto\controller\CalendarDialogController$Lezione.class
 com\progetto\Entity\entityDao\SessioniDao.class
