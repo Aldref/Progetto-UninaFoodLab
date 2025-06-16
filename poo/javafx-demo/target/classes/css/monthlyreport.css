@@ -1,0 +1,191 @@
+.report-container {
+    -fx-background-color: #f8f9fa;
+}
+
+.header-section {
+    -fx-background-color: white;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 0 0 2 0;
+}
+
+.header-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.back-button {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.back-button:hover {
+    -fx-background-color: #5a6268;
+}
+
+.filter-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #495057;
+}
+
+.month-selector, .year-selector {
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8 12;
+}
+
+.update-button {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.update-button:hover {
+    -fx-background-color: #0056b3;
+}
+
+
+.stats-row {
+    -fx-padding: 20 0;
+}
+
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-padding: 25 20;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.stat-card.guadagno {
+    -fx-background-color: linear-gradient(to bottom, #28a745, #20c997);
+    -fx-border-color: transparent;
+}
+
+.stat-card.guadagno .stat-title,
+.stat-card.guadagno .stat-value,
+.stat-card.guadagno .stat-subtitle {
+    -fx-text-fill: white;
+}
+
+.stat-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6c757d;
+}
+
+.stat-value {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.stat-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #868e96;
+}
+
+
+.chart-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-padding: 25;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.chart-card.full-width {
+    -fx-pref-width: 800;
+}
+
+.chart-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Recipes Stats */
+.recipes-stats-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-padding: 30;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-pref-width: 800;
+}
+
+.recipe-stat-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6c757d;
+}
+
+.recipe-stat-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.recipe-stat-value.max {
+    -fx-text-fill: #28a745;
+}
+
+.recipe-stat-value.min {
+    -fx-text-fill: #dc3545;
+}
+
+.recipe-stat-value.total {
+    -fx-text-fill: #007bff;
+}
+
+.recipe-stat-unit {
+    -fx-font-size: 12px;
+    -fx-text-fill: #868e96;
+}
+
+
+.report-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.report-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.report-scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+.chart {
+    -fx-background-color: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-content {
+    -fx-padding: 10px;
+}

@@ -122,7 +122,7 @@
                                 <Label fx:id="labelErrore" text="Compila tutti i campi obbligatori" styleClass="error-label" visible="false"/>
                                 <VBox spacing="15" styleClass="button-section">
                                     <children>
-                                        <Button fx:id="btnRegistrati" text="Registrati" styleClass="register-button" maxWidth="Infinity" onAction="#onRegistratiClick"/>
+                                        <Button fx:id="btnRegistrati" text="Registrati" styleClass="register-button" maxWidth="Infinity" onAction="#onRegistratiClick" defaultButton="true"/>
                                         <Button fx:id="btnIndietro" text="Torna al Login" styleClass="back-button" maxWidth="Infinity" onAction="#onIndietroClick"/>
                                     </children>
                                 </VBox>

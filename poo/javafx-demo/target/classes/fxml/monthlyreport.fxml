@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.chart.*?>
+
+<BorderPane stylesheets="@../css/root.css,@../css/navbar.css,@../css/monthlyreport.css,@../css/searchisland.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.boundary.MonthlyReportBoundary"
+            prefHeight="700" prefWidth="1000" styleClass="homepage-container">
+   
+   <!-- Sidebar identica alla homepage chef -->
+   <left>
+      <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="280.0">
+         <children>
+            <VBox styleClass="logo-section" alignment="CENTER">
+               <children>
+                  <ImageView fx:id="logoImage" fitHeight="60.0" fitWidth="200.0" preserveRatio="true">
+                     <image>
+                        <Image url="/immagini/logo.png" />
+                     </image>
+                  </ImageView>
+                  <Label text="UninaFoodLab Chef" styleClass="app-title" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </VBox.margin>
+            </VBox>
+            
+            <Separator styleClass="sidebar-separator" />
+            
+            <VBox styleClass="user-section" alignment="CENTER" spacing="10.0">
+               <children>
+                  <ImageView fx:id="chefProfileImage" fitHeight="80.0" fitWidth="80.0" preserveRatio="true">
+                     <image>
+                        <Image url="/immagini/login_image.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="chefNameLabel" text="Mario" styleClass="user-name" />
+                  <Label text="Chef" styleClass="user-role" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="30.0" left="20.0" right="20.0" top="20.0" />
+               </VBox.margin>
+            </VBox>
+            
+            <VBox styleClass="navigation-section" spacing="15.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Button fx:id="viewMyCoursesBtn" text="I miei corsi" styleClass="nav-button" maxWidth="Infinity" onAction="#goToHomepage">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                           <image>
+                              <Image url="/immagini/homepage/icon_corsi.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  
+                  <Button fx:id="createCourseBtn" text="Crea nuovo corso" styleClass="nav-button" maxWidth="Infinity" onAction="#goToCreateCourse">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                           <image>
+                              <Image url="/immagini/homepage/icon_newcourse.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  
+                  <Button fx:id="monthlyReportBtn" text="Resoconto mensile" styleClass="nav-button-active" maxWidth="Infinity">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                           <image>
+                              <Image url="/immagini/homepage/icon_report.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  
+                  <Button fx:id="accountManagementBtn" text="Gestione account" styleClass="nav-button" maxWidth="Infinity" onAction="#goToAccountManagement">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                           <image>
+                              <Image url="/immagini/homepage/icon_dettagli_account.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </VBox.margin>
+            </VBox>
+            
+            <VBox styleClass="logout-section">
+               <children>
+                  <Button fx:id="logoutBtn" text="Logout" styleClass="logout-button" maxWidth="Infinity" onAction="#LogoutClick">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                           <image>
+                              <Image url="/immagini/homepage/icon_logout.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </VBox.margin>
+            </VBox>
+         </children>
+      </VBox>
+   </left>
+   
+   <!-- Area centrale con layout ORIGINALE -->
+   <center>
+      <VBox spacing="30.0" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+         <children>
+            
+            <!-- Search Island per filtri report -->
+            <VBox styleClass="search-island" alignment="CENTER" spacing="20.0">
+               <children>
+                  <Label fx:id="monthYearLabel" text="Resoconto - Dicembre 2024" styleClass="search-title" />
+                  
+                  <HBox spacing="15.0" alignment="CENTER">
+                     <children>
+                        <VBox spacing="5.0">
+                           <children>
+                              <Label text="Mese" styleClass="dropdown-label" />
+                              <ComboBox fx:id="monthComboBox" styleClass="search-dropdown" prefWidth="180.0" promptText="Seleziona mese..." />
+                           </children>
+                        </VBox>
+                        
+                        <VBox spacing="5.0">
+                           <children>
+                              <Label text="Anno" styleClass="dropdown-label" />
+                              <ComboBox fx:id="yearComboBox" styleClass="search-dropdown" prefWidth="180.0" promptText="Anno..." />
+                           </children>
+                        </VBox>
+                        
+                        <VBox spacing="5.0" alignment="BOTTOM_CENTER">
+                           <children>
+                              <Button fx:id="updateButton" text="Aggiorna Report" styleClass="search-button" onAction="#updateReport" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
+               </VBox.margin>
+            </VBox>
+            
+            <!-- ScrollPane con layout ORIGINALE -->
+            <ScrollPane styleClass="report-scroll-pane" VBox.vgrow="ALWAYS" fitToWidth="true">
+               <content>
+                  <VBox spacing="30.0" alignment="TOP_CENTER">
+                     <children>
+                        
+                        <!-- Statistiche Principali -->
+                        <HBox spacing="20.0" alignment="CENTER" styleClass="stats-row">
+                           <children>
+                              <VBox styleClass="stat-card" spacing="10.0" alignment="CENTER" prefWidth="200">
+                                 <children>
+                                    <Label text="Corsi Totali" styleClass="stat-title" />
+                                    <Label fx:id="totalCoursesLabel" text="12" styleClass="stat-value" />
+                                    <Label text="corsi attivi" styleClass="stat-subtitle" />
+                                 </children>
+                              </VBox>
+                              
+                              <VBox styleClass="stat-card" spacing="10.0" alignment="CENTER" prefWidth="200">
+                                 <children>
+                                    <Label text="Sessioni Online" styleClass="stat-title" />
+                                    <Label fx:id="onlineSessionsLabel" text="48" styleClass="stat-value" />
+                                    <Label text="sessioni completate" styleClass="stat-subtitle" />
+                                 </children>
+                              </VBox>
+                              
+                              <VBox styleClass="stat-card" spacing="10.0" alignment="CENTER" prefWidth="200">
+                                 <children>
+                                    <Label text="Sessioni Pratiche" styleClass="stat-title" />
+                                    <Label fx:id="practicalSessionsLabel" text="24" styleClass="stat-value" />
+                                    <Label text="sessioni completate" styleClass="stat-subtitle" />
+                                 </children>
+                              </VBox>
+                              
+                              <VBox styleClass="stat-card guadagno" spacing="10.0" alignment="CENTER" prefWidth="200">
+                                 <children>
+                                    <Label text="Guadagno Mensile" styleClass="stat-title" />
+                                    <Label fx:id="monthlyEarningsLabel" text="€ 4.580,00" styleClass="stat-value" />
+                                    <Label text="incasso totale" styleClass="stat-subtitle" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        
+                        <!-- Grafici -->
+                        <HBox spacing="30.0" alignment="CENTER">
+                           <children>
+                              <!-- Grafico Sessioni -->
+                              <VBox styleClass="chart-card" spacing="15.0" prefWidth="450">
+                                 <children>
+                                    <Label text="Distribuzione Sessioni" styleClass="chart-title" />
+                                    <PieChart fx:id="sessionsChart" prefHeight="300" prefWidth="400" />
+                                 </children>
+                              </VBox>
+                              
+                              <!-- Grafico Ricette -->
+                              <VBox styleClass="chart-card" spacing="15.0" prefWidth="450">
+                                 <children>
+                                    <Label text="Ricette per Sessione Pratica" styleClass="chart-title" />
+                                    <BarChart fx:id="recipesChart" prefHeight="300" prefWidth="400">
+                                       <xAxis>
+                                          <CategoryAxis fx:id="recipesXAxis" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis fx:id="recipesYAxis" />
+                                       </yAxis>
+                                    </BarChart>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        
+                        <!-- Statistiche Ricette Dettagliate -->
+                        <VBox styleClass="recipes-stats-card" spacing="20.0">
+                           <children>
+                              <Label text="Statistiche Ricette Realizzate" styleClass="section-title" />
+                              
+                              <HBox spacing="40.0" alignment="CENTER">
+                                 <children>
+                                    <VBox spacing="8.0" alignment="CENTER">
+                                       <children>
+                                          <Label text="Media" styleClass="recipe-stat-title" />
+                                          <Label fx:id="avgRecipesLabel" text="3.2" styleClass="recipe-stat-value" />
+                                          <Label text="ricette/sessione" styleClass="recipe-stat-unit" />
+                                       </children>
+                                    </VBox>
+                                    
+                                    <Separator orientation="VERTICAL" prefHeight="60" />
+                                    
+                                    <VBox spacing="8.0" alignment="CENTER">
+                                       <children>
+                                          <Label text="Massimo" styleClass="recipe-stat-title" />
+                                          <Label fx:id="maxRecipesLabel" text="5" styleClass="recipe-stat-value max" />
+                                          <Label text="ricette/sessione" styleClass="recipe-stat-unit" />
+                                       </children>
+                                    </VBox>
+                                    
+                                    <Separator orientation="VERTICAL" prefHeight="60" />
+                                    
+                                    <VBox spacing="8.0" alignment="CENTER">
+                                       <children>
+                                          <Label text="Minimo" styleClass="recipe-stat-title" />
+                                          <Label fx:id="minRecipesLabel" text="2" styleClass="recipe-stat-value min" />
+                                          <Label text="ricette/sessione" styleClass="recipe-stat-unit" />
+                                       </children>
+                                    </VBox>
+                                    
+                                    <Separator orientation="VERTICAL" prefHeight="60" />
+                                    
+                                    <VBox spacing="8.0" alignment="CENTER">
+                                       <children>
+                                          <Label text="Totale" styleClass="recipe-stat-title" />
+                                          <Label fx:id="totalRecipesLabel" text="76" styleClass="recipe-stat-value total" />
+                                          <Label text="ricette realizzate" styleClass="recipe-stat-unit" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        
+                        <!-- Grafico Guadagni nel Tempo -->
+                        <VBox styleClass="chart-card full-width" spacing="15.0">
+                           <children>
+                              <Label text="Andamento Guadagni Mensili" styleClass="chart-title" />
+                              <LineChart fx:id="earningsChart" prefHeight="250" prefWidth="800">
+                                 <xAxis>
+                                    <CategoryAxis fx:id="earningsXAxis" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis fx:id="earningsYAxis" />
+                                 </yAxis>
+                              </LineChart>
+                           </children>
+                        </VBox>
+                        
+                     </children>
+                     <padding>
+                        <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
+                     </padding>
+                  </VBox>
+               </content>
+            </ScrollPane>
+            
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

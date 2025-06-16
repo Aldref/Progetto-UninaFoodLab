@@ -5,7 +5,10 @@ com\progetto\boundary\AccountManagementBoundary.class
 com\progetto\boundary\HomepageUtenteBoundary.class
 com\progetto\boundary\LoginBoundary.class
 com\progetto\boundary\UserCardsBoundary.class
+com\progetto\boundary\HomepageChefBoundary.class
 com\progetto\controller\EnrolledCoursesController.class
+com\progetto\boundary\MonthlyReportBoundary.class
+com\progetto\boundary\AccountManagementChefBoundary.class
 com\progetto\boundary\LogoutDialogBoundary.class
 com\progetto\utils\SceneSwitcher.class
 com\progetto\Entity\entityDao\SessioneOnlineDao.class
@@ -13,9 +16,11 @@ com\progetto\controller\PaymentPageController.class
 com\progetto\utils\CardValidator.class
 com\progetto\utils\ErroriEmail.class
 com\progetto\controller\AccountManagementController.class
+com\progetto\controller\HomepageChefController.class
 com\progetto\controller\HomepageUtenteController.class
 com\progetto\controller\LogoutDialogController.class
 com\progetto\Entity\entityDao\CorsoDao.class
+com\progetto\controller\AccountManagementChefController.class
 com\progetto\jdbc\SupportDb.class
 com\progetto\jdbc\ConnectionJavaDb.class
 com\progetto\controller\UserCardsController.class
@@ -26,6 +31,7 @@ com\progetto\controller\LoginController.class
 com\progetto\controller\RegisterController.class
 com\progetto\Entity\EntityDto\Chef.class
 com\progetto\boundary\SuccessDialogBoundary.class
+com\progetto\controller\MonthlyReportController$ReportData.class
 com\progetto\boundary\RegisterBoundary.class
 com\progetto\boundary\CardCorsoBoundary.class
 com\progetto\Entity\entityDao\UtenteVisitatoreDao.class
@@ -35,6 +41,7 @@ com\progetto\Entity\EntityDto\Sessione.class
 com\progetto\Entity\entityDao\SessioneInPresenzaDao.class
 com\progetto\Entity\entityDao\UtenteDao.class
 com\progetto\Entity\EntityDto\UtenteVisitatore.class
+com\progetto\controller\MonthlyReportController.class
 com\progetto\utils\SuccessDialogUtils.class
 com\progetto\controller\CardCorsoController.class
 com\progetto\controller\CalendarDialogController$Lezione.class

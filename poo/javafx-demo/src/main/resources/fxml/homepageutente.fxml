@@ -111,21 +111,21 @@
                         <VBox spacing="5.0">
                         <children>
                            <Label text="Categoria" styleClass="dropdown-label" />
-                           <ComboBox fx:id="categoryComboBox" styleClass="search-dropdown" prefWidth="150.0" promptText="Seleziona..." />
+                           <ComboBox fx:id="categoryComboBox" styleClass="search-dropdown" prefWidth="180.0" promptText="Seleziona..." />
                            </children>
                         </VBox>
                         
                         <VBox spacing="5.0">
                            <children>
                            <Label text="Frequenza" styleClass="dropdown-label" />
-                           <ComboBox fx:id="frequencyComboBox" styleClass="search-dropdown" prefWidth="150.0" promptText="Seleziona..." />
+                           <ComboBox fx:id="frequencyComboBox" styleClass="search-dropdown" prefWidth="180.0" promptText="Seleziona..." />
                            </children>
                         </VBox>
                         
                         <VBox spacing="5.0">
                            <children>
                            <Label text="Tipo lezione" styleClass="dropdown-label" />
-                           <ComboBox fx:id="lessonTypeComboBox" styleClass="search-dropdown" prefWidth="150.0" promptText="Seleziona..." />
+                           <ComboBox fx:id="lessonTypeComboBox" styleClass="search-dropdown" prefWidth="180.0" promptText="Seleziona..." />
                            </children>
                         </VBox>
                         

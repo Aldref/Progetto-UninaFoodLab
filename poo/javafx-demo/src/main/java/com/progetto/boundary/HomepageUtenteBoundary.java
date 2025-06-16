@@ -1,44 +1,40 @@
 package com.progetto.boundary;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
 import javafx.event.ActionEvent;
 import com.progetto.controller.HomepageUtenteController;
 
-import java.util.List;
-
 public class HomepageUtenteBoundary {
 
-    @FXML
-    private ComboBox<String> cbCategoria;
-    @FXML
-    private ComboBox<String> cbFrequenza;
-    @FXML
-    private ComboBox<String> cbTipoLezione;
-    @FXML
-    private FlowPane mainContentArea;
-    @FXML
-    private Label pageLabel;
+    @FXML private FlowPane mainContentArea;
+    @FXML private Label pageLabel;
+    @FXML private ComboBox<String> categoryComboBox;
+    @FXML private ComboBox<String> frequencyComboBox;
+    @FXML private ComboBox<String> lessonTypeComboBox;
+    @FXML private Label userNameLabel;
 
     private HomepageUtenteController controller;
 
-    public HomepageUtenteBoundary() {}
-
     @FXML
     public void initialize() {
-        controller = new HomepageUtenteController(mainContentArea, pageLabel, cbCategoria, cbFrequenza, cbTipoLezione);
-        controller.loadCards();
+        // Aggiungi userNameLabel come parametro mancante
+        controller = new HomepageUtenteController(mainContentArea, pageLabel, categoryComboBox, 
+                                                frequencyComboBox, lessonTypeComboBox, userNameLabel);
+        controller.initializeSearchFilters();
+        controller.loadCourses(); // Cambiato da loadCards() a loadCourses()
     }
 
     @FXML
     private void goToEnrolledCourses(ActionEvent event) {
         controller.goToEnrolledCourses();
+    }
+
+    @FXML
+    private void goToUserCards(ActionEvent event) {
+        controller.goToUserCards();
     }
 
     @FXML
@@ -62,7 +58,15 @@ public class HomepageUtenteBoundary {
     }
 
     @FXML
-    private void handleSearch(ActionEvent event) {
-        controller.handleSearch();
+    private void searchCourses(ActionEvent event) {
+        controller.searchCourses(); 
     }
+
+    
+    public FlowPane getMainContentArea() { return mainContentArea; }
+    public Label getPageLabel() { return pageLabel; }
+    public ComboBox<String> getCategoryComboBox() { return categoryComboBox; }
+    public ComboBox<String> getFrequencyComboBox() { return frequencyComboBox; }
+    public ComboBox<String> getLessonTypeComboBox() { return lessonTypeComboBox; }
+    public Label getUserNameLabel() { return userNameLabel; }
 }

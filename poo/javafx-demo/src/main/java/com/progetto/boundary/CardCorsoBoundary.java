@@ -13,27 +13,27 @@ import com.progetto.controller.CardCorsoController;
 public class CardCorsoBoundary {
 
     @FXML private Button buyButton;
+    @FXML private Button editButton;
+    @FXML private Button calendarButton;
     @FXML private HBox buttonsBox;
     @FXML private VBox priceSection;
     @FXML private Label acquistatoBadge;
     @FXML private Label priceLabel;
-    @FXML private Button calendarButton;
-    @FXML private ImageView courseImage;
     @FXML private Label courseTitle;
     @FXML private Label courseDescription;
     @FXML private Label startDate;
     @FXML private Label endDate;
     @FXML private Label frequency;
-    @FXML private Label lessonType;
+    @FXML private ImageView courseImage;
 
     private CardCorsoController controller;
 
     @FXML
     private void initialize() {
-        controller = new CardCorsoController(buyButton, buttonsBox, priceSection, acquistatoBadge, priceLabel, calendarButton);
+        controller = new CardCorsoController(buyButton, editButton, buttonsBox, priceSection, 
+                                           acquistatoBadge, priceLabel, calendarButton, courseImage,
+                                           courseTitle, courseDescription, startDate, endDate, frequency);
         controller.initialize();
-
-        // Immagine di esempio, facilmente modificabile da Java
         setCourseImage("/immagini/corsi/esempio.png");
     }
 
@@ -43,43 +43,50 @@ public class CardCorsoBoundary {
     }
 
     @FXML
+    private void handleEdit(ActionEvent event) {
+        controller.handleEdit();
+    }
+
+    @FXML
     private void handleShowCalendar(ActionEvent event) {
         controller.handleShowCalendar();
     }
 
-   
-    public void setAcquistato(boolean acquistato) {
-        controller.setAcquistato(acquistato);
-    }
-
-    public void setEnrolledPage(boolean enrolledPage) {
-        controller.setEnrolledPage(enrolledPage);
-    }
-
-    public CardCorsoController getController() {
-        return controller;
-    }
-
-    // Metodo per cambiare facilmente l'immagine
-    public void setCourseImage(String resourcePath) {
+    public void setCourseImage(String imagePath) {
         try {
-            Image img = new Image(getClass().getResource(resourcePath).toExternalForm());
-            courseImage.setImage(img);
-            courseImage.setPreserveRatio(false); 
-            courseImage.setSmooth(true); 
+            Image image = new Image(getClass().getResourceAsStream(imagePath));
+            courseImage.setImage(image);
         } catch (Exception e) {
-            System.err.println("Immagine non trovata: " + resourcePath);
-            
-            courseImage.setImage(null);
+            System.out.println("Immagine non trovata: " + imagePath);
         }
     }
 
-    // Metodi per cambiare facilmente i dati della card
-    public void setCourseTitle(String title) { courseTitle.setText(title); }
-    public void setCourseDescription(String desc) { courseDescription.setText(desc); }
-    public void setStartDate(String date) { startDate.setText(date); }
-    public void setEndDate(String date) { endDate.setText(date); }
-    public void setFrequency(String freq) { frequency.setText(freq); }
-    public void setLessonType(String type) { lessonType.setText(type); }
-    public void setPrice(String price) { priceLabel.setText(price); }
+    public void setCourseData(String title, String description, String start, String end, String freq, String price) {
+        controller.setCourseData(title, description, start, end, freq, price);
+    }
+
+    public void setChefMode(boolean isChef) {
+        controller.setChefMode(isChef);
+    }
+
+    public void setEnrolledMode(boolean isEnrolled) {
+        controller.setEnrolledMode(isEnrolled);
+    }
+
+    // Getter per i componenti
+    public Button getBuyButton() { return buyButton; }
+    public Button getEditButton() { return editButton; }
+    public Button getCalendarButton() { return calendarButton; }
+    public HBox getButtonsBox() { return buttonsBox; }
+    public VBox getPriceSection() { return priceSection; }
+    public Label getAcquistatoBadge() { return acquistatoBadge; }
+    public Label getPriceLabel() { return priceLabel; }
+    public Label getCourseTitle() { return courseTitle; }
+    public Label getCourseDescription() { return courseDescription; }
+    public Label getStartDate() { return startDate; }
+    public Label getEndDate() { return endDate; }
+    public Label getFrequency() { return frequency; }
+    public ImageView getCourseImage() { return courseImage; }
+    public CardCorsoController getController() {return controller;}
+
 }

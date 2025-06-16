@@ -18,7 +18,7 @@ public class UserCardsBoundary {
     @FXML
     private Button addCardBtn;
     @FXML
-    private ListView<String> cardsListView; // Ogni stringa rappresenta una carta formattata
+    private ListView<String> cardsListView; 
     @FXML
     private VBox noCardsMessage;
 

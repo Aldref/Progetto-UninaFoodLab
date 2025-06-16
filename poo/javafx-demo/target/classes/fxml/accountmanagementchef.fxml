@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane stylesheets="@../css/root.css,@../css/navbar.css,@../css/accountmanagement.css" 
+    xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="com.progetto.boundary.AccountManagementChefBoundary">
+    
+    <left>
+        <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="280.0">
+            <children>
+                <VBox styleClass="logo-section" alignment="CENTER">
+                    <children>
+                        <ImageView fx:id="logoImage" fitHeight="60.0" fitWidth="200.0" preserveRatio="true">
+                            <image>
+                                <Image url="/immagini/logo.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="UninaFoodLab Chef" styleClass="app-title" />
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </VBox.margin>
+                </VBox>
+                
+                <Separator styleClass="sidebar-separator" />
+                
+                <VBox styleClass="user-section" alignment="CENTER" spacing="10.0">
+                    <children>
+                        <ImageView fx:id="userProfileImage" fitHeight="80.0" fitWidth="80.0" preserveRatio="true">
+                            <image>
+                                <Image url="/immagini/login_image.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="userNameLabel" text="Chef Mario" styleClass="user-name" />
+                        <Label text="Chef" styleClass="user-role" />
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="30.0" left="20.0" right="20.0" top="20.0" />
+                    </VBox.margin>
+                </VBox>
+                
+                <VBox styleClass="navigation-section" spacing="15.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Button fx:id="viewMyCoursesBtn" text="I miei corsi" styleClass="nav-button" maxWidth="Infinity" onAction="#goToHomepage">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                                    <image>
+                                        <Image url="/immagini/homepage/icon_corsi.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        
+                        <Button fx:id="createCourseBtn" text="Crea nuovo corso" styleClass="nav-button" maxWidth="Infinity" onAction="#goToCreateCourse">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                                    <image>
+                                        <Image url="/immagini/homepage/icon_corsi_iscritti.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        
+                        <Button fx:id="monthlyReportBtn" text="Resoconto mensile" styleClass="nav-button" maxWidth="Infinity" onAction="#goToMonthlyReport">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                                    <image>
+                                        <Image url="/immagini/homepage/icon_dettagli_account.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        
+                        <Button fx:id="accountManagementBtn" text="Gestione account" styleClass="nav-button-active" maxWidth="Infinity">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                                    <image>
+                                        <Image url="/immagini/homepage/icon_dettagli_account.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="0.0" />
+                    </VBox.margin>
+                </VBox>
+                
+                <VBox styleClass="logout-section">
+                    <children>
+                        <Button fx:id="logoutBtn" text="Logout" styleClass="logout-button" maxWidth="Infinity" onAction="#LogoutClick">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                                    <image>
+                                        <Image url="/immagini/homepage/icon_logout.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </VBox.margin>
+                </VBox>
+            </children>
+        </VBox>
+    </left>
+    
+    <center>
+        <!-- Stesso contenuto centrale dell'account management normale -->
+        <ScrollPane styleClass="account-scroll-pane" fitToWidth="true" VBox.vgrow="ALWAYS">
+            <content>
+                <VBox spacing="30.0" alignment="TOP_CENTER" styleClass="account-container">
+                    <padding>
+                        <Insets top="40" bottom="40" left="40" right="40"/>
+                    </padding>
+                    
+                    <VBox styleClass="profile-header" alignment="CENTER" spacing="20.0">
+                        <children>
+                            <ImageView fx:id="profileImageLarge" fitHeight="120.0" fitWidth="120.0" preserveRatio="true" styleClass="profile-image-large">
+                                <image>
+                                    <Image url="/immagini/login_image.png" />
+                                </image>
+                            </ImageView>
+                            <Label text="Gestione Account Chef" styleClass="account-title"/>
+                            <Button fx:id="changePhotoBtn" text="Cambia Foto" styleClass="change-photo-btn" onAction="#changePhoto"/>
+                        </children>
+                    </VBox>
+                    
+                    <!-- Stesso form dell'account management normale -->
+                    <VBox styleClass="form-container" spacing="20.0" maxWidth="600">
+                        <children>
+                            <Label text="Informazioni Personali" styleClass="section-title"/>
+                            
+                            <HBox spacing="20.0">
+                                <children>
+                                    <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                                        <children>
+                                            <Label text="Nome" styleClass="field-label"/>
+                                            <TextField fx:id="nameField" styleClass="form-field" promptText="Inserisci il nome"/>
+                                        </children>
+                                    </VBox>
+                                    <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                                        <children>
+                                            <Label text="Cognome" styleClass="field-label"/>
+                                            <TextField fx:id="surnameField" styleClass="form-field" promptText="Inserisci il cognome"/>
+                                        </children>
+                                    </VBox>
+                                </children>
+                            </HBox>
+                            
+                            <VBox spacing="8.0">
+                                <children>
+                                    <Label text="Email" styleClass="field-label"/>
+                                    <TextField fx:id="emailField" styleClass="form-field" promptText="Inserisci l'email"/>
+                                </children>
+                            </VBox>
+                            
+                            <VBox spacing="8.0">
+                                <children>
+                                    <Label text="Data di Nascita" styleClass="field-label"/>
+                                    <DatePicker fx:id="birthDatePicker" styleClass="form-field" promptText="Seleziona la data"/>
+                                </children>
+                            </VBox>
+                        </children>
+                    </VBox>
+                    
+                    <VBox styleClass="form-container" spacing="20.0" maxWidth="600">
+                        <children>
+                            <Label text="Sicurezza" styleClass="section-title"/>
+                            
+                            <VBox spacing="8.0">
+                                <children>
+                                    <Label text="Password Attuale" styleClass="field-label"/>
+                                    <PasswordField fx:id="currentPasswordField" styleClass="form-field" promptText="Inserisci password attuale"/>
+                                </children>
+                            </VBox>
+                            
+                            <VBox spacing="8.0">
+                                <children>
+                                    <Label text="Nuova Password" styleClass="field-label"/>
+                                    <PasswordField fx:id="newPasswordField" styleClass="form-field" promptText="Inserisci nuova password"/>
+                                </children>
+                            </VBox>
+                            
+                            <VBox spacing="8.0">
+                                <children>
+                                    <Label text="Conferma Nuova Password" styleClass="field-label"/>
+                                    <PasswordField fx:id="confirmPasswordField" styleClass="form-field" promptText="Conferma nuova password"/>
+                                </children>
+                            </VBox>
+                        </children>
+                    </VBox>
+                    
+                    <HBox spacing="20.0" alignment="CENTER">
+                        <children>
+                            <Button fx:id="saveBtn" text="Salva Modifiche" styleClass="save-button" onAction="#saveChanges"/>
+                            <Button fx:id="cancelBtn" text="Annulla" styleClass="cancel-button" onAction="#cancelChanges"/>
+                        </children>
+                    </HBox>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

@@ -65,7 +65,7 @@
                         </VBox>
                         <VBox spacing="15" styleClass="button-section">
                             <children>
-                                <Button fx:id="loginBtn" text="Accedi" styleClass="login-button" maxWidth="Infinity" onAction="#LoginClick"/>
+                                <Button fx:id="loginBtn" text="Accedi" styleClass="login-button" maxWidth="Infinity" onAction="#LoginClick" defaultButton="true"/>
                                 <Button fx:id="registerBtn" text="Crea un account" styleClass="register-button" maxWidth="Infinity" onAction="#RegisterClick"/>
                             </children>
                         </VBox>

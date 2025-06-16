@@ -77,14 +77,15 @@
                             </children>
                         </VBox>
                         <HBox spacing="15" fx:id="buttonsBox" styleClass="buttons-box">
-                           <children>
-                              <Button fx:id="buyButton" mnemonicParsing="false" onAction="#handlePurchase" styleClass="buy-button" text="Acquista"/>
-                              <Button fx:id="calendarButton"
-                                       text="Vedi calendario"
-                                       styleClass="calendar-button"
-                                       visible="true"
-                                       onAction="#handleShowCalendar"/>
-                           </children>
+                            <children>
+                                <Button fx:id="buyButton" mnemonicParsing="false" onAction="#handlePurchase" styleClass="buy-button" text="Acquista"/>
+                                <Button fx:id="editButton" text="Modifica" styleClass="edit-button" visible="false" onAction="#handleEdit"/>
+                                <Button fx:id="calendarButton"
+                                        text="Vedi calendario"
+                                        styleClass="calendar-button"
+                                        visible="true"
+                                        onAction="#handleShowCalendar"/>
+                            </children>
                         </HBox>
                     </children>
                 </VBox>

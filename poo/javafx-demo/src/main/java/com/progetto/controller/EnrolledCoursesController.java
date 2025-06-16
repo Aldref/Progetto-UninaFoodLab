@@ -60,37 +60,31 @@ public class EnrolledCoursesController {
 
         loadEnrolledCourses();
     }
-    //temporanei
+    
     private void loadEnrolledCourses() {
         allCards.clear();
         try {
-            for (int i = 1; i <= 5; i++) {
+            for (int i = 1; i <= 8; i++) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
                 Node card = loader.load();
                 CardCorsoBoundary boundary = loader.getController();
-
-                // Dati di esempio personalizzabili
-                String img = "/immagini/corsi/esempio.png";
-                String titolo = "Corso Iscritto " + i;
-                String descrizione = "Attualmente l’applicazione utilizza dati di esempio per simulare il comportamento dell’interfaccia utente in attesa dell’integrazione con il database. È stata implementata una prima separazione tra boundary e controller, dove il boundary gestisce gli elementi grafici tramite FXML e il controller elabora le azioni dell’utente. Anche se il controller utilizza ancora componenti JavaFX, questa struttura è pensata per facilitare la successiva sostituzione con logica basata su dati reali. In futuro, il controller sarà rifattorizzato per lavorare solo con oggetti dati (DTO), migliorando così l’architettura secondo i principi MVC o Clean Architecture.";
-                String inizio = "01/09/2025";
-                String fine = "30/11/2025";
-                String frequenza = (i % 2 == 0) ? "1 volta a settimana" : "2 volte a settimana";
-                String tipoLezione = (i % 2 == 0) ? "Online" : "Presenza";
-                String prezzo = (i % 2 == 0) ? "200€" : "350€";
-
-                boundary.setCourseImage(img);
-                boundary.setCourseTitle(titolo);
-                boundary.setCourseDescription(descrizione);
-                boundary.setStartDate(inizio);
-                boundary.setEndDate(fine);
-                boundary.setFrequency(frequenza);
-                boundary.setLessonType(tipoLezione);
-                boundary.setPrice(prezzo);
-                boundary.setAcquistato(true);
-
-                CardCorsoController controller = boundary.getController();
-                controller.setEnrolledPage(true);
+                
+                // TEMPORANEI
+                String title = "Corso Iscritto " + i;
+                String description = "Descrizione del corso a cui sei iscritto numero " + i;
+                String startDate = "15/0" + (i % 9 + 1) + "/2025";
+                String endDate = "30/0" + (i % 9 + 1) + "/2025";
+                String frequency = (i % 2 == 0) ? "2 volte a settimana" : "1 volta a settimana";
+                String price = "€" + (100 + i * 20) + ",00";
+                
+                boundary.setCourseData(title, description, startDate, endDate, frequency, price);
+                
+                // Configura per modalità enrolled
+                boundary.setEnrolledMode(true);
+                
+                // Una sola immagine per tutte le card
+                String imagePath = "/immagini/corsi/esempio.png";
+                boundary.setCourseImage(imagePath);
 
                 allCards.add(card);
             }

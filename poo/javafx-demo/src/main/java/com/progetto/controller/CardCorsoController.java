@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -15,117 +16,195 @@ import javafx.util.Duration;
 public class CardCorsoController {
 
     private final Button buyButton;
+    private final Button editButton;
     private final HBox buttonsBox;
     private final VBox priceSection;
     private final Label acquistatoBadge;
     private final Label priceLabel;
     private final Button calendarButton;
+    private final ImageView courseImage;
+    private final Label courseTitle;
+    private final Label courseDescription;
+    private final Label startDate;
+    private final Label endDate;
+    private final Label frequency;
 
     private boolean isEnrolledPage = false;
+    private boolean isChefMode = false;
 
-    public CardCorsoController(Button buyButton, HBox buttonsBox, VBox priceSection, Label acquistatoBadge, Label priceLabel, Button calendarButton) {
+    public CardCorsoController(Button buyButton, Button editButton, HBox buttonsBox, VBox priceSection,
+                              Label acquistatoBadge, Label priceLabel, Button calendarButton, ImageView courseImage,
+                              Label courseTitle, Label courseDescription, Label startDate, Label endDate, Label frequency) {
         this.buyButton = buyButton;
+        this.editButton = editButton;
         this.buttonsBox = buttonsBox;
         this.priceSection = priceSection;
         this.acquistatoBadge = acquistatoBadge;
         this.priceLabel = priceLabel;
         this.calendarButton = calendarButton;
+        this.courseImage = courseImage;
+        this.courseTitle = courseTitle;
+        this.courseDescription = courseDescription;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.frequency = frequency;
     }
 
     public void initialize() {
         updateCardState();
     }
 
-    public void setAcquistato(boolean acquistato) {
-        acquistatoBadge.setVisible(acquistato);
+    public void setChefMode(boolean isChef) {
+        this.isChefMode = isChef;
+        this.isEnrolledPage = false; 
+        updateCardState();
     }
 
-    public void setEnrolledPage(boolean enrolledPage) {
-        this.isEnrolledPage = enrolledPage;
+    public void setEnrolledMode(boolean isEnrolled) {
+        this.isEnrolledPage = isEnrolled;
+        this.isChefMode = false; 
         updateCardState();
     }
 
     private void updateCardState() {
-        if (isEnrolledPage) {
-            if (buyButton != null) {
-                buyButton.setVisible(false);
-                buyButton.setManaged(false);
+        Platform.runLater(() -> {
+            if (isChefMode) {
+                
+                if (priceSection != null) {
+                    priceSection.setVisible(false);
+                    priceSection.setManaged(false);
+                }
+                if (buyButton != null) {
+                    buyButton.setVisible(false);
+                    buyButton.setManaged(false);
+                }
+                if (editButton != null) {
+                    editButton.setVisible(true);
+                    editButton.setManaged(true);
+                }
+                if (acquistatoBadge != null) {
+                    acquistatoBadge.setVisible(false);
+                }
+                if (calendarButton != null) {
+                    calendarButton.setVisible(true);
+                    calendarButton.setManaged(true);
+                }
+                
+                if (buttonsBox != null) {
+                    buttonsBox.getStyleClass().remove("centered-calendar");
+                }
+            } else if (isEnrolledPage) {
+                
+                if (buyButton != null) {
+                    buyButton.setVisible(false);
+                    buyButton.setManaged(false);
+                }
+                if (editButton != null) {
+                    editButton.setVisible(false);
+                    editButton.setManaged(false);
+                }
+                if (priceSection != null) {
+                    priceSection.setVisible(false);
+                    priceSection.setManaged(false);
+                }
+                if (acquistatoBadge != null) {
+                    acquistatoBadge.setVisible(true);
+                }
+                if (buttonsBox != null && !buttonsBox.getStyleClass().contains("centered-calendar")) {
+                    buttonsBox.getStyleClass().add("centered-calendar");
+                }
+                if (calendarButton != null) {
+                    calendarButton.setVisible(true);
+                    calendarButton.setManaged(true);
+                }
+            } else {
+                
+                if (buyButton != null) {
+                    buyButton.setVisible(true);
+                    buyButton.setManaged(true);
+                }
+                if (editButton != null) {
+                    editButton.setVisible(false);
+                    editButton.setManaged(false);
+                }
+                if (priceSection != null) {
+                    priceSection.setVisible(true);
+                    priceSection.setManaged(true);
+                }
+                if (acquistatoBadge != null) {
+                    acquistatoBadge.setVisible(false);
+                }
+                if (calendarButton != null) {
+                    calendarButton.setVisible(true);
+                    calendarButton.setManaged(true);
+                }
+                
+                if (buttonsBox != null) {
+                    buttonsBox.getStyleClass().remove("centered-calendar");
+                }
             }
-            if (acquistatoBadge != null) acquistatoBadge.setVisible(true);
-            if (buttonsBox != null) {
-                buttonsBox.getStyleClass().removeAll("centered-calendar");
-                buttonsBox.getStyleClass().add("centered-calendar");
-                calendarButton.setVisible(true);
-            }
-        } else {
-            if (buyButton != null) {
-                buyButton.setVisible(true);
-                buyButton.setManaged(true);
-            }
-            if (acquistatoBadge != null) acquistatoBadge.setVisible(false);
-            if (buttonsBox != null) {
-                buttonsBox.getStyleClass().removeAll("centered-calendar");
-                calendarButton.setVisible(true);
-            }
-        }
+        });
+    }
+
+    public void setCourseData(String title, String description, String start, String end, String freq, String price) {
+        if (courseTitle != null) courseTitle.setText(title);
+        if (courseDescription != null) courseDescription.setText(description);
+        if (startDate != null) startDate.setText(start);
+        if (endDate != null) endDate.setText(end);
+        if (frequency != null) frequency.setText(freq);
+        if (priceLabel != null && price != null) priceLabel.setText(price);
     }
 
     public void handlePurchase() {
-        // Animazione del pulsante
-        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), buyButton);
-        scaleDown.setToX(0.95);
-        scaleDown.setToY(0.95);
-
-        scaleDown.setOnFinished(e -> {
-            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), buyButton);
-            scaleUp.setToX(1.0);
-            scaleUp.setToY(1.0);
-            
-            scaleUp.setOnFinished(event -> {
-                // Usa Platform.runLater e delega tutto a SceneSwitcher
-                Platform.runLater(this::showPaymentDialog);
-            });
-            
-            scaleUp.play();
-        });
-
-        scaleDown.play();
-    }
-
-    private void showPaymentDialog() {
         try {
-            Stage stage = (Stage) buyButton.getScene().getWindow(); 
-            SceneSwitcher.switchToScene(stage, "/fxml/paymentpage.fxml"); 
+            Stage stage = (Stage) buyButton.getScene().getWindow();
+            SceneSwitcher.switchScene(stage, "/fxml/paymentpage.fxml", "UninaFoodLab - Pagamento");
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorAlert();
+            showAlert("Errore", "Impossibile aprire la pagina di pagamento.");
         }
     }
 
-    private void handleSuccessfulPurchase() {
-        setAcquistato(true);
-        
-        Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-        successAlert.setTitle("Acquisto Completato");
-        successAlert.setHeaderText("Corso acquistato con successo!");
-        successAlert.setContentText("Il corso è stato aggiunto ai tuoi corsi iscritti. Ora puoi visualizzare il calendario delle lezioni.");
-        successAlert.showAndWait();
-    }
-
-    private void showErrorAlert() {
-        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-        errorAlert.setTitle("Errore");
-        errorAlert.setHeaderText("Errore nell'apertura del pagamento");
-        errorAlert.setContentText("Si è verificato un errore. Riprova più tardi.");
-        errorAlert.showAndWait();
+    public void handleEdit() {
+        try {
+            Stage stage = (Stage) editButton.getScene().getWindow();
+            SceneSwitcher.switchScene(stage, "/fxml/editcourse.fxml", "UninaFoodLab - Modifica Corso");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Errore", "Impossibile aprire la pagina di modifica del corso.");
+        }
     }
 
     public void handleShowCalendar() {
         try {
-            Stage mainStage = (Stage) calendarButton.getScene().getWindow();
-            SceneSwitcher.showCalendarDialog(mainStage);
+            Stage stage = (Stage) calendarButton.getScene().getWindow();
+            SceneSwitcher.showCalendarDialog(stage);
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert("Errore", "Impossibile aprire il calendario del corso.");
         }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void animateButton(Button button) {
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(100), button);
+        scaleTransition.setFromX(1.0);
+        scaleTransition.setFromY(1.0);
+        scaleTransition.setToX(1.05);
+        scaleTransition.setToY(1.05);
+        scaleTransition.setAutoReverse(true);
+        scaleTransition.setCycleCount(2);
+        scaleTransition.play();
+    }
+
+    public void setEnrolledPage(boolean isEnrolled) {
+        setEnrolledMode(isEnrolled);
     }
 }

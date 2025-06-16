@@ -102,7 +102,8 @@ public class AccountManagementController {
         boundary.getNewPasswordField().clear();
         boundary.getConfirmPasswordField().clear();
 
-        boundary.showInfoMessage("Modifiche annullate.");
+        Stage stage = (Stage) boundary.getNameField().getScene().getWindow();
+        SuccessDialogUtils.showCancelSuccessDialog(stage);
     }
 
     public void goToUserCards() {

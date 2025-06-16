@@ -1,5 +1,7 @@
 package com.progetto.utils;
 
+import java.io.IOException;
+
 import com.progetto.boundary.SuccessDialogBoundary;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +25,14 @@ public class SuccessDialogUtils {
             "Dati Salvati!",
             "Le modifiche sono state salvate con successo.",
             "I tuoi dati sono stati aggiornati.",
+            null);
+    }
+
+    public static void showCancelSuccessDialog(Stage parentStage) {
+        showSuccessDialog(parentStage,
+            "Modifiche Annullate!",
+            "Le modifiche sono state annullate con successo.",
+            "I dati sono stati ripristinati ai valori originali.",
             null);
     }
     
