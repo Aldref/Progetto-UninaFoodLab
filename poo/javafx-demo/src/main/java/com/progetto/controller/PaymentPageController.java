@@ -57,7 +57,7 @@ public class PaymentPageController {
         // Pulisci errori precedenti
         boundary.clearAllErrors();
         
-        // Se è selezionata una carta salvata, usa quella
+        
         if (boundary.getSelectedCard() != null) {
             String cardId = (String) boundary.getSelectedCard().get("id");
             processPaymentWithSavedCard(cardId);
@@ -89,7 +89,7 @@ public class PaymentPageController {
     }
     
     // Nuovo metodo privato per gestire il dialog di successo
-    private void showPaymentSuccessDialog() {
+        private void showPaymentSuccessDialog() {
         try {
             // Usa null come parentStage - il dialog si centrerà sullo schermo
             Stage parentStage = null;
@@ -97,11 +97,17 @@ public class PaymentPageController {
             
             SuccessDialogUtils.showPaymentSuccessDialog(parentStage, courseName);
             
+            // Dopo aver mostrato il dialog di successo, torna alla homepage
+            boundary.navigateToSuccess();
+            
         } catch (Exception e) {
             e.printStackTrace();
             showSuccessAlert(); // Fallback al dialog semplice
+            // Anche nel caso di fallback, torna alla homepage
+            boundary.navigateToSuccess();
         }
     }
+
     
     private boolean validateAllFields() {
         boolean isValid = true;
@@ -170,6 +176,8 @@ public class PaymentPageController {
         alert.setHeaderText("Successo!");
         alert.setContentText("Il pagamento è stato elaborato con successo.\nIl corso è stato aggiunto ai tuoi corsi iscritti.");
         alert.showAndWait();
+        
+        boundary.navigateToSuccess();
     }
     
     private void showErrorAlert(String title, String message) {

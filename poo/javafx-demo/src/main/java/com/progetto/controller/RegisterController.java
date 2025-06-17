@@ -21,13 +21,15 @@ public class RegisterController {
     private RadioButton radioChef;
     private VBox descrizioneSection;
     private TextArea textFieldDescrizione;
+    private TextField textFieldAnniEsperienza;
     private Label labelErrore;
 
     public RegisterController(
         TextField textFieldNome, TextField textFieldCognome, DatePicker datePickerDataNascita,
         TextField textFieldEmail, PasswordField textFieldPassword, PasswordField textFieldConfermaPassword,
         ComboBox<String> comboBoxGenere, RadioButton radioUtente, RadioButton radioChef,
-        VBox descrizioneSection, TextArea textFieldDescrizione, Label labelErrore
+        VBox descrizioneSection, TextArea textFieldDescrizione, TextField textFieldAnniEsperienza,
+        Label labelErrore
     ) {
         this.textFieldNome = textFieldNome;
         this.textFieldCognome = textFieldCognome;
@@ -40,6 +42,7 @@ public class RegisterController {
         this.radioChef = radioChef;
         this.descrizioneSection = descrizioneSection;
         this.textFieldDescrizione = textFieldDescrizione;
+        this.textFieldAnniEsperienza = textFieldAnniEsperienza;
         this.labelErrore = labelErrore;
     }
 
@@ -53,6 +56,13 @@ public class RegisterController {
         radioChef.setToggleGroup(accountTypeGroup);
 
         radioUtente.setSelected(true);
+
+        // Listener per rendere il campo anni esperienza solo numerico
+        textFieldAnniEsperienza.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                textFieldAnniEsperienza.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
 
         accountTypeGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             if (newToggle == radioChef) {
@@ -75,6 +85,7 @@ public class RegisterController {
         String confermaPassword = textFieldConfermaPassword.getText();
         String genere = comboBoxGenere.getValue();
         String descrizione = textFieldDescrizione.getText().trim();
+        String anniEsperienza = textFieldAnniEsperienza.getText().trim();
 
         boolean utenteSelezionato = radioUtente.isSelected();
         boolean chefSelezionato = radioChef.isSelected();
@@ -114,6 +125,28 @@ public class RegisterController {
             valid = false;
         }
 
+        if (chefSelezionato && anniEsperienza.isEmpty()) {
+            messaggioErrore.append("• Gli anni di esperienza sono obbligatori per i Chef\n");
+            valid = false;
+        }
+
+        if (chefSelezionato && !anniEsperienza.isEmpty()) {
+            try {
+                int anni = Integer.parseInt(anniEsperienza);
+                if (anni < 0) {
+                    messaggioErrore.append("• Gli anni di esperienza devono essere un numero positivo\n");
+                    valid = false;
+                }
+                if (anni > 50) {
+                    messaggioErrore.append("• Gli anni di esperienza non possono superare 50\n");
+                    valid = false;
+                }
+            } catch (NumberFormatException e) {
+                messaggioErrore.append("• Gli anni di esperienza devono essere un numero valido\n");
+                valid = false;
+            }
+        }
+
         if (datePickerDataNascita.getValue() != null &&
             datePickerDataNascita.getValue().isAfter(java.time.LocalDate.now().minusYears(13))) {
             messaggioErrore.append("• Devi avere almeno 13 anni per registrarti\n");
@@ -135,6 +168,7 @@ public class RegisterController {
             System.out.println("Tipo: " + (chefSelezionato ? "Chef" : "Utente"));
             if (chefSelezionato) {
                 System.out.println("Descrizione: " + descrizione);
+                System.out.println("Anni di esperienza: " + anniEsperienza);
             }
 
             showSuccessMessage("Registrazione completata con successo!");
@@ -142,6 +176,7 @@ public class RegisterController {
         }
     }
 
+    
     public void onIndietroClick(ActionEvent event) {
         try {
             Stage stage = (Stage) textFieldNome.getScene().getWindow();

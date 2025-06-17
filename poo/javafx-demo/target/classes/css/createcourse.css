@@ -1,0 +1,487 @@
+/* === PAGE LAYOUT === */
+.header-section {
+    -fx-background-color: white;
+    -fx-padding: 30 0 20 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.page-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C56C9;
+}
+
+.page-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #666;
+}
+
+/* === FORM STYLING === */
+.form-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);
+}
+
+.form-section {
+    -fx-background-color: #fafbfc;
+    -fx-background-radius: 12;
+    -fx-padding: 25;
+    -fx-border-color: #e1e5e9;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C56C9;
+}
+
+.field-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.field-sublabel {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #666;
+}
+
+/* === FORM FIELDS === */
+.form-field {
+    -fx-font-size: 14px;
+    -fx-padding: 12;
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+}
+
+.form-field:focused {
+    -fx-border-color: #2C56C9;
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.3), 5, 0, 0, 0);
+}
+
+.description-area {
+    -fx-min-height: 100px;
+    -fx-max-height: 120px;
+}
+
+/* === FIX DROPDOWN NON EVIDENZIABILI === */
+.combo-box {
+    -fx-font-size: 14px;
+    -fx-padding: 12;
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+}
+
+.combo-box:focused {
+    -fx-border-color: #2C56C9;
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.3), 5, 0, 0, 0);
+}
+
+/* Rimuove completamente l'evidenziazione sui ComboBox */
+.combo-box .list-cell {
+    -fx-padding: 8 12;
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #333 !important;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #333 !important;
+}
+
+.combo-box .list-cell:selected {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #333 !important;
+}
+
+.combo-box .list-cell:focused {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #333 !important;
+}
+
+.combo-box .list-cell:filled {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #333 !important;
+}
+
+.combo-box .list-cell:filled:hover {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #333 !important;
+}
+
+.combo-box .list-cell:filled:selected {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #333 !important;
+}
+
+.combo-box .list-cell:filled:focused {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #333 !important;
+}
+
+/* Fix per il popup del ComboBox */
+.combo-box-popup .list-view {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 4);
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-padding: 10 15;
+    -fx-background-color: transparent;
+    -fx-text-fill: #333;
+    -fx-border-color: transparent;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #f0f4ff !important;
+    -fx-text-fill: #2C56C9 !important;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #2C56C9 !important;
+    -fx-text-fill: white !important;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #666;
+}
+
+/* === IMAGE SECTION === */
+.image-section {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 12;
+    -fx-padding: 30;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 12;
+    -fx-border-width: 2;
+    -fx-border-style: dashed;
+}
+
+.course-image-preview {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
+}
+
+.image-button {
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #2C56C9;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 24;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+}
+
+.image-button:hover {
+    -fx-background-color: #bbdefb;
+}
+
+/* === BUTTONS === */
+.buttons-section {
+    -fx-padding: 30 0 20 0;
+}
+
+.create-button {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 15 30;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+    -fx-min-width: 150px;
+}
+
+.create-button:hover {
+    -fx-background-color: #1e3a8a;
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.4), 10, 0, 0, 3);
+}
+
+.create-button:disabled {
+    -fx-background-color: #cccccc;
+    -fx-text-fill: #666666;
+    -fx-cursor: default;
+    -fx-effect: none;
+}
+
+.cancel-button {
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 15 30;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+    -fx-min-width: 150px;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #d32f2f;
+    -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.4), 10, 0, 0, 3);
+}
+
+/* === SPINNER === */
+.spinner {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+}
+
+.spinner:focused {
+    -fx-border-color: #2C56C9;
+}
+
+.spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+}
+
+/* === LIST VIEW === */
+.list-view {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+}
+
+.list-view .list-cell {
+    -fx-padding: 8 12;
+    -fx-background-color: transparent;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+    -fx-background-radius: 4;
+}
+
+/* === VALIDAZIONE === */
+.error {
+    -fx-border-color: #f44336 !important;
+    -fx-border-width: 2 !important;
+}
+
+.success {
+    -fx-border-color: #4CAF50 !important;
+    -fx-border-width: 2 !important;
+}
+
+/* === VALIDAZIONE CAP (solo numeri) === */
+.cap-field {
+    -fx-text-formatter: numeric;
+}
+
+.cap-field.error {
+    -fx-border-color: #f44336 !important;
+    -fx-border-width: 2 !important;
+}
+
+.cap-field.success {
+    -fx-border-color: #4CAF50 !important;
+    -fx-border-width: 2 !important;
+}
+
+/* === RICETTE === */
+.recipe-container {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 10;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0, 0, 1);
+}
+
+.add-recipe-button {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 15;
+    -fx-cursor: hand;
+}
+
+.add-recipe-button:hover {
+    -fx-background-color: #218838;
+}
+
+.add-ingredient-button {
+    -fx-background-color: #17a2b8;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-padding: 6 12;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+
+.add-ingredient-button:hover {
+    -fx-background-color: #138496;
+}
+
+.remove-button, .remove-ingredient-button {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 8;
+    -fx-background-radius: 50%;
+    -fx-cursor: hand;
+    -fx-min-width: 25px;
+    -fx-max-width: 25px;
+    -fx-min-height: 25px;
+    -fx-max-height: 25px;
+}
+
+.remove-button:hover, .remove-ingredient-button:hover {
+    -fx-background-color: #c82333;
+}
+
+.ingredient-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+}
+
+.ingredient-name-field {
+    -fx-pref-width: 180px;
+    -fx-max-width: 180px;
+}
+
+.ingredient-quantity-field {
+    -fx-pref-width: 80px;
+    -fx-max-width: 80px;
+}
+
+.ingredient-unit-combo {
+    -fx-pref-width: 100px;
+    -fx-max-width: 100px;
+}
+
+.recipes-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.recipes-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.recipes-scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+
+.conditional-section {
+    -fx-background-color: #f0f4ff;
+    -fx-background-radius: 12;
+    -fx-padding: 25;
+    -fx-border-color: #2C56C9;
+    -fx-border-radius: 12;
+    -fx-border-width: 2;
+    -fx-border-style: dashed;
+}
+
+.presence-section {
+    -fx-background-color: #f0f8f0;
+    -fx-border-color: #4CAF50;
+}
+
+.online-section {
+    -fx-background-color: #f0f0f8;
+    -fx-border-color: #673AB7;
+}
+
+.info-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #666;
+    -fx-font-style: italic;
+}
+
+.time-field {
+    -fx-pref-width: 100px;
+    -fx-max-width: 100px;
+}
+
+.time-field.error {
+    -fx-border-color: #f44336 !important;
+    -fx-border-width: 2 !important;
+}
+
+.time-field.success {
+    -fx-border-color: #4CAF50 !important;
+    -fx-border-width: 2 !important;
+}
+
+.duration-field {
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
+}
+
+.duration-field.error {
+    -fx-border-color: #f44336 !important;
+    -fx-border-width: 2 !important;
+}
+
+.duration-field.success {
+    -fx-border-color: #4CAF50 !important;
+    -fx-border-width: 2 !important;
+}
+
+
+.time-field:focused,
+.duration-field:focused {
+    -fx-border-color: #2C56C9;
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.3), 5, 0, 0, 0);
+}
+
+
+@media (max-width: 1200px) {
+    .form-container {
+        -fx-padding: 20;
+    }
+    
+    .form-section {
+        -fx-padding: 20;
+    }
+    
+    .page-title {
+        -fx-font-size: 28px;
+    }
+    
+    .conditional-section {
+        -fx-padding: 20;
+    }
+    
+    .ingredient-name-field {
+        -fx-pref-width: 150px;
+        -fx-max-width: 150px;
+    }
+}

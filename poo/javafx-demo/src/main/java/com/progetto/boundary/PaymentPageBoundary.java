@@ -261,6 +261,8 @@ public class PaymentPageBoundary implements Initializable {
         goBack();
     }
     
+    
+
     @FXML
     private void goBack() {
         Stage stage = (Stage) backBtn.getScene().getWindow();
@@ -331,8 +333,15 @@ public class PaymentPageBoundary implements Initializable {
     }
     
     public void navigateToSuccess() {
-        Stage stage = (Stage) confermaBtn.getScene().getWindow();
-        SceneSwitcher.switchToScene(stage, "/fxml/homepageutente.fxml"); 
+        try {
+            Stage stage = (Stage) confermaBtn.getScene().getWindow();
+            SceneSwitcher.switchScene(stage, "/fxml/homepageutente.fxml", "UninaFoodLab - Homepage Utente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Fallback: chiudi semplicemente la finestra corrente
+            Stage stage = (Stage) confermaBtn.getScene().getWindow();
+            stage.close();
+        }
     }
     
     public void refreshSavedCards() {

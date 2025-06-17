@@ -23,6 +23,7 @@ public class RegisterBoundary implements Initializable {
     @FXML private RadioButton radioChef;
     @FXML private VBox descrizioneSection;
     @FXML private TextArea textFieldDescrizione;
+    @FXML private TextField textFieldAnniEsperienza;
     @FXML private Label labelErrore;
 
     private RegisterController controller;
@@ -32,7 +33,8 @@ public class RegisterBoundary implements Initializable {
         controller = new RegisterController(
             textFieldNome, textFieldCognome, datePickerDataNascita, textFieldEmail,
             textFieldPassword, textFieldConfermaPassword, comboBoxGenere,
-            radioUtente, radioChef, descrizioneSection, textFieldDescrizione, labelErrore
+            radioUtente, radioChef, descrizioneSection, textFieldDescrizione, 
+            textFieldAnniEsperienza, labelErrore
         );
         controller.initializeUI();
     }

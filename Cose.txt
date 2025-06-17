@@ -30,7 +30,7 @@ TIPODICUCINA(Nome, IDtipocucina(pk))
 
 TIPODICUCINA_CORSO(IDtipocucina(fk), IDcorso(fk)
 
-SESSIONE_PRESENZA(IdSessionePresenza(pk), giorno, Data, Orario, Durata, citta, via, cap, Attrezzatura, IDcorso(fk))
+SESSIONE_PRESENZA(IdSessionePresenza(pk), giorno, Data, Orario, Durata, citta, via, cap, Attrezzatura, Descrizione, IDcorso(fk))
 
 SESSIONE_PRESENZA_CHEF(IDchef(fk), IDsessionepresenza(fk)) //Rimuovere dal db
 

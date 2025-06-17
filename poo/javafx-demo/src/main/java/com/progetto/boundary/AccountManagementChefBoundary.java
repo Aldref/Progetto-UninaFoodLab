@@ -16,6 +16,8 @@ public class AccountManagementChefBoundary {
     @FXML private TextField surnameField;
     @FXML private TextField emailField;
     @FXML private DatePicker birthDatePicker;
+    @FXML private TextArea descriptionField;
+    @FXML private TextField experienceYearsField;
     @FXML private PasswordField currentPasswordField;
     @FXML private PasswordField newPasswordField;
     @FXML private PasswordField confirmPasswordField;
@@ -76,6 +78,8 @@ public class AccountManagementChefBoundary {
     public TextField getSurnameField() { return surnameField; }
     public TextField getEmailField() { return emailField; }
     public DatePicker getBirthDatePicker() { return birthDatePicker; }
+    public TextArea getDescriptionField() { return descriptionField; }
+    public TextField getExperienceYearsField() { return experienceYearsField; }
     public PasswordField getCurrentPasswordField() { return currentPasswordField; }
     public PasswordField getNewPasswordField() { return newPasswordField; }
     public PasswordField getConfirmPasswordField() { return confirmPasswordField; }

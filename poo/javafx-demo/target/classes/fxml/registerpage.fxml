@@ -111,10 +111,20 @@
                                                 </HBox>
                                             </children>
                                         </VBox>
-                                        <VBox fx:id="descrizioneSection" spacing="8" visible="false" managed="false">
+                                        <VBox fx:id="descrizioneSection" spacing="12" visible="false" managed="false">
                                             <children>
-                                                <Label text="Descrizione" styleClass="field-label"/>
-                                                <TextArea fx:id="textFieldDescrizione" styleClass="form-textarea" promptText="Descrivi la tua esperienza culinaria..." prefRowCount="3"/>
+                                                <VBox spacing="8">
+                                                    <children>
+                                                        <Label text="Descrizione*" styleClass="field-label"/>
+                                                        <TextArea fx:id="textFieldDescrizione" styleClass="form-textarea" promptText="Descrivi la tua esperienza culinaria..." prefRowCount="3"/>
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="8">
+                                                    <children>
+                                                        <Label text="Anni di Esperienza*" styleClass="field-label"/>
+                                                        <TextField fx:id="textFieldAnniEsperienza" styleClass="form-input" promptText="Inserisci gli anni di esperienza"/>
+                                                    </children>
+                                                </VBox>
                                             </children>
                                         </VBox>
                                     </children>

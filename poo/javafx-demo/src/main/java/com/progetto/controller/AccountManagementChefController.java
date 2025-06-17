@@ -18,13 +18,25 @@ public class AccountManagementChefController {
     private String originalSurname;
     private String originalEmail;
     private LocalDate originalBirthDate;
+    private String originalDescription;
+    private String originalExperienceYears;
 
     public AccountManagementChefController(AccountManagementChefBoundary boundary) {
         this.boundary = boundary;
     }
 
     public void initialize() {
+        setupExperienceYearsValidation();
         loadChefData();
+    }
+
+    private void setupExperienceYearsValidation() {
+        // Listener per rendere il campo anni esperienza solo numerico
+        boundary.getExperienceYearsField().textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                boundary.getExperienceYearsField().setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
     }
 
     private void loadChefData() {
@@ -33,11 +45,15 @@ public class AccountManagementChefController {
         originalSurname = "Rossi";
         originalEmail = "chef.mario@unifoodlab.com";
         originalBirthDate = LocalDate.of(1985, 3, 20);
+        originalDescription = "Chef esperto in cucina italiana e mediterranea con specializzazione in pasta fresca e dolci tradizionali.";
+        originalExperienceYears = "15";
 
         boundary.getNameField().setText(originalName);
         boundary.getSurnameField().setText(originalSurname);
         boundary.getEmailField().setText(originalEmail);
         boundary.getBirthDatePicker().setValue(originalBirthDate);
+        boundary.getDescriptionField().setText(originalDescription);
+        boundary.getExperienceYearsField().setText(originalExperienceYears);
 
         boundary.getUserNameLabel().setText(originalName + " " + originalSurname);
     }
@@ -62,9 +78,28 @@ public class AccountManagementChefController {
         if (boundary.getNameField().getText().trim().isEmpty() ||
             boundary.getSurnameField().getText().trim().isEmpty() ||
             boundary.getEmailField().getText().trim().isEmpty() ||
-            boundary.getBirthDatePicker().getValue() == null) {
+            boundary.getBirthDatePicker().getValue() == null ||
+            boundary.getDescriptionField().getText().trim().isEmpty() ||
+            boundary.getExperienceYearsField().getText().trim().isEmpty()) {
 
             boundary.showErrorMessage("Compila tutti i campi obbligatori.");
+            return;
+        }
+
+        // Validazione anni di esperienza
+        String experienceYears = boundary.getExperienceYearsField().getText().trim();
+        try {
+            int years = Integer.parseInt(experienceYears);
+            if (years < 0) {
+                boundary.showErrorMessage("Gli anni di esperienza devono essere un numero positivo.");
+                return;
+            }
+            if (years > 50) {
+                boundary.showErrorMessage("Gli anni di esperienza non possono superare 50.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            boundary.showErrorMessage("Gli anni di esperienza devono essere un numero valido.");
             return;
         }
 
@@ -75,6 +110,8 @@ public class AccountManagementChefController {
             originalSurname = boundary.getSurnameField().getText();
             originalEmail = boundary.getEmailField().getText();
             originalBirthDate = boundary.getBirthDatePicker().getValue();
+            originalDescription = boundary.getDescriptionField().getText();
+            originalExperienceYears = boundary.getExperienceYearsField().getText();
 
             boundary.getUserNameLabel().setText("Chef " + originalName + " " + originalSurname);
 
@@ -96,6 +133,8 @@ public class AccountManagementChefController {
         boundary.getSurnameField().setText(originalSurname);
         boundary.getEmailField().setText(originalEmail);
         boundary.getBirthDatePicker().setValue(originalBirthDate);
+        boundary.getDescriptionField().setText(originalDescription);
+        boundary.getExperienceYearsField().setText(originalExperienceYears);
 
         boundary.getCurrentPasswordField().clear();
         boundary.getNewPasswordField().clear();

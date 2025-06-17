@@ -60,7 +60,7 @@
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
                                     <image>
-                                        <Image url="/immagini/homepage/icon_corsi_iscritti.png" />
+                                        <Image url="/immagini/homepage/icon_newcourse.png" />
                                     </image>
                                 </ImageView>
                             </graphic>
@@ -70,7 +70,7 @@
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
                                     <image>
-                                        <Image url="/immagini/homepage/icon_dettagli_account.png" />
+                                        <Image url="/immagini/homepage/icon_report.png" />
                                     </image>
                                 </ImageView>
                             </graphic>
@@ -112,7 +112,6 @@
     </left>
     
     <center>
-        <!-- Stesso contenuto centrale dell'account management normale -->
         <ScrollPane styleClass="account-scroll-pane" fitToWidth="true" VBox.vgrow="ALWAYS">
             <content>
                 <VBox spacing="30.0" alignment="TOP_CENTER" styleClass="account-container">
@@ -132,7 +131,6 @@
                         </children>
                     </VBox>
                     
-                    <!-- Stesso form dell'account management normale -->
                     <VBox styleClass="form-container" spacing="20.0" maxWidth="600">
                         <children>
                             <Label text="Informazioni Personali" styleClass="section-title"/>
@@ -165,6 +163,26 @@
                                 <children>
                                     <Label text="Data di Nascita" styleClass="field-label"/>
                                     <DatePicker fx:id="birthDatePicker" styleClass="form-field" promptText="Seleziona la data"/>
+                                </children>
+                            </VBox>
+                        </children>
+                    </VBox>
+                    
+                    <VBox styleClass="form-container" spacing="20.0" maxWidth="600">
+                        <children>
+                            <Label text="Informazioni Professionali" styleClass="section-title"/>
+                            
+                            <VBox spacing="8.0">
+                                <children>
+                                    <Label text="Descrizione" styleClass="field-label"/>
+                                    <TextArea fx:id="descriptionField" styleClass="form-field" promptText="Descrivi la tua esperienza culinaria..." prefRowCount="4"/>
+                                </children>
+                            </VBox>
+                            
+                            <VBox spacing="8.0">
+                                <children>
+                                    <Label text="Anni di Esperienza" styleClass="field-label"/>
+                                    <TextField fx:id="experienceYearsField" styleClass="form-field" promptText="Inserisci gli anni di esperienza"/>
                                 </children>
                             </VBox>
                         </children>
