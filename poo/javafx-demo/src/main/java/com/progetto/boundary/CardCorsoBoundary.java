@@ -24,6 +24,8 @@ public class CardCorsoBoundary {
     @FXML private Label startDate;
     @FXML private Label endDate;
     @FXML private Label frequency;
+    @FXML private Label chefName;
+    @FXML private Label chefExperience;
     @FXML private ImageView courseImage;
 
     private CardCorsoController controller;
@@ -32,7 +34,8 @@ public class CardCorsoBoundary {
     private void initialize() {
         controller = new CardCorsoController(buyButton, editButton, buttonsBox, priceSection, 
                                            acquistatoBadge, priceLabel, calendarButton, courseImage,
-                                           courseTitle, courseDescription, startDate, endDate, frequency);
+                                           courseTitle, courseDescription, startDate, endDate, frequency,
+                                           chefName, chefExperience);
         controller.initialize();
         setCourseImage("/immagini/corsi/esempio.png");
     }
@@ -61,8 +64,8 @@ public class CardCorsoBoundary {
         }
     }
 
-    public void setCourseData(String title, String description, String start, String end, String freq, String price) {
-        controller.setCourseData(title, description, start, end, freq, price);
+    public void setCourseData(String title, String description, String start, String end, String freq, String price, String chef, String experience) {
+        controller.setCourseData(title, description, start, end, freq, price, chef, experience);
     }
 
     public void setChefMode(boolean isChef) {
@@ -86,7 +89,8 @@ public class CardCorsoBoundary {
     public Label getStartDate() { return startDate; }
     public Label getEndDate() { return endDate; }
     public Label getFrequency() { return frequency; }
+    public Label getChefName() { return chefName; }
+    public Label getChefExperience() { return chefExperience; }
     public ImageView getCourseImage() { return courseImage; }
     public CardCorsoController getController() {return controller;}
-
 }

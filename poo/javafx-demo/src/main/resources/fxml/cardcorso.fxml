@@ -37,8 +37,17 @@
                         </HBox>
                         <Label fx:id="courseTitle" styleClass="course-title" text="Corso Avanzato di Cucina Tradizionale"/>
                         <Label fx:id="courseDescription" styleClass="course-description"
-                               text="Scopri i segreti della vera cucina italiana attraverso un viaggio culinario autentico. Imparerai a preparare pasta fresca, risotti cremosi, sughi tradizionali e dolci della nonna. Il nostro chef esperto ti guiderà passo dopo passo nella realizzazione di piatti che raccontano la storia e la passione dell'Italia a tavola."
+                               text="Scopri i segreti della vera cucina italiana attraverso un viaggio culinario autentico. Imparerai a preparare pasta fresca, risotti cremosi, sughi tradizionali e dolci della nonna."
                                wrapText="true"/>
+                        
+                        <!-- Sezione informazioni chef -->
+                        <VBox styleClass="chef-section" spacing="4.0">
+                            <children>
+                                <Label fx:id="chefName" styleClass="chef-name" text="Chef Mario Rossi"/>
+                                <Label fx:id="chefExperience" styleClass="chef-experience" text="15 anni di esperienza"/>
+                            </children>
+                        </VBox>
+                        
                         <VBox styleClass="course-details" spacing="8.0">
                             <children>
                                 <HBox styleClass="detail-row">

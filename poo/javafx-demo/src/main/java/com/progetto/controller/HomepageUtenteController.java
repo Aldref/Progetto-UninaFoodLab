@@ -106,6 +106,23 @@ public class HomepageUtenteController {
                 "L'arte del cioccolato: dalla ganache alle decorazioni più elaborate.",
                 "Hummus, falafel e i sapori del Medio Oriente nella cucina libanese."
             };
+
+            // Array con nomi chef variabili
+            String[] chefNames = {
+                "Chef Mario Rossi", "Chef Giuseppe Verdi", "Chef Anna Bianchi", 
+                "Chef Francesco Neri", "Chef Laura Gialli", "Chef Roberto Blues",
+                "Chef Sofia Viola", "Chef Alessandro Rosa", "Chef Elena Grigi", 
+                "Chef Davide Azzurri", "Chef Carla Violetti", "Chef Marco Arancioni",
+                "Chef Giulia Marroni", "Chef Simone Celesti", "Chef Federica Coralli",
+                "Chef Antonio Perla", "Chef Valentina Smeraldi", "Chef Luca Ambra",
+                "Chef Chiara Turchesi", "Chef Matteo Cremisi"
+            };
+
+            // Array con anni di esperienza variabili
+            String[] experienceYears = {
+                "15", "12", "8", "20", "10", "18", "6", "25", "14", "22",
+                "9", "16", "11", "7", "19", "13", "24", "5", "17", "21"
+            };
             
             for (int i = 0; i < courseTitles.length; i++) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
@@ -118,8 +135,10 @@ public class HomepageUtenteController {
                 String endDate = "30/" + String.format("%02d", ((i % 12) + 1)) + "/2025";
                 String frequency = (i % 2 == 0) ? "2 volte a settimana" : "1 volta a settimana";
                 String price = "€" + (100 + i * 15) + ",00";
+                String chefName = chefNames[i % chefNames.length];
+                String experience = experienceYears[i % experienceYears.length];
                 
-                boundary.setCourseData(title, description, startDate, endDate, frequency, price);
+                boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience);
                 
                 // Una sola immagine per tutte le card
                 String imagePath = "/immagini/corsi/esempio.png";
@@ -133,6 +152,7 @@ public class HomepageUtenteController {
         updateCourseCards();
     }
 
+    // ...existing code... (resto dei metodi rimane uguale)
     private void updateCourseCards() {
         mainContentArea.getChildren().clear();
         int start = currentPage * CARDS_PER_PAGE;

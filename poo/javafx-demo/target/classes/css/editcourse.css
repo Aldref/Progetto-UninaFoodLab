@@ -1,18 +1,39 @@
+.edit-course-container {
+    -fx-background-color: #f5f7fa;
+}
+
 .header-section {
     -fx-background-color: white;
-    -fx-padding: 30 0 20 0;
+    -fx-padding: 20 0 20 0;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
 }
 
 .page-title {
-    -fx-font-size: 32px;
+    -fx-font-size: 28px;
     -fx-font-weight: bold;
     -fx-text-fill: #2C56C9;
 }
 
 .page-subtitle {
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
     -fx-text-fill: #666;
+    -fx-font-style: italic;
+}
+
+/* BOTTONE INDIETRO SIMILE A PAYMENTPAGE */
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2C56C9;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 8 15;
+    -fx-background-radius: 20;
+    -fx-border-width: 0;
+}
+
+.back-button:hover {
+    -fx-background-color: #f0f7ff;
 }
 
 .form-scroll-pane,
@@ -37,7 +58,7 @@
 }
 
 .section-title {
-    -fx-font-size: 20px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: #2C56C9;
 }
@@ -46,12 +67,6 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill: #333;
-}
-
-.field-sublabel {
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #666;
 }
 
 .info-label {
@@ -64,6 +79,7 @@
 .error-label {
     -fx-text-fill: #f44336 !important;
     -fx-font-weight: bold;
+    -fx-font-size: 12px;
 }
 
 .form-field {
@@ -159,16 +175,25 @@
     -fx-font-size: 14px;
 }
 
+/* STILE SPINNER ORARIO IDENTICO A CREATECOURSE */
 .time-spinner {
     -fx-pref-width: 80px;
     -fx-max-width: 80px;
     -fx-font-size: 16px;
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
 }
 
 .time-spinner .text-field {
     -fx-alignment: center;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #333;
 }
 
 .time-spinner:focused {
@@ -176,6 +201,7 @@
     -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.3), 5, 0, 0, 0);
 }
 
+/* SEPARATORE ORARIO IDENTICO A CREATECOURSE */
 .time-separator {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
@@ -193,6 +219,7 @@
     -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.3), 5, 0, 0, 0) !important;
 }
 
+/* DAY SELECTION IDENTICO A CREATECOURSE */
 .day-selection-container {
     -fx-padding: 15;
     -fx-background-color: white;
@@ -236,34 +263,19 @@
     -fx-cursor: default;
 }
 
-.image-section {
-    -fx-background-color: #f8f9fa;
-    -fx-background-radius: 12;
-    -fx-padding: 30;
-    -fx-border-color: #e9ecef;
-    -fx-border-radius: 12;
-    -fx-border-width: 2;
-    -fx-border-style: dashed;
-}
-
-.course-image-preview {
-    -fx-background-color: white;
-    -fx-background-radius: 10;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
-}
-
-.image-button {
-    -fx-background-color: #e3f2fd;
-    -fx-text-fill: #2C56C9;
-    -fx-font-size: 14px;
+/* BOTTONI RICETTE IDENTICI A CREATECOURSE */
+.add-recipe-button {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-padding: 12 24;
-    -fx-background-radius: 25;
+    -fx-padding: 8 16;
+    -fx-background-radius: 15;
     -fx-cursor: hand;
 }
 
-.image-button:hover {
-    -fx-background-color: #bbdefb;
+.add-recipe-button:hover {
+    -fx-background-color: #218838;
 }
 
 .recipe-container {
@@ -273,11 +285,13 @@
     -fx-border-radius: 10;
     -fx-border-width: 1;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0, 0, 1);
+    -fx-padding: 15;
 }
 
 .ingredient-row {
     -fx-alignment: center-left;
     -fx-spacing: 10;
+    -fx-padding: 5 0;
 }
 
 .ingredient-name-field {
@@ -293,63 +307,6 @@
 .ingredient-unit-combo {
     -fx-pref-width: 100px;
     -fx-max-width: 100px;
-}
-
-.buttons-section {
-    -fx-padding: 30 0 20 0;
-}
-
-.create-button {
-    -fx-background-color: #2C56C9;
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 15 30;
-    -fx-background-radius: 25;
-    -fx-cursor: hand;
-    -fx-min-width: 150px;
-}
-
-.create-button:hover {
-    -fx-background-color: #1e3a8a;
-    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.4), 10, 0, 0, 3);
-}
-
-.create-button:disabled {
-    -fx-background-color: #cccccc;
-    -fx-text-fill: #666666;
-    -fx-cursor: default;
-    -fx-effect: none;
-}
-
-.cancel-button {
-    -fx-background-color: #f44336;
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 15 30;
-    -fx-background-radius: 25;
-    -fx-cursor: hand;
-    -fx-min-width: 150px;
-}
-
-.cancel-button:hover {
-    -fx-background-color: #d32f2f;
-    -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.4), 10, 0, 0, 3);
-}
-
-.add-recipe-button {
-    -fx-background-color: #28a745;
-    -fx-text-fill: white;
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-padding: 8 16;
-    -fx-background-radius: 15;
-    -fx-cursor: hand;
-}
-
-.add-recipe-button:hover {
-    -fx-background-color: #218838;
 }
 
 .add-ingredient-button {
@@ -385,31 +342,50 @@
     -fx-background-color: #c82333;
 }
 
-.error {
-    -fx-border-color: #f44336 !important;
-    -fx-border-width: 2 !important;
+/* SEZIONE BOTTONI IDENTICA A CREATECOURSE */
+.buttons-section {
+    -fx-padding: 30 0 20 0;
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1 0 0 0;
 }
 
-.success {
-    -fx-border-color: #4CAF50 !important;
-    -fx-border-width: 2 !important;
+/* BOTTONI PRINCIPALI IDENTICI A CREATECOURSE */
+.save-button {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 15 30;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+    -fx-min-width: 150px;
 }
 
-@media (max-width: 1200px) {
-    .form-container {
-        -fx-padding: 20;
-    }
-    
-    .form-section {
-        -fx-padding: 20;
-    }
-    
-    .page-title {
-        -fx-font-size: 28px;
-    }
-    
-    .ingredient-name-field {
-        -fx-pref-width: 150px;
-        -fx-max-width: 150px;
-    }
+.save-button:hover {
+    -fx-background-color: #1e3a8a;
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.4), 10, 0, 0, 3);
+}
+
+.save-button:disabled {
+    -fx-background-color: #cccccc;
+    -fx-text-fill: #666666;
+    -fx-cursor: default;
+    -fx-effect: none;
+}
+
+.cancel-button {
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 15 30;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+    -fx-min-width: 150px;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #d32f2f;
+    -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.4), 10, 0, 0, 3);
 }

@@ -32,7 +32,7 @@ public class EnrolledCoursesBoundary implements Initializable {
         controller = new EnrolledCoursesController(
             userNameLabel, categoryComboBox, frequencyComboBox, lessonTypeComboBox,
             searchBtn, enrolledCoursesArea, enrolledCoursesScrollPane,
-            enrolledCountLabel, prevPageBtn, nextPageBtn, pageLabel
+            pageLabel, prevPageBtn, nextPageBtn, enrolledCountLabel
         );
         controller.initialize();
     }
@@ -55,6 +55,17 @@ public class EnrolledCoursesBoundary implements Initializable {
     @FXML
     private void viewCoursesClick(ActionEvent event) {
         controller.viewCoursesClick();
+    }
+
+    // AGGIUNGI QUESTO METODO MANCANTE
+    @FXML
+    private void goToHomepage(ActionEvent event) {
+        controller.goToHomepage();
+    }
+
+    @FXML
+    private void goToUserCards(ActionEvent event) {
+        controller.goToUserCards();
     }
 
     @FXML

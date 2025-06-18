@@ -1,10 +1,10 @@
-// filepath: /mnt/c/Users/mario/Desktop/prova/Progetto-UninaFoodLab/poo/javafx-demo/src/main/java/com/progetto/boundary/CreateCourseBoundary.java
 package com.progetto.boundary;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.FlowPane;
 import javafx.event.ActionEvent;
 import com.progetto.controller.CreateCourseController;
 
@@ -33,17 +33,17 @@ public class CreateCourseBoundary {
     @FXML
     private Button createButton;
 
-    
     @FXML
     private VBox presenceDetailsSection;
     @FXML
     private VBox onlineDetailsSection;
     
-    
     @FXML
-    private ListView<String> dayOfWeekListView;
+    private FlowPane dayOfWeekContainer;
     @FXML
-    private TextField timeField;
+    private Spinner<Integer> presenceHourSpinner;
+    @FXML
+    private Spinner<Integer> presenceMinuteSpinner;
     @FXML
     private TextField durationField; 
     @FXML
@@ -55,15 +55,16 @@ public class CreateCourseBoundary {
     @FXML
     private VBox recipesContainer;
     
-    
     @FXML
     private ComboBox<String> applicationComboBox;
     @FXML
     private TextField meetingCodeField;
     @FXML
-    private ListView<String> onlineDayOfWeekListView;
+    private FlowPane onlineDayOfWeekContainer;
     @FXML
-    private TextField onlineTimeField;
+    private Spinner<Integer> onlineHourSpinner;
+    @FXML
+    private Spinner<Integer> onlineMinuteSpinner;
     @FXML
     private TextField onlineDurationField; 
 
@@ -75,14 +76,16 @@ public class CreateCourseBoundary {
             courseNameField, descriptionArea, startDatePicker, endDatePicker,
             frequencyComboBox, lessonTypeComboBox, maxParticipantsSpinner,
             priceField, courseImageView, chefNameLabel, createButton,
-            presenceDetailsSection, onlineDetailsSection, dayOfWeekListView, 
-            timeField, durationField, cityField, streetField, capField,
-            recipesContainer, applicationComboBox, meetingCodeField, 
-            onlineDayOfWeekListView, onlineTimeField, onlineDurationField 
+            presenceDetailsSection, onlineDetailsSection, dayOfWeekContainer, 
+            presenceHourSpinner, presenceMinuteSpinner, durationField, 
+            cityField, streetField, capField, recipesContainer, 
+            applicationComboBox, meetingCodeField, onlineDayOfWeekContainer, 
+            onlineHourSpinner, onlineMinuteSpinner, onlineDurationField 
         );
         controller.initialize();
     }
 
+    // ...resto dei metodi invariato...
     @FXML
     private void onLessonTypeChanged(ActionEvent event) {
         controller.onLessonTypeChanged();

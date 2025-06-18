@@ -4,6 +4,7 @@ C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\Entity\EntityDto\Chef.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\controller\CardCorsoController.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\boundary\PaymentPageBoundary.java
+C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\controller\EditCourseController.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\jdbc\SupportDb.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\Entity\EntityDto\Sessione.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\Entity\EntityDto\SessioniInPresenza.java
@@ -16,6 +17,7 @@ C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\boundary\HomepageUtenteBoundary.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\utils\CardValidator.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\Entity\entityDao\UtenteVisitatoreDao.java
+C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\boundary\EditCourseBoundary.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\Entity\EntityDto\Corso.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\boundary\LogoutDialogBoundary.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\controller\UserCardsController.java

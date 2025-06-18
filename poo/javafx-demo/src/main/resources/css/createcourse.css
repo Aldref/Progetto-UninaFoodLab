@@ -1,4 +1,3 @@
-/* === PAGE LAYOUT === */
 .header-section {
     -fx-background-color: white;
     -fx-padding: 30 0 20 0;
@@ -16,8 +15,8 @@
     -fx-text-fill: #666;
 }
 
-/* === FORM STYLING === */
-.form-scroll-pane {
+.form-scroll-pane,
+.recipes-scroll-pane {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
@@ -55,7 +54,18 @@
     -fx-text-fill: #666;
 }
 
-/* === FORM FIELDS === */
+.info-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #666;
+    -fx-font-style: italic;
+    -fx-padding: 5 0 0 0;
+}
+
+.error-label {
+    -fx-text-fill: #f44336 !important;
+    -fx-font-weight: bold;
+}
+
 .form-field {
     -fx-font-size: 14px;
     -fx-padding: 12;
@@ -76,7 +86,6 @@
     -fx-max-height: 120px;
 }
 
-/* === FIX DROPDOWN NON EVIDENZIABILI === */
 .combo-box {
     -fx-font-size: 14px;
     -fx-padding: 12;
@@ -92,49 +101,12 @@
     -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.3), 5, 0, 0, 0);
 }
 
-/* Rimuove completamente l'evidenziazione sui ComboBox */
 .combo-box .list-cell {
     -fx-padding: 8 12;
     -fx-background-color: transparent !important;
     -fx-text-fill: #333 !important;
 }
 
-.combo-box .list-cell:hover {
-    -fx-background-color: transparent !important;
-    -fx-text-fill: #333 !important;
-}
-
-.combo-box .list-cell:selected {
-    -fx-background-color: transparent !important;
-    -fx-text-fill: #333 !important;
-}
-
-.combo-box .list-cell:focused {
-    -fx-background-color: transparent !important;
-    -fx-text-fill: #333 !important;
-}
-
-.combo-box .list-cell:filled {
-    -fx-background-color: transparent !important;
-    -fx-text-fill: #333 !important;
-}
-
-.combo-box .list-cell:filled:hover {
-    -fx-background-color: transparent !important;
-    -fx-text-fill: #333 !important;
-}
-
-.combo-box .list-cell:filled:selected {
-    -fx-background-color: transparent !important;
-    -fx-text-fill: #333 !important;
-}
-
-.combo-box .list-cell:filled:focused {
-    -fx-background-color: transparent !important;
-    -fx-text-fill: #333 !important;
-}
-
-/* Fix per il popup del ComboBox */
 .combo-box-popup .list-view {
     -fx-background-color: white;
     -fx-border-color: #ddd;
@@ -148,7 +120,6 @@
     -fx-padding: 10 15;
     -fx-background-color: transparent;
     -fx-text-fill: #333;
-    -fx-border-color: transparent;
 }
 
 .combo-box-popup .list-view .list-cell:hover {
@@ -169,7 +140,102 @@
     -fx-background-color: #666;
 }
 
-/* === IMAGE SECTION === */
+.spinner {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+}
+
+.spinner:focused {
+    -fx-border-color: #2C56C9;
+}
+
+.spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+}
+
+.time-spinner {
+    -fx-pref-width: 80px;
+    -fx-max-width: 80px;
+    -fx-font-size: 16px;
+}
+
+.time-spinner .text-field {
+    -fx-alignment: center;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.time-spinner:focused {
+    -fx-border-color: #2C56C9;
+    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.3), 5, 0, 0, 0);
+}
+
+.time-separator {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C56C9;
+    -fx-padding: 0 5 0 5;
+}
+
+.spinner-error {
+    -fx-border-color: #f44336 !important;
+    -fx-border-width: 2px !important;
+    -fx-background-color: #ffebee !important;
+}
+
+.spinner-error:focused {
+    -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.3), 5, 0, 0, 0) !important;
+}
+
+.day-selection-container {
+    -fx-padding: 15;
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+}
+
+.day-checkbox {
+    -fx-font-size: 14px;
+    -fx-padding: 8 12;
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-border-width: 2;
+    -fx-cursor: hand;
+}
+
+.day-checkbox:selected {
+    -fx-background-color: #2C56C9;
+    -fx-text-fill: white;
+    -fx-border-color: #2C56C9;
+}
+
+.day-checkbox:hover {
+    -fx-background-color: #e3f2fd;
+    -fx-border-color: #2C56C9;
+}
+
+.day-checkbox:selected:hover {
+    -fx-background-color: #1e3a8a;
+    -fx-border-color: #1e3a8a;
+}
+
+.day-checkbox:disabled {
+    -fx-background-color: #f5f5f5;
+    -fx-text-fill: #999;
+    -fx-border-color: #ccc;
+    -fx-cursor: default;
+}
+
 .image-section {
     -fx-background-color: #f8f9fa;
     -fx-background-radius: 12;
@@ -200,7 +266,35 @@
     -fx-background-color: #bbdefb;
 }
 
-/* === BUTTONS === */
+.recipe-container {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 10;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0, 0, 1);
+}
+
+.ingredient-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+}
+
+.ingredient-name-field {
+    -fx-pref-width: 180px;
+    -fx-max-width: 180px;
+}
+
+.ingredient-quantity-field {
+    -fx-pref-width: 80px;
+    -fx-max-width: 80px;
+}
+
+.ingredient-unit-combo {
+    -fx-pref-width: 100px;
+    -fx-max-width: 100px;
+}
+
 .buttons-section {
     -fx-padding: 30 0 20 0;
 }
@@ -244,82 +338,6 @@
     -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.4), 10, 0, 0, 3);
 }
 
-/* === SPINNER === */
-.spinner {
-    -fx-background-color: white;
-    -fx-border-color: #ddd;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-border-width: 2;
-}
-
-.spinner:focused {
-    -fx-border-color: #2C56C9;
-}
-
-.spinner .text-field {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-text-fill: #333;
-    -fx-font-size: 14px;
-}
-
-/* === LIST VIEW === */
-.list-view {
-    -fx-background-color: white;
-    -fx-border-color: #ddd;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-border-width: 2;
-}
-
-.list-view .list-cell {
-    -fx-padding: 8 12;
-    -fx-background-color: transparent;
-}
-
-.list-view .list-cell:selected {
-    -fx-background-color: #2C56C9;
-    -fx-text-fill: white;
-    -fx-background-radius: 4;
-}
-
-/* === VALIDAZIONE === */
-.error {
-    -fx-border-color: #f44336 !important;
-    -fx-border-width: 2 !important;
-}
-
-.success {
-    -fx-border-color: #4CAF50 !important;
-    -fx-border-width: 2 !important;
-}
-
-/* === VALIDAZIONE CAP (solo numeri) === */
-.cap-field {
-    -fx-text-formatter: numeric;
-}
-
-.cap-field.error {
-    -fx-border-color: #f44336 !important;
-    -fx-border-width: 2 !important;
-}
-
-.cap-field.success {
-    -fx-border-color: #4CAF50 !important;
-    -fx-border-width: 2 !important;
-}
-
-/* === RICETTE === */
-.recipe-container {
-    -fx-background-color: #f8f9fa;
-    -fx-background-radius: 10;
-    -fx-border-color: #e9ecef;
-    -fx-border-radius: 10;
-    -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0, 0, 1);
-}
-
 .add-recipe-button {
     -fx-background-color: #28a745;
     -fx-text-fill: white;
@@ -347,7 +365,8 @@
     -fx-background-color: #138496;
 }
 
-.remove-button, .remove-ingredient-button {
+.remove-button, 
+.remove-ingredient-button {
     -fx-background-color: #dc3545;
     -fx-text-fill: white;
     -fx-font-size: 12px;
@@ -361,107 +380,20 @@
     -fx-max-height: 25px;
 }
 
-.remove-button:hover, .remove-ingredient-button:hover {
+.remove-button:hover, 
+.remove-ingredient-button:hover {
     -fx-background-color: #c82333;
 }
 
-.ingredient-row {
-    -fx-alignment: center-left;
-    -fx-spacing: 10;
-}
-
-.ingredient-name-field {
-    -fx-pref-width: 180px;
-    -fx-max-width: 180px;
-}
-
-.ingredient-quantity-field {
-    -fx-pref-width: 80px;
-    -fx-max-width: 80px;
-}
-
-.ingredient-unit-combo {
-    -fx-pref-width: 100px;
-    -fx-max-width: 100px;
-}
-
-.recipes-scroll-pane {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-}
-
-.recipes-scroll-pane .viewport {
-    -fx-background-color: transparent;
-}
-
-.recipes-scroll-pane .content {
-    -fx-background-color: transparent;
-}
-
-
-.conditional-section {
-    -fx-background-color: #f0f4ff;
-    -fx-background-radius: 12;
-    -fx-padding: 25;
-    -fx-border-color: #2C56C9;
-    -fx-border-radius: 12;
-    -fx-border-width: 2;
-    -fx-border-style: dashed;
-}
-
-.presence-section {
-    -fx-background-color: #f0f8f0;
-    -fx-border-color: #4CAF50;
-}
-
-.online-section {
-    -fx-background-color: #f0f0f8;
-    -fx-border-color: #673AB7;
-}
-
-.info-label {
-    -fx-font-size: 12px;
-    -fx-text-fill: #666;
-    -fx-font-style: italic;
-}
-
-.time-field {
-    -fx-pref-width: 100px;
-    -fx-max-width: 100px;
-}
-
-.time-field.error {
+.error {
     -fx-border-color: #f44336 !important;
     -fx-border-width: 2 !important;
 }
 
-.time-field.success {
+.success {
     -fx-border-color: #4CAF50 !important;
     -fx-border-width: 2 !important;
 }
-
-.duration-field {
-    -fx-pref-width: 120px;
-    -fx-max-width: 120px;
-}
-
-.duration-field.error {
-    -fx-border-color: #f44336 !important;
-    -fx-border-width: 2 !important;
-}
-
-.duration-field.success {
-    -fx-border-color: #4CAF50 !important;
-    -fx-border-width: 2 !important;
-}
-
-
-.time-field:focused,
-.duration-field:focused {
-    -fx-border-color: #2C56C9;
-    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.3), 5, 0, 0, 0);
-}
-
 
 @media (max-width: 1200px) {
     .form-container {
@@ -474,10 +406,6 @@
     
     .page-title {
         -fx-font-size: 28px;
-    }
-    
-    .conditional-section {
-        -fx-padding: 20;
     }
     
     .ingredient-name-field {

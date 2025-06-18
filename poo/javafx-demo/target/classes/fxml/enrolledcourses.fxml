@@ -44,7 +44,7 @@
             
             <VBox styleClass="navigation-section" spacing="15.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="viewCoursesBtn" text="Visualizza i corsi" styleClass="nav-button" maxWidth="Infinity" onAction="#viewCoursesClick">
+                  <Button fx:id="viewCoursesBtn" text="Visualizza i corsi" styleClass="nav-button" maxWidth="Infinity" onAction="#goToHomepage">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
                            <image>

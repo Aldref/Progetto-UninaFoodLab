@@ -206,7 +206,7 @@
                               <VBox spacing="8.0">
                                  <children>
                                     <Label styleClass="field-label" text="Giorni della Settimana *" />
-                                    <ListView fx:id="dayOfWeekListView" styleClass="form-field" prefHeight="120" />
+                                    <FlowPane fx:id="dayOfWeekContainer" hgap="10.0" vgap="8.0" styleClass="day-selection-container" />
                                  </children>
                               </VBox>
                               
@@ -215,7 +215,13 @@
                                     <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                                        <children>
                                           <Label styleClass="field-label" text="Orario Inizio *" />
-                                          <TextField fx:id="timeField" promptText="es. 18:00" styleClass="form-field, time-field" />
+                                          <HBox spacing="8.0" alignment="CENTER_LEFT">
+                                             <children>
+                                                <Spinner fx:id="presenceHourSpinner" styleClass="form-field, time-spinner" prefWidth="80.0" />
+                                                <Label styleClass="time-separator" text=":" />
+                                                <Spinner fx:id="presenceMinuteSpinner" styleClass="form-field, time-spinner" prefWidth="80.0" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                     </VBox>
                                     <VBox spacing="8.0" HBox.hgrow="ALWAYS">
@@ -296,7 +302,7 @@
                               <VBox spacing="8.0">
                                  <children>
                                     <Label styleClass="field-label" text="Giorni della Settimana *" />
-                                    <ListView fx:id="onlineDayOfWeekListView" styleClass="form-field" prefHeight="120" />
+                                    <FlowPane fx:id="onlineDayOfWeekContainer" hgap="10.0" vgap="8.0" styleClass="day-selection-container" />
                                  </children>
                               </VBox>
                               
@@ -305,7 +311,13 @@
                                     <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                                        <children>
                                           <Label styleClass="field-label" text="Orario Inizio *" />
-                                          <TextField fx:id="onlineTimeField" promptText="es. 18:00" styleClass="form-field, time-field" />
+                                          <HBox spacing="8.0" alignment="CENTER_LEFT">
+                                             <children>
+                                                <Spinner fx:id="onlineHourSpinner" styleClass="form-field, time-spinner" prefWidth="80.0" />
+                                                <Label styleClass="time-separator" text=":" />
+                                                <Spinner fx:id="onlineMinuteSpinner" styleClass="form-field, time-spinner" prefWidth="80.0" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                     </VBox>
                                     <VBox spacing="8.0" HBox.hgrow="ALWAYS">

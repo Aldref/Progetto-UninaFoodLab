@@ -28,13 +28,16 @@ public class CardCorsoController {
     private final Label startDate;
     private final Label endDate;
     private final Label frequency;
+    private final Label chefName;
+    private final Label chefExperience;
 
     private boolean isEnrolledPage = false;
     private boolean isChefMode = false;
 
     public CardCorsoController(Button buyButton, Button editButton, HBox buttonsBox, VBox priceSection,
                               Label acquistatoBadge, Label priceLabel, Button calendarButton, ImageView courseImage,
-                              Label courseTitle, Label courseDescription, Label startDate, Label endDate, Label frequency) {
+                              Label courseTitle, Label courseDescription, Label startDate, Label endDate, Label frequency,
+                              Label chefName, Label chefExperience) {
         this.buyButton = buyButton;
         this.editButton = editButton;
         this.buttonsBox = buttonsBox;
@@ -48,6 +51,8 @@ public class CardCorsoController {
         this.startDate = startDate;
         this.endDate = endDate;
         this.frequency = frequency;
+        this.chefName = chefName;
+        this.chefExperience = chefExperience;
     }
 
     public void initialize() {
@@ -146,13 +151,15 @@ public class CardCorsoController {
         });
     }
 
-    public void setCourseData(String title, String description, String start, String end, String freq, String price) {
+    public void setCourseData(String title, String description, String start, String end, String freq, String price, String chef, String experience) {
         if (courseTitle != null) courseTitle.setText(title);
         if (courseDescription != null) courseDescription.setText(description);
         if (startDate != null) startDate.setText(start);
         if (endDate != null) endDate.setText(end);
         if (frequency != null) frequency.setText(freq);
         if (priceLabel != null && price != null) priceLabel.setText(price);
+        if (chefName != null && chef != null) chefName.setText(chef);
+        if (chefExperience != null && experience != null) chefExperience.setText(experience + " anni di esperienza");
     }
 
     public void handlePurchase() {

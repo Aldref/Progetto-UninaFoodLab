@@ -86,6 +86,26 @@ public class HomepageChefController {
                 "Salse tradizionali e sughi regionali per valorizzare ogni piatto.",
                 "Viaggio nelle cucine regionali italiane: dalla Sicilia al Trentino."
             };
+
+            // Array con nomi chef variabili
+            String[] chefNames = {
+                "Chef Mario Rossi",
+                "Chef Giuseppe Verdi", 
+                "Chef Anna Bianchi",
+                "Chef Francesco Neri",
+                "Chef Laura Gialli",
+                "Chef Roberto Blues",
+                "Chef Sofia Viola",
+                "Chef Alessandro Rosa",
+                "Chef Elena Grigi",
+                "Chef Davide Azzurri"
+            };
+
+            // Array con anni di esperienza variabili
+            String[] experienceYears = {
+                "15", "12", "8", "20", "10", 
+                "18", "6", "25", "14", "22"
+            };
             
             for (int i = 0; i < courseTitles.length; i++) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
@@ -95,14 +115,17 @@ public class HomepageChefController {
                 // Configura la card per la modalità chef
                 boundary.setChefMode(true);
                 
-                // Imposta i dati del corso
+                // Imposta i dati del corso con variabili
                 String title = courseTitles[i];
                 String description = descriptions[i];
                 String startDate = "15/0" + ((i % 9) + 1) + "/2025";
                 String endDate = "30/" + String.format("%02d", ((i % 12) + 1)) + "/2025";
                 String frequency = (i % 2 == 0) ? "2 volte a settimana" : "1 volta a settimana";
+                String price = null; // Per chef non serve il prezzo
+                String chefName = chefNames[i % chefNames.length];
+                String experience = experienceYears[i % experienceYears.length];
                 
-                boundary.setCourseData(title, description, startDate, endDate, frequency, null);
+                boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience);
                 
                 // Una sola immagine per tutte le card
                 String imagePath = "/immagini/corsi/esempio.png";
@@ -116,6 +139,7 @@ public class HomepageChefController {
         updateCourseCards();
     }
 
+    // ...existing code... (resto del metodo rimane uguale)
     private void updateCourseCards() {
         mainContentArea.getChildren().clear();
         int start = currentPage * CARDS_PER_PAGE;
