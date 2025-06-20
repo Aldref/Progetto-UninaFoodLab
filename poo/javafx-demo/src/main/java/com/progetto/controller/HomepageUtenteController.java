@@ -23,7 +23,6 @@ public class HomepageUtenteController {
     private ComboBox<String> lessonTypeComboBox;
     private Label userNameLabel;
 
-    // Aggiungi queste variabili mancanti
     private List<Node> allCourseCards = new ArrayList<>();
     private int currentPage = 0;
     private final int CARDS_PER_PAGE = 12;
