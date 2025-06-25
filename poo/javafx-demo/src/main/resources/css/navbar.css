@@ -37,7 +37,6 @@
     -fx-font-style: italic;
 }
 
-/* === NAVIGATION BUTTONS === */
 .nav-button {
     -fx-background-color: transparent;
     -fx-text-fill: white;

@@ -30,7 +30,6 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 2, 2);
 }
 
-/* Nuovo stile per la categoria */
 .course-category {
     -fx-text-fill: white;
     -fx-background-color: #2C56C9;
@@ -55,7 +54,6 @@
     -fx-line-spacing: 2;
 }
 
-/* Nuovi stili per le informazioni chef */
 .chef-section {
     -fx-background-color: #f1f3f4;
     -fx-background-radius: 12;

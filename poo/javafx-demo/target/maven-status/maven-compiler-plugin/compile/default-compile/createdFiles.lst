@@ -47,7 +47,6 @@ com\progetto\utils\SceneSwitcher.class
 com\progetto\Entity\entityDao\SessioneOnlineDao.class
 com\progetto\utils\CardValidator.class
 com\progetto\controller\CreateCourseController$2.class
-com\progetto\controller\LogoutDialogController.class
 com\progetto\Entity\entityDao\CorsoDao.class
 com\progetto\jdbc\SupportDb.class
 com\progetto\controller\CreateCourseController$Recipe.class
@@ -65,3 +64,4 @@ com\progetto\utils\SuccessDialogUtils.class
 com\progetto\boundary\CreateCourseBoundary.class
 com\progetto\controller\CalendarDialogController$Lezione.class
 com\progetto\controller\EditCourseController$CourseData.class
+com\progetto\controller\CalendarDialogController$Ingrediente.class

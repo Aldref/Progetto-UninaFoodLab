@@ -11,13 +11,11 @@
     styleClass="success-dialog" stylesheets="@../css/successdialog.css"
     spacing="0" prefWidth="500" prefHeight="320">
 
-    <!-- Contenuto principale -->
     <VBox styleClass="success-content" alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
         <padding>
             <Insets top="40" bottom="30" left="40" right="40"/>
         </padding>
         <children>
-            <!-- Icona di successo -->
             <VBox alignment="CENTER" spacing="10">
                 <children>
                     <ImageView fx:id="successImage" fitWidth="80" fitHeight="80" preserveRatio="true">
@@ -27,23 +25,17 @@
                     </ImageView>
                 </children>
             </VBox>
-            
-            <!-- Titolo -->
             <Label fx:id="successTitle" text="Operazione Completata!" styleClass="success-title">
                 <font>
                     <Font name="System Bold" size="24"/>
                 </font>
             </Label>
-            
-            <!-- Messaggio -->
             <VBox alignment="CENTER" spacing="8">
                 <children>
                     <Label fx:id="successMessage" text="L'operazione è stata completata con successo." styleClass="success-message"/>
                     <Label fx:id="courseAddedMessage" text="" styleClass="success-submessage"/>
                 </children>
             </VBox>
-            
-            <!-- Nome corso acquistato (opzionale) -->
             <VBox fx:id="courseInfoBox" styleClass="course-info" spacing="8" alignment="CENTER">
                 <children>
                     <Label text="Corso acquistato:" styleClass="course-label"/>
@@ -52,8 +44,6 @@
             </VBox>
         </children>
     </VBox>
-
-    <!-- Footer con pulsante -->
     <HBox styleClass="success-footer" alignment="CENTER">
         <padding>
             <Insets top="20" bottom="25" left="40" right="40"/>
@@ -62,5 +52,4 @@
             <Button fx:id="okButton" text="Continua" styleClass="ok-button" onAction="#closeDialog" HBox.hgrow="ALWAYS"/>
         </children>
     </HBox>
-
 </VBox>

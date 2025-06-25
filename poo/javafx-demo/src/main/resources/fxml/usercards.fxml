@@ -4,17 +4,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
 
 <BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="com.progetto.boundary.UserCardsBoundary"
     stylesheets="@../css/root.css,@../css/paymentpage.css"
     styleClass="payment-page">
 
-    <!-- Header -->
     <top>
         <VBox styleClass="payment-header-section">
             <children>
-                <!-- Navbar di navigazione -->
                 <HBox styleClass="payment-navbar" alignment="CENTER_LEFT" spacing="20">
                     <padding>
                         <Insets top="15" bottom="15" left="40" right="40"/>
@@ -25,14 +24,12 @@
                         <Label text="UninaFoodLab" styleClass="brand-name"/>
                     </children>
                 </HBox>
-                
-                <!-- Titolo sezione -->
                 <HBox styleClass="payment-title-section" alignment="CENTER" spacing="15">
                     <padding>
                         <Insets top="40" bottom="40" left="40" right="40"/>
                     </padding>
                     <children>
-                        <Label text="💳" styleClass="payment-icon">
+                        <Label text="" styleClass="payment-icon">
                             <font>
                                 <Font size="40"/>
                             </font>
@@ -49,7 +46,6 @@
         </VBox>
     </top>
 
-    <!-- Contenuto principale -->
     <center>
         <ScrollPane styleClass="payment-scroll" fitToWidth="true">
             <content>
@@ -58,49 +54,42 @@
                         <Insets top="40" bottom="60" left="40" right="40"/>
                     </padding>
                     <children>
-                        <!-- Form per aggiungere nuova carta -->
                         <VBox styleClass="payment-form-container" spacing="30" HBox.hgrow="NEVER">
                             <children>
                                 <Label text="Aggiungi Nuova Carta" styleClass="section-title"/>
-                                
-                                <!-- Nome del Titolare -->
                                 <VBox spacing="8">
                                     <children>
                                         <Label text="Nome del Titolare *" styleClass="field-label"/>
                                         <TextField fx:id="cardHolderField" promptText="Mario Rossi" styleClass="payment-field"/>
+                                        <Label fx:id="cardHolderErrorLabel" styleClass="error-label" visible="false"/>
                                     </children>
                                 </VBox>
-
-                                <!-- Numero Carta -->
                                 <VBox spacing="8">
                                     <children>
                                         <Label text="Numero Carta *" styleClass="field-label"/>
                                         <TextField fx:id="cardNumberField" promptText="1234 5678 9012 3456" styleClass="payment-field"/>
+                                        <Label fx:id="cardNumberErrorLabel" styleClass="error-label" visible="false"/>
                                     </children>
                                 </VBox>
-
-                                <!-- Scadenza e CVV -->
                                 <HBox spacing="20">
                                     <children>
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
                                             <children>
                                                 <Label text="Scadenza *" styleClass="field-label"/>
                                                 <TextField fx:id="expiryField" promptText="MM/AA" styleClass="payment-field"/>
+                                                <Label fx:id="expiryErrorLabel" styleClass="error-label" visible="false"/>
                                             </children>
                                         </VBox>
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
                                             <children>
                                                 <Label text="CVV *" styleClass="field-label"/>
                                                 <TextField fx:id="cvvField" promptText="123" styleClass="payment-field"/>
+                                                <Label fx:id="cvvErrorLabel" styleClass="error-label" visible="false"/>
                                             </children>
                                         </VBox>
                                     </children>
                                 </HBox>
-
-                                <!-- Separatore -->
                                 <Separator styleClass="form-separator"/>
-
-                                <!-- Pulsanti azione -->
                                 <HBox spacing="15" alignment="CENTER">
                                     <children>
                                         <Button fx:id="clearFieldsBtn" text="Cancella" styleClass="cancel-button" onAction="#clearFields"/>
@@ -109,8 +98,6 @@
                                 </HBox>
                             </children>
                         </VBox>
-                        
-                        <!-- Lista carte salvate e messaggio nessuna carta -->
                         <VBox styleClass="order-summary-container" spacing="20" HBox.hgrow="NEVER">
                             <children>
                                 <Label text="Carte Salvate" styleClass="section-title"/>
@@ -122,7 +109,7 @@
                                 </HBox>
                                 <VBox fx:id="noCardsMessage" styleClass="order-summary-card" alignment="CENTER" spacing="15" visible="false">
                                     <children>
-                                        <Label text="💳" styleClass="payment-icon">
+                                        <Label text="" styleClass="payment-icon">
                                             <font>
                                                 <Font size="40"/>
                                             </font>

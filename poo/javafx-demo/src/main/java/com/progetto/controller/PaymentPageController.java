@@ -22,7 +22,7 @@ public class PaymentPageController {
     
     // Pattern per validazione
     private static final Pattern NOME_PATTERN = Pattern.compile("^[a-zA-ZÀ-ÿ]+(?:\\s+[a-zA-ZÀ-ÿ]+)*$");
-    private static final Pattern CARTA_PATTERN = Pattern.compile("^[0-9]{13,19}$");
+    private static final Pattern CARTA_PATTERN = Pattern.compile("^[0-9]{16}$");
     private static final Pattern CVC_PATTERN = Pattern.compile("^[0-9]{3,4}$");
     private static final Pattern SCADENZA_PATTERN = Pattern.compile("^(0[1-9]|1[0-2])/([0-9]{2})$");
     
@@ -137,7 +137,7 @@ public class PaymentPageController {
             boundary.showError("numerocarta", "Il numero della carta è obbligatorio");
             isValid = false;
         } else if (!CARTA_PATTERN.matcher(numeroCarta).matches()) {
-            boundary.showError("numerocarta", "Numero carta non valido (13-19 cifre)");
+            boundary.showError("numerocarta", "Il numero della carta deve essere di 16 cifre");
             isValid = false;
         } else if (!CardValidator.isValidCardType(numeroCarta)) {
             boundary.showError("numerocarta", "Tipo di carta non supportato. Accettiamo solo Visa e Mastercard");

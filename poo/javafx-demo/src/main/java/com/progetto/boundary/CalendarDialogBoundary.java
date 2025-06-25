@@ -16,11 +16,12 @@ public class CalendarDialogBoundary {
     @FXML private Button closeBtn;
 
     private CalendarDialogController controller;
-
+    private boolean isChef;
+    
     @FXML
     public void initialize() {
         controller = new CalendarDialogController(
-            monthYearLabel, calendarGrid, lessonDetailsArea, selectedDateLabel, lessonsContainer, closeBtn
+            monthYearLabel, calendarGrid, lessonDetailsArea, selectedDateLabel, lessonsContainer, closeBtn, isChef
         );
         controller.initialize();
     }
@@ -38,5 +39,9 @@ public class CalendarDialogBoundary {
     @FXML
     private void closeDialog(ActionEvent event) {
         controller.closeDialog();
+    }
+
+    public void setChefMode(boolean isChef) {
+        this.isChef = isChef;
     }
 }

@@ -185,13 +185,12 @@ public class CardCorsoController {
     public void handleShowCalendar() {
         try {
             Stage stage = (Stage) calendarButton.getScene().getWindow();
-            SceneSwitcher.showCalendarDialog(stage);
+            SceneSwitcher.showCalendarDialog(stage, isChefMode);
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Errore", "Impossibile aprire il calendario del corso.");
         }
     }
-
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);

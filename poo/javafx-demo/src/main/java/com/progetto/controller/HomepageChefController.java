@@ -139,7 +139,6 @@ public class HomepageChefController {
         updateCourseCards();
     }
 
-    // ...existing code... (resto del metodo rimane uguale)
     private void updateCourseCards() {
         mainContentArea.getChildren().clear();
         int start = currentPage * CARDS_PER_PAGE;

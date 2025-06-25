@@ -188,8 +188,8 @@
 
                     <HBox spacing="20.0" alignment="CENTER">
                         <children>
-                            <Button fx:id="saveBtn" text="Salva Modifiche" styleClass="save-button" onAction="#saveChanges"/>
                             <Button fx:id="cancelBtn" text="Annulla" styleClass="cancel-button" onAction="#cancelChanges"/>
+                            <Button fx:id="saveBtn" text="Salva Modifiche" styleClass="save-button" onAction="#saveChanges"/>
                         </children>
                     </HBox>
 

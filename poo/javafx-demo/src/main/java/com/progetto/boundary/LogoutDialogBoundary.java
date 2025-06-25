@@ -21,7 +21,6 @@ public class LogoutDialogBoundary {
         closeDialog(event);
     }
 
-    @FXML
     public boolean isConfirmed() {
         return confirmed;
     }

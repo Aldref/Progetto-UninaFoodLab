@@ -16,7 +16,6 @@ public class SceneSwitcher {
     private static final double GLOBAL_MAX_WIDTH = 2560;  
     private static final double GLOBAL_MAX_HEIGHT = 1440;
 
-    
     private static final double AUTH_MIN_WIDTH = 600;
     private static final double AUTH_MIN_HEIGHT = 500;
     private static final double AUTH_MAX_WIDTH = 900;
@@ -32,10 +31,8 @@ public class SceneSwitcher {
     private static final double REGISTER_MAX_WIDTH = 1200;
     private static final double REGISTER_MAX_HEIGHT = 900;
 
-    
     private static final double MAIN_APP_MIN_WIDTH = 1024;
     private static final double MAIN_APP_MIN_HEIGHT = 768;
-    
     
     private static final double TRANSACTION_MIN_WIDTH = 1100;
     private static final double TRANSACTION_MIN_HEIGHT = 800;
@@ -47,9 +44,6 @@ public class SceneSwitcher {
     private static final double DIALOG_LOGOUT_WIDTH = 400;
     private static final double DIALOG_LOGOUT_HEIGHT = 250;
 
-    /**
-     * Applica limiti per pagine di autenticazione (login, register)
-     */
     private static void applyAuthLimits(Stage stage) {
         stage.setMinWidth(AUTH_MIN_WIDTH);
         stage.setMinHeight(AUTH_MIN_HEIGHT);
@@ -57,9 +51,6 @@ public class SceneSwitcher {
         stage.setMaxHeight(AUTH_MAX_HEIGHT);
     }
     
-    /**
-     * Applica limiti per pagine principali dell'app (homepage, account, corsi)
-     */
     private static void applyMainAppLimits(Stage stage) {
         stage.setMinWidth(MAIN_APP_MIN_WIDTH);
         stage.setMinHeight(MAIN_APP_MIN_HEIGHT);
@@ -67,9 +58,6 @@ public class SceneSwitcher {
         stage.setMaxHeight(GLOBAL_MAX_HEIGHT);
     }
     
-    /**
-     * Applica limiti per pagine transazionali (pagamento, carte)
-     */
     private static void applyTransactionLimits(Stage stage) {
         stage.setMinWidth(TRANSACTION_MIN_WIDTH);
         stage.setMinHeight(TRANSACTION_MIN_HEIGHT);
@@ -94,9 +82,6 @@ public class SceneSwitcher {
         stage.setMaxHeight(REGISTER_MAX_HEIGHT);
     }
 
-        /**
-     * Valida e corregge le dimensioni rispetto ai limiti
-     */
     private static void validateAndCorrectSize(Stage stage, double minWidth, double minHeight, 
                                               double maxWidth, double maxHeight) {
         double currentWidth = stage.getWidth();
@@ -115,7 +100,6 @@ public class SceneSwitcher {
             if (forceMaximized) {
                 if (os.contains("linux")) {
                     stage.setMaximized(true);
-                    // Trigger di ridisegno
                     stage.setWidth(stage.getWidth() + 1);
                     stage.setWidth(stage.getWidth() - 1);
                     stage.setHeight(stage.getHeight() + 1);
@@ -135,9 +119,6 @@ public class SceneSwitcher {
         });
     }
 
-    /**
-     * CATEGORIA 1: Login - Finestra piccola, non ridimensionabile
-     */
     public static <T> T switchToLogin(Stage stage, String fxmlPath, String title) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource(fxmlPath));
         Parent root = loader.load();
@@ -146,24 +127,17 @@ public class SceneSwitcher {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle(title);
-        
-        // Login: finestra fissa, non ridimensionabile
         stage.setMaximized(false);
         stage.setResizable(false);
         stage.setWidth(LOGIN_DEFAULT_WIDTH);
         stage.setHeight(LOGIN_DEFAULT_HEIGHT);
-        
         applyAuthLimits(stage);
-        
         stage.show();
         Platform.runLater(() -> stage.centerOnScreen());
 
         return controller;
     }
 
-    /**
-     * CATEGORIA 1: Registrazione - Finestra media, ridimensionabile con limiti
-     */
     public static <T> T switchToRegister(Stage stage, String fxmlPath, String title) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource(fxmlPath));
         Parent root = loader.load();
@@ -172,25 +146,17 @@ public class SceneSwitcher {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle(title);
-        
         stage.setMaximized(false);
         stage.setResizable(false);
         stage.setWidth(REGISTER_DEFAULT_WIDTH);
         stage.setHeight(REGISTER_DEFAULT_HEIGHT);
-
-        
         applyRegisterLimits(stage);
-
         stage.show();
         Platform.runLater(() -> stage.centerOnScreen());
 
         return controller;
     }
 
-    /**
-     * CATEGORIA 2: Pagine principali dell'app - Homepage, Account, Corsi
-     * Mantiene stato finestra, applica limiti app principale
-     */
     public static <T> T switchToMainApp(Stage stage, String fxmlPath, String title) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource(fxmlPath));
         Parent root = loader.load();
@@ -200,21 +166,14 @@ public class SceneSwitcher {
         stage.setScene(scene);
         stage.setTitle(title);
         stage.setResizable(true);
-
         applyMainAppLimits(stage);
-
         stage.show();
-        // Forza massimizzazione per app principale al primo accesso
         applyPlatformWindowFix(stage, true);
 
         return controller;
     }
 
-    /**
-     * CATEGORIA 2: Navigazione tra pagine principali - MANTIENE stato finestra
-     */
     public static <T> T switchMainAppScene(Stage stage, String fxmlPath, String title) throws IOException {
-        
         boolean wasMaximized = stage.isMaximized();
         double savedWidth = stage.getWidth();
         double savedHeight = stage.getHeight();
@@ -230,15 +189,11 @@ public class SceneSwitcher {
         stage.setScene(scene);
         stage.setTitle(title);
         stage.setResizable(wasResizable);
-        
-        // Applica i limiti delle pagine principali
         applyMainAppLimits(stage);
         
         if (!wasMaximized) {
-            // Valida e corregge le dimensioni salvate
             validateAndCorrectSize(stage, MAIN_APP_MIN_WIDTH, MAIN_APP_MIN_HEIGHT, 
                                  GLOBAL_MAX_WIDTH, GLOBAL_MAX_HEIGHT);
-            
             stage.setWidth(Math.max(MAIN_APP_MIN_WIDTH, savedWidth));
             stage.setHeight(Math.max(MAIN_APP_MIN_HEIGHT, savedHeight));
             stage.setX(savedX);
@@ -250,7 +205,6 @@ public class SceneSwitcher {
         if (wasMaximized) {
             Platform.runLater(() -> {
                 stage.setMaximized(true);
-                
                 String os = System.getProperty("os.name").toLowerCase();
                 if (os.contains("linux")) {
                     stage.setWidth(stage.getWidth() + 1);
@@ -264,9 +218,6 @@ public class SceneSwitcher {
         return controller;
     }
 
-    /**
-     * CATEGORIA 3: Pagine transazionali - Pagamento, Gestione Carte
-     */
     public static <T> T switchToTransaction(Stage stage, String fxmlPath, String title) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource(fxmlPath));
         Parent root = loader.load();
@@ -277,7 +228,6 @@ public class SceneSwitcher {
         stage.setTitle(title);
         stage.setResizable(true);
 
-        // Imposta dimensioni ideali per transazioni
         if (!stage.isMaximized()) {
             stage.setWidth(TRANSACTION_DEFAULT_WIDTH);
             stage.setHeight(TRANSACTION_DEFAULT_HEIGHT);
@@ -291,11 +241,7 @@ public class SceneSwitcher {
         return controller;
     }
 
-    /**
-     * Metodo generico - rileva automaticamente la categoria
-     */
     public static <T> T switchScene(Stage stage, String fxmlPath, String title) throws IOException {
-        // Rileva automaticamente la categoria in base al path
         if (fxmlPath.contains("login")) {
             return switchToLogin(stage, fxmlPath, title);
         } else if (fxmlPath.contains("register")) {
@@ -303,17 +249,14 @@ public class SceneSwitcher {
         } else if (fxmlPath.contains("payment") || fxmlPath.contains("card")) {
             return switchToTransaction(stage, fxmlPath, title);
         } else {
-            // Default: pagine principali dell'app
             return switchMainAppScene(stage, fxmlPath, title);
         }
     }
 
     public static void switchToScene(Stage stage, String fxmlPath) {
         try {
-            // Rileva categoria e applica il metodo appropriato
             String title = "UninaFoodLab"; 
             switchScene(stage, fxmlPath, title);
-            
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Errore nel caricamento della scena: " + fxmlPath);
@@ -334,14 +277,18 @@ public class SceneSwitcher {
         }
     }
 
-    public static void showCalendarDialog(Stage owner) throws IOException {
+    public static void showCalendarDialog(Stage owner, boolean isChef) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource("/fxml/calendardialog.fxml"));
         Parent dialogContent = loader.load();
+
+        com.progetto.boundary.CalendarDialogBoundary dialogBoundary = loader.getController();
+        dialogBoundary.setChefMode(isChef);
+        dialogBoundary.initialize();
 
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.initOwner(owner);
-        
+
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("mac")) {
             dialogStage.initStyle(javafx.stage.StageStyle.UTILITY);
@@ -350,7 +297,7 @@ public class SceneSwitcher {
         }
 
         dialogStage.setTitle("Calendario lezioni - UninaFoodLab");
-        
+
         applyDialogLimits(dialogStage, DIALOG_CALENDAR_WIDTH, DIALOG_CALENDAR_HEIGHT);
 
         Scene dialogScene = new Scene(dialogContent);

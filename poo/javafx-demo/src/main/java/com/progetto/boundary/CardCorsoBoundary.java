@@ -76,7 +76,6 @@ public class CardCorsoBoundary {
         controller.setEnrolledMode(isEnrolled);
     }
 
-    // Getter per i componenti
     public Button getBuyButton() { return buyButton; }
     public Button getEditButton() { return editButton; }
     public Button getCalendarButton() { return calendarButton; }

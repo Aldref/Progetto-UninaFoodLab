@@ -20,7 +20,6 @@
     -fx-font-style: italic;
 }
 
-/* BOTTONE INDIETRO SIMILE A PAYMENTPAGE */
 .back-button {
     -fx-background-color: transparent;
     -fx-text-fill: #2C56C9;
@@ -175,25 +174,15 @@
     -fx-font-size: 14px;
 }
 
-/* STILE SPINNER ORARIO IDENTICO A CREATECOURSE */
 .time-spinner {
     -fx-pref-width: 80px;
     -fx-max-width: 80px;
     -fx-font-size: 16px;
-    -fx-background-color: white;
-    -fx-border-color: #ddd;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-border-width: 2;
 }
 
 .time-spinner .text-field {
     -fx-alignment: center;
     -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-text-fill: #333;
 }
 
 .time-spinner:focused {
@@ -201,10 +190,8 @@
     -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.3), 5, 0, 0, 0);
 }
 
-/* SEPARATORE ORARIO IDENTICO A CREATECOURSE */
 .time-separator {
     -fx-font-size: 24px;
-    -fx-font-weight: bold;
     -fx-text-fill: #2C56C9;
     -fx-padding: 0 5 0 5;
 }
@@ -219,7 +206,6 @@
     -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.3), 5, 0, 0, 0) !important;
 }
 
-/* DAY SELECTION IDENTICO A CREATECOURSE */
 .day-selection-container {
     -fx-padding: 15;
     -fx-background-color: white;
@@ -263,7 +249,6 @@
     -fx-cursor: default;
 }
 
-/* BOTTONI RICETTE IDENTICI A CREATECOURSE */
 .add-recipe-button {
     -fx-background-color: #28a745;
     -fx-text-fill: white;
@@ -342,7 +327,7 @@
     -fx-background-color: #c82333;
 }
 
-/* SEZIONE BOTTONI IDENTICA A CREATECOURSE */
+
 .buttons-section {
     -fx-padding: 30 0 20 0;
     -fx-background-color: white;
@@ -350,21 +335,20 @@
     -fx-border-width: 1 0 0 0;
 }
 
-/* BOTTONI PRINCIPALI IDENTICI A CREATECOURSE */
 .save-button {
     -fx-background-color: #2C56C9;
     -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 15 30;
     -fx-background-radius: 25;
+    -fx-padding: 12 30 12 30;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
     -fx-cursor: hand;
     -fx-min-width: 150px;
 }
 
 .save-button:hover {
     -fx-background-color: #1e3a8a;
-    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.4), 10, 0, 0, 3);
+    -fx-effect: none;
 }
 
 .save-button:disabled {
@@ -375,17 +359,17 @@
 }
 
 .cancel-button {
-    -fx-background-color: #f44336;
+    -fx-background-color: #6c757d;
     -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 15 30;
     -fx-background-radius: 25;
+    -fx-padding: 12 30 12 30;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
     -fx-cursor: hand;
     -fx-min-width: 150px;
 }
 
 .cancel-button:hover {
-    -fx-background-color: #d32f2f;
-    -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.4), 10, 0, 0, 3);
+    -fx-background-color: #5a6268;
+    -fx-effect: none;
 }

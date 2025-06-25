@@ -39,15 +39,12 @@
                         <Label fx:id="courseDescription" styleClass="course-description"
                                text="Scopri i segreti della vera cucina italiana attraverso un viaggio culinario autentico. Imparerai a preparare pasta fresca, risotti cremosi, sughi tradizionali e dolci della nonna."
                                wrapText="true"/>
-                        
-                        <!-- Sezione informazioni chef -->
                         <VBox styleClass="chef-section" spacing="4.0">
                             <children>
                                 <Label fx:id="chefName" styleClass="chef-name" text="Chef Mario Rossi"/>
                                 <Label fx:id="chefExperience" styleClass="chef-experience" text="15 anni di esperienza"/>
                             </children>
                         </VBox>
-                        
                         <VBox styleClass="course-details" spacing="8.0">
                             <children>
                                 <HBox styleClass="detail-row">

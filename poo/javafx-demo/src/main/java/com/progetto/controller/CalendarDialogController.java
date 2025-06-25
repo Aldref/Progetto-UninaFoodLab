@@ -16,6 +16,7 @@ public class CalendarDialogController {
     private Label selectedDateLabel;
     private VBox lessonsContainer;
     private Button closeBtn;
+    private boolean isChef;
 
     private LocalDate currentMonth;
     private LocalDate selectedDate;
@@ -23,13 +24,14 @@ public class CalendarDialogController {
     private VBox selectedDayCell;
 
     public CalendarDialogController(Label monthYearLabel, GridPane calendarGrid, VBox lessonDetailsArea,
-                                   Label selectedDateLabel, VBox lessonsContainer, Button closeBtn) {
+                                   Label selectedDateLabel, VBox lessonsContainer, Button closeBtn, boolean isChef) {
         this.monthYearLabel = monthYearLabel;
         this.calendarGrid = calendarGrid;
         this.lessonDetailsArea = lessonDetailsArea;
         this.selectedDateLabel = selectedDateLabel;
         this.lessonsContainer = lessonsContainer;
         this.closeBtn = closeBtn;
+        this.isChef = isChef;
     }
 
     public void initialize() {
@@ -41,16 +43,40 @@ public class CalendarDialogController {
         lessonDetailsArea.setVisible(true);
     }
 
+    // Dati fittizi, facilmente sostituibili con dati da DB
     private void loadSampleLessons() {
         LocalDate today = LocalDate.now();
         lessonsMap.put(today.withDayOfMonth(15), Arrays.asList(
-            new Lezione("09:00", "3 ore", "Preparazione di tagliatelle e ravioli", "Napoli", "80100", "Via Roma 123")
+            new Lezione(
+                "09:00", "3 ore", "Preparazione di tagliatelle e ravioli", "Napoli", "80100", "Via Roma 123",
+                true, // presenza
+                12,   // partecipanti
+                Arrays.asList(
+                    new Ingrediente("Farina", 100, "g"),
+                    new Ingrediente("Uova", 1, "pz"),
+                    new Ingrediente("Sale", 2, "g")
+                )
+            )
         ));
         lessonsMap.put(today.withDayOfMonth(22), Arrays.asList(
-            new Lezione("10:00", "3 ore", "Tiramisù e panna cotta", "Napoli", "80138", "Corso Umberto I, 45")
+            new Lezione(
+                "10:00", "3 ore", "Tiramisù e panna cotta", "Napoli", "80138", "Corso Umberto I, 45",
+                false, // online
+                0,
+                Collections.emptyList()
+            )
         ));
         lessonsMap.put(today.withDayOfMonth(29), Arrays.asList(
-            new Lezione("09:00", "3 ore", "Risotto ai funghi porcini", "Napoli", "80121", "Piazza del Plebiscito 1")
+            new Lezione(
+                "09:00", "3 ore", "Risotto ai funghi porcini", "Napoli", "80121", "Piazza del Plebiscito 1",
+                true,
+                8,
+                Arrays.asList(
+                    new Ingrediente("Riso", 80, "g"),
+                    new Ingrediente("Funghi porcini", 50, "g"),
+                    new Ingrediente("Brodo vegetale", 200, "ml")
+                )
+            )
         ));
     }
 
@@ -173,6 +199,26 @@ public class CalendarDialogController {
 
         detailsContainer.getChildren().addAll(startTimeBox, durationBox, addressBox);
 
+        // SOLO PER CHEF E SOLO PER CORSI IN PRESENZA
+        if (isChef && lesson.isPresenza()) {
+            Label partecipantiLabel = new Label("Partecipanti: " + lesson.getPartecipanti());
+            partecipantiLabel.getStyleClass().add("detail-label");
+            detailsContainer.getChildren().add(partecipantiLabel);
+
+            if (lesson.getIngredienti() != null && !lesson.getIngredienti().isEmpty()) {
+                Label ingredientiTitle = new Label("Ingredienti necessari:");
+                ingredientiTitle.getStyleClass().add("detail-label");
+                detailsContainer.getChildren().add(ingredientiTitle);
+
+                for (Ingrediente ingr : lesson.getIngredienti()) {
+                    double totale = ingr.getQuantitaPerPersona() * lesson.getPartecipanti();
+                    Label ingrLabel = new Label("- " + ingr.getNome() + ": " + totale + " " + ingr.getUnita());
+                    ingrLabel.getStyleClass().add("detail-label");
+                    detailsContainer.getChildren().add(ingrLabel);
+                }
+            }
+        }
+
         item.getChildren().addAll(descLabel, separator, detailsContainer);
         return item;
     }
@@ -194,7 +240,7 @@ public class CalendarDialogController {
         stage.close();
     }
 
-    // Classe TEMPORANEA per rappresentare una lezione di esempio
+    // === CLASSI DATI ===
     public static class Lezione {
         private String startTime;
         private String duration;
@@ -202,15 +248,22 @@ public class CalendarDialogController {
         private String city;
         private String postalCode;
         private String address;
+        private boolean presenza;
+        private int partecipanti;
+        private List<Ingrediente> ingredienti;
 
         public Lezione(String startTime, String duration, String description,
-                       String city, String postalCode, String address) {
+                       String city, String postalCode, String address,
+                       boolean presenza, int partecipanti, List<Ingrediente> ingredienti) {
             this.startTime = startTime;
             this.duration = duration;
             this.description = description;
             this.city = city;
             this.postalCode = postalCode;
             this.address = address;
+            this.presenza = presenza;
+            this.partecipanti = partecipanti;
+            this.ingredienti = ingredienti;
         }
 
         public String getStartTime() { return startTime; }
@@ -222,5 +275,24 @@ public class CalendarDialogController {
         public String getFullAddress() {
             return address + ", " + postalCode + " " + city;
         }
+        public boolean isPresenza() { return presenza; }
+        public int getPartecipanti() { return partecipanti; }
+        public List<Ingrediente> getIngredienti() { return ingredienti; }
+    }
+
+    public static class Ingrediente {
+        private String nome;
+        private double quantitaPerPersona;
+        private String unita;
+
+        public Ingrediente(String nome, double quantitaPerPersona, String unita) {
+            this.nome = nome;
+            this.quantitaPerPersona = quantitaPerPersona;
+            this.unita = unita;
+        }
+
+        public String getNome() { return nome; }
+        public double getQuantitaPerPersona() { return quantitaPerPersona; }
+        public String getUnita() { return unita; }
     }
 }

@@ -302,17 +302,17 @@
 .create-button {
     -fx-background-color: #2C56C9;
     -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 15 30;
     -fx-background-radius: 25;
+    -fx-padding: 12 30 12 30;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
     -fx-cursor: hand;
     -fx-min-width: 150px;
 }
 
 .create-button:hover {
     -fx-background-color: #1e3a8a;
-    -fx-effect: dropshadow(gaussian, rgba(44,86,201,0.4), 10, 0, 0, 3);
+    -fx-effect: none;
 }
 
 .create-button:disabled {
@@ -323,20 +323,20 @@
 }
 
 .cancel-button {
-    -fx-background-color: #f44336;
+    -fx-background-color: #6c757d;
     -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 15 30;
     -fx-background-radius: 25;
+    -fx-padding: 12 30 12 30;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
     -fx-cursor: hand;
     -fx-min-width: 150px;
 }
 
 .cancel-button:hover {
-    -fx-background-color: #d32f2f;
-    -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.4), 10, 0, 0, 3);
-}
+    -fx-background-color: #5a6268;
+    -fx-effect: none;
+} 
 
 .add-recipe-button {
     -fx-background-color: #28a745;

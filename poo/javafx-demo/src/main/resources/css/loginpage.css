@@ -1,9 +1,7 @@
-/* Main Container */
 .login-container {
     -fx-background-color: linear-gradient(45deg, #2C56C9 0%, #1e3a8a 100%);
 }
 
-/* LEFT SIDE - Brand Section */
 .brand-section {
     -fx-background-color: #2C56C9;
     -fx-min-width: 450;
@@ -50,7 +48,6 @@
     -fx-max-width: 350;
 }
 
-/* RIGHT SIDE - Login Form */
 .login-section {
     -fx-background-color: #f8f9fa;
     -fx-background-radius: 0 0 0 30;
@@ -143,7 +140,6 @@
     -fx-text-fill: white;
 }
 
-/* Responsive adjustments */
 @media screen and (max-width: 800px) {
     .brand-section {
         -fx-min-width: 300;

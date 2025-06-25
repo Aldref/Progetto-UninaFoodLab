@@ -9,218 +9,185 @@
 <BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.boundary.EditCourseBoundary" stylesheets="@../css/root.css,@../css/editcourse.css" prefHeight="700" prefWidth="1000" styleClass="edit-course-container">
    
    <top>
-      <!-- HEADER WITH BACK BUTTON - TITLE CENTERED -->
-      <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="header-section">
-         <children>
-            <Button fx:id="backButton" text="← Indietro" styleClass="back-button" onAction="#goBack" />
-            <Region HBox.hgrow="ALWAYS" />
-            <VBox alignment="CENTER" spacing="5.0">
-               <children>
-                  <Label text="Modifica Corso" styleClass="page-title" />
-                  <Label fx:id="courseNameLabel" text="Nome del corso da modificare" styleClass="page-subtitle" />
-               </children>
-            </VBox>
-            <Region HBox.hgrow="ALWAYS" />
-         </children>
-         <padding>
-            <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
-         </padding>
-      </HBox>
+     <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="header-section">
+       <children>
+         <Button fx:id="backButton" text="← Indietro" styleClass="back-button" onAction="#goBack" />
+         <Region HBox.hgrow="ALWAYS" />
+         <VBox alignment="CENTER" spacing="5.0">
+            <children>
+              <Label text="Modifica Corso" styleClass="page-title" />
+              <Label fx:id="courseNameLabel" text="Nome del corso da modificare" styleClass="page-subtitle" />
+            </children>
+         </VBox>
+         <Region HBox.hgrow="ALWAYS" />
+       </children>
+       <padding>
+         <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
+       </padding>
+     </HBox>
    </top>
    
    <center>
-      <!-- MAIN CONTENT -->
-      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="form-scroll-pane">
-         <content>
-            <VBox spacing="25.0" styleClass="form-container">
-               <children>
-                  
-                  <!-- INFORMAZIONI GENERALI -->
-                  <VBox spacing="15.0" styleClass="form-section">
+     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="form-scroll-pane">
+       <content>
+         <VBox spacing="25.0" styleClass="form-container">
+            <children>
+              <VBox spacing="15.0" styleClass="form-section">
+                <children>
+                  <Label text="Informazioni Generali" styleClass="section-title" />
+                  <VBox spacing="8.0">
                      <children>
-                        <Label text="Informazioni Generali" styleClass="section-title" />
-                        
-                        <!-- Descrizione -->
-                        <VBox spacing="8.0">
-                           <children>
-                              <Label text="Descrizione" styleClass="field-label" />
-                              <TextArea fx:id="descriptionArea" promptText="Inserisci la descrizione del corso..." styleClass="form-field, description-area" wrapText="true" />
-                              <Label fx:id="descriptionErrorLabel" styleClass="error-label" visible="false" />
-                           </children>
-                        </VBox>
-                        
-                        <!-- Tipo di corso -->
-                        <VBox spacing="8.0">
-                           <children>
-                              <Label text="Modalità" styleClass="field-label" />
-                              <ComboBox fx:id="courseTypeCombo" styleClass="combo-box" maxWidth="200.0" onAction="#onCourseTypeChanged" />
-                              <Label text="Seleziona se il corso è in presenza o telematico" styleClass="info-label" />
-                           </children>
-                        </VBox>
-                        
-                        <!-- Frequenza -->
-                        <VBox spacing="8.0">
-                           <children>
-                              <Label text="Frequenza" styleClass="field-label" />
-                              <ComboBox fx:id="frequencyCombo" styleClass="combo-box" maxWidth="250.0" onAction="#onFrequencyChanged" />
-                              <Label text="Seleziona quante volte a settimana" styleClass="info-label" />
-                           </children>
-                        </VBox>
-                        
-                        <!-- Max persone -->
-                        <VBox spacing="8.0">
-                           <children>
-                              <Label text="Numero massimo partecipanti" styleClass="field-label" />
-                              <Spinner fx:id="maxPersonsSpinner" styleClass="spinner" prefWidth="150.0" />
-                              <Label fx:id="maxPersonsErrorLabel" styleClass="error-label" visible="false" />
-                           </children>
-                        </VBox>
-                        
+                       <Label text="Descrizione" styleClass="field-label" />
+                       <TextArea fx:id="descriptionArea" promptText="Inserisci la descrizione del corso..." styleClass="form-field, description-area" wrapText="true" />
+                       <Label fx:id="descriptionErrorLabel" styleClass="error-label" visible="false" />
                      </children>
                   </VBox>
-                  
-                  <!-- DATE E ORARI -->
-                  <VBox spacing="15.0" styleClass="form-section">
+                  <VBox spacing="8.0">
                      <children>
-                        <Label text="Date e Orari" styleClass="section-title" />
-                        
-                        <!-- Date -->
-                        <HBox spacing="20.0">
-                           <children>
-                              <VBox spacing="8.0" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label text="Data inizio" styleClass="field-label" />
-                                    <DatePicker fx:id="startDatePicker" styleClass="form-field" />
-                                    <Label fx:id="startDateErrorLabel" styleClass="error-label" visible="false" />
-                                 </children>
-                              </VBox>
-                              <VBox spacing="8.0" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label text="Data fine" styleClass="field-label" />
-                                    <DatePicker fx:id="endDatePicker" styleClass="form-field" />
-                                    <Label fx:id="endDateErrorLabel" styleClass="error-label" visible="false" />
-                                 </children>
-                              </VBox>
-                           </children>
-                        </HBox>
-                        
-                        <!-- Orario -->
-                        <HBox spacing="20.0">
-                            <children>
-                                <VBox spacing="8.0">
-                                    <children>
-                                        <Label text="Orario inizio" styleClass="field-label" />
-                                        <HBox spacing="8.0" alignment="CENTER_LEFT">
-                                            <children>
-                                                <Spinner fx:id="startHourSpinner" styleClass="time-spinner" prefWidth="80.0" maxWidth="80.0" minWidth="80.0" />
-                                                <Label text=":" styleClass="time-separator" />
-                                                <Spinner fx:id="startMinuteSpinner" styleClass="time-spinner" prefWidth="80.0" maxWidth="80.0" minWidth="80.0" />
-                                            </children>
-                                        </HBox>
-                                        <Label fx:id="startTimeErrorLabel" styleClass="error-label" visible="false" />
-                                    </children>
-                                </VBox>
-                                <VBox spacing="8.0">
-                                    <children>
-                                        <Label text="Durata (ore)" styleClass="field-label" />
-                                        <Spinner fx:id="durationSpinner" styleClass="spinner" prefWidth="120.0" />
-                                        <Label fx:id="durationErrorLabel" styleClass="error-label" visible="false" />
-                                    </children>
-                                </VBox>
-                            </children>
-                        </HBox>
-                        
-                        <!-- Giorni della settimana -->
+                       <Label text="Modalità" styleClass="field-label" />
+                       <ComboBox fx:id="courseTypeCombo" styleClass="combo-box" maxWidth="200.0" onAction="#onCourseTypeChanged" />
+                       <Label text="Seleziona se il corso è in presenza o telematico" styleClass="info-label" />
+                     </children>
+                  </VBox>
+                  <VBox spacing="8.0">
+                     <children>
+                       <Label text="Frequenza" styleClass="field-label" />
+                       <ComboBox fx:id="frequencyCombo" styleClass="combo-box" maxWidth="250.0" onAction="#onFrequencyChanged" />
+                       <Label text="Seleziona quante volte a settimana" styleClass="info-label" />
+                     </children>
+                  </VBox>
+                  <VBox spacing="8.0">
+                     <children>
+                       <Label text="Numero massimo partecipanti" styleClass="field-label" />
+                       <Spinner fx:id="maxPersonsSpinner" styleClass="spinner" prefWidth="150.0" />
+                       <Label fx:id="maxPersonsErrorLabel" styleClass="error-label" visible="false" />
+                     </children>
+                  </VBox>
+                </children>
+              </VBox>
+              <VBox spacing="15.0" styleClass="form-section">
+                <children>
+                  <Label text="Date e Orari" styleClass="section-title" />
+                  <HBox spacing="20.0">
+                     <children>
+                       <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                         <children>
+                           <Label text="Data inizio" styleClass="field-label" />
+                           <DatePicker fx:id="startDatePicker" styleClass="form-field" />
+                           <Label fx:id="startDateErrorLabel" styleClass="error-label" visible="false" />
+                         </children>
+                       </VBox>
+                       <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                         <children>
+                           <Label text="Data fine" styleClass="field-label" />
+                           <DatePicker fx:id="endDatePicker" styleClass="form-field" />
+                           <Label fx:id="endDateErrorLabel" styleClass="error-label" visible="false" />
+                         </children>
+                       </VBox>
+                     </children>
+                  </HBox>
+                  <HBox spacing="20.0">
+                     <children>
                         <VBox spacing="8.0">
                            <children>
-                              <Label text="Giorni della settimana" styleClass="field-label" />
-                              <FlowPane fx:id="dayOfWeekContainer" hgap="10.0" vgap="10.0" styleClass="day-selection-container">
+                              <Label text="Orario inizio" styleClass="field-label" />
+                              <HBox spacing="8.0" alignment="CENTER_LEFT">
                                  <children>
-                                    <CheckBox fx:id="mondayCheckBox" text="Lunedì" styleClass="day-checkbox" />
-                                    <CheckBox fx:id="tuesdayCheckBox" text="Martedì" styleClass="day-checkbox" />
-                                    <CheckBox fx:id="wednesdayCheckBox" text="Mercoledì" styleClass="day-checkbox" />
-                                    <CheckBox fx:id="thursdayCheckBox" text="Giovedì" styleClass="day-checkbox" />
-                                    <CheckBox fx:id="fridayCheckBox" text="Venerdì" styleClass="day-checkbox" />
-                                    <CheckBox fx:id="saturdayCheckBox" text="Sabato" styleClass="day-checkbox" />
-                                    <CheckBox fx:id="sundayCheckBox" text="Domenica" styleClass="day-checkbox" />
+                                    <Spinner fx:id="startHourSpinner" styleClass="time-spinner" prefWidth="80.0" maxWidth="80.0" minWidth="80.0" />
+                                    <Label text=":" styleClass="time-separator" />
+                                    <Spinner fx:id="startMinuteSpinner" styleClass="time-spinner" prefWidth="80.0" maxWidth="80.0" minWidth="80.0" />
                                  </children>
-                              </FlowPane>
-                              <Label fx:id="dayInfoLabel" text="Seleziona la frequenza prima di scegliere i giorni" styleClass="info-label" />
-                              <Label fx:id="daysErrorLabel" styleClass="error-label" visible="false" />
+                              </HBox>
+                              <Label fx:id="startTimeErrorLabel" styleClass="error-label" visible="false" />
                            </children>
                         </VBox>
-                        
-                     </children>
-                  </VBox>
-                  
-                  <!-- INFORMAZIONI LOCATION (solo per corsi in presenza) -->
-                  <VBox fx:id="locationSection" spacing="15.0" styleClass="form-section">
-                     <children>
-                        <Label text="Informazioni Location" styleClass="section-title" />
-                        
-                        <HBox spacing="20.0">
+                        <VBox spacing="8.0">
                            <children>
-                              <VBox spacing="8.0" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label text="Via" styleClass="field-label" />
-                                    <TextField fx:id="streetField" promptText="Inserisci la via..." styleClass="form-field" />
-                                    <Label fx:id="streetErrorLabel" styleClass="error-label" visible="false" />
-                                 </children>
-                              </VBox>
-                              <VBox spacing="8.0" prefWidth="150.0">
-                                 <children>
-                                    <Label text="CAP" styleClass="field-label" />
-                                    <TextField fx:id="capField" promptText="80100" styleClass="form-field" />
-                                    <Label fx:id="capErrorLabel" styleClass="error-label" visible="false" />
-                                 </children>
-                              </VBox>
+                              <Label text="Durata (ore)" styleClass="field-label" />
+                              <Spinner fx:id="durationSpinner" styleClass="spinner" prefWidth="120.0" />
+                              <Label fx:id="durationErrorLabel" styleClass="error-label" visible="false" />
                            </children>
-                        </HBox>
-                        
+                        </VBox>
                      </children>
-                  </VBox>
-                  
-                  <!-- RICETTE (solo per corsi in presenza) -->
-                  <VBox fx:id="recipesSection" spacing="15.0" styleClass="form-section">
+                  </HBox>
+                  <VBox spacing="8.0">
                      <children>
-                        <HBox alignment="CENTER_LEFT" spacing="15.0">
-                           <children>
-                              <Label text="Ricette del Corso" styleClass="section-title" />
-                              <Button fx:id="addRecipeButton" text="+ Aggiungi Ricetta" styleClass="add-recipe-button" onAction="#addRecipe" />
-                           </children>
-                        </HBox>
-                        
-                        <ScrollPane fx:id="recipesScrollPane" fitToWidth="true" maxHeight="300.0" styleClass="recipes-scroll-pane">
-                           <content>
-                              <VBox fx:id="recipesContainer" spacing="15.0">
-                                 <!-- Le ricette verranno aggiunte dinamicamente qui -->
-                              </VBox>
-                           </content>
-                        </ScrollPane>
-                        
+                       <Label text="Giorni della settimana" styleClass="field-label" />
+                       <FlowPane fx:id="dayOfWeekContainer" hgap="10.0" vgap="10.0" styleClass="day-selection-container">
+                         <children>
+                           <CheckBox fx:id="mondayCheckBox" text="Lunedì" styleClass="day-checkbox" />
+                           <CheckBox fx:id="tuesdayCheckBox" text="Martedì" styleClass="day-checkbox" />
+                           <CheckBox fx:id="wednesdayCheckBox" text="Mercoledì" styleClass="day-checkbox" />
+                           <CheckBox fx:id="thursdayCheckBox" text="Giovedì" styleClass="day-checkbox" />
+                           <CheckBox fx:id="fridayCheckBox" text="Venerdì" styleClass="day-checkbox" />
+                           <CheckBox fx:id="saturdayCheckBox" text="Sabato" styleClass="day-checkbox" />
+                           <CheckBox fx:id="sundayCheckBox" text="Domenica" styleClass="day-checkbox" />
+                         </children>
+                       </FlowPane>
+                       <Label fx:id="dayInfoLabel" text="Seleziona la frequenza prima di scegliere i giorni" styleClass="info-label" />
+                       <Label fx:id="daysErrorLabel" styleClass="error-label" visible="false" />
                      </children>
                   </VBox>
-                  
-               </children>
-               <padding>
-                  <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
-               </padding>
-            </VBox>
-         </content>
-      </ScrollPane>
+                </children>
+              </VBox>
+              <VBox fx:id="locationSection" spacing="15.0" styleClass="form-section">
+                <children>
+                  <Label text="Informazioni Location" styleClass="section-title" />
+                  <HBox spacing="20.0">
+                     <children>
+                       <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                         <children>
+                           <Label text="Via" styleClass="field-label" />
+                           <TextField fx:id="streetField" promptText="Inserisci la via..." styleClass="form-field" />
+                           <Label fx:id="streetErrorLabel" styleClass="error-label" visible="false" />
+                         </children>
+                       </VBox>
+                       <VBox spacing="8.0" prefWidth="150.0">
+                         <children>
+                           <Label text="CAP" styleClass="field-label" />
+                           <TextField fx:id="capField" promptText="80100" styleClass="form-field" />
+                           <Label fx:id="capErrorLabel" styleClass="error-label" visible="false" />
+                         </children>
+                       </VBox>
+                     </children>
+                  </HBox>
+                </children>
+              </VBox>
+              <VBox fx:id="recipesSection" spacing="15.0" styleClass="form-section">
+                <children>
+                  <HBox alignment="CENTER_LEFT" spacing="15.0">
+                     <children>
+                       <Label text="Ricette del Corso" styleClass="section-title" />
+                       <Button fx:id="addRecipeButton" text="+ Aggiungi Ricetta" styleClass="add-recipe-button" onAction="#addRecipe" />
+                     </children>
+                  </HBox>
+                  <ScrollPane fx:id="recipesScrollPane" fitToWidth="true" maxHeight="300.0" styleClass="recipes-scroll-pane">
+                     <content>
+                       <VBox fx:id="recipesContainer" spacing="15.0">
+                       </VBox>
+                     </content>
+                  </ScrollPane>
+                </children>
+              </VBox>
+            </children>
+            <padding>
+              <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+         </VBox>
+       </content>
+     </ScrollPane>
    </center>
    
    <bottom>
-      <!-- BUTTONS -->
-      <HBox alignment="CENTER" spacing="20.0" styleClass="buttons-section">
-         <children>
-            <Button fx:id="cancelButton" text="Annulla" styleClass="cancel-button" onAction="#goBack" />
-            <Button fx:id="saveButton" text="Salva Modifiche" styleClass="save-button" onAction="#saveCourse" />
-         </children>
-         <padding>
-            <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
-         </padding>
-      </HBox>
+     <HBox alignment="CENTER" spacing="20.0" styleClass="buttons-section">
+       <children>
+         <Button fx:id="cancelButton" text="Annulla" styleClass="cancel-button" onAction="#goBack" />
+         <Button fx:id="saveButton" text="Salva Modifiche" styleClass="save-button" onAction="#saveCourse" />
+       </children>
+       <padding>
+         <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
+       </padding>
+     </HBox>
    </bottom>
    
 </BorderPane>

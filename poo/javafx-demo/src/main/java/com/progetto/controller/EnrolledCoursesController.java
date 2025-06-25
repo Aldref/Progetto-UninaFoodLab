@@ -207,7 +207,6 @@ public class EnrolledCoursesController {
         }
     }
 
-    // AGGIUNTO DEBUG PER CAPIRE IL PROBLEMA
     public void goToHomepage() {
         try {
             Stage stage = (Stage) mainContentArea.getScene().getWindow();

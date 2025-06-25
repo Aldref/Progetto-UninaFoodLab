@@ -30,6 +30,16 @@ public class UserCardsBoundary {
     @FXML private TextField expiryField;
     @FXML private TextField cvvField;
 
+    @FXML private Label cardHolderErrorLabel;
+    @FXML private Label cardNumberErrorLabel;
+    @FXML private Label expiryErrorLabel;
+    @FXML private Label cvvErrorLabel;
+
+    // Flags per evitare ricorsione nei listener
+    private boolean updatingCardNumber = false;
+    private boolean updatingExpiry = false;
+    private boolean updatingCvv = false;
+
     @FXML
     private void initialize() {
         controller = new UserCardsController(this);
@@ -57,6 +67,8 @@ public class UserCardsBoundary {
         });
 
         cardNumberField.textProperty().addListener((obs, oldText, newText) -> {
+            if (updatingCardNumber) return;
+            updatingCardNumber = true;
             String digits = newText.replaceAll("[^0-9]", "");
             if (digits.length() > 16) digits = digits.substring(0, 16);
             StringBuilder formatted = new StringBuilder();
@@ -70,19 +82,28 @@ public class UserCardsBoundary {
             }
             // Validazione tipo carta
             if (digits.length() >= 4 && !CardValidator.isValidCardType(digits)) {
-                showFieldError("cardNumber", "Tipo carta non supportato");
+                showFieldError("cardNumber", "Tipo di carta non supportato. Accettiamo solo Visa e Mastercard");
             } else {
                 clearAllErrors();
             }
+            updatingCardNumber = false;
         });
 
         cvvField.textProperty().addListener((obs, oldText, newText) -> {
+            if (updatingCvv) return;
+            updatingCvv = true;
             String filtered = newText.replaceAll("[^0-9]", "");
             if (filtered.length() > 4) filtered = filtered.substring(0, 4);
-            cvvField.setText(filtered);
+            if (!cvvField.getText().equals(filtered)) {
+                cvvField.setText(filtered);
+                cvvField.positionCaret(filtered.length());
+            }
+            updatingCvv = false;
         });
 
         expiryField.textProperty().addListener((obs, oldText, newText) -> {
+            if (updatingExpiry) return;
+            updatingExpiry = true;
             String filtered = newText.replaceAll("[^0-9]", "");
             if (filtered.length() > 4) filtered = filtered.substring(0, 4);
             StringBuilder formatted = new StringBuilder(filtered);
@@ -93,12 +114,12 @@ public class UserCardsBoundary {
                 expiryField.setText(formatted.toString());
                 expiryField.positionCaret(formatted.length());
             }
-            
             if (formatted.length() == 5 && !CardValidator.isValidExpiryDate(formatted.toString())) {
                 showFieldError("expiry", "Data di scadenza non valida");
             } else {
                 clearAllErrors();
             }
+            updatingExpiry = false;
         });
     }
 
@@ -117,20 +138,17 @@ public class UserCardsBoundary {
     private void deleteSelectedCard() {
         String selected = cardsListView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            // Qui chiamerai il controller per eliminare la carta dal DB
             controller.deleteCard(selected); // Passa l'id o info della carta
         }
     }
 
     @FXML
     private void saveCard() {
-        // Chiama il controller per salvare la carta
         controller.saveNewCard();
     }
 
     @FXML
     private void clearFields() {
-        // Svuota i campi della form
         cardHolderField.setText("");
         cardNumberField.setText("");
         expiryField.setText("");
@@ -138,15 +156,50 @@ public class UserCardsBoundary {
         clearAllErrors();
     }
 
-    // Utility methods (come già presenti)
-    public void clearAllErrors() {}
-    public void showSuccessMessage(String msg) {}
-    public void clearFieldsFromController() {}
-    public void showFieldError(String field, String msg) {}
+    // Utility methods
+    public void clearAllErrors() {
+        cardHolderErrorLabel.setVisible(false);
+        cardNumberErrorLabel.setVisible(false);
+        expiryErrorLabel.setVisible(false);
+        cvvErrorLabel.setVisible(false);
+    }
+    public void showSuccessMessage(String msg) {
+        // Implementa se vuoi mostrare un messaggio di successo
+    }
+    public void clearFieldsFromController() {
+        clearFields();
+    }
+    public void showFieldError(String field, String msg) {
+        switch (field) {
+            case "cardHolder":
+                cardHolderErrorLabel.setText(msg);
+                cardHolderErrorLabel.setVisible(true);
+                break;
+            case "cardNumber":
+                cardNumberErrorLabel.setText(msg);
+                cardNumberErrorLabel.setVisible(true);
+                break;
+            case "expiry":
+                expiryErrorLabel.setText(msg);
+                expiryErrorLabel.setVisible(true);
+                break;
+            case "cvv":
+                cvvErrorLabel.setText(msg);
+                cvvErrorLabel.setVisible(true);
+                break;
+        }
+    }
 
-    // Getter per i dati della carta (da implementare secondo la tua UI)
-    public String getCardHolderName() { return ""; }
-    public String getCardNumber() { return ""; }
-    public String getExpiry() { return ""; }
-    public String getCvv() { return ""; }
+    public String getCardHolderName() {
+        return cardHolderField.getText().trim();
+    }
+    public String getCardNumber() {
+        return cardNumberField.getText().replaceAll("\\s", "");
+    }
+    public String getExpiry() {
+        return expiryField.getText().trim();
+    }
+    public String getCvv() {
+        return cvvField.getText().trim();
+    }
 }
