@@ -13,13 +13,13 @@ abstract public class Sessione {
     private Chef chef;
 
     
-
-    public Sessione(String giorno, LocalDate data, float orario, int  durata) {
+    public Sessione(String giorno, LocalDate data, float orario, int  durata, int id_Sessione) {
         this.giorno = giorno;
         this.data = data;
         this.orario = orario;
         this.durata = durata;
         this.chef = new Chef();
+        this.id_Sessione = id_Sessione;
 
     }
 

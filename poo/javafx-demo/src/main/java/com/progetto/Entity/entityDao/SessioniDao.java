@@ -9,6 +9,7 @@ import com.progetto.Entity.EntityDto.Chef;
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.Sessione;
 import com.progetto.jdbc.ConnectionJavaDb;
+import com.progetto.jdbc.SupportDb;
 
 abstract public class SessioniDao {
 
@@ -17,6 +18,7 @@ abstract public class SessioniDao {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        SupportDb dbu = new SupportDb();   
 
         try {
             conn = ConnectionJavaDb.getConnection();
@@ -31,21 +33,17 @@ abstract public class SessioniDao {
         } catch (SQLException e) {
           // gestisci errore 
         } finally {
-            try {
-                if (rs != null) rs.close();
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+                dbu.closeAll(conn, ps, rs); 
         }
         return false;
     }
+
+
     public ArrayList<Sessione> recuperoSessioniPerChef(Corso corso) {
         SessioneInPresenzaDao sessioneInPresenzaDao = new SessioneInPresenzaDao();
         SessioneOnlineDao sessioneOnlineDao = new SessioneOnlineDao();
         ArrayList<Sessione> sessioni = new ArrayList<>();
-        sessioni.addAll(sessioneInPresenzaDao.recuperoSessionCorsoTelematiche(corso));
+        sessioni.addAll(sessioneInPresenzaDao.recuperoSessionCorso(corso));
         sessioni.addAll(sessioneOnlineDao.recuperoSessioniCorsoOnline(corso));
             return sessioni;
         }

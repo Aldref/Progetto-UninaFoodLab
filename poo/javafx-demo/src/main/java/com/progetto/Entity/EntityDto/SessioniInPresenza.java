@@ -5,15 +5,20 @@ import java.util.ArrayList;
 public class SessioniInPresenza extends Sessione {
    private String citta, via, cap, attrezzatura;
    private ArrayList<UtenteVisitatore> corsoListPartecipanti;
+   private ArrayList<Ricetta> ricette;
 
-    public SessioniInPresenza(String giorno, LocalDate data, float orario, int durata, String citta, String via, String cap, String attrezzatura) {
-        super(giorno, data, orario, durata);
+  
+    public SessioniInPresenza(String giorno, LocalDate data, float orario, int durata, String citta, String via, String cap, String attrezzatura, int id_Sessione) {
+        super(giorno, data, orario, durata, id_Sessione);
         this.citta = citta;
         this.via = via;
         this.cap = cap;
         this.attrezzatura = attrezzatura;
         this.corsoListPartecipanti = new ArrayList<>();
+        this.ricette = new ArrayList<>();
+    
     }
+
     public String getCitta() {
         return citta;
     }
@@ -49,12 +54,17 @@ public class SessioniInPresenza extends Sessione {
      public ArrayList<UtenteVisitatore> getCorsoList() {
         return corsoListPartecipanti;
     }
+    
 
     public void setCorsoList(ArrayList<UtenteVisitatore> corsoList) {
         this.corsoListPartecipanti  = corsoList;
     }
-
-
-
+    public ArrayList<Ricetta> getRicette() {
+        return ricette;
+    }
+    public void setRicette(ArrayList<Ricetta> ricette) {
+        this.ricette = ricette;
+    }
+  
 
 }

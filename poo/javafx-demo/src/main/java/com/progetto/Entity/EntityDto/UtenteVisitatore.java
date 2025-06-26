@@ -17,7 +17,8 @@ public class UtenteVisitatore extends Utente {
         super("", "", "", "", "", null);
         this.utenteVisitatoreDao = new UtenteVisitatoreDao();
     }
-
+   
+    
     
 
     public int getId_UtenteVisitatore() {

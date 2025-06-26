@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.Sessione;
@@ -38,7 +37,8 @@ public class SessioneOnlineDao extends SessioniDao {
                         rs.getInt("durata"),
                         rs.getString("Applicazione"),
                         rs.getString("Codicechiamata"),
-                        rs.getString("Descrizione"));
+                        rs.getString("Descrizione"),
+                        rs.getInt("id_Sessione"));
                 sessioni.add(sessione);
             }
         } catch (SQLException e) {
@@ -74,11 +74,7 @@ public class SessioneOnlineDao extends SessioniDao {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);        }
     }
-    public Collection<? extends Sessione> recuperoSessionCorsoTelematiche(Corso corso) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'recuperoSessionCorsoTelematiche'");
-    }
-
+  
 
 
     

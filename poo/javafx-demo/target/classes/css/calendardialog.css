@@ -202,7 +202,6 @@
     -fx-background-color: #5a6268;
 }
 
-/* Badge per tipo lezione per il futuro */
 .presence-badge {
     -fx-background-color: #28a745;
     -fx-text-fill: white;

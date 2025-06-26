@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.jdbc.ConnectionJavaDb;
@@ -48,4 +49,57 @@ public class CorsoDao{
 
 
 }
+    public Corso getCorsoById(int idCorso) {
+        String query = "SELECT * FROM Corso WHERE id_Corso = ?";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Corso corso = null;
+
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, idCorso);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                corso = new Corso(rs.getString("Nome"), rs.getString("Descrizione"), rs.getDate("DataInizio").toLocalDate(), rs.getDate("DataFine").toLocalDate(), rs.getString("FrequenzaDelleSessioni"), rs.getInt("MaxPersone"), rs.getFloat("Prezzo"), rs.getString("Url_Propic"));
+                corso.setId_Corso(rs.getInt("id_Corso"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return corso;
+    }
+    
+    public ArrayList<Corso> recuperaCorsi(){
+        ArrayList<Corso> corsi = new ArrayList<>();
+        String query = "SELECT * FROM Corso";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Corso corso = new Corso(rs.getString("Nome"), rs.getString("Descrizione"), rs.getDate("DataInizio").toLocalDate(), rs.getDate("DataFine").toLocalDate(), rs.getString("FrequenzaDelleSessioni"), rs.getInt("MaxPersone"), rs.getFloat("Prezzo"), rs.getString("Url_Propic"));
+                corso.setId_Corso(rs.getInt("id_Corso"));
+                corsi.add(corso);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return corsi;
+    }
+
+
 }

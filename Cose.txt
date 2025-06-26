@@ -46,9 +46,9 @@ RICETTA(IdRicetta(pk), Nome)
 
 SESSIONE_PRESENZA_RICETTA(Idricetta(fk), idsessionepresenza(fk)
 
-INGREDIENTE(IdIngrediente(pk), Nome, UnitaDiMisura, Quanitita)
+INGREDIENTE(IdIngrediente(pk), Nome, UnitaDiMisura)
 
-PREPARAZIONEINGREDIENTE(IdRicetta(fk), IdIngrediente(fk), QuantitaTotale)
+PREPARAZIONEINGREDIENTE(IdRicetta(fk), IdIngrediente(fk), QuantitaTotale,Quanitita)
 
 
 CREATE TYPE Circuito AS ENUM ('Visa', 'Mastercard');
