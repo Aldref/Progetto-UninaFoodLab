@@ -171,7 +171,7 @@
                               <VBox spacing="8.0">
                                  <children>
                                     <Label styleClass="field-label" text="Frequenza delle Sessioni *" />
-                                    <ComboBox fx:id="frequencyComboBox" promptText="Seleziona la frequenza" styleClass="form-field" />
+                                    <ComboBox fx:id="frequencyComboBox" promptText="Seleziona la frequenza" styleClass="form-field" onAction="#onFrequencyChanged" />
                                  </children>
                               </VBox>
                               <VBox spacing="8.0">

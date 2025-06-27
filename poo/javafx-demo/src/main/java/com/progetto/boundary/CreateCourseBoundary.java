@@ -100,8 +100,15 @@ public class CreateCourseBoundary {
     }
 
     // ...resto dei metodi invariato...
+
     @FXML
     private void onLessonTypeChanged(ActionEvent event) {
+        controller.onLessonTypeChanged();
+    }
+
+    @FXML
+    private void onFrequencyChanged(ActionEvent event) {
+        // Aggiorna la UI della sezione "Entrambi" quando cambia la frequenza
         controller.onLessonTypeChanged();
     }
 
