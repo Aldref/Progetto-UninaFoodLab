@@ -773,7 +773,12 @@ public class CreateCourseController {
         onlineDetailsSection.setManaged(isOnline);
         hybridDetailsSection.setVisible(isHybrid);
         hybridDetailsSection.setManaged(isHybrid);
-        if (isHybrid) setupHybridDaysUI();
+        // Fix macOS: assicurati che la sezione sia visibile/managed PRIMA di popolare i giorni
+        if (isHybrid) {
+            hybridDetailsSection.setVisible(true);
+            hybridDetailsSection.setManaged(true);
+            setupHybridDaysUI();
+        }
     }
 
     private void setupHybridDaysUI() {
