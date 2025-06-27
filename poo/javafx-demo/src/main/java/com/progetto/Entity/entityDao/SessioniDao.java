@@ -3,10 +3,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import com.progetto.Entity.EntityDto.Chef;
-import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.Sessione;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
@@ -39,14 +37,7 @@ abstract public class SessioniDao {
     }
 
 
-    public ArrayList<Sessione> recuperoSessioniPerChef(Corso corso) {
-        SessioneInPresenzaDao sessioneInPresenzaDao = new SessioneInPresenzaDao();
-        SessioneOnlineDao sessioneOnlineDao = new SessioneOnlineDao();
-        ArrayList<Sessione> sessioni = new ArrayList<>();
-        sessioni.addAll(sessioneInPresenzaDao.recuperoSessionCorso(corso));
-        sessioni.addAll(sessioneOnlineDao.recuperoSessioniCorsoOnline(corso));
-            return sessioni;
-        }
+    
 
         abstract public void  MemorizzaSessione(Sessione sessione);
     }

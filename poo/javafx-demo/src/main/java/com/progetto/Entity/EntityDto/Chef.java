@@ -1,17 +1,14 @@
 package com.progetto.Entity.EntityDto;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
-
-import com.progetto.Entity.entityDao.ChefDao;
 public class Chef extends Utente {
     private int anniDiEsperienza;
     private int  id_Chef;
-     private List<Corso> corsi = new ArrayList<Corso>();
+     private String Descrizione;
+     private GraficoChef grafico1;
     
-    public Chef(String nome, String cognome, String email, String password, String numeroDiTelefono, LocalDate dataDiNascita, int anniDiEsperienza) {
-        super(nome, cognome, email, password, numeroDiTelefono, dataDiNascita);
+    public Chef(String nome, String cognome, String email, String password, LocalDate dataDiNascita, int anniDiEsperienza) {
+        super(nome, cognome, email, password,  dataDiNascita);
         this.anniDiEsperienza = anniDiEsperienza;
     }  
 
@@ -20,11 +17,27 @@ public class Chef extends Utente {
         this.anniDiEsperienza = 0;
    
     }
+    
+    
+    public String getDescrizione(){
+        return Descrizione ;
+    }
+
+    public void  setDescrizione(String Descrizione){
+        this.Descrizione=Descrizione ;
+    } 
 
 
     public int getAnniDiEsperienza() {
         return anniDiEsperienza;
     }       
+    public void setGrafico(GraficoChef Grafico){
+      grafico1=Grafico; 
+    }
+
+    public GraficoChef getGraficoChef(){
+        return grafico1;
+    }
 
     public int getId_Chef() {
         return id_Chef;
@@ -41,9 +54,7 @@ public class Chef extends Utente {
         this.corsi = corsi; 
     }
 
-    public List<Corso> getCorsi() {
-        return corsi;
-    }
+    
 
     
 

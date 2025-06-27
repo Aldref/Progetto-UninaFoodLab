@@ -46,5 +46,8 @@ public class Ingredienti{
     public void setUnitaMisura(String unitaMisura) {
         this.unitaMisura = unitaMisura;
     }
-
+    
+    public void setIdIngrediente(int id_Ingrediente){
+        this.id_Ingrediente=id_Ingrediente;
+    }
 }

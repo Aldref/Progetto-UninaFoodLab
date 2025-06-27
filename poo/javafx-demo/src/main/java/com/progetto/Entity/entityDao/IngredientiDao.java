@@ -70,7 +70,7 @@ public void cancellaingrediente(Ingredienti ingredienti) {
     }
 
     public void recuperaQuantitaTotale(Ingredienti ingredienti, Ricetta ricetta) {
-        String query = "SELECT SUM(QuantitaUnitaria) AS QuantitaTotale FROM PREPARAZIONEINGREDIENTE WHERE IdIngrediente = ? and IdRicetta = ?  ";
+        String query = "SELECT QuantitaTotale FROM QuantitaPerSessione WHERE IdIngrediente = ? and IdRicetta = ?  ";
         Connection conn = null;
         PreparedStatement ps = null;
         SupportDb dbu = new SupportDb();

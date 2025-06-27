@@ -12,7 +12,7 @@ import com.progetto.jdbc.SupportDb;
 public abstract class UtenteDao {
     
 
-    public boolean ControlloEmailUtente(Utente utente) {
+    public boolean LoginUtente(Utente utente) {
         String query="SELECT EXISTS (SELECT 1 FROM Partecipante WHERE Email = ?) OR EXISTS (SELECT 1 FROM Chef WHERE Email = ?) AS Esistenza";
         SupportDb dbu= new SupportDb();
         Connection conn=null;
@@ -74,4 +74,5 @@ public abstract class UtenteDao {
     public abstract  void recuperaDatiUtente   (Utente utenteVisitatore);
     public abstract void RegistrazioneUtente(Utente utenteVisitatore);
     public abstract void ModificaUtente(Utente utenteVisitatore);
+    public abstract void RecuperaCorsi(Utente utente);
 }

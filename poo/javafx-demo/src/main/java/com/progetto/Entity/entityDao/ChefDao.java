@@ -3,12 +3,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 import com.progetto.Entity.EntityDto.Chef;
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.Utente;
+import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
 
@@ -16,7 +17,7 @@ public class ChefDao extends UtenteDao  {
    
     @Override
     public void RegistrazioneUtente(Utente chef1) {
-        String query = "INSERT INTO Chef (Nome, Cognome, Email, Password, NumeroDiTelefono, DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Chef (Nome, Cognome, Email, Password,DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?, ?)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -32,7 +33,6 @@ public class ChefDao extends UtenteDao  {
             ps.setString(2, chef1.getCognome());
             ps.setString(3, chef1.getEmail());
             ps.setString(4, chef1.getPassword());
-            ps.setString(5, chef1.getNumeroDiTelefono());
             ps.setDate(6, sqlData);
             ps.setInt(7, ((Chef)chef1).getAnniDiEsperienza());
             ps.execute(); 
@@ -89,7 +89,6 @@ public class ChefDao extends UtenteDao  {
                 chef.setCognome(rs.getString("Cognome"));
                 chef.setEmail(rs.getString("Email"));
                 chef.setPassword(rs.getString("Password"));
-                chef.setNumeroDiTelefono(rs.getString("NumeroDiTelefono"));
                 chef.setDataDiNascita(rs.getDate("DataDiNascita").toLocalDate());
                 ((Chef)chef).setAnniDiEsperienza(rs.getInt("AnniDiEsperienza"));
             }
@@ -103,41 +102,52 @@ public class ChefDao extends UtenteDao  {
 
 
 
-    public List<Corso> recuperaCorsiChef(Chef chef) {
-        String query = "SELECT c.* FROM Corso c JOIN Chef_Corso cc ON c.id_Corso = cc.id_Corso WHERE cc.id_Chef = ?";
+   
+    public void RecuperaCorsi (Utente utente){
+      String query = "SELECT C.* FROM CHEF_CORSO CC NATURAL JOIN CORSO C WHERE CC.IdChef = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Corso> corsi = new ArrayList<>();
-
+        ArrayList<Corso> Corsi=new ArrayList<>();
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
-            ps.setInt(1, chef.getId_Chef());
-            rs = ps.executeQuery();
+            ps.setInt(1, ((UtenteVisitatore) utente).getId_UtenteVisitatore());
+            rs = ps.executeQuery(); 
 
-            while (rs.next()) {
-                Corso corso = new Corso();
-                corso.setId_Corso(rs.getInt("id_Corso"));
-                corso.setNome(rs.getString("Nome"));
-                corso.setDescrizione(rs.getString("Descrizione"));
-                corso.setDataInizio(rs.getDate("DataInizio").toLocalDate());
-                corso.setDataFine(rs.getDate("DataFine").toLocalDate());
-                corso.setFrequenzaDelleSessioni(rs.getString("FrequenzaDelleSessioni"));
-                corso.setMaxPersone(rs.getInt("MaxPersone"));
-                corso.setPrezzo(rs.getFloat("Prezzo"));
-                corso.setUrl_Propic(rs.getString("Url_Propic"));
-                corsi.add(corso);
+             while (rs.next()){
+                LocalDate dataInizio = null;
+                LocalDate dataFine = null;
+                java.sql.Date sqlDataInizio = rs.getDate("DataInizio");
+                java.sql.Date sqlDataFine = rs.getDate("DataFine");
+
+                Corso Corso1 = new Corso(
+                    rs.getString("Nome"),
+                    rs.getString("Descrizione"),
+                    dataInizio,
+                    dataFine,
+                    rs.getString("FrequenzaDelleSessioni"),
+                    rs.getInt("MaxPersone"),
+                    (float) rs.getDouble("Prezzo"),
+                    rs.getString("Propic"));
+
+                    Corso1.setId_Corso(rs.getInt("IdCorso"));
+                    Corso1.setSessioni(new CorsoDao().recuperoSessioniPerCorso(Corso1));               
+                Corsi.add(Corso1);
+               
+              
+             
+            
             }
-        
         } catch (SQLException sqe) {
-       // aggiungi errore
+            //gestire errore
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
-        return corsi;
+        utente.setcorso(Corsi);
     }
+
 
 
     
@@ -168,7 +178,7 @@ public class ChefDao extends UtenteDao  {
     
      @Override
     public void ModificaUtente(Utente chef) {
-        String query = "UPDATE CHEF SET Nome = COALESCE(?, Nome), Cognome = COALESCE(?, Cognome), Email = COALESCE(?, Email), Password = COALESCE(?, Password), NumeroDiTelefono = COALESCE(?, NumeroDiTelefono), DataDiNascita = COALESCE(?, DataDiNascita) WHERE id_Chef = ?";
+        String query = "UPDATE CHEF SET Nome = COALESCE(?, Nome), Cognome = COALESCE(?, Cognome), Email = COALESCE(?, Email), Password = COALESCE(?, Password), DataDiNascita = COALESCE(?, DataDiNascita), Propic=COALESCE(?,Propic) , DESCRIZIONE=COALESCE(?,DESCRIZIONE) WHERE id_Chef = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -185,8 +195,9 @@ public class ChefDao extends UtenteDao  {
         ps.setString(2, chef.getCognome());
         ps.setString(3, chef.getEmail());
         ps.setString(4, chef.getPassword());
-        ps.setString(5, chef.getNumeroDiTelefono());
         ps.setDate(6, sqlDataDiNascita);
+        ps.setString(5, ((Chef)chef).getUrl_Propic());
+        ps.setString(6, ((Chef)chef).getDescrizione());
         ps.setInt(7, ((Chef)chef).getId_Chef());
 
         ps.executeUpdate();

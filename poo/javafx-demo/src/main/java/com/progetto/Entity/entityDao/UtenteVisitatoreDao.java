@@ -4,7 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
+import com.progetto.Entity.EntityDto.CartaDiCredito;
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.Entity.EntityDto.Utente;
@@ -16,7 +18,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
    
     @Override
     public void RegistrazioneUtente(Utente utenteVisitatore) {
-        String query = "INSERT INTO Partecipante (Nome, Cognome, Email, Password, NumeroDiTelefono, DataDiNascita) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Partecipante (Nome, Cognome, Email, Password,  DataDiNascita) VALUES (?, ?, ?, ?, ?)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -31,9 +33,8 @@ public class UtenteVisitatoreDao extends UtenteDao {
             ps.setString(2, ((UtenteVisitatore) utenteVisitatore).getCognome());
             ps.setString(3, ((UtenteVisitatore) utenteVisitatore).getEmail());
             ps.setString(4, ((UtenteVisitatore) utenteVisitatore).getPassword());
-            ps.setString(5, ((UtenteVisitatore) utenteVisitatore).getNumeroDiTelefono());
-            ps.setDate(6, sqlData);
-            ps.execute(); 
+            ps.setDate(5, sqlData);
+            ps.execute();
             generatedKeys = ps.getGeneratedKeys();
             if (generatedKeys.next()) {
                 ((UtenteVisitatore)utenteVisitatore).setId_UtenteVisitatore(generatedKeys.getInt(1));
@@ -63,7 +64,6 @@ public class UtenteVisitatoreDao extends UtenteDao {
                 utenteVisitatore.setCognome(rs.getString("Cognome"));
                 utenteVisitatore.setEmail(rs.getString("Email"));
                 utenteVisitatore.setPassword(rs.getString("Password"));
-                utenteVisitatore.setNumeroDiTelefono(rs.getString("NumeroDiTelefono"));
                 utenteVisitatore.setDataDiNascita(rs.getDate("DataDiNascita").toLocalDate());
             }
         } catch (SQLException sqe) {
@@ -121,7 +121,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
 
     @Override
     public void ModificaUtente(Utente utenteVisitatore) {
-        String query = "UPDATE Partecipante SET Nome = COALESCE(?, Nome), Cognome = COALESCE(?, Cognome), Email = COALESCE(?, Email), Password = COALESCE(?, Password), NumeroDiTelefono = COALESCE(?, NumeroDiTelefono), DataDiNascita = COALESCE(?, DataDiNascita) WHERE id_UtenteVisitatore = ?";
+        String query = "UPDATE Partecipante SET Nome = COALESCE(?, Nome), Cognome = COALESCE(?, Cognome), Email = COALESCE(?, Email), Password = COALESCE(?, Password), DataDiNascita = COALESCE(?, DataDiNascita) WHERE id_UtenteVisitatore = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -138,9 +138,8 @@ public class UtenteVisitatoreDao extends UtenteDao {
         ps.setString(2, utenteVisitatore.getCognome());
         ps.setString(3, utenteVisitatore.getEmail());
         ps.setString(4, utenteVisitatore.getPassword());
-        ps.setString(5, utenteVisitatore.getNumeroDiTelefono());
-        ps.setDate(6, sqlDataDiNascita);
-        ps.setInt(7, ((UtenteVisitatore)utenteVisitatore).getId_UtenteVisitatore());
+        ps.setDate(5, sqlDataDiNascita);
+        ps.setInt(6, ((UtenteVisitatore)utenteVisitatore).getId_UtenteVisitatore());
 
         ps.executeUpdate();
     } catch (SQLException e) {
@@ -150,5 +149,87 @@ public class UtenteVisitatoreDao extends UtenteDao {
         dbu.closeConnection(conn);
     }
 }
+     public void RecuperaCorsi (Utente utente){
+      String query = "SELECT C.* FROM RICHIESTAPAGAMENTO R NATURAL JOIN CORSO C WHERE R.IdPartecipante = ?";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ArrayList<Corso> Corsi=new ArrayList<>();
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, ((UtenteVisitatore) utente).getId_UtenteVisitatore());
+            rs = ps.executeQuery(); 
+
+             while (rs.next()){
+                LocalDate dataInizio = null;
+                LocalDate dataFine = null;
+                java.sql.Date sqlDataInizio = rs.getDate("DataInizio");
+                java.sql.Date sqlDataFine = rs.getDate("DataFine");
+
+                Corso Corso1 = new Corso(
+                    rs.getString("Nome"),
+                    rs.getString("Descrizione"),
+                    dataInizio,
+                    dataFine,
+                    rs.getString("FrequenzaDelleSessioni"),
+                    rs.getInt("MaxPersone"),
+                    (float) rs.getDouble("Prezzo"),
+                    rs.getString("Propic"));
+
+                    Corso1.setId_Corso(rs.getInt("IdCorso"));
+                    Corso1.setSessioni(new CorsoDao().recuperoSessioniPerCorso(Corso1));               
+                Corsi.add(Corso1);
+               
+              
+             
+            
+            }
+        } catch (SQLException sqe) {
+            //gestire errore
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        utente.setcorso(Corsi);
+    }
+
+    public void EliminaCarta( CartaDiCredito carta) {
+        String query = "DELETE FROM Carta WHERE IdCarta = ? ";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, Integer.parseInt(carta.getIdCarta()));
+            ps.executeUpdate();
+        } catch (SQLException sqe) {
+            // gestire errore
+        } finally {
+            dbu.closeStatement(ps);
+            dbu.closeConnection(conn);
+        }
+    }
+       
+    public void aggiungiCartaAPossiede(UtenteVisitatore utente, CartaDiCredito carta) {
+        String query = "INSERT INTO POSSIEDE (IdUtente, IdCarta) VALUES (?, ?)";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, utente.getId_UtenteVisitatore());
+            ps.setInt(2, Integer.parseInt(carta.getIdCarta()));
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            // gestire errore
+        } finally {
+            dbu.closeStatement(ps);
+            dbu.closeConnection(conn);
+        }
+    }
+
 
     }

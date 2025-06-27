@@ -8,13 +8,13 @@ public class UtenteVisitatore extends Utente {
     private int id_UtenteVisitatore;
     private UtenteVisitatoreDao utenteVisitatoreDao;
 
-    public UtenteVisitatore(String nome, String cognome, String email, String password, String numeroDiTelefono, LocalDate dataDiNascita) {
-        super(nome, cognome, email, password, numeroDiTelefono, dataDiNascita);
+    public UtenteVisitatore(String nome, String cognome, String email, String password, LocalDate dataDiNascita) {
+        super(nome, cognome, email, password, dataDiNascita);
         this.utenteVisitatoreDao = new UtenteVisitatoreDao();
     }
 
     public UtenteVisitatore() {
-        super("", "", "", "", "", null);
+        super("", "", "", "",  null);
         this.utenteVisitatoreDao = new UtenteVisitatoreDao();
     }
    

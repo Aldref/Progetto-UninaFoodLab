@@ -13,6 +13,7 @@ public class Corso {
     private String Url_Propic;
     private int  id_Corso;
     private ArrayList<Sessione> sessioni = new ArrayList<>();
+    private ArrayList<String> TipiDiCucina=new ArrayList<>();
 
     
     public Corso(String nome, String descrizione, LocalDate dataInizio, LocalDate dataFine, String frequenzaDelleSessioni, int maxPersone, float prezzo, String url_Propic) {
@@ -114,6 +115,24 @@ public class Corso {
         this.sessioni = sessioni;
     }
 
-    
+    public void addTipoDiCucina(String tipo) {
+
+            TipiDiCucina.add(tipo);
+        
+    }
+
+    public ArrayList<String> getTipiDiCucina() {
+        return new ArrayList<>(TipiDiCucina);
+    }
+
+    public void setTipiDiCucina(ArrayList<String> tipiDiCucina) {
+        if (tipiDiCucina != null) {
+            this.TipiDiCucina = new ArrayList<>(tipiDiCucina);
+        } else {
+            this.TipiDiCucina = new ArrayList<>();
+        }
+    }
+
+
 
 }

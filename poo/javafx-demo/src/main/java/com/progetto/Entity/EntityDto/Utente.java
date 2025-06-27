@@ -1,6 +1,7 @@
 package com.progetto.Entity.EntityDto;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
  abstract public class Utente {
    protected  LocalDate dataDiNascita;
@@ -8,21 +9,26 @@ import java.time.LocalDate;
     protected String cognome;
     protected  String email;
     protected  String password;
-    protected  String numeroDiTelefono;
-    
+    protected String Url_Propic;
+    protected  ArrayList<Corso> corsi=new ArrayList<>();
 
-    public Utente(String nome, String cognome, String email, String password, String numeroDiTelefono, LocalDate dataDiNascita) {
+    public Utente(String nome, String cognome, String email, String password, LocalDate dataDiNascita) {
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
         this.password = password;
-        this.numeroDiTelefono = numeroDiTelefono;
         this.dataDiNascita = dataDiNascita;
     
     }
     public Utente() {
     }
-
+    
+    public ArrayList<Corso> getCorsi() {
+        return corsi;
+    }
+    public void setcorso(ArrayList<Corso> corsi){
+       this.corsi=corsi;
+    }
 
     public String getNome() {
         return nome;
@@ -36,9 +42,7 @@ import java.time.LocalDate;
     public String getPassword() {
         return password;
     }
-    public String getNumeroDiTelefono() {
-        return numeroDiTelefono;
-    }
+  
     public LocalDate getDataDiNascita() {
         return dataDiNascita;
     }
@@ -54,16 +58,23 @@ import java.time.LocalDate;
     public void setPassword(String password) {  
         this.password = password;
     }
-    public void setNumeroDiTelefono(String numeroDiTelefono) {
-        this.numeroDiTelefono = numeroDiTelefono;   
+    
+    public String getUrl_Propic(){
+        return Url_Propic;
     }
+
+    public void setUrl_Propic(String Propic){
+        this.Url_Propic=Propic;
+    }
+    
     public void setDataDiNascita(LocalDate dataDiNascita) {
         this.dataDiNascita = dataDiNascita;
-    }       
+    } 
+}      
 
     
     
-    }
+
 
 
 
