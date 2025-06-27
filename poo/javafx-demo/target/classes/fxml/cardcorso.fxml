@@ -29,10 +29,10 @@
                         <Insets top="20" right="20" bottom="20" left="20"/>
                      </padding>
                     <children>
-                        <HBox spacing="8">
+                        <HBox spacing="8" alignment="CENTER" styleClass="cuisine-type-box" prefWidth="340" minWidth="340" maxWidth="340">
                             <children>
-                                <Label fx:id="acquistatoBadge" text="✓ Acquistato" styleClass="acquistato-badge" visible="false"/>
-                                <Label styleClass="course-category" text="Cucina Italiana"/>
+                                <Label fx:id="cuisineTypeLabel1" styleClass="course-category" text="" visible="false" managed="false" />
+                                <Label fx:id="cuisineTypeLabel2" styleClass="course-category" text="" visible="false" managed="false" />
                             </children>
                         </HBox>
                         <Label fx:id="courseTitle" styleClass="course-title" text="Corso Avanzato di Cucina Tradizionale"/>

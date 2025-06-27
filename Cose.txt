@@ -14,41 +14,37 @@ Schema logico
 
 CARTA(IdCarta(pk), Intestatario, DataScadenza, UltimeQuattroCifre, Circuito)
 
-PARTECIPANTE(IdPartecipante(pk), Nome, Cognome, Email, Password, numeroditelefono, DataDiNascita, Propic, cf)
+PARTECIPANTE(IdPartecipante(pk), Nome, Cognome, Email, Password, DataDiNascita, Propic)
 
 POSSiEDE(IdPartecipante(fk), IdCarta(fk))
 
-CHEF(IdChef(pk), Nome, Cognome, Email, password, numeroditelefono, DataDiNascita, Descrizione, Propic, annidiesperienza, cf)
+CHEF(IdChef(pk), Nome, Cognome, Email, password, DataDiNascita, Descrizione, Propic, annidiesperienza)
 
 CORSO(IdCorso(pk), Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, Propic, MaxPersone, Prezzo)
 
 CHEF_CORSO(IdChef(fk), IdCorso(fk))
 
-RICHIESTAPAGAMENTO(IdRichiesta(pk), DataRichiesta, StatoPagamento, ImportoPagato, IdCorso(fk), IdPartecipante(fk))
+RICHIESTAPAGAMENTO(DataRichiesta, StatoPagamento, ImportoPagato, IdCorso(fk), IdPartecipante(fk))
 
 TIPODICUCINA(Nome, IDtipocucina(pk))
 
-TIPODICUCINA_CORSO(IDtipocucina(fk), IDcorso(fk)
+TIPODICUCINA_CORSO(IDtipocucina(fk), IDcorso(fk))
 
-SESSIONE_PRESENZA(IdSessionePresenza(pk), giorno, Data, Orario, Durata, citta, via, cap, Attrezzatura, Descrizione, IDcorso(fk))
-
-SESSIONE_PRESENZA_CHEF(IDchef(fk), IDsessionepresenza(fk)) //Rimuovere dal db
+SESSIONE_PRESENZA(IdSessionePresenza(pk), giorno, Data, Orario, Durata, citta, via, cap, Attrezzatura, Descrizione, IDcorso(fk), IDChef(fk))
 
 SESSIONE_TELEMATICA(IdSessioneTelematica(pk), Applicazione, Codicechiamata, Data, Orario, Durata, giorno, Descrizione, IDcorso(fk),IdChef(Fk))
 
 PARTECIPANTE_SESSIONETELEMATICA(IdPartecipante(fk), IdSessioneTelematica(fk))
 
-SESSIONE_TELEMATICA_CHEF(IDchef(fk), IDsessionetelematica(fk))
-
 ADESIONE_SESSIONEPRESENZA(Conferma, Idsessionepresenza(fk), IDpartecipante(fk))
 
 RICETTA(IdRicetta(pk), Nome)
 
-SESSIONE_PRESENZA_RICETTA(Idricetta(fk), idsessionepresenza(fk)
+SESSIONE_PRESENZA_RICETTA(Idricetta(fk), idsessionepresenza(fk))
 
 INGREDIENTE(IdIngrediente(pk), Nome, UnitaDiMisura)
 
-PREPARAZIONEINGREDIENTE(IdRicetta(fk), IdIngrediente(fk), QuantitaTotale,Quanitita)
+PREPARAZIONEINGREDIENTE(IdRicetta(fk), IdIngrediente(fk), QuantitaTotale, QuanititaUnitaria)
 
 
 CREATE TYPE Circuito AS ENUM ('Visa', 'Mastercard');
@@ -79,163 +75,681 @@ CREATE TYPE UnitaDiMisura AS ENUM ('Grammi', 'Kilogrammi', 'Litro', 'Centilitro'
 
 
 CREATE TABLE Carta (
-  IdCarta SERIAL PRIMARY KEY,
-  Intestatario TEXT,
-  DataScadenza DATE,
-  UltimeQuattroCifre CHAR(4),
-  Circuito Circuito
+    IdCarta INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Intestatario VARCHAR(100) NOT NULL,
+    DataScadenza DATE NOT NULL,
+    UltimeQuattroCifre CHAR(4) NOT NULL,
+    Circuito VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Partecipante (
-  IdPartecipante SERIAL PRIMARY KEY,
-  Nome TEXT,
-  Cognome TEXT,
-  Email TEXT,
-  Password TEXT,
-  NumeroDiTelefono TEXT,
-  DataDiNascita DATE,
-  Propic BYTEA,
-  CF TEXT
+    IdPartecipante INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL,
+    Cognome VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Password VARCHAR(100) NOT NULL,
+    DataDiNascita DATE NOT NULL,
+    Propic TEXT
 );
 
 CREATE TABLE Possiede (
-  IdPartecipante INT REFERENCES Partecipante(IdPartecipante),
-  IdCarta INT REFERENCES Carta(IdCarta),
-  PRIMARY KEY (IdPartecipante, IdCarta)
+    IdPartecipante INT,
+    IdCarta INT,
+    PRIMARY KEY (IdPartecipante, IdCarta),
+    FOREIGN KEY (IdPartecipante) REFERENCES Partecipante(IdPartecipante),
+    FOREIGN KEY (IdCarta) REFERENCES Carta(IdCarta)
 );
 
 CREATE TABLE Chef (
-  IdChef SERIAL PRIMARY KEY,
-  Nome TEXT,
-  Cognome TEXT,
-  Email TEXT,
-  Password TEXT,
-  NumeroDiTelefono TEXT,
-  DataDiNascita DATE,
-  Descrizione TEXT,
-  Propic BYTEA,
-  AnniDiEsperienza INT,
-  CF TEXT
+    IdChef INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL,
+    Cognome VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Password VARCHAR(100) NOT NULL,
+    DataDiNascita DATE NOT NULL,
+    Descrizione VARCHAR(60),
+    Propic TEXT,
+    AnniDiEsperienza INT CHECK (AnniDiEsperienza >= 0)
 );
 
 CREATE TABLE Corso (
-  IdCorso SERIAL PRIMARY KEY,
-  Nome TEXT,
-  Descrizione TEXT,
-  DataInizio DATE,
-  DataFine DATE,
-  FrequenzaDelleSessioni FDS,
-  Propic BYTEA,
-  MaxPersone INT,
-  Prezzo FLOAT
+    IdCorso INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL,
+    Descrizione VARCHAR(60) NOT NULL,
+    DataInizio DATE NOT NULL,
+    DataFine DATE NOT NULL,
+    FrequenzaDelleSessioni VARCHAR(100) NOT NULL,
+    Propic TEXT,
+    MaxPersone INT CHECK (MaxPersone > 0),
+    Prezzo DECIMAL(10, 2) CHECK (Prezzo >= 0)
 );
 
 CREATE TABLE Chef_Corso (
-  IdChef INT REFERENCES Chef(IdChef),
-  IdCorso INT REFERENCES Corso(IdCorso),
-  PRIMARY KEY (IdChef, IdCorso)
+    IdChef INT,
+    IdCorso INT,
+    PRIMARY KEY (IdChef, IdCorso),
+    FOREIGN KEY (IdChef) REFERENCES Chef(IdChef),
+    FOREIGN KEY (IdCorso) REFERENCES Corso(IdCorso)
 );
 
 CREATE TABLE RichiestaPagamento (
-  IdRichiesta SERIAL PRIMARY KEY,
-  DataRichiesta DATE,
-  StatoPagamento StatoPagamento,
-  ImportoPagato INT,
-  IdCorso INT REFERENCES Corso(IdCorso),
-  IdPartecipante INT REFERENCES Partecipante(IdPartecipante)
+    DataRichiesta TIMESTAMP NOT NULL,
+    StatoPagamento VARCHAR(50) NOT NULL,
+    ImportoPagato DECIMAL(10, 2) CHECK (ImportoPagato >= 0),
+    IdCorso INT,
+    IdPartecipante INT,
+    PRIMARY KEY (DataRichiesta, IdCorso, IdPartecipante),
+    FOREIGN KEY (IdCorso) REFERENCES Corso(IdCorso),
+    FOREIGN KEY (IdPartecipante) REFERENCES Partecipante(IdPartecipante)
 );
 
 CREATE TABLE TipoDiCucina (
-  IdTipoCucina SERIAL PRIMARY KEY,
-  Nome TEXT
+    IDTipoCucina INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE TipoDiCucina_Corso (
-  IdTipoCucina INT REFERENCES TipoDiCucina(IdTipoCucina),
-  IdCorso INT REFERENCES Corso(IdCorso),
-  PRIMARY KEY (IdTipoCucina, IdCorso)
+    IDTipoCucina INT,
+    IDCorso INT,
+    PRIMARY KEY (IDTipoCucina, IDCorso),
+    FOREIGN KEY (IDTipoCucina) REFERENCES TipoDiCucina(IDTipoCucina),
+    FOREIGN KEY (IDCorso) REFERENCES Corso(IdCorso)
 );
 
 CREATE TABLE Sessione_Presenza (
-  IdSessionePresenza SERIAL PRIMARY KEY,
-  Giorno Giorno,
-  Data DATE,
-  Orario TIME,
-  Durata INTERVAL,
-  Citta TEXT,
-  Via TEXT,
-  CAP TEXT,
-  Attrezzatura TEXT,
-  IdCorso INT REFERENCES Corso(IdCorso)
-);
-
-CREATE TABLE Sessione_Presenza_Chef (
-  IdChef INT REFERENCES Chef(IdChef),
-  IdSessionePresenza INT REFERENCES Sessione_Presenza(IdSessionePresenza),
-  PRIMARY KEY (IdChef, IdSessionePresenza)
+    IdSessionePresenza INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Giorno VARCHAR(20) NOT NULL,
+    Data DATE NOT NULL,
+    Orario TIME NOT NULL,
+    Durata INTERVAL NOT NULL,
+    Citta VARCHAR(50) NOT NULL,
+    Via VARCHAR(100) NOT NULL,
+    Cap CHAR(5) NOT NULL,
+    Descrizione VARCHAR(60) NOT NULL,
+    IdCorso INT,
+    IdChef INT,
+    FOREIGN KEY (IdCorso) REFERENCES Corso(IdCorso),
+    FOREIGN KEY (IdChef) REFERENCES Chef(IdChef)
 );
 
 CREATE TABLE Sessione_Telematica (
-  IdSessioneTelematica SERIAL PRIMARY KEY,
-  Applicazione TEXT,
-  CodiceChiamata TEXT,
-  Data DATE,
-  Orario TIME,
-  Durata INTERVAL,
-  Giorno Giorno,
-  Descrizione TEXT,
-  IdCorso INT REFERENCES Corso(IdCorso)
+    IdSessioneTelematica INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Applicazione VARCHAR(100 NOT NULL,
+    CodiceChiamata VARCHAR(100) NOT NULL,
+    Data DATE NOT NULL,
+    Orario TIME NOT NULL,
+    Durata INTERVAL NOT NULL,
+    Giorno VARCHAR(20) NOT NULL,
+    Descrizione VARCHAR(60) NOT NULL,
+    IdCorso INT,
+    IdChef INT,
+    FOREIGN KEY (IdCorso) REFERENCES Corso(IdCorso),
+    FOREIGN KEY (IdChef) REFERENCES Chef(IdChef)
 );
 
 CREATE TABLE Partecipante_SessioneTelematica (
-  IdPartecipante INT REFERENCES Partecipante(IdPartecipante),
-  IdSessioneTelematica INT REFERENCES Sessione_Telematica(IdSessioneTelematica),
-  PRIMARY KEY (IdPartecipante, IdSessioneTelematica)
-);
-
-CREATE TABLE Sessione_Telematica_Chef (
-  IdChef INT REFERENCES Chef(IdChef),
-  IdSessioneTelematica INT REFERENCES Sessione_Telematica(IdSessioneTelematica),
-  PRIMARY KEY (IdChef, IdSessioneTelematica)
+    IdPartecipante INT,
+    IdSessioneTelematica INT,
+    PRIMARY KEY (IdPartecipante, IdSessioneTelematica),
+    FOREIGN KEY (IdPartecipante) REFERENCES Partecipante(IdPartecipante),
+    FOREIGN KEY (IdSessioneTelematica) REFERENCES Sessione_Telematica(IdSessioneTelematica)
 );
 
 CREATE TABLE Adesione_SessionePresenza (
-  Conferma BOOLEAN,
-  IdSessionePresenza INT REFERENCES Sessione_Presenza(IdSessionePresenza),
-  IdPartecipante INT REFERENCES Partecipante(IdPartecipante),
-  PRIMARY KEY (IdSessionePresenza, IdPartecipante)
+    Conferma BOOLEAN,
+    IdSessionePresenza INT,
+    IdPartecipante INT,
+    PRIMARY KEY (IdSessionePresenza, IdPartecipante),
+    FOREIGN KEY (IdSessionePresenza) REFERENCES Sessione_Presenza(IdSessionePresenza),
+    FOREIGN KEY (IdPartecipante) REFERENCES Partecipante(IdPartecipante)
 );
 
 CREATE TABLE Ricetta (
-  IdRicetta SERIAL PRIMARY KEY,
-  Nome TEXT
+    IdRicetta INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE Sessione_Presenza_Ricetta (
-  IdRicetta INT REFERENCES Ricetta(IdRicetta),
-  IdSessionePresenza INT REFERENCES Sessione_Presenza(IdSessionePresenza),
-  PRIMARY KEY (IdRicetta, IdSessionePresenza)
+    IdRicetta INT,
+    IdSessionePresenza INT,
+    PRIMARY KEY (IdRicetta, IdSessionePresenza),
+    FOREIGN KEY (IdRicetta) REFERENCES Ricetta(IdRicetta),
+    FOREIGN KEY (IdSessionePresenza) REFERENCES Sessione_Presenza(IdSessionePresenza)
 );
 
 CREATE TABLE Ingrediente (
-  IdIngrediente SERIAL PRIMARY KEY,
-  Nome TEXT,
-  UnitaDiMisura UnitaDiMisura,
-  Quantita INT
+    IdIngrediente INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL,
+    UnitaDiMisura VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE PreparazioneIngrediente (
-  IdRicetta INT REFERENCES Ricetta(IdRicetta),
-  IdIngrediente INT REFERENCES Ingrediente(IdIngrediente),
-  QuantitaTotale INT,
-  PRIMARY KEY (IdRicetta, IdIngrediente)
+    IdRicetta INT,
+    IdIngrediente INT,
+    QuantitaTotale DECIMAL(10,2) CHECK (QuantitaTotale >= 0),
+    QuanititaUnitaria DECIMAL(10,2) NOT NULL CHECK (QuanititaUnitaria >= 0),
+    PRIMARY KEY (IdRicetta, IdIngrediente),
+    FOREIGN KEY (IdRicetta) REFERENCES Ricetta(IdRicetta),
+    FOREIGN KEY (IdIngrediente) REFERENCES Ingrediente(IdIngrediente)
 );
 
+-trigger sull'email tra chef e utente
+  CREATE OR REPLACE FUNCTION verifica_unicita_email()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        IF TG_TABLE_NAME = 'chef' THEN
+            IF EXISTS (SELECT 1 FROM Partecipante WHERE Email = NEW.Email) THEN
+                RAISE EXCEPTION 'Errore: L''email "%" è già utilizzata da un Partecipante.', NEW.Email;
+            END IF;
+        ELSIF TG_TABLE_NAME = 'partecipante' THEN
+            IF EXISTS (SELECT 1 FROM Chef WHERE Email = NEW.Email) THEN
+                RAISE EXCEPTION 'Errore: L''email "%" è già utilizzata da uno Chef.', NEW.Email;
+            END IF;
+        END IF;
+        RETURN NEW;
+    END;
+ $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_verifica_email_partecipante
+BEFORE INSERT OR UPDATE ON Partecipante
+FOR EACH ROW
+EXECUTE FUNCTION verifica_unicita_email();
+
+CREATE TRIGGER trg_verifica_email_chef
+BEFORE INSERT OR UPDATE ON Chef
+FOR EACH ROW
+EXECUTE FUNCTION verifica_unicita_email();
 
 
+-trigger elimina ricetta elimina in preparata
+  CREATE OR REPLACE FUNCTION elimina_ingredienti_della_ricetta()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      DELETE FROM PREPARAZIONEINGREDIENTE
+      WHERE IdRicetta = OLD.IdRicetta;
+      RETURN OLD;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE TRIGGER trigger_elimina_ingredienti_associati
+    BEFORE DELETE ON RICETTA
+    FOR EACH ROW
+    EXECUTE FUNCTION elimina_ingredienti_della_ricetta();
+
+-view aggiorno quantita unitaria, aggiorna quantita totale, ogni volta che ce un adesione in presenza, aggiorna quantita QuantitaTotale
+    CREATE OR REPLACE VIEW QuantitaPerSessione AS
+      SELECT 
+          pi.IdRicetta,
+          pi.IdIngrediente,
+          pi.QuanititaUnitaria,
+          COUNT(asp.IDpartecipante) AS NumeroPartecipanti,
+          pi.QuanititaUnitaria * COUNT(asp.IDpartecipante) AS QuantitaTotale,
+          spr.Idsessionepresenza
+      FROM PREPARAZIONEINGREDIENTE pi
+      JOIN SESSIONE_PRESENZA_RICETTA spr ON pi.IdRicetta = spr.Idricetta
+      JOIN ADESIONE_SESSIONEPRESENZA asp ON asp.Idsessionepresenza = spr.Idsessionepresenza
+      WHERE asp.Conferma = true
+      GROUP BY pi.IdRicetta, pi.IdIngrediente, pi.QuanititaUnitaria, spr.Idsessionepresenza;
 
 
+-trigger non puoi inserire la stessa carta
+  CREATE OR REPLACE FUNCTION impedisci_carta_duplicata_per_partecipante()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        existing_card_id INT;
+    BEGIN
+        IF TG_TABLE_NAME = 'carta' THEN
+            IF EXISTS (
+                SELECT 1
+                FROM Carta
+                WHERE UltimeQuattroCifre = NEW.UltimeQuattroCifre
+                  AND DataScadenza = NEW.DataScadenza
+                  AND Circuito = NEW.Circuito::VARCHAR(50)
+                  AND Intestatario = NEW.Intestatario
+                  AND IdCarta != NEW.IdCarta
+            ) THEN
+                RAISE EXCEPTION 'Errore: Una carta con queste ultime 4 cifre, data di scadenza, circuito e intestatario esiste già nel sistema.';
+            END IF;
+        END IF;
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_impedisci_dettagli_carta_duplicati
+BEFORE INSERT OR UPDATE ON Carta
+FOR EACH ROW
+EXECUTE FUNCTION impedisci_carta_duplicata_per_partecipante();
 
 
+-trigger massimo 2 tipi di cucina per Corso
+  CREATE OR REPLACE FUNCTION verifica_max_tipi_cucina_per_corso()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        current_tipi_count INTEGER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO current_tipi_count
+        FROM TipoDiCucina_Corso
+        WHERE IDCorso = NEW.IDCorso;
+
+        IF current_tipi_count >= 2 THEN
+            RAISE EXCEPTION 'Errore: Il corso con ID % ha già raggiunto il limite massimo di 2 tipi di cucina associati.', NEW.IDCorso;
+        END IF;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_max_tipi_cucina_corso
+BEFORE INSERT ON TipoDiCucina_Corso
+FOR EACH ROW
+EXECUTE FUNCTION verifica_max_tipi_cucina_per_corso();
+
+
+-trigger frequenza sessioni e giorni
+
+-trigger datainizio > datafine e datainizio > datacorrente
+  CREATE OR REPLACE FUNCTION verifica_intervallo_date_corso()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        IF NEW.DataInizio > NEW.DataFine OR NEW.DataInizio > CURRENT_DATE THEN
+            RAISE EXCEPTION 'Errore: La DataInizio del corso (%) non può essere successiva alla DataFine (%) e non può essere nel futuro (data corrente: %).', NEW.DataInizio, NEW.DataFine, CURRENT_DATE;
+        END IF;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_valida_date_corso
+BEFORE INSERT OR UPDATE ON Corso
+FOR EACH ROW
+EXECUTE FUNCTION verifica_intervallo_date_corso();
+
+-trigger annidiesperienza con data nascita
+  CREATE OR REPLACE FUNCTION verifica_anni_esperienza_chef()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        chef_current_age_years INTEGER;
+        min_start_age CONSTANT INTEGER := 18;
+    BEGIN
+        IF NEW.DataDiNascita IS NULL THEN
+            RAISE EXCEPTION 'Errore: La DataDiNascita dello Chef non può essere NULL.';
+        END IF;
+
+        chef_current_age_years := EXTRACT(YEAR FROM AGE(CURRENT_DATE, NEW.DataDiNascita));
+
+        IF NEW.AnniDiEsperienza < 0 THEN
+            RAISE EXCEPTION 'Errore: Gli AnniDiEsperienza non possono essere negativi.';
+        END IF;
+
+        IF NEW.AnniDiEsperienza > chef_current_age_years THEN
+            RAISE EXCEPTION 'Errore: Gli AnniDiEsperienza (%) non possono superare l''età attuale dello Chef (%).', NEW.AnniDiEsperienza, chef_current_age_years;
+        END IF;
+
+        IF (chef_current_age_years - NEW.AnniDiEsperienza) < min_start_age THEN
+            RAISE EXCEPTION 'Errore: L''età stimata di inizio esperienza (età: % anni, esperienza: % anni = % anni) è inferiore all''età minima consentita per iniziare (%).', chef_current_age_years, NEW.AnniDiEsperienza, (chef_current_age_years - NEW.AnniDiEsperienza), min_start_age;
+        END IF;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_valida_anni_esperienza_chef
+BEFORE INSERT OR UPDATE ON Chef
+FOR EACH ROW
+EXECUTE FUNCTION verifica_anni_esperienza_chef();
+
+-trigger datapagamento con data inizio corso
+  CREATE OR REPLACE FUNCTION verifica_data_pagamento_prima_inizio_corso()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        course_start_date DATE;
+        course_name VARCHAR(255);
+    BEGIN
+        SELECT DataInizio, Nome INTO course_start_date, course_name
+        FROM Corso
+        WHERE IdCorso = NEW.IdCorso;
+
+        IF NEW.DataRichiesta::DATE >= course_start_date THEN
+            RAISE EXCEPTION 'Errore: Impossibile procedere con il pagamento per il corso "%" (ID %). La data della richiesta di pagamento (%) non può essere successiva o uguale alla data di inizio del corso (%).',
+                                course_name, NEW.IdCorso, NEW.DataRichiesta::DATE, course_start_date;
+        END IF;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_impedisci_pagamento_tardivo
+BEFORE INSERT OR UPDATE ON RichiestaPagamento
+FOR EACH ROW
+EXECUTE FUNCTION verifica_data_pagamento_prima_inizio_corso();
+
+-trigger importopagato = costo del corso
+  CREATE OR REPLACE FUNCTION verifica_importo_pagamento_corrisponde_prezzo_corso()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        course_price DECIMAL(10,2);
+    BEGIN
+        SELECT Prezzo INTO course_price
+        FROM Corso
+        WHERE IdCorso = NEW.IdCorso;
+
+        IF NEW.ImportoPagato != course_price THEN
+            RAISE EXCEPTION 'Errore: L''ImportoPagato (%.2f) deve corrispondere esattamente al Prezzo del corso (%.2f).', NEW.ImportoPagato, course_price;
+        END IF;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_valida_importo_pagamento
+BEFORE INSERT OR UPDATE ON RichiestaPagamento
+FOR EACH ROW
+EXECUTE FUNCTION verifica_importo_pagamento_corrisponde_prezzo_corso();
+
+-trigger datanascita >=18 anni e datanascita <=100
+  CREATE OR REPLACE FUNCTION verifica_intervallo_eta()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        person_age_years INTEGER;
+        min_age CONSTANT INTEGER := 18;
+        max_age CONSTANT INTEGER := 100;
+    BEGIN
+        IF NEW.DataDiNascita IS NULL THEN
+            RAISE EXCEPTION 'Errore: La DataDiNascita non può essere NULL.';
+        END IF;
+
+        person_age_years := EXTRACT(YEAR FROM AGE(CURRENT_DATE, NEW.DataDiNascita));
+
+        IF person_age_years < min_age THEN
+            RAISE EXCEPTION 'Errore: L''età della persona (%, calcolata dalla DataDiNascita %) è inferiore all''età minima consentita (%).', person_age_years, NEW.DataDiNascita, min_age;
+        END IF;
+
+        IF person_age_years > max_age THEN
+            RAISE EXCEPTION 'Errore: L''età della persona (%, calcolata dalla DataDiNascita %) è superiore all''età massima consentita (%).', person_age_years, NEW.DataDiNascita, max_age;
+        END IF;
+
+        RETURN NEW;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_valida_eta_chef
+BEFORE INSERT OR UPDATE ON Chef
+FOR EACH ROW
+EXECUTE FUNCTION verifica_intervallo_eta();
+
+CREATE TRIGGER trg_valida_eta_partecipante
+BEFORE INSERT OR UPDATE ON Partecipante
+FOR EACH ROW
+EXECUTE FUNCTION verifica_intervallo_eta();
+
+-trigger controllo superamento maxpersone corso
+  CREATE OR REPLACE FUNCTION verifica_superamento_max_partecipanti_corso()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        course_max_people INTEGER;
+        current_paid_count INTEGER;
+        potential_paid_count INTEGER;
+        course_name VARCHAR(255);
+    BEGIN
+        SELECT MaxPersone, Nome INTO course_max_people, course_name
+        FROM Corso
+        WHERE IdCorso = NEW.IdCorso;
+
+        IF course_max_people <= 0 OR course_max_people IS NULL THEN
+            RETURN NEW;
+        END IF;
+
+        SELECT COUNT(*)
+        INTO current_paid_count
+        FROM RichiestaPagamento
+        WHERE IdCorso = NEW.IdCorso
+          AND StatoPagamento = 'Pagato';
+
+        potential_paid_count := current_paid_count;
+
+        IF TG_OP = 'INSERT' THEN
+            IF NEW.StatoPagamento = 'Pagato' THEN
+                potential_paid_count := potential_paid_count + 1;
+            END IF;
+        ELSIF TG_OP = 'UPDATE' THEN
+            IF OLD.StatoPagamento != 'Pagato' AND NEW.StatoPagamento = 'Pagato' THEN
+                potential_paid_count := potential_paid_count + 1;
+            ELSIF OLD.StatoPagamento = 'Pagato' AND NEW.StatoPagamento != 'Pagato' THEN
+                potential_paid_count := potential_paid_count - 1;
+            END IF;
+        END IF;
+
+        IF potential_paid_count > course_max_people THEN
+            RAISE EXCEPTION 'Errore: Il corso "%" (ID %) ha raggiunto il limite massimo di % partecipanti paganti. Impossibile accettare questa richiesta di pagamento (attuali: %s, limite: %s).',
+                                course_name, NEW.IdCorso, course_max_people, current_paid_count, course_max_people;
+        END IF;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_controllo_max_partecipanti_corso
+BEFORE INSERT OR UPDATE ON RichiestaPagamento
+FOR EACH ROW
+EXECUTE FUNCTION verifica_superamento_max_partecipanti_corso();
+
+-trigger non puoi eliminare corsi se ci sono iscritti
+  CREATE OR REPLACE FUNCTION impedisci_eliminazione_corso_se_iscritto()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        enrolled_count INTEGER;
+        course_name VARCHAR(255);
+    BEGIN
+        SELECT Nome INTO course_name
+        FROM Corso
+        WHERE IdCorso = OLD.IdCorso;
+
+        SELECT COUNT(*)
+        INTO enrolled_count
+        FROM RichiestaPagamento
+        WHERE IdCorso = OLD.IdCorso
+          AND StatoPagamento = 'Pagato';
+
+        IF enrolled_count > 0 THEN
+            RAISE EXCEPTION 'Errore: Impossibile eliminare il corso "%" (ID %). Ci sono ancora % partecipanti paganti iscritti.',
+                                course_name, OLD.IdCorso, enrolled_count;
+        END IF;
+
+        RETURN OLD;
+    END;
+    $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_impedisci_eliminazione_corso
+BEFORE DELETE ON Corso
+FOR EACH ROW
+EXECUTE FUNCTION impedisci_eliminazione_corso_se_iscritto();
+
+-trigger chef contemporaneamente sessione presenza e telematica
+  CREATE OR REPLACE FUNCTION verifica_sessioni_contemporanee_chef()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        conflicting_session_count INTEGER;
+        chef_name VARCHAR(255);
+        session_type_being_inserted TEXT;
+        other_session_type TEXT;
+    BEGIN
+        SELECT Nome || ' ' || Cognome INTO chef_name
+        FROM Chef
+        WHERE IdChef = NEW.IDChef;
+
+        IF TG_TABLE_NAME = 'sessione_presenza' THEN
+            session_type_being_inserted := 'presenza';
+            other_session_type := 'telematica';
+        ELSIF TG_TABLE_NAME = 'sessione_telematica' THEN
+            session_type_being_inserted := 'telematica';
+            other_session_type := 'presenza';
+        ELSE
+            RAISE EXCEPTION 'Errore interno del trigger: tabella sconosciuta (%).', TG_TABLE_NAME;
+        END IF;
+
+        IF session_type_being_inserted = 'presenza' THEN
+            SELECT COUNT(*)
+            INTO conflicting_session_count
+            FROM Sessione_Telematica
+            WHERE IDChef = NEW.IDChef
+              AND Data = NEW.Data;
+        ELSIF session_type_being_inserted = 'telematica' THEN
+            SELECT COUNT(*)
+            INTO conflicting_session_count
+            FROM Sessione_Presenza
+            WHERE IDChef = NEW.IDChef
+              AND Data = NEW.Data;
+        END IF;
+
+        IF conflicting_session_count > 0 THEN
+            RAISE EXCEPTION 'Errore: Lo Chef "%" (ID %) è già assegnato a una sessione di tipo "%" in data %. Impossibile assegnarlo anche a una sessione di tipo "%" nello stesso giorno.',
+                                chef_name, NEW.IDChef, other_session_type, NEW.Data, session_type_being_inserted;
+        END IF;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_verifica_sessione_presenza_chef
+BEFORE INSERT OR UPDATE ON Sessione_Presenza
+FOR EACH ROW
+EXECUTE FUNCTION verifica_sessioni_contemporanee_chef();
+
+CREATE TRIGGER trg_verifica_sessione_telematica_chef
+BEFORE INSERT OR UPDATE ON Sessione_Telematica
+FOR EACH ROW
+EXECUTE FUNCTION verifica_sessioni_contemporanee_chef();
+
+-trigger un corso o è in presenza o in telematica
+  CREATE OR REPLACE FUNCTION verifica_corso_tipo_sessione_esclusiva()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        -- Conteggio delle sessioni di tipo 'presenza' per il corso corrente
+        conteggio_sessioni_presenza INTEGER;
+        -- Conteggio delle sessioni di tipo 'telematica' per il corso corrente
+        conteggio_sessioni_telematica INTEGER;
+        -- Nome del corso per un messaggio di errore più chiaro
+        nome_corso VARCHAR(100);
+    BEGIN
+        -- Recupera il nome del corso
+        SELECT Nome INTO nome_corso
+        FROM Corso
+        WHERE IdCorso = NEW.IdCorso;
+
+        -- Se l'operazione è su Sessione_Presenza
+        IF TG_TABLE_NAME = 'sessione_presenza' THEN
+            -- Conta le sessioni telematiche esistenti per questo corso
+            SELECT COUNT(*)
+            INTO conteggio_sessioni_telematica
+            FROM Sessione_Telematica
+            WHERE IdCorso = NEW.IdCorso;
+
+            -- Se esistono già sessioni telematiche, impedisci l'inserimento/aggiornamento della sessione in presenza
+            IF conteggio_sessioni_telematica > 0 THEN
+                RAISE EXCEPTION 'Errore: Il corso "%" (ID %) ha già sessioni telematiche associate. Non è possibile aggiungere sessioni in presenza.',
+                                nome_corso, NEW.IdCorso;
+            END IF;
+        -- Se l'operazione è su Sessione_Telematica
+        ELSIF TG_TABLE_NAME = 'sessione_telematica' THEN
+            -- Conta le sessioni in presenza esistenti per questo corso
+            SELECT COUNT(*)
+            INTO conteggio_sessioni_presenza
+            FROM Sessione_Presenza
+            WHERE IdCorso = NEW.IdCorso;
+
+            -- Se esistono già sessioni in presenza, impedisci l'inserimento/aggiornamento della sessione telematica
+            IF conteggio_sessioni_presenza > 0 THEN
+                RAISE EXCEPTION 'Errore: Il corso "%" (ID %) ha già sessioni in presenza associate. Non è possibile aggiungere sessioni telematiche.',
+                                nome_corso, NEW.IdCorso;
+            END IF;
+        END IF;
+
+        RETURN NEW; -- Permetti l'operazione se non ci sono violazioni
+    END;
+    $$ LANGUAGE plpgsql;
+
+    -- Trigger per Sessione_Presenza: attiva la funzione prima di ogni inserimento o aggiornamento
+    CREATE TRIGGER trg_corso_sessione_presenza_esclusiva
+    BEFORE INSERT OR UPDATE ON Sessione_Presenza
+    FOR EACH ROW
+    EXECUTE FUNCTION verifica_corso_tipo_sessione_esclusiva();
+
+    -- Trigger per Sessione_Telematica: attiva la funzione prima di ogni inserimento o aggiornamento
+    CREATE TRIGGER trg_corso_sessione_telematica_esclusiva
+    BEFORE INSERT OR UPDATE ON Sessione_Telematica
+    FOR EACH ROW
+    EXECUTE FUNCTION verifica_corso_tipo_sessione_esclusiva();
+-trigger finisce il corso tolgo gli ingredienti della ricetta
+-view per il grafico del report Mensile
+  CREATE OR REPLACE VIEW vista_statistiche_mensili_chef AS
+    SELECT
+      ch.IdChef,
+      ch.Nome,
+      ch.Cognome,
+
+      -- Totale ricette nelle sessioni in presenza nel mese corrente (senza DISTINCT)
+      COUNT(spr.IdRicetta) AS totale_ricette_mese,
+
+      -- Max/min/avg ricette per sessione in presenza nel mese corrente
+      COALESCE(MAX(spr_count.ricette_per_sessione), 0) AS max_ricette_in_sessione,
+      COALESCE(MIN(spr_count.ricette_per_sessione), 0) AS min_ricette_in_sessione,
+      COALESCE(AVG(spr_count.ricette_per_sessione), 0) AS media_ricette_per_sessione,
+
+      -- Numero corsi insegnati dallo chef
+      COUNT(DISTINCT cc.IdCorso) AS numero_corsi,
+
+      -- Numero sessioni in presenza
+      COUNT(DISTINCT sp.IdSessionePresenza) AS numero_sessioni_presenza,
+
+      -- Numero sessioni telematiche
+      COUNT(DISTINCT st.IdSessioneTelematica) AS numero_sessioni_telematiche,
+
+      -- Guadagno totale derivante dai corsi dello chef
+      COALESCE(SUM(rp.ImportoPagato), 0) AS guadagno_totale
+
+    FROM CHEF ch
+
+    -- Corsi assegnati allo chef
+    LEFT JOIN CHEF_CORSO cc ON ch.IdChef = cc.IdChef
+
+    -- Sessioni in presenza del corso
+    LEFT JOIN SESSIONE_PRESENZA sp ON cc.IdCorso = sp.IDcorso AND sp.IDChef = ch.IdChef
+    -- Ricette associate a sessioni in presenza
+    LEFT JOIN SESSIONE_PRESENZA_RICETTA spr ON spr.IdSessionePresenza = sp.IdSessionePresenza
+    -- Conteggio ricette per sessione (per max/min/media)
+    LEFT JOIN (
+      SELECT spr2.IdSessionePresenza, COUNT(*) AS ricette_per_sessione
+      FROM SESSIONE_PRESENZA_RICETTA spr2
+      JOIN SESSIONE_PRESENZA sp2 ON spr2.IdSessionePresenza = sp2.IdSessionePresenza
+      WHERE DATE_PART('month', sp2.Data) = DATE_PART('month', CURRENT_DATE)
+        AND DATE_PART('year', sp2.Data) = DATE_PART('year', CURRENT_DATE)
+      GROUP BY spr2.IdSessionePresenza
+    ) spr_count ON spr_count.IdSessionePresenza = sp.IdSessionePresenza
+
+    -- Sessioni telematiche
+    LEFT JOIN SESSIONE_TELEMATICA st ON cc.IdCorso = st.IDcorso AND st.IDChef = ch.IdChef
+      AND DATE_PART('month', st.Data) = DATE_PART('month', CURRENT_DATE)
+      AND DATE_PART('year', st.Data) = DATE_PART('year', CURRENT_DATE)
+
+    -- Guadagno dai corsi: partecipanti che hanno pagato per i corsi dello chef
+    LEFT JOIN RICHIESTAPAGAMENTO rp ON rp.IdCorso = cc.IdCorso
+      AND DATE_PART('month', rp.DataRichiesta) = DATE_PART('month', CURRENT_DATE)
+      AND DATE_PART('year', rp.DataRichiesta) = DATE_PART('year', CURRENT_DATE)
+
+    -- Filtra sessioni e ricette solo nel mese corrente
+    WHERE
+      (
+        (sp.Data IS NULL OR (
+          DATE_PART('month', sp.Data) = DATE_PART('month', CURRENT_DATE)
+          AND DATE_PART('year', sp.Data) = DATE_PART('year', CURRENT_DATE)
+        ))
+      )
+
+    GROUP BY ch.IdChef, ch.Nome, ch.Cognome;
+
+
+//da fare in futuro
+db check percorso propic
 
 

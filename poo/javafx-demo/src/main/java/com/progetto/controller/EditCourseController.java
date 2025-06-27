@@ -115,6 +115,120 @@ public class EditCourseController {
         setupUI();
         loadCourseData();
         setupValidation();
+        setupModeUI();
+        setupChangeListenersForSave(); // <--- aggiunto
+        setupFrequencyRestrictionForHybrid(); // <--- aggiunto
+    }
+
+    /**
+     * Imposta la UI in modalità modifica: disabilita il cambio tipo corso e aggiorna sezioni visibili.
+     */
+    private void setupModeUI() {
+        // Disabilita la ComboBox del tipo corso (non modificabile in edit mode)
+        courseTypeCombo.setDisable(true);
+
+        // Mostra/nascondi le sezioni location/ricette in base al tipo corso attuale
+        String selectedType = courseTypeCombo.getValue();
+        boolean isPresenza = "In presenza".equals(selectedType);
+        locationSection.setVisible(isPresenza);
+        locationSection.setManaged(isPresenza);
+        recipesSection.setVisible(isPresenza);
+        recipesSection.setManaged(isPresenza);
+
+        // Se non "In presenza", svuota i campi location e ricette
+        if (!isPresenza) {
+            streetField.clear();
+            capField.clear();
+            recipesContainer.getChildren().clear();
+        } else {
+            // Se torna a presenza e non ci sono ricette, carica quelle di default
+            if (recipesContainer.getChildren().isEmpty()) {
+                loadExistingRecipes();
+            }
+        }
+        // (Se c'è un controllo per l'immagine, qui si può disabilitare)
+    }
+
+    /**
+     * Abilita il salvataggio solo se c'è almeno una modifica rispetto ai dati originali.
+     */
+    private void setupChangeListenersForSave() {
+        List<Observable> observables = new ArrayList<>(Arrays.asList(
+            descriptionArea.textProperty(),
+            startDatePicker.valueProperty(),
+            endDatePicker.valueProperty(),
+            frequencyCombo.valueProperty(),
+            maxPersonsSpinner.valueProperty(),
+            startHourSpinner.valueProperty(),
+            startMinuteSpinner.valueProperty(),
+            durationSpinner.valueProperty(),
+            streetField.textProperty(),
+            capField.textProperty()
+        ));
+        dayCheckBoxes.values().forEach(cb -> observables.add(cb.selectedProperty()));
+        // Puoi aggiungere qui anche listeners per ricette/ingredienti se vuoi
+
+        BooleanBinding changed = Bindings.createBooleanBinding(() -> hasAnyFieldChanged(),
+            observables.toArray(new Observable[0])
+        );
+        saveButton.disableProperty().unbind();
+        saveButton.disableProperty().bind(changed.not());
+    }
+
+    /**
+     * Ritorna true se almeno un campo è stato modificato rispetto ai dati originali.
+     */
+    private boolean hasAnyFieldChanged() {
+        if (currentCourse == null) return false;
+        if (!Objects.equals(descriptionArea.getText().trim(), currentCourse.getDescription())) return true;
+        if (!Objects.equals(startDatePicker.getValue(), currentCourse.getStartDate())) return true;
+        if (!Objects.equals(endDatePicker.getValue(), currentCourse.getEndDate())) return true;
+        if (!Objects.equals(frequencyCombo.getValue(), currentCourse.getFrequency())) return true;
+        if (!Objects.equals(maxPersonsSpinner.getValue(), currentCourse.getMaxPersons())) return true;
+        if (!Objects.equals(startHourSpinner.getValue(), currentCourse.getStartHour())) return true;
+        if (!Objects.equals(startMinuteSpinner.getValue(), currentCourse.getStartMinute())) return true;
+        if (!Objects.equals(durationSpinner.getValue(), currentCourse.getDuration())) return true;
+        if (!Objects.equals(streetField.getText().trim(), currentCourse.getStreet())) return true;
+        if (!Objects.equals(capField.getText().trim(), currentCourse.getCap())) return true;
+        // Giorni
+        List<String> selectedDays = getSelectedDays();
+        if (!Objects.equals(selectedDays, currentCourse.getSelectedDays())) return true;
+        // Puoi aggiungere qui anche il confronto per ricette/ingredienti
+        return false;
+    }
+
+    /**
+     * Impedisce di selezionare '1 volta a settimana' se il corso è "Entrambi" o "In presenza".
+     */
+    private void setupFrequencyRestrictionForHybrid() {
+        frequencyCombo.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty && item != null) {
+                    String type = courseTypeCombo.getValue();
+                    boolean isHybrid = "Entrambi".equals(type);
+                    boolean isPresence = "In presenza".equals(type);
+                    setDisable((isHybrid || isPresence) && "1 volta a settimana".equals(item));
+                } else {
+                    setDisable(false);
+                }
+            }
+        });
+        // Se già selezionato, correggi
+        frequencyCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            String type = courseTypeCombo.getValue();
+            if (("Entrambi".equals(type) || "In presenza".equals(type)) && "1 volta a settimana".equals(newVal)) {
+                // Trova la prima frequenza valida
+                for (String freq : frequencyCombo.getItems()) {
+                    if (!"1 volta a settimana".equals(freq)) {
+                        frequencyCombo.setValue(freq);
+                        break;
+                    }
+                }
+            }
+        });
     }
     
     private void initializeDayCheckBoxesMap() {
@@ -462,8 +576,9 @@ public class EditCourseController {
     
     // === VALIDATION ===
     private void setupValidation() {
-        BooleanBinding formValid = createFormValidation();
-        saveButton.disableProperty().bind(formValid.not());
+        // Rimuovi il binding qui: la logica di abilitazione è gestita da setupChangeListenersForSave()
+        // BooleanBinding formValid = createFormValidation();
+        // saveButton.disableProperty().bind(formValid.not());
     }
     
     private BooleanBinding createFormValidation() {
@@ -567,18 +682,17 @@ public class EditCourseController {
     }
     
     public void saveCourse() {
-        if (validateFormData()) {
+        // Salva solo se almeno un campo è stato modificato e il form è valido
+        if (hasAnyFieldChanged() && validateFormData()) {
             try {
                 CourseData updatedCourse = collectUpdatedCourseData();
-                
                 // TODO: Sostituire con chiamata al DAO
                 // boolean success = CourseDAO.updateCourse(updatedCourse);
                 // if (success) {
-                    showCourseUpdateSuccessDialog();
+                showCourseUpdateSuccessDialog();
                 // } else {
                 //     showAlert("Errore", "Errore durante l'aggiornamento del corso.");
                 // }
-                
             } catch (Exception e) {
                 showAlert("Errore", "Si è verificato un errore durante l'aggiornamento del corso.");
                 e.printStackTrace();

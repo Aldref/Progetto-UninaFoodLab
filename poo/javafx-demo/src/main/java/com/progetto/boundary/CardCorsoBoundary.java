@@ -7,7 +7,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.event.ActionEvent;
 import com.progetto.controller.CardCorsoController;
 
 public class CardCorsoBoundary {
@@ -27,6 +26,8 @@ public class CardCorsoBoundary {
     @FXML private Label chefName;
     @FXML private Label chefExperience;
     @FXML private ImageView courseImage;
+    @FXML private Label cuisineTypeLabel1;
+    @FXML private Label cuisineTypeLabel2;
 
     private CardCorsoController controller;
 
@@ -35,23 +36,28 @@ public class CardCorsoBoundary {
         controller = new CardCorsoController(buyButton, editButton, buttonsBox, priceSection, 
                                            acquistatoBadge, priceLabel, calendarButton, courseImage,
                                            courseTitle, courseDescription, startDate, endDate, frequency,
-                                           chefName, chefExperience);
+                                           chefName, chefExperience,
+                                           cuisineTypeLabel1, cuisineTypeLabel2);
         controller.initialize();
         setCourseImage("/immagini/corsi/esempio.png");
     }
 
+    public void setCuisineTypes(String... types) {
+        controller.setCuisineTypes(types);
+    }
+
     @FXML
-    private void handlePurchase(ActionEvent event) {
+    private void handlePurchase() {
         controller.handlePurchase();
     }
 
     @FXML
-    private void handleEdit(ActionEvent event) {
+    private void handleEdit() {
         controller.handleEdit();
     }
 
     @FXML
-    private void handleShowCalendar(ActionEvent event) {
+    private void handleShowCalendar() {
         controller.handleShowCalendar();
     }
 

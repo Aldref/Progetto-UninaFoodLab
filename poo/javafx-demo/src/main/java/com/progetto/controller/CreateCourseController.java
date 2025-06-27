@@ -26,6 +26,8 @@ import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
 
 public class CreateCourseController {
+    // --- Hybrid validation binding for manual invalidation ---
+    private BooleanBinding detailsValidBinding;
     
     // === CONSTANTS ===
     private static final Pattern DURATION_PATTERN = Pattern.compile("\\d+");
@@ -58,11 +60,23 @@ public class CreateCourseController {
     private final Spinner<Integer> onlineHourSpinner, onlineMinuteSpinner;
     private final TextField onlineDurationField;
     
+    // === HYBRID MODE SUPPORT ===
+    private final VBox hybridDaysContainer;
+    private final VBox hybridDetailsSection;
+    private final Label hybridErrorLabel;
+    private final List<HybridDay> hybridDays = new ArrayList<>();
+    private static final String[] WEEK_DAYS = {"Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"};
+
     // === DATA ===
     private final ObservableList<Recipe> recipes = FXCollections.observableArrayList();
     private final Map<String, CheckBox> presenceDayCheckBoxes = new HashMap<>();
     private final Map<String, CheckBox> onlineDayCheckBoxes = new HashMap<>();
     private Label presenceDayInfoLabel, onlineDayInfoLabel;
+    
+    // === CUISINE TYPE FIELDS ===
+    private final ComboBox<String> cuisineTypeComboBox1;
+    private final ComboBox<String> cuisineTypeComboBox2;
+    private final Label cuisineTypeErrorLabel;
     
     // === CONSTRUCTOR ===
     public CreateCourseController(TextField courseNameField, TextArea descriptionArea, 
@@ -77,7 +91,9 @@ public class CreateCourseController {
                                 VBox recipesContainer, ComboBox<String> applicationComboBox, 
                                 TextField meetingCodeField, FlowPane onlineDayOfWeekContainer, 
                                 Spinner<Integer> onlineHourSpinner, Spinner<Integer> onlineMinuteSpinner, 
-                                TextField onlineDurationField) {
+                                TextField onlineDurationField, VBox hybridDetailsSection, VBox hybridDaysContainer, Label hybridErrorLabel,
+                                ComboBox<String> cuisineTypeComboBox1, ComboBox<String> cuisineTypeComboBox2, Label cuisineTypeErrorLabel
+    ) {
         
         // Initialize all fields
         this.courseNameField = courseNameField;
@@ -107,6 +123,12 @@ public class CreateCourseController {
         this.onlineHourSpinner = onlineHourSpinner;
         this.onlineMinuteSpinner = onlineMinuteSpinner;
         this.onlineDurationField = onlineDurationField;
+        this.hybridDetailsSection = hybridDetailsSection;
+        this.hybridDaysContainer = hybridDaysContainer;
+        this.hybridErrorLabel = hybridErrorLabel;
+        this.cuisineTypeComboBox1 = cuisineTypeComboBox1;
+        this.cuisineTypeComboBox2 = cuisineTypeComboBox2;
+        this.cuisineTypeErrorLabel = cuisineTypeErrorLabel;
     }
     
     // === INITIALIZATION ===
@@ -114,7 +136,7 @@ public class CreateCourseController {
         initializeData();
         setupUI();
         setupValidation();
-        addNewRecipe();
+        addNewRecipe(); // Aggiungi una ricetta vuota di default
     }
     
     private void initializeData() {
@@ -133,6 +155,45 @@ public class CreateCourseController {
         setupDatePickers();
         setupFieldValidators();
         setupEventListeners();
+        // Limite caratteri descrizione (min 1, max 60)
+        descriptionArea.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.length() > 60) {
+                descriptionArea.setText(newVal.substring(0, 60));
+            }
+        });
+
+        // Popola tipi di cucina
+        ObservableList<String> cuisineTypes = FXCollections.observableArrayList(
+            "Italiana", "Cinese", "Giapponese", "Messicana", "Indiana", "Francese", "Greca", "Spagnola", "Tailandese", "Americana", "Vegana", "Vegetariana", "Altro"
+        );
+        cuisineTypeComboBox1.setItems(cuisineTypes);
+        cuisineTypeComboBox2.setItems(cuisineTypes);
+        cuisineTypeComboBox1.setValue(null);
+        cuisineTypeComboBox2.setValue(null);
+        cuisineTypeErrorLabel.setVisible(false);
+
+        // Limita durata presenza a 480
+        durationField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String filtered = newVal.replaceAll("[^\\d]", "");
+            if (!filtered.equals(newVal)) durationField.setText(filtered);
+            if (!filtered.isEmpty()) {
+                try {
+                    int val = Integer.parseInt(filtered);
+                    if (val > 480) durationField.setText("480");
+                } catch (NumberFormatException e) { durationField.setText(""); }
+            }
+        });
+        // Limita durata telematica a 480
+        onlineDurationField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String filtered = newVal.replaceAll("[^\\d]", "");
+            if (!filtered.equals(newVal)) onlineDurationField.setText(filtered);
+            if (!filtered.isEmpty()) {
+                try {
+                    int val = Integer.parseInt(filtered);
+                    if (val > 480) onlineDurationField.setText("480");
+                } catch (NumberFormatException e) { onlineDurationField.setText(""); }
+            }
+        });
     }
     
     // === DATABASE INTEGRATION METHODS ===
@@ -146,7 +207,7 @@ public class CreateCourseController {
     
     private void loadLessonTypes() {
         // TODO: Sostituire con chiamata al DAO
-        lessonTypeComboBox.getItems().addAll("In presenza", "Telematica");
+        lessonTypeComboBox.getItems().addAll("In presenza", "Telematica", "Entrambi");
         // Esempio: lessonTypeComboBox.setItems(LessonTypeDAO.getAllTypes());
     }
     
@@ -305,8 +366,13 @@ public class CreateCourseController {
     private void setupFieldValidators() {
         addTextValidator(capField, "[^\\d]", 5);
         addTextValidator(priceField, PRICE_PATTERN);
-        addTextValidator(durationField, "[^\\d]", null);
-        addTextValidator(onlineDurationField, "[^\\d]", null);
+        addTextValidator(durationField, "[^\\d]", 3); // max 3 cifre
+        addTextValidator(onlineDurationField, "[^\\d]", 3);
+        // Solo lettere per città (presenza)
+        cityField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String filtered = newVal.replaceAll("[^a-zA-ZàèéìòùÀÈÉÌÒÙ' ]", "");
+            if (!filtered.equals(newVal)) cityField.setText(filtered);
+        });
     }
     
     private void addTextValidator(TextField field, String regex, Integer maxLength) {
@@ -351,29 +417,50 @@ public class CreateCourseController {
     // === VALIDATION ===
     private void setupValidation() {
         BooleanBinding basicValid = createBasicValidation();
-        BooleanBinding detailsValid = createDetailsValidation();
-        
-        addCheckboxValidationListeners(detailsValid);
-        createButton.disableProperty().bind(basicValid.not().or(detailsValid.not()));
+        detailsValidBinding = createDetailsValidation();
+        addCheckboxValidationListeners(detailsValidBinding);
+        createButton.disableProperty().bind(basicValid.not().or(detailsValidBinding.not()));
+
+        // --- Hybrid dynamic reactivity fix ---
+        // Listen to changes in hybridDays and their fields
+        Runnable hybridListener = this::invalidateHybridValidation;
+        for (HybridDay hd : hybridDays) {
+            if (hd.modeProperty() != null) hd.modeProperty().addListener((obs, ov, nv) -> hybridListener.run());
+            if (hd.hourProperty() != null) hd.hourProperty().addListener((obs, ov, nv) -> hybridListener.run());
+            if (hd.minuteProperty() != null) hd.minuteProperty().addListener((obs, ov, nv) -> hybridListener.run());
+            if (hd.durationProperty() != null) hd.durationProperty().addListener((obs, ov, nv) -> hybridListener.run());
+            if (hd.cityProperty() != null) hd.cityProperty().addListener((obs, ov, nv) -> hybridListener.run());
+            if (hd.streetProperty() != null) hd.streetProperty().addListener((obs, ov, nv) -> hybridListener.run());
+            if (hd.capProperty() != null) hd.capProperty().addListener((obs, ov, nv) -> hybridListener.run());
+            if (hd.enabledProperty() != null) hd.enabledProperty().addListener((obs, ov, nv) -> hybridListener.run());
+            if (hd.recipesProperty() != null) hd.recipesProperty().addListener((obs, ov, nv) -> hybridListener.run());
+            if (hd.appComboProperty() != null) hd.appComboProperty().addListener((obs, ov, nv) -> hybridListener.run());
+            if (hd.linkFieldProperty() != null) hd.linkFieldProperty().addListener((obs, ov, nv) -> hybridListener.run());
+        }
+    }
+    // Call this after any hybrid UI change to revalidate
+    private void invalidateHybridValidation() {
+        if (detailsValidBinding != null) detailsValidBinding.invalidate();
     }
     
     private BooleanBinding createBasicValidation() {
         return Bindings.createBooleanBinding(() -> 
             isValidText(courseNameField.getText()) &&
-            isValidText(descriptionArea.getText()) &&
+            isValidDescription(descriptionArea.getText()) &&
             startDatePicker.getValue() != null &&
             endDatePicker.getValue() != null &&
             frequencyComboBox.getValue() != null &&
             lessonTypeComboBox.getValue() != null &&
-            isValidPrice(priceField.getText()),
-            
+            isValidPrice(priceField.getText()) &&
+            isValidParticipants(maxParticipantsSpinner.getValue()),
             courseNameField.textProperty(),
             descriptionArea.textProperty(),
             startDatePicker.valueProperty(),
             endDatePicker.valueProperty(),
             frequencyComboBox.valueProperty(),
             lessonTypeComboBox.valueProperty(),
-            priceField.textProperty()
+            priceField.textProperty(),
+            maxParticipantsSpinner.valueProperty()
         );
     }
     
@@ -382,24 +469,67 @@ public class CreateCourseController {
         Observable[] properties = Arrays.stream(getAllRelevantProperties())
             .filter(obj -> obj instanceof Observable)
             .toArray(Observable[]::new);
-            
+
         return Bindings.createBooleanBinding(() -> {
             String lessonType = lessonTypeComboBox.getValue();
             if ("In presenza".equals(lessonType)) {
                 return validatePresenceDetails();
             } else if ("Telematica".equals(lessonType)) {
                 return validateOnlineDetails();
+            } else if ("Entrambi".equals(lessonType)) {
+                return validateHybridDetailsFixed();
             }
             return false;
         }, properties);
     }
     
     private boolean validatePresenceDetails() {
-        return hasCorrectNumberOfDays(presenceDayCheckBoxes) &&
-               isValidDurationRange(durationField.getText()) &&
-               isValidText(cityField.getText()) &&
-               isValidText(streetField.getText()) &&
-               isValidCAP(capField.getText());
+        if (!hasCorrectNumberOfDays(presenceDayCheckBoxes)) return false;
+        if (!isValidDurationRange(durationField.getText())) return false;
+        if (!isValidText(cityField.getText())) return false;
+        if (!isValidText(streetField.getText())) return false;
+        if (!isValidCAP(capField.getText())) return false;
+        // Almeno una ricetta con almeno un ingrediente completo
+        boolean hasValidRecipe = false;
+        for (javafx.scene.Node node : recipesContainer.getChildren()) {
+            if (node instanceof VBox) {
+                VBox recipeBox = (VBox) node;
+                TextField nameField = null;
+                VBox ingredientsBox = null;
+                for (javafx.scene.Node child : recipeBox.getChildren()) {
+                    if (child instanceof HBox && nameField == null) {
+                        // Cerca il TextField del nome ricetta nell'header
+                        for (javafx.scene.Node h : ((HBox) child).getChildren()) {
+                            if (h instanceof TextField) {
+                                nameField = (TextField) h;
+                                break;
+                            }
+                        }
+                    }
+                    if (child instanceof VBox && ingredientsBox == null) ingredientsBox = (VBox) child;
+                }
+                if (nameField != null && isValidText(nameField.getText()) && ingredientsBox != null) {
+                    for (javafx.scene.Node ingrRow : ingredientsBox.getChildren()) {
+                        if (ingrRow instanceof HBox) {
+                            HBox row = (HBox) ingrRow;
+                            TextField ingrName = null, ingrQty = null;
+                            ComboBox<?> ingrUnit = null;
+                            for (javafx.scene.Node ingrField : row.getChildren()) {
+                                if (ingrField instanceof TextField && ingrName == null) ingrName = (TextField) ingrField;
+                                else if (ingrField instanceof TextField && ingrQty == null && ingrName != null) ingrQty = (TextField) ingrField;
+                                else if (ingrField instanceof ComboBox && ingrUnit == null) ingrUnit = (ComboBox<?>) ingrField;
+                            }
+                            if (ingrName != null && isValidText(ingrName.getText()) && ingrQty != null && isValidText(ingrQty.getText()) && ingrUnit != null && ingrUnit.getValue() != null) {
+                                hasValidRecipe = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!hasValidRecipe) return false;
+        return true;
     }
     
     private boolean validateOnlineDetails() {
@@ -409,14 +539,96 @@ public class CreateCourseController {
                isValidDurationRange(onlineDurationField.getText());
     }
     
+    private boolean validateHybridDetails() {
+        // Obsoleta, sostituita da validateHybridDetailsFixed()
+        return false;
+    }
+
+    // Nuova validazione per "Entrambi" (ibrido):
+    private boolean validateHybridDetailsFixed() {
+        // Controlla che il numero di giorni selezionati sia corretto
+        int expectedDays = getMaxDaysFromFrequency(frequencyComboBox.getValue());
+        long selectedDays = hybridDays.stream().filter(HybridDay::isEnabled).count();
+        if (selectedDays != expectedDays) return false;
+
+        for (HybridDay hd : hybridDays) {
+            if (!hd.isEnabled()) continue;
+            String mode = hd.getMode();
+            if ("Presenza".equals(mode)) {
+                // Tutti i campi presenza obbligatori
+                if (!isValidText(hd.getCity())) return false;
+                if (!isValidText(hd.getStreet())) return false;
+                if (!isValidCAP(hd.getCap())) return false;
+                if (hd.getHour() == null) return false;
+                if (hd.getMinute() == null) return false;
+                if (!isValidDurationRange(hd.getDuration())) return false;
+                // Almeno una ricetta con almeno un ingrediente completo
+                java.util.List<Recipe> recipes = hd.getRecipes();
+                boolean hasValidRecipe = false;
+                if (recipes != null) {
+                    for (Recipe r : recipes) {
+                        if (r.getName() != null && !r.getName().trim().isEmpty()) {
+                            javafx.collections.ObservableList<Ingredient> ings = r.getIngredients();
+                            if (ings != null && !ings.isEmpty()) {
+                                boolean allValid = true;
+                                for (Ingredient ing : ings) {
+                                    if (ing.getName() == null || ing.getName().trim().isEmpty()) allValid = false;
+                                    if (ing.getQuantity() == null || ing.getQuantity().trim().isEmpty()) allValid = false;
+                                    if (ing.getUnit() == null || ing.getUnit().trim().isEmpty()) allValid = false;
+                                }
+                                if (allValid) {
+                                    hasValidRecipe = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!hasValidRecipe) return false;
+            } else if ("Telematica".equals(mode)) {
+                ComboBox<String> appCombo = hd.getAppCombo();
+                TextField linkField = hd.getLinkField();
+                if (appCombo == null || appCombo.getValue() == null || appCombo.getValue().trim().isEmpty()) return false;
+                if (linkField == null || linkField.getText() == null || linkField.getText().trim().isEmpty()) return false;
+                if (hd.getHour() == null) return false;
+                if (hd.getMinute() == null) return false;
+                if (!isValidDurationRange(hd.getDuration())) return false;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     private Object[] getAllRelevantProperties() {
-        return new Object[]{
-            lessonTypeComboBox.valueProperty(), frequencyComboBox.valueProperty(),
-            durationField.textProperty(), cityField.textProperty(), 
-            streetField.textProperty(), capField.textProperty(),
-            applicationComboBox.valueProperty(), meetingCodeField.textProperty(),
-            onlineDurationField.textProperty()
-        };
+        java.util.List<Object> props = new java.util.ArrayList<>();
+        props.add(lessonTypeComboBox.valueProperty());
+        props.add(frequencyComboBox.valueProperty());
+        props.add(durationField.textProperty());
+        props.add(cityField.textProperty());
+        props.add(streetField.textProperty());
+        props.add(capField.textProperty());
+        props.add(applicationComboBox.valueProperty());
+        props.add(meetingCodeField.textProperty());
+        props.add(onlineDurationField.textProperty());
+
+        // Aggiorna: aggiungi tutte le property osservabili dei giorni ibridi
+        if (hybridDays != null) {
+            for (HybridDay hd : hybridDays) {
+                props.add(hd.enabledProperty());
+                props.add(hd.modeProperty());
+                props.add(hd.cityProperty());
+                props.add(hd.streetProperty());
+                props.add(hd.capProperty());
+                props.add(hd.durationProperty());
+                props.add(hd.hourProperty());
+                props.add(hd.minuteProperty());
+                props.add(hd.recipesProperty());
+                if (hd.getAppCombo() != null) props.add(hd.getAppCombo().valueProperty());
+                if (hd.getLinkField() != null) props.add(hd.getLinkField().textProperty());
+            }
+        }
+        return props.toArray();
     }
     
     private void addCheckboxValidationListeners(BooleanBinding binding) {
@@ -517,6 +729,10 @@ public class CreateCourseController {
             return false;
         }
     }
+
+    private boolean isValidParticipants(Integer value) {
+        return value != null && value >= 10;
+    }
     
     private boolean isValidCAP(String capText) {
         return isValidText(capText) && CAP_PATTERN.matcher(capText.trim()).matches();
@@ -530,6 +746,10 @@ public class CreateCourseController {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    private boolean isValidDescription(String text) {
+        return text != null && text.trim().length() >= 1 && text.length() <= 60;
     }
     
     private boolean hasCorrectNumberOfDays(Map<String, CheckBox> checkBoxes) {
@@ -546,292 +766,345 @@ public class CreateCourseController {
         String selectedType = lessonTypeComboBox.getValue();
         boolean isPresence = "In presenza".equals(selectedType);
         boolean isOnline = "Telematica".equals(selectedType);
-        
+        boolean isHybrid = "Entrambi".equals(selectedType);
         presenceDetailsSection.setVisible(isPresence);
         presenceDetailsSection.setManaged(isPresence);
         onlineDetailsSection.setVisible(isOnline);
         onlineDetailsSection.setManaged(isOnline);
+        hybridDetailsSection.setVisible(isHybrid);
+        hybridDetailsSection.setManaged(isHybrid);
+        if (isHybrid) setupHybridDaysUI();
     }
-    
-    public void selectImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleziona Immagine del Corso");
-        fileChooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
-        
-        Stage stage = (Stage) courseImageView.getScene().getWindow();
-        File selectedFile = fileChooser.showOpenDialog(stage);
-        
-        if (selectedFile != null) {
-            try {
-                courseImageView.setImage(new Image(selectedFile.toURI().toString()));
-            } catch (Exception e) {
-                showAlert("Errore", "Impossibile caricare l'immagine selezionata.");
-            }
+
+    private void setupHybridDaysUI() {
+        hybridDaysContainer.getChildren().clear();
+        hybridDays.clear();
+        String freq = frequencyComboBox.getValue();
+        int maxDays = getMaxDaysFromFrequency(freq != null ? freq : "1 volta a settimana");
+        if (maxDays < 2) {
+            hybridErrorLabel.setText("La modalità 'Entrambi' richiede almeno 2 giorni a settimana.");
+            hybridErrorLabel.setVisible(true);
+            hybridErrorLabel.setManaged(true);
+            return;
+        } else {
+            hybridErrorLabel.setVisible(false);
+            hybridErrorLabel.setManaged(false);
         }
-    }
-    
-    public void createCourse() {
-        try {
-            CourseData courseData = collectCourseData();
-            
-            // TODO: Sostituire con chiamata al DAO
-            // boolean success = CourseDAO.createCourse(courseData);
-            // if (success) {
-                showCourseCreationSuccessDialog();
-            // } else {
-            //     showAlert("Errore", "Errore durante il salvataggio del corso.");
-            // }
-            
-        } catch (Exception e) {
-            showAlert("Errore", "Si è verificato un errore durante la creazione del corso.");
-            e.printStackTrace();
+        FlowPane daysPane = new FlowPane();
+        daysPane.setHgap(12);
+        daysPane.setVgap(8);
+        daysPane.setPrefWrapLength(600);
+        List<HybridDay> tempHybridDays = new ArrayList<>();
+        for (String day : WEEK_DAYS) {
+            VBox dayBox = new VBox(6);
+            dayBox.setPadding(new Insets(4, 8, 4, 8));
+            dayBox.setStyle("-fx-background-color: #f4f7fb; -fx-border-color: #e1e5e9; -fx-border-radius: 8; -fx-background-radius: 8;");
+            CheckBox dayCheck = new CheckBox(day);
+            ComboBox<String> modeCombo = new ComboBox<>();
+            modeCombo.getItems().addAll("Presenza", "Telematica");
+            modeCombo.setDisable(true);
+            VBox detailsBox = new VBox(8);
+            detailsBox.setVisible(false);
+            detailsBox.setManaged(false);
+            dayBox.getChildren().addAll(dayCheck, modeCombo, detailsBox);
+            daysPane.getChildren().add(dayBox);
+            HybridDay hd = new HybridDay(day, null);
+            tempHybridDays.add(hd);
+
+            dayCheck.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+                long count = tempHybridDays.stream().filter(HybridDay::isEnabled).count();
+                if (isSelected) {
+                    if (count >= maxDays) {
+                        dayCheck.setSelected(false);
+                        hybridErrorLabel.setText("Puoi selezionare solo " + maxDays + " giorni.");
+                        hybridErrorLabel.setVisible(true);
+                        hybridErrorLabel.setManaged(true);
+                        return;
+                    }
+                    modeCombo.setDisable(false);
+                    modeCombo.setValue("Presenza");
+                    detailsBox.setVisible(true);
+                    detailsBox.setManaged(true);
+                    hd.setEnabled(true);
+                    hd.setMode("Presenza");
+                } else {
+                    modeCombo.setDisable(true);
+                    modeCombo.setValue(null);
+                    detailsBox.setVisible(false);
+                    detailsBox.setManaged(false);
+                    detailsBox.getChildren().clear();
+                    hd.setEnabled(false);
+                    hd.setMode(null);
+                }
+                hybridErrorLabel.setVisible(false);
+                hybridErrorLabel.setManaged(false);
+            });
+
+            modeCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+                if (!dayCheck.isSelected()) return;
+                // Reset campi non rilevanti quando si cambia modalità
+                if ("Presenza".equals(newVal)) {
+                    // Svuota campi telematica
+                    if (hd.getAppCombo() != null) hd.getAppCombo().setValue(null);
+                    if (hd.getLinkField() != null) hd.getLinkField().setText("");
+                } else if ("Telematica".equals(newVal)) {
+                    // Svuota campi presenza e ricette
+                    hd.setCity("");
+                    hd.setStreet("");
+                    hd.setCap("");
+                    hd.setRecipes(new java.util.ArrayList<>());
+                }
+                // Svuota sempre orario e durata (obbligatori in entrambi)
+                hd.setHour(null);
+                hd.setMinute(null);
+                hd.setDuration("");
+                invalidateHybridValidation();
+                hd.setMode(newVal);
+                detailsBox.getChildren().clear();
+                if ("Presenza".equals(newVal)) {
+                    // Orario, durata, città, via, cap
+                    HBox orarioBox = new HBox(8);
+                    Label orarioLabel = new Label("Orario Inizio:");
+                    Spinner<Integer> hourSpinner = new Spinner<>(6, 23, 18);
+                    Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 0, 15);
+                    hourSpinner.setEditable(true);
+                    minuteSpinner.setEditable(true);
+                    orarioBox.getChildren().addAll(orarioLabel, hourSpinner, new Label(":"), minuteSpinner);
+                    // Durata
+                    HBox durataBox = new HBox(8);
+                    Label durataLabel = new Label("Durata (minuti):");
+                    TextField durataField = new TextField();
+                    durataField.setPromptText("es. 120");
+                    // Limita input a numeri e max 480
+                    durataField.textProperty().addListener((o, ov, nv) -> {
+                        String filtered = nv.replaceAll("[^\\d]", "");
+                        if (!filtered.equals(nv)) durataField.setText(filtered);
+                        if (!filtered.isEmpty()) {
+                            try {
+                                int val = Integer.parseInt(filtered);
+                                if (val > 480) durataField.setText("480");
+                            } catch (NumberFormatException e) { durataField.setText(""); }
+                        }
+                        hd.setDuration(durataField.getText());
+                    });
+                    durataBox.getChildren().addAll(durataLabel, durataField);
+                    // Indirizzo
+                    HBox indirizzoBox = new HBox(8);
+                    TextField cityField = new TextField(); cityField.setPromptText("Città");
+                    TextField streetField = new TextField(); streetField.setPromptText("Via");
+                    TextField capField = new TextField(); capField.setPromptText("CAP");
+                    // Limita input CAP a numeri e max 5 cifre
+                    capField.textProperty().addListener((o, ov, nv) -> {
+                        String filtered = nv.replaceAll("[^\\d]", "");
+                        if (filtered.length() > 5) filtered = filtered.substring(0, 5);
+                        if (!filtered.equals(nv)) capField.setText(filtered);
+                        hd.setCap(filtered);
+                    });
+                    // Solo lettere per città (ibrido)
+                    cityField.textProperty().addListener((o, ov, nv) -> {
+                        String filtered = nv.replaceAll("[^a-zA-ZàèéìòùÀÈÉÌÒÙ' ]", "");
+                        if (!filtered.equals(nv)) cityField.setText(filtered);
+                        hd.setCity(filtered);
+                    });
+                    streetField.textProperty().addListener((o, ov, nv) -> hd.setStreet(nv));
+                    indirizzoBox.getChildren().addAll(new Label("Città:"), cityField, new Label("Via:"), streetField, new Label("CAP:"), capField);
+                    // Ricette
+                    VBox ricetteBox = new VBox(5);
+                    Button addRecipeBtn = new Button("+ Aggiungi Ricetta");
+                    addRecipeBtn.getStyleClass().add("add-recipe-button");
+                    List<Recipe> dayRecipes = new ArrayList<>();
+                    addRecipeBtn.setOnAction(e -> {
+                        Recipe r = new Recipe();
+                        dayRecipes.add(r);
+                        VBox recipeBox = createRecipeBox(r, dayRecipes, ricetteBox);
+                        ricetteBox.getChildren().add(recipeBox);
+                    });
+                    detailsBox.getChildren().addAll(orarioBox, durataBox, indirizzoBox, new Label("Ricette per questo giorno:"), ricetteBox, addRecipeBtn);
+                    hd.setRecipes(dayRecipes);
+                    // Bind fields to HybridDay
+                    hourSpinner.valueProperty().addListener((o, ov, nv) -> hd.setHour(nv));
+                    minuteSpinner.valueProperty().addListener((o, ov, nv) -> hd.setMinute(nv));
+                } else if ("Telematica".equals(newVal)) {
+                    // Orario, durata
+                    HBox orarioBox = new HBox(8);
+                    Label orarioLabel = new Label("Orario Inizio:");
+                    Spinner<Integer> hourSpinner = new Spinner<>(6, 23, 18);
+                    Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 0, 15);
+                    hourSpinner.setEditable(true);
+                    minuteSpinner.setEditable(true);
+                    orarioBox.getChildren().addAll(orarioLabel, hourSpinner, new Label(":"), minuteSpinner);
+                    // Durata
+                    HBox durataBox = new HBox(8);
+                    Label durataLabel = new Label("Durata (minuti):");
+                    TextField durataField = new TextField();
+                    durataField.setPromptText("es. 120");
+                    // Limita input a numeri e max 480
+                    durataField.textProperty().addListener((o, ov, nv) -> {
+                        String filtered = nv.replaceAll("[^\\d]", "");
+                        if (!filtered.equals(nv)) durataField.setText(filtered);
+                        if (!filtered.isEmpty()) {
+                            try {
+                                int val = Integer.parseInt(filtered);
+                                if (val > 480) durataField.setText("480");
+                            } catch (NumberFormatException e) { durataField.setText(""); }
+                        }
+                        hd.setDuration(durataField.getText());
+                    });
+                    durataBox.getChildren().addAll(durataLabel, durataField);
+                    // App/link
+                    Label appLabel = new Label("Applicazione:");
+                    ComboBox<String> appCombo = new ComboBox<>();
+                    appCombo.getItems().addAll(applicationComboBox.getItems());
+                    appCombo.getStyleClass().add("combo-box");
+                    Label linkLabel = new Label("Codice/Link:");
+                    TextField linkField = new TextField();
+                    linkField.getStyleClass().add("form-field");
+                    detailsBox.getChildren().addAll(orarioBox, durataBox, appLabel, appCombo, linkLabel, linkField);
+                    hd.setAppCombo(appCombo);
+                    hd.setLinkField(linkField);
+                    // Bind fields to HybridDay
+                    hourSpinner.valueProperty().addListener((o, ov, nv) -> hd.setHour(nv));
+                    minuteSpinner.valueProperty().addListener((o, ov, nv) -> hd.setMinute(nv));
+                }
+            });
         }
+        hybridDays.clear();
+        hybridDays.addAll(tempHybridDays);
+        hybridDaysContainer.getChildren().clear();
+        hybridDaysContainer.getChildren().add(daysPane);
     }
-    
-    private CourseData collectCourseData() {
-        String lessonType = lessonTypeComboBox.getValue();
-        
-        CourseData data = new CourseData();
-        data.name = courseNameField.getText().trim();
-        data.description = descriptionArea.getText().trim();
-        data.startDate = startDatePicker.getValue();
-        data.endDate = endDatePicker.getValue();
-        data.frequency = frequencyComboBox.getValue();
-        data.lessonType = lessonType;
-        data.maxParticipants = maxParticipantsSpinner.getValue();
-        data.price = Double.parseDouble(priceField.getText().trim());
-        data.recipes = new ArrayList<>(recipes);
-        
-        if ("In presenza".equals(lessonType)) {
-            data.timeSlot = getFormattedTime(presenceHourSpinner, presenceMinuteSpinner);
-            data.duration = Integer.parseInt(durationField.getText().trim());
-            data.location = String.format("%s, %s, %s", 
-                streetField.getText().trim(), cityField.getText().trim(), capField.getText().trim());
-            data.selectedDays = getSelectedDays(presenceDayCheckBoxes);
-        } else if ("Telematica".equals(lessonType)) {
-            data.timeSlot = getFormattedTime(onlineHourSpinner, onlineMinuteSpinner);
-            data.duration = Integer.parseInt(onlineDurationField.getText().trim());
-            data.platform = applicationComboBox.getValue();
-            data.meetingCode = meetingCodeField.getText().trim();
-            data.selectedDays = getSelectedDays(onlineDayCheckBoxes);
-        }
-        
-        return data;
-    }
-    
-    // === RECIPE MANAGEMENT ===
+
+    // Ricette in presenza: ripristina la UI completa
     public void addNewRecipe() {
         Recipe recipe = new Recipe();
         recipes.add(recipe);
-        recipesContainer.getChildren().add(createRecipeBox(recipe));
+        VBox recipeBox = createRecipeBox(recipe, recipes, recipesContainer);
+        recipesContainer.getChildren().add(recipeBox);
+        // Invalida la validazione quando aggiungi una ricetta
+        if (detailsValidBinding != null) detailsValidBinding.invalidate();
     }
-    
-    private VBox createRecipeBox(Recipe recipe) {
-        VBox recipeBox = new VBox(15);
-        recipeBox.getStyleClass().add("recipe-container");
-        recipeBox.setPadding(new Insets(15));
-        
-        HBox headerBox = createRecipeHeader(recipe, recipeBox);
+
+    // Crea la UI per una ricetta (nome + ingredienti)
+    private VBox createRecipeBox(Recipe recipe, List<Recipe> recipeList, VBox parentContainer) {
+        VBox box = new VBox(8);
+        box.getStyleClass().add("recipe-container");
+        TextField nameField = new TextField();
+        nameField.setPromptText("Nome ricetta");
+        nameField.getStyleClass().add("form-field");
+        // Solo lettere e spazi per nome ricetta
+        nameField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String filtered = newVal.replaceAll("[^a-zA-ZàèéìòùÀÈÉÌÒÙ' ]", "");
+            if (!filtered.equals(newVal)) nameField.setText(filtered);
+            recipe.setName(filtered);
+            // Invalida la validazione per abilitare il tasto crea
+            if (detailsValidBinding != null) detailsValidBinding.invalidate();
+        });
+        Button removeBtn = new Button("Rimuovi");
+        removeBtn.getStyleClass().add("remove-button");
+        removeBtn.setOnAction(e -> {
+            recipeList.remove(recipe);
+            parentContainer.getChildren().remove(box);
+            // Invalida la validazione quando rimuovi una ricetta
+            if (detailsValidBinding != null) detailsValidBinding.invalidate();
+        });
+        HBox header = new HBox(10, new Label("Ricetta:"), nameField, removeBtn);
         VBox ingredientsBox = createIngredientsSection(recipe);
-        
-        recipeBox.getChildren().addAll(headerBox, ingredientsBox);
-        addIngredient(recipe);
-        return recipeBox;
+        box.getChildren().addAll(header, ingredientsBox);
+        return box;
     }
-    
-    private HBox createRecipeHeader(Recipe recipe, VBox recipeBox) {
-        HBox headerBox = new HBox(10);
-        headerBox.setStyle("-fx-alignment: center-left;");
-        
-        Label recipeLabel = new Label("Nome Ricetta:");
-        recipeLabel.getStyleClass().add("field-label");
-        
-        TextField recipeNameField = new TextField();
-        recipeNameField.setPromptText("Inserisci il nome della ricetta");
-        recipeNameField.getStyleClass().add("form-field");
-        recipeNameField.setPrefWidth(250);
-        recipeNameField.textProperty().addListener((obs, oldVal, newVal) -> recipe.setName(newVal));
-        
-        Button removeRecipeBtn = new Button("✕");
-        removeRecipeBtn.getStyleClass().add("remove-button");
-        removeRecipeBtn.setOnAction(e -> removeRecipe(recipeBox, recipe));
-        
-        headerBox.getChildren().addAll(recipeLabel, recipeNameField, removeRecipeBtn);
-        return headerBox;
-    }
-    
+
+    // UI per ingredienti di una ricetta
     private VBox createIngredientsSection(Recipe recipe) {
-        VBox ingredientsBox = new VBox(10);
-        Label ingredientsLabel = new Label("Ingredienti:");
-        ingredientsLabel.getStyleClass().add("field-label");
-        
-        VBox ingredientsList = new VBox(8);
-        recipe.setIngredientsContainer(ingredientsList);
-        
-        Button addIngredientBtn = new Button("+ Aggiungi Ingrediente");
-        addIngredientBtn.getStyleClass().add("add-ingredient-button");
-        addIngredientBtn.setOnAction(e -> addIngredient(recipe));
-        
-        ingredientsBox.getChildren().addAll(ingredientsLabel, ingredientsList, addIngredientBtn);
+        VBox ingredientsBox = new VBox(5);
+        for (Ingredient ing : recipe.getIngredients()) {
+            HBox row = createIngredientBox(ing, recipe, ingredientsBox);
+            ingredientsBox.getChildren().add(row);
+        }
+        Button addIngBtn = new Button("+ Ingrediente");
+        addIngBtn.getStyleClass().add("add-ingredient-button");
+        addIngBtn.setOnAction(e -> addIngredient(recipe, ingredientsBox));
+        ingredientsBox.getChildren().add(addIngBtn);
         return ingredientsBox;
     }
-    
-    private void addIngredient(Recipe recipe) {
-        Ingredient ingredient = new Ingredient();
-        recipe.addIngredient(ingredient);
-        recipe.getIngredientsContainer().getChildren().add(createIngredientBox(ingredient, recipe));
+
+    private void addIngredient(Recipe recipe, VBox ingredientsBox) {
+        Ingredient ing = new Ingredient();
+        recipe.addIngredient(ing);
+        HBox row = createIngredientBox(ing, recipe, ingredientsBox);
+        ingredientsBox.getChildren().add(ingredientsBox.getChildren().size() - 1, row);
+        // Invalida la validazione quando aggiungi un ingrediente
+        if (detailsValidBinding != null) detailsValidBinding.invalidate();
     }
-    
-    private HBox createIngredientBox(Ingredient ingredient, Recipe recipe) {
-        HBox ingredientBox = new HBox(10);
-        ingredientBox.getStyleClass().add("ingredient-row");
-        
-        TextField nameField = createIngredientNameField(ingredient);
-        TextField quantityField = createIngredientQuantityField(ingredient);
-        ComboBox<String> unitCombo = createIngredientUnitCombo(ingredient);
-        Button removeBtn = createRemoveIngredientButton(ingredientBox, recipe, ingredient);
-        
-        ingredientBox.getChildren().addAll(nameField, quantityField, unitCombo, removeBtn);
-        return ingredientBox;
-    }
-    
-    private TextField createIngredientNameField(Ingredient ingredient) {
+
+    private HBox createIngredientBox(Ingredient ingredient, Recipe recipe, VBox ingredientsBox) {
         TextField nameField = new TextField();
-        nameField.setPromptText("Nome ingrediente");
-        nameField.getStyleClass().addAll("form-field", "ingredient-name-field");
-        nameField.textProperty().addListener((obs, oldVal, newVal) -> ingredient.setName(newVal));
-        return nameField;
-    }
-    
-    private TextField createIngredientQuantityField(Ingredient ingredient) {
-        TextField quantityField = new TextField();
-        quantityField.setPromptText("Qta");
-        quantityField.getStyleClass().addAll("form-field", "ingredient-quantity-field");
-        quantityField.textProperty().addListener((obs, oldVal, newVal) -> {
-            String normalized = newVal.replace(",", ".");
-            if (!normalized.matches("\\d*\\.?\\d{0,3}")) {
-                String filtered = normalized.replaceAll("[^\\d.]", "");
-                int dotIndex = filtered.indexOf('.');
-                if (dotIndex != -1) {
-                    String beforeDot = filtered.substring(0, dotIndex);
-                    String afterDot = filtered.substring(dotIndex + 1).replaceAll("\\.", "");
-                    if (afterDot.length() > 3) afterDot = afterDot.substring(0, 3);
-                    filtered = beforeDot + "." + afterDot;
-                }
-                quantityField.setText(filtered);
-            } else {
-                ingredient.setQuantity(normalized);
-            }
+        nameField.setPromptText("Ingrediente");
+        nameField.getStyleClass().add("ingredient-name-field");
+        nameField.getStyleClass().add("form-field"); // Uniforma stile
+        // Solo lettere e spazi per nome ingrediente
+        nameField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String filtered = newVal.replaceAll("[^a-zA-ZàèéìòùÀÈÉÌÒÙ' ]", "");
+            if (!filtered.equals(newVal)) nameField.setText(filtered);
+            ingredient.setName(filtered);
+            if (detailsValidBinding != null) detailsValidBinding.invalidate();
         });
-        return quantityField;
-    }
-    
-    private ComboBox<String> createIngredientUnitCombo(Ingredient ingredient) {
+
+        TextField qtyField = new TextField();
+        qtyField.setPromptText("Quantità");
+        qtyField.getStyleClass().add("ingredient-quantity-field");
+        qtyField.getStyleClass().add("form-field"); // Uniforma stile
+        // Permetti solo numeri
+        qtyField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String filtered = newVal.replaceAll("[^\\d]", "");
+            if (!filtered.equals(newVal)) qtyField.setText(filtered);
+            ingredient.setQuantity(filtered);
+            if (detailsValidBinding != null) detailsValidBinding.invalidate();
+        });
+
         ComboBox<String> unitCombo = new ComboBox<>();
-        // TODO: Caricare da database
-        unitCombo.getItems().addAll("g", "kg", "ml", "l", "pz", "cucchiai", "cucchiaini", "tazze", "q.b.");
+        unitCombo.getItems().addAll("g", "kg", "ml", "l", "pz");
         unitCombo.setPromptText("Unità");
-        unitCombo.getStyleClass().addAll("form-field", "ingredient-unit-combo");
-        unitCombo.valueProperty().addListener((obs, oldVal, newVal) -> ingredient.setUnit(newVal));
-        return unitCombo;
-    }
-    
-    private Button createRemoveIngredientButton(HBox ingredientBox, Recipe recipe, Ingredient ingredient) {
-        Button removeBtn = new Button("✕");
+        unitCombo.getStyleClass().add("ingredient-unit-combo");
+        unitCombo.getStyleClass().add("combo-box"); // Uniforma stile
+        unitCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            ingredient.setUnit(newVal);
+            if (detailsValidBinding != null) detailsValidBinding.invalidate();
+        });
+
+        Button removeBtn = new Button("-");
         removeBtn.getStyleClass().add("remove-ingredient-button");
         removeBtn.setOnAction(e -> {
             recipe.removeIngredient(ingredient);
-            recipe.getIngredientsContainer().getChildren().remove(ingredientBox);
+            ingredientsBox.getChildren().removeIf(node -> node == removeBtn.getParent());
+            // Invalida la validazione quando rimuovi un ingrediente
+            if (detailsValidBinding != null) detailsValidBinding.invalidate();
         });
-        return removeBtn;
-    }
-    
-    private void removeRecipe(VBox recipeBox, Recipe recipe) {
-        if (recipes.size() > 1) {
-            recipes.remove(recipe);
-            recipesContainer.getChildren().remove(recipeBox);
-        } else {
-            showAlert("Attenzione", "Deve essere presente almeno una ricetta.");
-        }
-    }
-    
-    // === NAVIGATION ===
-    public void goToHomepage() {
-        navigateTo("/fxml/homepagechef.fxml", "UninaFoodLab - Homepage");
-    }
-    
-    public void goToMonthlyReport() {
-        navigateTo("/fxml/monthlyreport.fxml", "UninaFoodLab - Resoconto Mensile");
-    }
-    
-    public void goToAccountManagement() {
-        navigateTo("/fxml/accountmanagementchef.fxml", "UninaFoodLab - Gestione Account");
-    }
-    
-    private void navigateTo(String fxml, String title) {
-        try {
-            Stage stage = (Stage) courseNameField.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, fxml, title);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public void LogoutClick() {
-        try {
-            Stage stage = (Stage) courseNameField.getScene().getWindow();
-            LogoutDialogBoundary dialogBoundary = SceneSwitcher.showLogoutDialog(stage);
-            if (dialogBoundary.isConfirmed()) {
-                SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    // === UTILITY ===
-    private void showCourseCreationSuccessDialog() {
-        try {
-            Stage parentStage = (Stage) courseNameField.getScene().getWindow();
-            String courseName = courseNameField.getText();
-            SuccessDialogUtils.showGenericSuccessDialog(
-                parentStage, 
-                "Corso Creato con Successo!", 
-                "Il corso \"" + courseName + "\" è stato creato e pubblicato con successo."
-            );
-            goToHomepage();
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Successo", "Il corso \"" + courseNameField.getText() + "\" è stato creato con successo!");
-            goToHomepage();
-        }
-    }
-    
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(title.equals("Successo") ? Alert.AlertType.INFORMATION : Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        HBox row = new HBox(8, nameField, qtyField, unitCombo, removeBtn);
+        row.getStyleClass().add("ingredient-row");
+        return row;
     }
     
     // === DATA TRANSFER OBJECTS ===
     public static class CourseData {
-        public String name, description, frequency, lessonType, timeSlot, location, platform, meetingCode;
-        public LocalDate startDate, endDate;
+        public String name, description, lessonType, frequency, street, cap, city, application, meetingCode, timeSlot;
         public int maxParticipants, duration;
         public double price;
-        public List<String> selectedDays;
+        public LocalDate startDate, endDate;
+        public List<String> days;
         public List<Recipe> recipes;
+        public List<HybridDayData> hybridDays;
+        public static class HybridDayData {
+            public String day;
+            public String mode;
+            public List<Recipe> recipes;
+            public String application;
+            public String meetingCode;
+        }
     }
-    
     public static class Recipe {
-        private String name;
-        private final ObservableList<Ingredient> ingredients = FXCollections.observableArrayList();
-        private VBox ingredientsContainer;
-        
-        // Getters and setters
+        public String name;
+        public final ObservableList<Ingredient> ingredients = FXCollections.observableArrayList();
+        public VBox ingredientsContainer;
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
         public ObservableList<Ingredient> getIngredients() { return ingredients; }
@@ -840,11 +1113,8 @@ public class CreateCourseController {
         public VBox getIngredientsContainer() { return ingredientsContainer; }
         public void setIngredientsContainer(VBox container) { this.ingredientsContainer = container; }
     }
-    
     public static class Ingredient {
-        private String name, quantity, unit;
-        
-        // Getters and setters
+        public String name, quantity, unit;
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
         public String getQuantity() { return quantity; }
@@ -852,4 +1122,149 @@ public class CreateCourseController {
         public String getUnit() { return unit; }
         public void setUnit(String unit) { this.unit = unit; }
     }
+    // Classe di supporto per la modalità ibrida
+    private static class HybridDay {
+        private final String day;
+        private final javafx.beans.property.BooleanProperty enabled = new javafx.beans.property.SimpleBooleanProperty(false);
+        private final javafx.beans.property.StringProperty mode = new javafx.beans.property.SimpleStringProperty();
+        private final javafx.beans.property.ObjectProperty<java.util.List<Recipe>> recipes = new javafx.beans.property.SimpleObjectProperty<>();
+        private final javafx.beans.property.IntegerProperty hour = new javafx.beans.property.SimpleIntegerProperty();
+        private final javafx.beans.property.IntegerProperty minute = new javafx.beans.property.SimpleIntegerProperty();
+        private final javafx.beans.property.StringProperty duration = new javafx.beans.property.SimpleStringProperty();
+        private final javafx.beans.property.StringProperty city = new javafx.beans.property.SimpleStringProperty();
+        private final javafx.beans.property.StringProperty street = new javafx.beans.property.SimpleStringProperty();
+        private final javafx.beans.property.StringProperty cap = new javafx.beans.property.SimpleStringProperty();
+        private final javafx.beans.property.ObjectProperty<ComboBox<String>> appCombo = new javafx.beans.property.SimpleObjectProperty<>();
+        private final javafx.beans.property.ObjectProperty<TextField> linkField = new javafx.beans.property.SimpleObjectProperty<>();
+
+        public HybridDay(String day, String mode) {
+            this.day = day;
+            setMode(mode);
+        }
+        public String getDay() { return day; }
+        public boolean isEnabled() { return enabled.get(); }
+        public void setEnabled(boolean enabled) { this.enabled.set(enabled); }
+        public javafx.beans.property.BooleanProperty enabledProperty() { return enabled; }
+        public String getMode() { return mode.get(); }
+        public void setMode(String mode) { this.mode.set(mode); }
+        public javafx.beans.property.StringProperty modeProperty() { return mode; }
+        public java.util.List<Recipe> getRecipes() { return recipes.get(); }
+        public void setRecipes(java.util.List<Recipe> recipes) { this.recipes.set(recipes); }
+        public javafx.beans.property.ObjectProperty<java.util.List<Recipe>> recipesProperty() { return recipes; }
+        public Integer getHour() { return hour.get(); }
+        public void setHour(Integer hour) { this.hour.set(hour != null ? hour : 0); }
+        public javafx.beans.property.IntegerProperty hourProperty() { return hour; }
+        public Integer getMinute() { return minute.get(); }
+        public void setMinute(Integer minute) { this.minute.set(minute != null ? minute : 0); }
+        public javafx.beans.property.IntegerProperty minuteProperty() { return minute; }
+        public String getDuration() { return duration.get(); }
+        public void setDuration(String duration) { this.duration.set(duration); }
+        public javafx.beans.property.StringProperty durationProperty() { return duration; }
+        public String getCity() { return city.get(); }
+        public void setCity(String city) { this.city.set(city); }
+        public javafx.beans.property.StringProperty cityProperty() { return city; }
+        public String getStreet() { return street.get(); }
+        public void setStreet(String street) { this.street.set(street); }
+        public javafx.beans.property.StringProperty streetProperty() { return street; }
+        public String getCap() { return cap.get(); }
+        public void setCap(String cap) { this.cap.set(cap); }
+        public javafx.beans.property.StringProperty capProperty() { return cap; }
+        public ComboBox<String> getAppCombo() { return appCombo.get(); }
+        public void setAppCombo(ComboBox<String> appCombo) { this.appCombo.set(appCombo); }
+        public javafx.beans.property.ObjectProperty<ComboBox<String>> appComboProperty() { return appCombo; }
+        public TextField getLinkField() { return linkField.get(); }
+        public void setLinkField(TextField linkField) { this.linkField.set(linkField); }
+        public javafx.beans.property.ObjectProperty<TextField> linkFieldProperty() { return linkField; }
+    }
+    // === HYBRID VALIDATION ===
+    private boolean validateHybridDays() {
+        for (HybridDay hd : hybridDays) {
+            if (!hd.isEnabled()) continue;
+            String mode = hd.getMode();
+            if ("Presenza".equals(mode)) {
+                List<Recipe> recipes = hd.getRecipes();
+                if (recipes == null || recipes.isEmpty()) return false;
+                for (Recipe r : recipes) {
+                    if (r.getName() == null || r.getName().trim().isEmpty()) return false;
+                    ObservableList<Ingredient> ings = r.getIngredients();
+                    if (ings == null || ings.isEmpty()) return false;
+                    for (Ingredient ing : ings) {
+                        if (ing.getName() == null || ing.getName().trim().isEmpty()) return false;
+                        if (ing.getQuantity() == null || ing.getQuantity().trim().isEmpty()) return false;
+                        if (ing.getUnit() == null || ing.getUnit().trim().isEmpty()) return false;
+                    }
+                }
+            } else if ("Telematica".equals(mode)) {
+                ComboBox<String> appCombo = hd.getAppCombo();
+                TextField linkField = hd.getLinkField();
+                if (appCombo == null || appCombo.getValue() == null || appCombo.getValue().trim().isEmpty()) return false;
+                if (linkField == null || linkField.getText() == null || linkField.getText().trim().isEmpty()) return false;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+    // === PUBLIC API FOR BOUNDARY ===
+    public void selectImage() {
+        // TODO: implementa selezione immagine
+    }
+    public void createCourse() {
+        // Validazione tipi di cucina: almeno uno selezionato
+        String cucina1 = cuisineTypeComboBox1.getValue();
+        String cucina2 = cuisineTypeComboBox2.getValue();
+        if ((cucina1 == null || cucina1.trim().isEmpty()) && (cucina2 == null || cucina2.trim().isEmpty())) {
+            cuisineTypeErrorLabel.setText("Seleziona almeno un tipo di cucina.");
+            cuisineTypeErrorLabel.setVisible(true);
+            return;
+        } else {
+            cuisineTypeErrorLabel.setVisible(false);
+        }
+        // TODO: qui va la logica di salvataggio del corso
+        Stage stage = (Stage) courseNameField.getScene().getWindow();
+        SuccessDialogUtils.showGenericSuccessDialog(stage, "Corso creato con successo!", "Il corso è stato creato correttamente.");
+        goToHomepage();
+    }
+    public void goToHomepage() {
+        try {
+            Stage stage = (Stage) courseNameField.getScene().getWindow();
+            SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Home Chef");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void goToMonthlyReport() {
+        try {
+            Stage stage = (Stage) courseNameField.getScene().getWindow();
+            SceneSwitcher.switchScene(stage, "/fxml/monthlyreport.fxml", "UninaFoodLab - Resoconto Mensile");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void goToAccountManagement() {
+        try {
+            Stage stage = (Stage) courseNameField.getScene().getWindow();
+            SceneSwitcher.switchScene(stage, "/fxml/accountmanagement.fxml", "UninaFoodLab - Gestione Account");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void LogoutClick() {
+        try {
+            Stage stage = (Stage) courseNameField.getScene().getWindow();
+            LogoutDialogBoundary dialogBoundary = SceneSwitcher.showLogoutDialog(stage);
+            if (dialogBoundary != null && dialogBoundary.isConfirmed()) {
+                SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // Conta le parole nella descrizione
+    private int countWords(String text) {
+        if (text == null || text.trim().isEmpty()) return 0;
+        return text.trim().split("\\s+").length;
+    }
 }
+

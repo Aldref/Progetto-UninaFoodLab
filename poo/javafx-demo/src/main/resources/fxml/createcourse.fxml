@@ -139,6 +139,14 @@
                                     <TextArea fx:id="descriptionArea" prefRowCount="4" promptText="Descrivi il tuo corso..." styleClass="form-field, description-area" wrapText="true" />
                                  </children>
                               </VBox>
+                              <VBox spacing="8.0">
+                                 <children>
+                                    <Label styleClass="field-label" text="Tipo di cucina (almeno uno) *" />
+                                    <ComboBox fx:id="cuisineTypeComboBox1" promptText="Seleziona tipo di cucina" styleClass="form-field" />
+                                    <ComboBox fx:id="cuisineTypeComboBox2" promptText="Seleziona altro tipo di cucina (opzionale)" styleClass="form-field" />
+                                    <Label fx:id="cuisineTypeErrorLabel" styleClass="error-label" visible="false" />
+                                 </children>
+                              </VBox>
                            </children>
                         </VBox>
                         <VBox spacing="20.0" styleClass="form-section">
@@ -292,6 +300,18 @@
                                     </VBox>
                                  </children>
                               </HBox>
+                           </children>
+                        </VBox>
+                        <VBox fx:id="hybridDetailsSection" spacing="20.0" styleClass="form-section" visible="false" managed="false">
+                           <children>
+                              <Label styleClass="section-title" text="Dettagli Lezioni Entrambi" />
+                              <VBox spacing="8.0">
+                                 <children>
+                                    <Label styleClass="field-label" text="Configura per ogni giorno della settimana:" />
+                                    <VBox fx:id="hybridDaysContainer" spacing="10.0" />
+                                 </children>
+                              </VBox>
+                              <Label fx:id="hybridErrorLabel" styleClass="error-label" visible="false" managed="false" text="" />
                            </children>
                         </VBox>
                         <VBox spacing="20.0" styleClass="form-section">

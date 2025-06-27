@@ -139,6 +139,11 @@ public class HomepageUtenteController {
                 
                 boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience);
                 
+                // Dati fittizi per i tipi di cucina: alterna tra uno e due tipi
+                String cucina1 = (i % 3 == 0) ? "Italiana" : (i % 3 == 1) ? "Vegetariana" : "Giapponese";
+                String cucina2 = (i % 2 == 0) ? "" : "Fusion"; // Solo per alcuni corsi
+                boundary.setCuisineTypes(cucina1, cucina2);
+                
                 // Una sola immagine per tutte le card
                 String imagePath = "/immagini/corsi/esempio.png";
                 boundary.setCourseImage(imagePath);
@@ -151,7 +156,6 @@ public class HomepageUtenteController {
         updateCourseCards();
     }
 
-    // ...existing code... (resto dei metodi rimane uguale)
     private void updateCourseCards() {
         mainContentArea.getChildren().clear();
         int start = currentPage * CARDS_PER_PAGE;

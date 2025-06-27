@@ -281,18 +281,27 @@
 }
 
 .ingredient-name-field {
-    -fx-pref-width: 180px;
-    -fx-max-width: 180px;
+    -fx-pref-width: 220px;
+    -fx-max-width: 220px;
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
 }
 
 .ingredient-quantity-field {
-    -fx-pref-width: 80px;
-    -fx-max-width: 80px;
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
 }
 
-.ingredient-unit-combo {
-    -fx-pref-width: 100px;
-    -fx-max-width: 100px;
+.cap-field {
+    -fx-font-family: inherit;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+}
+
+.duration-field {
+    -fx-font-size: 16px;
 }
 
 .buttons-section {

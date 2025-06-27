@@ -30,6 +30,8 @@ public class CardCorsoController {
     private final Label frequency;
     private final Label chefName;
     private final Label chefExperience;
+    private final Label cuisineTypeLabel1;
+    private final Label cuisineTypeLabel2;
 
     private boolean isEnrolledPage = false;
     private boolean isChefMode = false;
@@ -37,7 +39,8 @@ public class CardCorsoController {
     public CardCorsoController(Button buyButton, Button editButton, HBox buttonsBox, VBox priceSection,
                               Label acquistatoBadge, Label priceLabel, Button calendarButton, ImageView courseImage,
                               Label courseTitle, Label courseDescription, Label startDate, Label endDate, Label frequency,
-                              Label chefName, Label chefExperience) {
+                              Label chefName, Label chefExperience,
+                              Label cuisineTypeLabel1, Label cuisineTypeLabel2) {
         this.buyButton = buyButton;
         this.editButton = editButton;
         this.buttonsBox = buttonsBox;
@@ -53,6 +56,8 @@ public class CardCorsoController {
         this.frequency = frequency;
         this.chefName = chefName;
         this.chefExperience = chefExperience;
+        this.cuisineTypeLabel1 = cuisineTypeLabel1;
+        this.cuisineTypeLabel2 = cuisineTypeLabel2;
     }
 
     public void initialize() {
@@ -160,6 +165,29 @@ public class CardCorsoController {
         if (priceLabel != null && price != null) priceLabel.setText(price);
         if (chefName != null && chef != null) chefName.setText(chef);
         if (chefExperience != null && experience != null) chefExperience.setText(experience + " anni di esperienza");
+    }
+
+    public void setCuisineTypes(String... types) {
+        if (cuisineTypeLabel1 != null) {
+            if (types != null && types.length > 0 && types[0] != null && !types[0].trim().isEmpty()) {
+                cuisineTypeLabel1.setText(types[0]);
+                cuisineTypeLabel1.setVisible(true);
+                cuisineTypeLabel1.setManaged(true);
+            } else {
+                cuisineTypeLabel1.setVisible(false);
+                cuisineTypeLabel1.setManaged(false);
+            }
+        }
+        if (cuisineTypeLabel2 != null) {
+            if (types != null && types.length > 1 && types[1] != null && !types[1].trim().isEmpty()) {
+                cuisineTypeLabel2.setText(types[1]);
+                cuisineTypeLabel2.setVisible(true);
+                cuisineTypeLabel2.setManaged(true);
+            } else {
+                cuisineTypeLabel2.setVisible(false);
+                cuisineTypeLabel2.setManaged(false);
+            }
+        }
     }
 
     public void handlePurchase() {

@@ -151,8 +151,12 @@ public class EnrolledCoursesController {
                 String chefName = chefNames[i % chefNames.length];
                 String experience = experienceYears[i % experienceYears.length];
                 
-                
                 boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience);
+                
+                // Dati fittizi per i tipi di cucina: alterna tra uno e due tipi
+                String cucina1 = (i % 3 == 0) ? "Italiana" : (i % 3 == 1) ? "Vegetariana" : "Giapponese";
+                String cucina2 = (i % 2 == 0) ? "" : "Fusion"; // Solo per alcuni corsi
+                boundary.setCuisineTypes(cucina1, cucina2);
                 
                 String imagePath = "/immagini/corsi/esempio.png";
                 boundary.setCourseImage(imagePath);

@@ -15,6 +15,12 @@ public class CreateCourseBoundary {
     @FXML
     private TextArea descriptionArea;
     @FXML
+    private ComboBox<String> cuisineTypeComboBox1;
+    @FXML
+    private ComboBox<String> cuisineTypeComboBox2;
+    @FXML
+    private Label cuisineTypeErrorLabel;
+    @FXML
     private DatePicker startDatePicker;
     @FXML
     private DatePicker endDatePicker;
@@ -37,6 +43,8 @@ public class CreateCourseBoundary {
     private VBox presenceDetailsSection;
     @FXML
     private VBox onlineDetailsSection;
+    @FXML
+    private VBox hybridDetailsSection;
     
     @FXML
     private FlowPane dayOfWeekContainer;
@@ -67,6 +75,10 @@ public class CreateCourseBoundary {
     private Spinner<Integer> onlineMinuteSpinner;
     @FXML
     private TextField onlineDurationField; 
+    @FXML
+    private VBox hybridDaysContainer;
+    @FXML
+    private Label hybridErrorLabel;
 
     private CreateCourseController controller;
 
@@ -80,7 +92,9 @@ public class CreateCourseBoundary {
             presenceHourSpinner, presenceMinuteSpinner, durationField, 
             cityField, streetField, capField, recipesContainer, 
             applicationComboBox, meetingCodeField, onlineDayOfWeekContainer, 
-            onlineHourSpinner, onlineMinuteSpinner, onlineDurationField 
+            onlineHourSpinner, onlineMinuteSpinner, onlineDurationField,
+            hybridDetailsSection, hybridDaysContainer, hybridErrorLabel,
+            cuisineTypeComboBox1, cuisineTypeComboBox2, cuisineTypeErrorLabel
         );
         controller.initialize();
     }

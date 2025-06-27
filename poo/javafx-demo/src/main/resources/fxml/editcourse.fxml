@@ -53,6 +53,7 @@
                      <children>
                        <Label text="Frequenza" styleClass="field-label" />
                        <ComboBox fx:id="frequencyCombo" styleClass="combo-box" maxWidth="250.0" onAction="#onFrequencyChanged" />
+                       <Label fx:id="frequencyErrorLabel" styleClass="error-label" visible="false" />
                        <Label text="Seleziona quante volte a settimana" styleClass="info-label" />
                      </children>
                   </VBox>
