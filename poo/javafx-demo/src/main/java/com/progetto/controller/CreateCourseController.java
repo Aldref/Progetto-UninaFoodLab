@@ -929,6 +929,8 @@ public class CreateCourseController {
                     // Bind fields to HybridDay
                     hourSpinner.valueProperty().addListener((o, ov, nv) -> hd.setHour(nv));
                     minuteSpinner.valueProperty().addListener((o, ov, nv) -> hd.setMinute(nv));
+                    // Forza il layout per garantire la visualizzazione su macOS
+                    javafx.application.Platform.runLater(() -> hybridDaysContainer.requestLayout());
                 } else if ("Telematica".equals(newVal)) {
                     // Orario, durata
                     HBox orarioBox = new HBox(8);
@@ -977,6 +979,8 @@ public class CreateCourseController {
         hybridDays.addAll(tempHybridDays);
         hybridDaysContainer.getChildren().clear();
         hybridDaysContainer.getChildren().add(daysPane);
+        // Forza il layout su tutte le piattaforme (fix macOS)
+        javafx.application.Platform.runLater(() -> hybridDaysContainer.requestLayout());
     }
 
     // Ricette in presenza: ripristina la UI completa
