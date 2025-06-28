@@ -14,9 +14,30 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.List;
 import java.util.regex.Pattern;
+import com.progetto.Entity.EntityDto.UtenteVisitatore;
+import com.progetto.Entity.EntityDto.Corso;
+import com.progetto.Entity.EntityDto.CartaDiCredito;
+import com.progetto.Entity.entityDao.CartaDiCreditoDao;
+import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
 
 public class PaymentPageController {
+    // Carica le carte salvate dell'utente loggato e le passa alla boundary
+    public void loadSavedCardsForUser() {
+        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
+        if (utente != null) {
+            CartaDiCreditoDao dao = new CartaDiCreditoDao();
+            List<CartaDiCredito> carte = dao.getCarteByUtenteId(utente.getId_UtenteVisitatore());
+            boundary.setSavedCards(carte);
+        }
+    }
+    // Carica le carte salvate dell'utente loggato e le passa alla boundary
+    public void loadSavedCardsForUser(int idUtente) {
+        CartaDiCreditoDao dao = new CartaDiCreditoDao();
+        List<CartaDiCredito> carte = dao.getCarteByUtenteId(idUtente);
+        boundary.setSavedCards(carte);
+    }
     
     private PaymentPageBoundary boundary;
     
@@ -32,22 +53,14 @@ public class PaymentPageController {
     
     // Metodo per pagamento con carta salvata (pronto per integrazione DB)
     public void processPaymentWithSavedCard(String cardId) {
-        // TODO: Implementare logica pagamento con carta salvata
-        // Validazione minima e simulazione pagamento
-        
         if (cardId == null || cardId.isEmpty()) {
             showErrorAlert("Errore", "Carta non valida");
             return;
         }
-        
-        // Simula elaborazione pagamento
         try {
-            // TODO: Chiamata al servizio di pagamento con carta salvata
-            // paymentService.processPaymentWithSavedCard(cardId, amount);
-            
-            // Sostituisci showSuccessDialog() con:
+            // Iscrivi l'utente al corso (simulazione, sostituisci con logica reale)
+            iscriviUtenteAlCorso();
             showPaymentSuccessDialog();
-            
         } catch (Exception e) {
             showErrorAlert("Errore Pagamento", "Si è verificato un errore durante l'elaborazione del pagamento.");
         }
@@ -70,36 +83,55 @@ public class PaymentPageController {
         }
         
         try {
-            // Simula elaborazione pagamento
-            // TODO: Implementare chiamata al servizio di pagamento reale
-            // PaymentResult result = paymentService.processPayment(paymentData);
-            
-            // Se l'utente ha scelto di salvare la carta
+            // Se l'utente ha scelto di salvare la carta, salvala nel DB
             if (boundary.isSalvaCarta()) {
-                // TODO: Salvare la carta nel database
-                // cardService.saveCard(userId, cardData);
+                salvaCartaUtente();
             }
-            
-            // Sostituisci showSuccessDialog() con:
+            // Iscrivi l'utente al corso (simulazione, sostituisci con logica reale)
+            iscriviUtenteAlCorso();
             showPaymentSuccessDialog();
-            
         } catch (Exception e) {
             showErrorAlert("Errore Pagamento", "Si è verificato un errore durante l'elaborazione del pagamento.");
         }
     }
+
+    // Metodo per iscrivere l'utente al corso (da personalizzare con la logica reale)
+    private void iscriviUtenteAlCorso() {
+        // Logica reale di iscrizione al corso
+        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
+        Corso corso = boundary.getSelectedCorso();
+        if (utente != null && corso != null) {
+            new UtenteVisitatoreDao().AssegnaCorso(corso, utente);
+        }
+    }
+
+    // Metodo per salvare la carta nel DB se richiesto
+    private void salvaCartaUtente() {
+        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
+        if (utente != null) {
+            CartaDiCredito carta = boundary.getCartaInserita();
+            if (carta != null) {
+                new CartaDiCreditoDao().memorizzaCarta(carta, utente.getId_UtenteVisitatore());
+            }
+        }
+    // NON chiudere qui la classe! Tutti i metodi successivi devono restare dentro PaymentPageController
+    }
     
     // Nuovo metodo privato per gestire il dialog di successo
-        private void showPaymentSuccessDialog() {
+    private void showPaymentSuccessDialog() {
         try {
             // Usa null come parentStage - il dialog si centrerà sullo schermo
             Stage parentStage = null;
-            String courseName = "Corso di Cucina Italiana"; // TODO: Sostituire con il nome reale del corso
-            
+            String courseName = "";
+            Corso corso = boundary.getSelectedCorso();
+            if (corso != null && corso.getNome() != null) {
+                courseName = corso.getNome();
+            } else {
+                courseName = "Corso acquistato";
+            }
             SuccessDialogUtils.showPaymentSuccessDialog(parentStage, courseName);
-            
             // Dopo aver mostrato il dialog di successo, torna alla homepage
             boundary.navigateToSuccess();
-            
         } catch (Exception e) {
             e.printStackTrace();
             showSuccessAlert(); // Fallback al dialog semplice

@@ -1,5 +1,5 @@
 .login-container {
-    -fx-background-color: linear-gradient(45deg, #2C56C9 0%, #1e3a8a 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #2C56C9 0%, #1e3a8a 100%);
 }
 
 .brand-section {

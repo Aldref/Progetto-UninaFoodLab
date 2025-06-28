@@ -8,6 +8,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
 
+import com.progetto.Entity.EntityDto.Corso;
+import com.progetto.Entity.EntityDto.Sessione;
+import com.progetto.Entity.EntityDto.UtenteVisitatore;
+import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
+
 public class CalendarDialogController {
 
     private Label monthYearLabel;
@@ -20,8 +25,22 @@ public class CalendarDialogController {
 
     private LocalDate currentMonth;
     private LocalDate selectedDate;
-    private Map<LocalDate, List<Lezione>> lessonsMap;
+    private Map<LocalDate, List<Sessione>> lessonsMap;
     private VBox selectedDayCell;
+
+    private List<Sessione> userSessions = new ArrayList<>();
+    // Permette di impostare le sessioni reali dal boundary
+    public void setSessioni(List<Sessione> sessioni) {
+        this.userSessions = sessioni != null ? sessioni : new ArrayList<>();
+        // Aggiorna la mappa delle lezioni se già inizializzato
+        if (lessonsMap != null) {
+            lessonsMap.clear();
+            if (userSessions != null && !userSessions.isEmpty()) {
+                loadUserSessions();
+                updateCalendar();
+            }
+        }
+    }
 
     public CalendarDialogController(Label monthYearLabel, GridPane calendarGrid, VBox lessonDetailsArea,
                                    Label selectedDateLabel, VBox lessonsContainer, Button closeBtn, boolean isChef) {
@@ -34,50 +53,54 @@ public class CalendarDialogController {
         this.isChef = isChef;
     }
 
+    // Nuovo costruttore per passare le sessioni dell'utente
+    public CalendarDialogController(Label monthYearLabel, GridPane calendarGrid, VBox lessonDetailsArea,
+                                   Label selectedDateLabel, VBox lessonsContainer, Button closeBtn, boolean isChef, List<Sessione> userSessions) {
+        this(monthYearLabel, calendarGrid, lessonDetailsArea, selectedDateLabel, lessonsContainer, closeBtn, isChef);
+        if (userSessions != null) this.userSessions = userSessions;
+    }
+
     public void initialize() {
         currentMonth = LocalDate.now().withDayOfMonth(1);
         lessonsMap = new HashMap<>();
-        loadSampleLessons();
+        if (userSessions != null && !userSessions.isEmpty()) {
+            loadUserSessions();
+        } else {
+            loadSampleLessons();
+        }
         updateCalendar();
         selectedDateLabel.setText("Clicca su un giorno per vedere le lezioni");
         lessonDetailsArea.setVisible(true);
     }
 
+    // Popola il calendario con le sessioni reali dell'utente
+    private void loadUserSessions() {
+        for (Sessione sessione : userSessions) {
+            LocalDate data = null;
+            Object rawData = sessione.getData();
+            if (rawData instanceof LocalDate) {
+                data = (LocalDate) rawData;
+            } else if (rawData instanceof java.sql.Date) {
+                data = ((java.sql.Date) rawData).toLocalDate();
+            } else if (rawData instanceof String) {
+                try {
+                    data = LocalDate.parse((String) rawData);
+                } catch (Exception e) {
+                    System.out.println("Data sessione non parsabile: " + rawData);
+                }
+            }
+            if (data != null) {
+                lessonsMap.computeIfAbsent(data, k -> new ArrayList<>()).add(sessione);
+            } else {
+                System.out.println("Sessione ignorata (data non valida): " + sessione);
+            }
+        }
+    }
+
     // Dati fittizi, facilmente sostituibili con dati da DB
     private void loadSampleLessons() {
-        LocalDate today = LocalDate.now();
-        lessonsMap.put(today.withDayOfMonth(15), Arrays.asList(
-            new Lezione(
-                "09:00", "3 ore", "Preparazione di tagliatelle e ravioli", "Napoli", "80100", "Via Roma 123",
-                true, // presenza
-                12,   // partecipanti
-                Arrays.asList(
-                    new Ingrediente("Farina", 100, "g"),
-                    new Ingrediente("Uova", 1, "pz"),
-                    new Ingrediente("Sale", 2, "g")
-                )
-            )
-        ));
-        lessonsMap.put(today.withDayOfMonth(22), Arrays.asList(
-            new Lezione(
-                "10:00", "3 ore", "Tiramisù e panna cotta", "Napoli", "80138", "Corso Umberto I, 45",
-                false, // online
-                0,
-                Collections.emptyList()
-            )
-        ));
-        lessonsMap.put(today.withDayOfMonth(29), Arrays.asList(
-            new Lezione(
-                "09:00", "3 ore", "Risotto ai funghi porcini", "Napoli", "80121", "Piazza del Plebiscito 1",
-                true,
-                8,
-                Arrays.asList(
-                    new Ingrediente("Riso", 80, "g"),
-                    new Ingrediente("Funghi porcini", 50, "g"),
-                    new Ingrediente("Brodo vegetale", 200, "ml")
-                )
-            )
-        ));
+        // Metodo placeholder: non aggiunge più lezioni fittizie, solo per compatibilità
+        // lessonsMap.clear();
     }
 
     private void updateCalendar() {
@@ -118,12 +141,21 @@ public class CalendarDialogController {
 
         if (lessonsMap.containsKey(date)) {
             cell.getStyleClass().add("has-lesson");
-            List<Lezione> lessons = lessonsMap.get(date);
-            for (Lezione lesson : lessons) {
-                Label lessonLabel = new Label(lesson.getStartTime());
+            List<Sessione> sessions = lessonsMap.get(date);
+            int added = 0;
+            for (Sessione sessione : sessions) {
+                String tipo = "";
+                String orario = sessione.getOrario() != null ? sessione.getOrario().toString() : "";
+                if (sessione instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
+                    tipo = "[P]"; // Presenza
+                } else if (sessione instanceof com.progetto.Entity.EntityDto.SessioneOnline) {
+                    tipo = "[T]"; // Telematica
+                }
+                Label lessonLabel = new Label(tipo + " " + orario);
                 lessonLabel.getStyleClass().add("lesson-indicator");
                 cell.getChildren().add(lessonLabel);
-                if (cell.getChildren().size() > 3) break;
+                added++;
+                if (added >= 3) break;
             }
         }
 
@@ -146,9 +178,9 @@ public class CalendarDialogController {
         lessonsContainer.getChildren().clear();
 
         if (lessonsMap.containsKey(date)) {
-            List<Lezione> lessons = lessonsMap.get(date);
-            for (Lezione lesson : lessons) {
-                VBox lessonItem = createLessonItem(lesson);
+            List<Sessione> sessions = lessonsMap.get(date);
+            for (Sessione sessione : sessions) {
+                VBox lessonItem = createSessionItem(sessione);
                 lessonsContainer.getChildren().add(lessonItem);
             }
             lessonDetailsArea.setVisible(true);
@@ -161,13 +193,9 @@ public class CalendarDialogController {
         }
     }
 
-    private VBox createLessonItem(Lezione lesson) {
+    private VBox createSessionItem(Sessione sessione) {
         VBox item = new VBox(8);
         item.getStyleClass().add("lesson-item");
-
-        Label descLabel = new Label(lesson.getDescription());
-        descLabel.getStyleClass().add("lesson-description");
-        descLabel.setWrapText(true);
 
         Separator separator = new Separator();
         separator.getStyleClass().add("lesson-separator");
@@ -178,46 +206,80 @@ public class CalendarDialogController {
         HBox startTimeBox = new HBox(8);
         Label startTimeIcon = new Label("🕐");
         startTimeIcon.getStyleClass().add("detail-icon");
-        Label startTimeLabel = new Label("Orario: " + lesson.getStartTime());
+        Label startTimeLabel = new Label("Orario: " + (sessione.getOrario() != null ? sessione.getOrario().toString() : ""));
         startTimeLabel.getStyleClass().add("detail-label");
         startTimeBox.getChildren().addAll(startTimeIcon, startTimeLabel);
 
         HBox durationBox = new HBox(8);
         Label durationIcon = new Label("⏱");
         durationIcon.getStyleClass().add("detail-icon");
-        Label durationLabel = new Label("Durata: " + lesson.getDuration());
+        Label durationLabel = new Label("Durata: " + (sessione.getDurata() != null ? sessione.getDurata().toString() : ""));
         durationLabel.getStyleClass().add("detail-label");
         durationBox.getChildren().addAll(durationIcon, durationLabel);
 
-        HBox addressBox = new HBox(8);
-        Label addressIcon = new Label("📍");
-        addressIcon.getStyleClass().add("detail-icon");
-        Label addressLabel = new Label("Indirizzo: " + lesson.getFullAddress());
-        addressLabel.getStyleClass().add("detail-label");
-        addressLabel.setWrapText(true);
-        addressBox.getChildren().addAll(addressIcon, addressLabel);
-
-        detailsContainer.getChildren().addAll(startTimeBox, durationBox, addressBox);
-
-        // SOLO PER CHEF E SOLO PER CORSI IN PRESENZA
-        if (isChef && lesson.isPresenza()) {
-            Label partecipantiLabel = new Label("Partecipanti: " + lesson.getPartecipanti());
-            partecipantiLabel.getStyleClass().add("detail-label");
-            detailsContainer.getChildren().add(partecipantiLabel);
-
-            if (lesson.getIngredienti() != null && !lesson.getIngredienti().isEmpty()) {
-                Label ingredientiTitle = new Label("Ingredienti necessari:");
-                ingredientiTitle.getStyleClass().add("detail-label");
-                detailsContainer.getChildren().add(ingredientiTitle);
-
-                for (Ingrediente ingr : lesson.getIngredienti()) {
-                    double totale = ingr.getQuantitaPerPersona() * lesson.getPartecipanti();
-                    Label ingrLabel = new Label("- " + ingr.getNome() + ": " + totale + " " + ingr.getUnita());
-                    ingrLabel.getStyleClass().add("detail-label");
-                    detailsContainer.getChildren().add(ingrLabel);
-                }
+        if (sessione instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
+            com.progetto.Entity.EntityDto.SessioniInPresenza s = (com.progetto.Entity.EntityDto.SessioniInPresenza) sessione;
+            String nomeRicetta = "";
+            if (s.getRicette() != null && !s.getRicette().isEmpty() && s.getRicette().get(0) != null) {
+                nomeRicetta = s.getRicette().get(0).getNome();
             }
+            String indirizzo = s.getVia() != null ? s.getVia() : "";
+            String cap = s.getCap() != null ? s.getCap() : "";
+            String citta = s.getCitta() != null ? s.getCitta() : "";
+
+            Label ricettaLabel = new Label("Ricetta: " + nomeRicetta);
+            ricettaLabel.getStyleClass().add("detail-label");
+            ricettaLabel.setWrapText(true);
+
+            HBox addressBox = new HBox(8);
+            Label addressIcon = new Label("📍");
+            addressIcon.getStyleClass().add("detail-icon");
+            Label addressLabel = new Label("Indirizzo: " + indirizzo + (cap.isEmpty() ? "" : (", " + cap)) + (citta.isEmpty() ? "" : (" " + citta)));
+            addressLabel.getStyleClass().add("detail-label");
+            addressLabel.setWrapText(true);
+            addressBox.getChildren().addAll(addressIcon, addressLabel);
+
+            detailsContainer.getChildren().addAll(startTimeBox, durationBox, ricettaLabel, addressBox);
+        } else if (sessione instanceof com.progetto.Entity.EntityDto.SessioneOnline) {
+            com.progetto.Entity.EntityDto.SessioneOnline s = (com.progetto.Entity.EntityDto.SessioneOnline) sessione;
+            String app = s.getApplicazione() != null ? s.getApplicazione() : "";
+            String codice = s.getCodicechiamata() != null ? s.getCodicechiamata() : "";
+
+            HBox appBox = new HBox(8);
+            Label appIcon = new Label("💻");
+            appIcon.getStyleClass().add("detail-icon");
+            Label appLabel = new Label("App: " + app);
+            appLabel.getStyleClass().add("detail-label");
+            appBox.getChildren().addAll(appIcon, appLabel);
+
+            HBox codeBox = new HBox(8);
+            Label codeIcon = new Label("🔑");
+            codeIcon.getStyleClass().add("detail-icon");
+            Label codeLabel = new Label("Codice chiamata: " + codice);
+            codeLabel.getStyleClass().add("detail-label");
+            codeBox.getChildren().addAll(codeIcon, codeLabel);
+
+            detailsContainer.getChildren().addAll(startTimeBox, durationBox, appBox, codeBox);
         }
+
+        // Titolo/descrizione in alto: tipo e nome ricetta o app
+        String descrizione;
+        if (sessione instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
+            com.progetto.Entity.EntityDto.SessioniInPresenza s = (com.progetto.Entity.EntityDto.SessioniInPresenza) sessione;
+            String nomeRicetta = "";
+            if (s.getRicette() != null && !s.getRicette().isEmpty() && s.getRicette().get(0) != null) {
+                nomeRicetta = s.getRicette().get(0).getNome();
+            }
+            descrizione = "[PRESENZA] " + nomeRicetta;
+        } else if (sessione instanceof com.progetto.Entity.EntityDto.SessioneOnline) {
+            com.progetto.Entity.EntityDto.SessioneOnline s = (com.progetto.Entity.EntityDto.SessioneOnline) sessione;
+            descrizione = "[TELEMATICA] " + (s.getApplicazione() != null ? s.getApplicazione() : "");
+        } else {
+            descrizione = "Sessione";
+        }
+        Label descLabel = new Label(descrizione);
+        descLabel.getStyleClass().add("lesson-description");
+        descLabel.setWrapText(true);
 
         item.getChildren().addAll(descLabel, separator, detailsContainer);
         return item;
@@ -240,59 +302,4 @@ public class CalendarDialogController {
         stage.close();
     }
 
-    // === CLASSI DATI ===
-    public static class Lezione {
-        private String startTime;
-        private String duration;
-        private String description;
-        private String city;
-        private String postalCode;
-        private String address;
-        private boolean presenza;
-        private int partecipanti;
-        private List<Ingrediente> ingredienti;
-
-        public Lezione(String startTime, String duration, String description,
-                       String city, String postalCode, String address,
-                       boolean presenza, int partecipanti, List<Ingrediente> ingredienti) {
-            this.startTime = startTime;
-            this.duration = duration;
-            this.description = description;
-            this.city = city;
-            this.postalCode = postalCode;
-            this.address = address;
-            this.presenza = presenza;
-            this.partecipanti = partecipanti;
-            this.ingredienti = ingredienti;
-        }
-
-        public String getStartTime() { return startTime; }
-        public String getDuration() { return duration; }
-        public String getDescription() { return description; }
-        public String getCity() { return city; }
-        public String getPostalCode() { return postalCode; }
-        public String getAddress() { return address; }
-        public String getFullAddress() {
-            return address + ", " + postalCode + " " + city;
-        }
-        public boolean isPresenza() { return presenza; }
-        public int getPartecipanti() { return partecipanti; }
-        public List<Ingrediente> getIngredienti() { return ingredienti; }
-    }
-
-    public static class Ingrediente {
-        private String nome;
-        private double quantitaPerPersona;
-        private String unita;
-
-        public Ingrediente(String nome, double quantitaPerPersona, String unita) {
-            this.nome = nome;
-            this.quantitaPerPersona = quantitaPerPersona;
-            this.unita = unita;
-        }
-
-        public String getNome() { return nome; }
-        public double getQuantitaPerPersona() { return quantitaPerPersona; }
-        public String getUnita() { return unita; }
-    }
 }

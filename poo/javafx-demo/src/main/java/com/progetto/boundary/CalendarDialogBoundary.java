@@ -5,6 +5,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import com.progetto.controller.CalendarDialogController;
+import com.progetto.Entity.EntityDto.Sessione;
+import java.util.List;
 
 public class CalendarDialogBoundary {
 
@@ -17,12 +19,16 @@ public class CalendarDialogBoundary {
 
     private CalendarDialogController controller;
     private boolean isChef;
+    private List<Sessione> sessioni;
     
     @FXML
     public void initialize() {
         controller = new CalendarDialogController(
             monthYearLabel, calendarGrid, lessonDetailsArea, selectedDateLabel, lessonsContainer, closeBtn, isChef
         );
+        if (sessioni != null) {
+            controller.setSessioni(sessioni);
+        }
         controller.initialize();
     }
 
@@ -43,5 +49,13 @@ public class CalendarDialogBoundary {
 
     public void setChefMode(boolean isChef) {
         this.isChef = isChef;
+    }
+
+    // Metodo per ricevere la lista di sessioni reali dal SceneSwitcher
+    public void setSessioni(List<Sessione> sessioni) {
+        this.sessioni = sessioni;
+        if (controller != null) {
+            controller.setSessioni(sessioni);
+        }
     }
 }

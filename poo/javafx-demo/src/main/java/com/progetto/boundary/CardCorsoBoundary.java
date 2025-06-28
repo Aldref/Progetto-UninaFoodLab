@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import com.progetto.controller.CardCorsoController;
+import com.progetto.Entity.EntityDto.Corso;
 
 public class CardCorsoBoundary {
 
@@ -28,8 +29,10 @@ public class CardCorsoBoundary {
     @FXML private ImageView courseImage;
     @FXML private Label cuisineTypeLabel1;
     @FXML private Label cuisineTypeLabel2;
+    @FXML private Label maxPeople;
 
     private CardCorsoController controller;
+    private Corso corso; // Corso associato a questa card
 
     @FXML
     private void initialize() {
@@ -37,7 +40,7 @@ public class CardCorsoBoundary {
                                            acquistatoBadge, priceLabel, calendarButton, courseImage,
                                            courseTitle, courseDescription, startDate, endDate, frequency,
                                            chefName, chefExperience,
-                                           cuisineTypeLabel1, cuisineTypeLabel2);
+                                           cuisineTypeLabel1, cuisineTypeLabel2, maxPeople);
         controller.initialize();
         setCourseImage("/immagini/corsi/esempio.png");
     }
@@ -46,9 +49,16 @@ public class CardCorsoBoundary {
         controller.setCuisineTypes(types);
     }
 
+    public void setCorso(Corso corso) {
+        this.corso = corso;
+        if (controller != null) {
+            controller.setCorso(corso);
+        }
+    }
+
     @FXML
     private void handlePurchase() {
-        controller.handlePurchase();
+        controller.handlePurchase(this.corso);
     }
 
     @FXML
@@ -66,12 +76,12 @@ public class CardCorsoBoundary {
             Image image = new Image(getClass().getResourceAsStream(imagePath));
             courseImage.setImage(image);
         } catch (Exception e) {
-            System.out.println("Immagine non trovata: " + imagePath);
+            // System.out.println("Immagine non trovata: " + imagePath); // Disabilitato log immagini mancanti
         }
     }
 
-    public void setCourseData(String title, String description, String start, String end, String freq, String price, String chef, String experience) {
-        controller.setCourseData(title, description, start, end, freq, price, chef, experience);
+    public void setCourseData(String title, String description, String start, String end, String freq, String price, String chef, String experience, String maxPeopleValue) {
+        controller.setCourseData(title, description, start, end, freq, price, chef, experience, maxPeopleValue);
     }
 
     public void setChefMode(boolean isChef) {

@@ -13,6 +13,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import com.progetto.Entity.EntityDto.Corso;
+import com.progetto.Entity.EntityDto.Sessione;
+import com.progetto.Entity.entityDao.CorsoDao;
+import java.util.ArrayList;
+
 public class CardCorsoController {
 
     private final Button buyButton;
@@ -32,15 +37,20 @@ public class CardCorsoController {
     private final Label chefExperience;
     private final Label cuisineTypeLabel1;
     private final Label cuisineTypeLabel2;
+    private final Label maxPeople;
+
 
     private boolean isEnrolledPage = false;
     private boolean isChefMode = false;
+
+    // Corso associato a questa card
+    private Corso corso;
 
     public CardCorsoController(Button buyButton, Button editButton, HBox buttonsBox, VBox priceSection,
                               Label acquistatoBadge, Label priceLabel, Button calendarButton, ImageView courseImage,
                               Label courseTitle, Label courseDescription, Label startDate, Label endDate, Label frequency,
                               Label chefName, Label chefExperience,
-                              Label cuisineTypeLabel1, Label cuisineTypeLabel2) {
+                              Label cuisineTypeLabel1, Label cuisineTypeLabel2, Label maxPeople) {
         this.buyButton = buyButton;
         this.editButton = editButton;
         this.buttonsBox = buttonsBox;
@@ -58,6 +68,13 @@ public class CardCorsoController {
         this.chefExperience = chefExperience;
         this.cuisineTypeLabel1 = cuisineTypeLabel1;
         this.cuisineTypeLabel2 = cuisineTypeLabel2;
+        this.maxPeople = maxPeople;
+
+    }
+
+    // Imposta il corso associato a questa card
+    public void setCorso(Corso corso) {
+        this.corso = corso;
     }
 
     public void initialize() {
@@ -156,7 +173,7 @@ public class CardCorsoController {
         });
     }
 
-    public void setCourseData(String title, String description, String start, String end, String freq, String price, String chef, String experience) {
+    public void setCourseData(String title, String description, String start, String end, String freq, String price, String chef, String experience, String maxPeopleValue) {
         if (courseTitle != null) courseTitle.setText(title);
         if (courseDescription != null) courseDescription.setText(description);
         if (startDate != null) startDate.setText(start);
@@ -165,6 +182,7 @@ public class CardCorsoController {
         if (priceLabel != null && price != null) priceLabel.setText(price);
         if (chefName != null && chef != null) chefName.setText(chef);
         if (chefExperience != null && experience != null) chefExperience.setText(experience + " anni di esperienza");
+        if (maxPeople != null && maxPeopleValue != null) maxPeople.setText(maxPeopleValue);
     }
 
     public void setCuisineTypes(String... types) {
@@ -190,10 +208,17 @@ public class CardCorsoController {
         }
     }
 
-    public void handlePurchase() {
+    public void handlePurchase(com.progetto.Entity.EntityDto.Corso corsoSelezionato) {
         try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/paymentpage.fxml"));
+            javafx.scene.Parent root = loader.load();
+            com.progetto.boundary.PaymentPageBoundary paymentBoundary = loader.getController();
+            paymentBoundary.setSelectedCorso(corsoSelezionato); // Passa il corso selezionato
+            // Usa lo stage corrente, non uno nuovo!
             Stage stage = (Stage) buyButton.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/paymentpage.fxml", "UninaFoodLab - Pagamento");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.setTitle("UninaFoodLab - Pagamento");
+            stage.show();
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Errore", "Impossibile aprire la pagina di pagamento.");
@@ -212,8 +237,16 @@ public class CardCorsoController {
 
     public void handleShowCalendar() {
         try {
+            if (corso == null) {
+                showAlert("Errore", "Corso non impostato per questa card.");
+                return;
+            }
+            // Recupera le sessioni reali dal DAO
+            CorsoDao corsoDao = new CorsoDao();
+            ArrayList<Sessione> sessioni = corsoDao.recuperoSessioniPerCorso(corso);
             Stage stage = (Stage) calendarButton.getScene().getWindow();
-            SceneSwitcher.showCalendarDialog(stage, isChefMode);
+            // Passa le sessioni reali al dialog del calendario
+            SceneSwitcher.showCalendarDialog(stage, sessioni, isChefMode);
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Errore", "Impossibile aprire il calendario del corso.");

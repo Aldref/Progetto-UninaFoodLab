@@ -23,19 +23,54 @@ public class UserCardsController {
     }
     
     public void loadCardsFromDb() {
-        // In futuro: carica le carte dal DB e aggiorna la boundary
-        // boundary.setCards(listaCarte);
+        // Carica le carte dal DB e aggiorna la boundary
+        com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
+        if (utente != null) {
+            com.progetto.Entity.entityDao.CartaDiCreditoDao dao = new com.progetto.Entity.entityDao.CartaDiCreditoDao();
+            java.util.List<com.progetto.Entity.EntityDto.CartaDiCredito> carte = dao.getCarteByUtenteId(utente.getId_UtenteVisitatore());
+            utente.setCarte(carte);
+            boundary.setCards(carte);
+        }
     }
 
     public void saveNewCard() {
         boundary.clearAllErrors();
         if (validateAllFields()) {
-            // Simula il salvataggio della carta
-            showCardSaveSuccessDialog();
-            
-            boundary.clearFieldsFromController();
-            // Dopo il salvataggio, aggiorna la lista:
-            // loadCardsFromDb();
+            String holder = boundary.getCardHolderName();
+            String number = boundary.getCardNumber().replaceAll("\\s", "");
+            String expiry = boundary.getExpiry();
+            String circuito = CardValidator.getCardType(number);
+            String ultimeQuattro = number.substring(number.length() - 4);
+
+            // Accetta solo Visa o Mastercard, altrimenti mostra errore
+            if (!"Visa".equals(circuito) && !"Mastercard".equals(circuito)) {
+                boundary.showFieldError("cardNumber", "Tipo di carta non supportato. Accettiamo solo Visa e Mastercard");
+                return;
+            }
+
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("MM/yy");
+            java.time.YearMonth ym = java.time.YearMonth.parse(expiry, formatter);
+            java.time.LocalDate dataScadenza = ym.atEndOfMonth();
+
+            com.progetto.Entity.EntityDto.CartaDiCredito carta = new com.progetto.Entity.EntityDto.CartaDiCredito();
+            carta.setIntestatario(holder);
+            carta.setUltimeQuattroCifre(ultimeQuattro);
+            carta.setCircuito(circuito); // Salva esattamente "Visa" o "Mastercard"
+            carta.setDataScadenza(dataScadenza);
+
+            com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
+            if (utente != null) {
+                com.progetto.Entity.entityDao.CartaDiCreditoDao dao = new com.progetto.Entity.entityDao.CartaDiCreditoDao();
+                dao.memorizzaCarta(carta, utente.getId_UtenteVisitatore());
+                // Inserisci la relazione in POSSIEDE solo se l'ID carta è stato generato
+                if (carta.getIdCarta() != null) {
+                    com.progetto.Entity.entityDao.UtenteVisitatoreDao utenteDao = new com.progetto.Entity.entityDao.UtenteVisitatoreDao();
+                    utenteDao.aggiungiCartaAPossiede(utente, carta);
+                }
+                showCardSaveSuccessDialog();
+                boundary.clearFieldsFromController();
+                loadCardsFromDb();
+            }
         }
     }
     
@@ -115,11 +150,14 @@ public class UserCardsController {
         return isValid;
     }
     
-    public void deleteCard(String cardId) {
-        // In futuro: elimina la carta dal DB usando l'id
-        boundary.showSuccessMessage("Carta eliminata con successo.");
-        // Dopo l'eliminazione, aggiorna la lista:
-        // loadCardsFromDb();
+    public void deleteCard(com.progetto.Entity.EntityDto.CartaDiCredito carta) {
+        com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
+        if (utente != null) {
+            com.progetto.Entity.entityDao.CartaDiCreditoDao dao = new com.progetto.Entity.entityDao.CartaDiCreditoDao();
+            dao.cancellaCarta(carta, utente.getId_UtenteVisitatore());
+            boundary.showSuccessMessage("Carta eliminata con successo.");
+            loadCardsFromDb();
+        }
     }
 
     public void goBack(Stage stage) {

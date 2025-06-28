@@ -4,9 +4,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 public class ConnectionJavaDb{
     private static String driver="org.postgresql.Driver";
-    private static String URL="";//Aggiungere url del db con localhost:5432
-    private static String USER = "nomeUtente"; 
-    private static String PASSWORD = "tuaPassword";
+    private static String URL="jdbc:postgresql://localhost:5432/Uninafoodlab";
+    private static String USER = "Mario"; 
+    private static String PASSWORD = "PasswordMario1";
    
     
     public static Connection getConnection() throws SQLException {
@@ -19,7 +19,5 @@ public class ConnectionJavaDb{
         return DriverManager.getConnection(URL,USER,PASSWORD);
 
     }
-
-
 
 }

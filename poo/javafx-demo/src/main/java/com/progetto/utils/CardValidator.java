@@ -4,6 +4,29 @@ import java.time.LocalDate;
 
 public class CardValidator {
 
+    // Ritorna il tipo di carta: "Visa", "Mastercard" o "Unknown"
+    public static String getCardType(String cardNumber) {
+        if (cardNumber == null) return "Unknown";
+        if (cardNumber.startsWith("4")) {
+            return "Visa";
+        }
+        if (cardNumber.startsWith("5")) {
+            return "Mastercard";
+        }
+        if (cardNumber.length() >= 4) {
+            try {
+                String prefix = cardNumber.substring(0, 4);
+                int prefixNum = Integer.parseInt(prefix);
+                if (prefixNum >= 2221 && prefixNum <= 2720) {
+                    return "Mastercard";
+                }
+            } catch (NumberFormatException e) {
+                return "Unknown";
+            }
+        }
+        return "Unknown";
+    }
+
     
     public static boolean isValidCardType(String cardNumber) {
         if (cardNumber == null) return false;

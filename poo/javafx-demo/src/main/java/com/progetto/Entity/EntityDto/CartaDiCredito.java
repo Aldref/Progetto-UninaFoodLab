@@ -4,6 +4,10 @@ import java.time.LocalDate;
 
 public class CartaDiCredito {
 
+    // Costruttore vuoto richiesto per DAO e controller
+    public CartaDiCredito() {
+    }
+
 private String Intestatario;
 private LocalDate DataScadenza;
 private String UltimeQuattroCifre;

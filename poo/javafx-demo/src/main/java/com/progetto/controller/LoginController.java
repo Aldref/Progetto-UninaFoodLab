@@ -14,14 +14,38 @@ public class LoginController {
     public void handleLogin(ActionEvent event, String email, String password) {
         try {
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            
-            // Controllo temporaneo per accesso chef
-            if ("admin".equals(email) && "admin".equals(password)) {
-                
+            // Crea un oggetto UtenteVisitatore
+            com.progetto.Entity.EntityDto.UtenteVisitatore utente = new com.progetto.Entity.EntityDto.UtenteVisitatore();
+            utente.setEmail(email);
+            utente.setPassword(password);
+
+            // Usa UtenteDao per verificare esistenza e tipo account
+            com.progetto.Entity.entityDao.UtenteVisitatoreDao utenteDao = new com.progetto.Entity.entityDao.UtenteVisitatoreDao();
+            boolean esiste = utenteDao.LoginUtente(utente);
+            if (!esiste) {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                alert.setTitle("Login fallito");
+                alert.setHeaderText(null);
+                alert.setContentText("Email o password errati.");
+                alert.showAndWait();
+                return;
+            }
+
+            String tipo = utenteDao.TipoDiAccount(utente);
+            if ("c".equals(tipo)) {
+                // Chef
                 SceneSwitcher.switchToMainApp(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Homepage");
-            } else {
-                
+            } else if ("v".equals(tipo)) {
+                // Utente Visitatore: carica tutti i dati e imposta loggedUser
+                utenteDao.recuperaDatiUtente(utente);
+                com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser = utente;
                 SceneSwitcher.switchToMainApp(stage, "/fxml/homepageutente.fxml", "UninaFoodLab - Homepage");
+            } else {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                alert.setTitle("Login fallito");
+                alert.setHeaderText(null);
+                alert.setContentText("Tipo di account non riconosciuto.");
+                alert.showAndWait();
             }
         } catch (IOException e) {
             e.printStackTrace();

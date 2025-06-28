@@ -12,6 +12,7 @@ import com.progetto.Entity.EntityDto.Utente;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
+import com.progetto.utils.ErrorCaricamentoPropic;
 
 public class ChefDao extends UtenteDao  {
    
@@ -105,7 +106,11 @@ public class ChefDao extends UtenteDao  {
 
    
     public void RecuperaCorsi (Utente utente){
-      String query = "SELECT C.* FROM CHEF_CORSO CC NATURAL JOIN CORSO C WHERE CC.IdChef = ?";
+      String query = "SELECT C.*, CH.Nome AS chef_nome, CH.Cognome AS chef_cognome, CH.AnniDiEsperienza AS chef_esperienza " +
+                    "FROM CHEF_CORSO CC " +
+                    "JOIN CORSO C ON CC.id_corso = C.idcorso " +
+                    "JOIN CHEF CH ON CC.id_chef = CH.idchef " +
+                    "WHERE CC.IdChef = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -117,13 +122,11 @@ public class ChefDao extends UtenteDao  {
             ps.setInt(1, ((UtenteVisitatore) utente).getId_UtenteVisitatore());
             rs = ps.executeQuery(); 
 
-             while (rs.next()){
-                LocalDate dataInizio = null;
-                LocalDate dataFine = null;
-                java.sql.Date sqlDataInizio = rs.getDate("DataInizio");
-                java.sql.Date sqlDataFine = rs.getDate("DataFine");
+            while (rs.next()){
+                LocalDate dataInizio = rs.getDate("DataInizio") != null ? rs.getDate("DataInizio").toLocalDate() : null;
+                LocalDate dataFine = rs.getDate("DataFine") != null ? rs.getDate("DataFine").toLocalDate() : null;
 
-                Corso Corso1 = new Corso(
+                Corso corso = new Corso(
                     rs.getString("Nome"),
                     rs.getString("Descrizione"),
                     dataInizio,
@@ -133,13 +136,13 @@ public class ChefDao extends UtenteDao  {
                     (float) rs.getDouble("Prezzo"),
                     rs.getString("Propic"));
 
-                    Corso1.setId_Corso(rs.getInt("IdCorso"));
-                    Corso1.setSessioni(new CorsoDao().recuperoSessioniPerCorso(Corso1));               
-                Corsi.add(Corso1);
-               
-              
-             
-            
+                corso.setId_Corso(rs.getInt("IdCorso"));
+                corso.setSessioni(new CorsoDao().recuperoSessioniPerCorso(corso));
+                // Set info chef
+                corso.setChefNome(rs.getString("chef_nome"));
+                corso.setChefCognome(rs.getString("chef_cognome"));
+                corso.setChefEsperienza(rs.getInt("chef_esperienza"));
+                Corsi.add(corso);
             }
         } catch (SQLException sqe) {
             //gestire errore

@@ -4,12 +4,14 @@ import com.progetto.controller.UserCardsController;
 import com.progetto.utils.CardValidator;
 import com.progetto.utils.SceneSwitcher;
 
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import com.progetto.Entity.EntityDto.CartaDiCredito;
 
 public class UserCardsBoundary {
 
@@ -17,13 +19,14 @@ public class UserCardsBoundary {
     private Button backBtn;
     @FXML
     private Button addCardBtn;
+
     @FXML
-    private ListView<String> cardsListView; 
+    private ListView<CartaDiCredito> cardsListView;
     @FXML
     private VBox noCardsMessage;
 
     private UserCardsController controller;
-    private ObservableList<String> cards = FXCollections.observableArrayList();
+    private ObservableList<CartaDiCredito> cards = FXCollections.observableArrayList();
 
     @FXML private TextField cardHolderField;
     @FXML private TextField cardNumberField;
@@ -43,15 +46,18 @@ public class UserCardsBoundary {
     @FXML
     private void initialize() {
         controller = new UserCardsController(this);
+        controller.loadCardsFromDb(); // Carica sempre le carte dal DB all'apertura della pagina
         cardsListView.setItems(cards);
         updateCardsView();
         setupFieldListeners();
     }
 
-    public void setCards(java.util.List<String> cardList) {
+
+    public void setCards(java.util.List<CartaDiCredito> cardList) {
         cards.setAll(cardList);
         updateCardsView();
     }
+
 
     private void updateCardsView() {
         boolean hasCards = !cards.isEmpty();
@@ -121,6 +127,26 @@ public class UserCardsBoundary {
             }
             updatingExpiry = false;
         });
+
+        // Imposta la cell factory per visualizzare le info della carta
+        cardsListView.setCellFactory(listView -> new ListCell<CartaDiCredito>() {
+            @Override
+            protected void updateItem(CartaDiCredito card, boolean empty) {
+                super.updateItem(card, empty);
+                if (empty || card == null) {
+                    setText(null);
+                } else {
+                    // Mostra solo MM/YY anche se nel DB è salvato come LocalDate
+                    String scadenza = "";
+                    if (card.getDataScadenza() != null) {
+                        int mese = card.getDataScadenza().getMonthValue();
+                        int anno = card.getDataScadenza().getYear() % 100;
+                        scadenza = String.format("%02d/%02d", mese, anno);
+                    }
+                    setText(card.getIntestatario() + " •••• " + card.getUltimeQuattroCifre() + " (" + card.getCircuito() + ")  Scad.: " + scadenza);
+                }
+            }
+        });
     }
 
     @FXML
@@ -136,9 +162,9 @@ public class UserCardsBoundary {
 
     @FXML
     private void deleteSelectedCard() {
-        String selected = cardsListView.getSelectionModel().getSelectedItem();
+        CartaDiCredito selected = cardsListView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            controller.deleteCard(selected); // Passa l'id o info della carta
+            controller.deleteCard(selected); // Passa direttamente l'oggetto carta
         }
     }
 

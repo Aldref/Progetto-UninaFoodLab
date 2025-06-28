@@ -17,7 +17,7 @@ public class CorsoDao{
     
 
     public void  memorizzaCorsoERicavaId(Corso corso) {
-    String query = "INSERT INTO Corso (Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, MaxPersone, Prezzo, Url_Propic) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    String query = "INSERT INTO Corso (Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, MaxPersone, Prezzo, Propic) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     SupportDb dbu = new SupportDb();
     Connection conn = null;
     PreparedStatement ps = null;
@@ -67,8 +67,8 @@ public class CorsoDao{
             rs = ps.executeQuery();
 
             if (rs.next()) {
-                corso = new Corso(rs.getString("Nome"), rs.getString("Descrizione"), rs.getDate("DataInizio").toLocalDate(), rs.getDate("DataFine").toLocalDate(), rs.getString("FrequenzaDelleSessioni"), rs.getInt("MaxPersone"), rs.getFloat("Prezzo"), rs.getString("Url_Propic"));
-                corso.setId_Corso(rs.getInt("id_Corso"));
+                corso = new Corso(rs.getString("Nome"), rs.getString("Descrizione"), rs.getDate("DataInizio").toLocalDate(), rs.getDate("DataFine").toLocalDate(), rs.getString("FrequenzaDelleSessioni"), rs.getInt("MaxPersone"), rs.getFloat("Prezzo"), rs.getString("Propic"));
+                corso.setId_Corso(rs.getInt("idcorso")); // nome corretto dal DB
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -80,7 +80,10 @@ public class CorsoDao{
     
     public ArrayList<Corso> recuperaCorsi(){
         ArrayList<Corso> corsi = new ArrayList<>();
-        String query = "SELECT * FROM Corso";
+        String query = "SELECT c.*, ch.Nome AS chef_nome, ch.Cognome AS chef_cognome, ch.AnniDiEsperienza AS chef_esperienza " +
+                "FROM corso c " +
+                "LEFT JOIN chef_corso cc ON c.idcorso = cc.idcorso " +
+                "LEFT JOIN chef ch ON cc.idchef = ch.idchef";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -92,8 +95,21 @@ public class CorsoDao{
             rs = ps.executeQuery();
 
             while (rs.next()) {
-                Corso corso = new Corso(rs.getString("Nome"), rs.getString("Descrizione"), rs.getDate("DataInizio").toLocalDate(), rs.getDate("DataFine").toLocalDate(), rs.getString("FrequenzaDelleSessioni"), rs.getInt("MaxPersone"), rs.getFloat("Prezzo"), rs.getString("Url_Propic"));
-                corso.setId_Corso(rs.getInt("id_Corso"));
+                Corso corso = new Corso(
+                        rs.getString("Nome"),
+                        rs.getString("Descrizione"),
+                        rs.getDate("DataInizio") != null ? rs.getDate("DataInizio").toLocalDate() : null,
+                        rs.getDate("DataFine") != null ? rs.getDate("DataFine").toLocalDate() : null,
+                        rs.getString("FrequenzaDelleSessioni"),
+                        rs.getInt("MaxPersone"),
+                        rs.getFloat("Prezzo"),
+                        rs.getString("Propic")
+                );
+                corso.setId_Corso(rs.getInt("idcorso"));
+                corso.setChefNome(rs.getString("chef_nome"));
+                corso.setChefCognome(rs.getString("chef_cognome"));
+                corso.setChefEsperienza(rs.getInt("chef_esperienza"));
+                recuperaTipoCucinaCorsi(corso);
                 corsi.add(corso);
             }
         } catch (SQLException e) {
@@ -105,7 +121,7 @@ public class CorsoDao{
     }
 
     public void aggiornaCorso(Corso corso) {
-        String query = "UPDATE Corso SET Nome = ?, Descrizione = ?, DataInizio = ?, DataFine = ?, FrequenzaDelleSessioni = ?, MaxPersone = ?, Prezzo = ?, Url_Propic = ? WHERE id_Corso = ?";
+        String query = "UPDATE Corso SET Nome = ?, Descrizione = ?, DataInizio = ?, DataFine = ?, FrequenzaDelleSessioni = ?, MaxPersone = ?, Prezzo = ?, Propic = ? WHERE id_Corso = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -132,7 +148,7 @@ public class CorsoDao{
         }
 
         public void recuperaTipoCucinaCorsi(Corso corso){
-        String quarry="Select I.Nome from TIPOCUCINA_CORSO TC NATURAL JOIN INGREDIENTI I WHERE TC.Codice=? ";
+        String quarry="SELECT T.Nome FROM TIPODICUCINA_CORSO TC NATURAL JOIN TIPODICUCINA T WHERE TC.idcorso = ? ";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -142,9 +158,9 @@ public class CorsoDao{
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(quarry);
             ps.setInt(1, corso.getId_Corso());
-            rs=ps.executeQuery(quarry);
-            while (rs.next()){
-                corso.addTipoDiCucina(rs.getNString("Nome"));
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                corso.addTipoDiCucina(rs.getString("Nome"));
             }
         }
         catch(SQLException e){
@@ -163,7 +179,7 @@ public class CorsoDao{
 
   public ArrayList<SessioneOnline> recuperoSessioniCorsoOnline(Corso corso){
       ArrayList<SessioneOnline> sessioni = new ArrayList<>();
-      String query = "SELECT * FROM SESSIONE_TELEMATICA WHERE id_Corso = ?";
+      String query = "SELECT * FROM SESSIONE_TELEMATICA WHERE idcorso = ?";
       Connection conn = null;
       PreparedStatement ps = null;
       ResultSet rs = null;
@@ -176,15 +192,16 @@ public class CorsoDao{
                 rs = ps.executeQuery();
 
             while (rs.next()) {
-
-                SessioneOnline sessione = new SessioneOnline(rs.getString("giorno"),
-                        rs.getDate("data").toLocalDate(),
-                        rs.getFloat("orario"),
-                        rs.getInt("durata"),
-                        rs.getString("Applicazione"),
-                        rs.getString("Codicechiamata"),
-                        rs.getString("Descrizione"),
-                        rs.getInt("id_Sessione"));
+                SessioneOnline sessione = new SessioneOnline(
+                    rs.getString("giorno"),
+                    rs.getDate("data").toLocalDate(),
+                    rs.getTime("orario").toLocalTime(),
+                    rs.getTime("durata").toLocalTime(),
+                    rs.getString("Applicazione"),
+                    rs.getString("Codicechiamata"),
+                    rs.getString("Descrizione"),
+                    rs.getInt("idsessionetelematica") 
+                );
                 sessioni.add(sessione);
             }
         } catch (SQLException e) {
@@ -197,42 +214,41 @@ public class CorsoDao{
 
     public ArrayList<SessioniInPresenza> recuperoSessionCorso(Corso corso){
       ArrayList<SessioniInPresenza> sessioni = new ArrayList<>();
-      String query = "SELECT * FROM SESSIONE_PRESENZA WHERE id_Corso = ?";
+      String query = "SELECT * FROM SESSIONE_PRESENZA WHERE idcorso = ?";
       Connection conn = null;
       PreparedStatement ps = null;
       ResultSet rs = null;
-        SupportDb dbu = new SupportDb();
+      SupportDb dbu = new SupportDb();
 
-        try {
-            conn = ConnectionJavaDb.getConnection();
-            ps = conn.prepareStatement(query);
-            ps.setInt(1, corso.getId_Corso());
-            rs = ps.executeQuery();
+      try {
+          conn = ConnectionJavaDb.getConnection();
+          ps = conn.prepareStatement(query);
+          ps.setInt(1, corso.getId_Corso());
+          rs = ps.executeQuery();
 
-            while (rs.next()) {
-
-                SessioniInPresenza sessione = new SessioniInPresenza(
-                    rs.getString("giorno"),
-                    rs.getDate("data").toLocalDate(),
-                    rs.getFloat("orario"),
-                    rs.getInt("durata"),
-                    rs.getString("citta"),
-                    rs.getString("via"),
-                    rs.getString("cap"),
-                    rs.getString("attrezzatura"),
-                    rs.getInt("id_Sessione")
-                );
-               
-                sessione.setRicette(new SessioneInPresenzaDao().recuperaRicetteSessione(sessione));
-                sessione.setCorsoList(new SessioneInPresenzaDao().recuperaPartecipantiSessione(sessione));
-                sessioni.add(sessione);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            dbu.closeAll(conn, ps, rs);
-        }
-        return sessioni;
-    }
+          while (rs.next()) {
+              SessioniInPresenza sessione = new SessioniInPresenza(
+                  rs.getString("giorno"),
+                  rs.getDate("data").toLocalDate(),
+                  rs.getTime("orario").toLocalTime(),
+                  rs.getTime("durata").toLocalTime(),
+                  rs.getString("citta"),
+                  rs.getString("via"),
+                  rs.getString("cap"),
+                  rs.getString("descrizione"),
+                  rs.getInt("idsessionepresenza") 
+              );
+              // Lazy loading: NON caricare subito ricette e partecipanti
+              // sessione.setRicette(new SessioneInPresenzaDao().recuperaRicetteSessione(sessione));
+              // sessione.setCorsoList(new SessioneInPresenzaDao().recuperaPartecipantiSessione(sessione));
+              sessioni.add(sessione);
+          }
+      } catch (SQLException e) {
+          e.printStackTrace();
+      } finally {
+          dbu.closeAll(conn, ps, rs);
+      }
+      return sessioni;
+  }
     
     }

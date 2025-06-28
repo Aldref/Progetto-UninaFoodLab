@@ -1,5 +1,6 @@
 package com.progetto.Entity.EntityDto;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class SessioniInPresenza extends Sessione {
@@ -8,7 +9,7 @@ public class SessioniInPresenza extends Sessione {
    private ArrayList<Ricetta> ricette;
 
   
-    public SessioniInPresenza(String giorno, LocalDate data, float orario, int durata, String citta, String via, String cap, String attrezzatura, int id_Sessione) {
+    public SessioniInPresenza(String giorno, LocalDate data, LocalTime orario, java.time.LocalTime durata, String citta, String via, String cap, String attrezzatura, int id_Sessione) {
         super(giorno, data, orario, durata, id_Sessione);
         this.citta = citta;
         this.via = via;

@@ -1,4 +1,4 @@
-package com.progetto.Entity.entityDao;
+package com.progetto.utils;
 
 public class ErrorCaricamentoPropic extends RuntimeException {
     public ErrorCaricamentoPropic() {

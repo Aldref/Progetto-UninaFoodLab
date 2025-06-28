@@ -111,10 +111,10 @@ public class HomepageChefController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
                 Node card = loader.load();
                 CardCorsoBoundary boundary = loader.getController();
-                
+
                 // Configura la card per la modalità chef
                 boundary.setChefMode(true);
-                
+
                 // Imposta i dati del corso con variabili
                 String title = courseTitles[i];
                 String description = descriptions[i];
@@ -124,18 +124,19 @@ public class HomepageChefController {
                 String price = null; // Per chef non serve il prezzo
                 String chefName = chefNames[i % chefNames.length];
                 String experience = experienceYears[i % experienceYears.length];
-                
-                boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience);
-                
+                String maxPeople = String.valueOf(20 + (i % 5) * 5); // esempio: 20, 25, 30, 35, 40
+
+                boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience, maxPeople);
+
                 // Dati fittizi per i tipi di cucina: alterna tra uno e due tipi
                 String cucina1 = (i % 3 == 0) ? "Italiana" : (i % 3 == 1) ? "Vegetariana" : "Giapponese";
                 String cucina2 = (i % 2 == 0) ? "" : "Fusion"; // Solo per alcuni corsi
                 boundary.setCuisineTypes(cucina1, cucina2);
-                
+
                 // Una sola immagine per tutte le card
                 String imagePath = "/immagini/corsi/esempio.png";
                 boundary.setCourseImage(imagePath);
-                
+
                 allCourseCards.add(card);
             }
         } catch (IOException e) {

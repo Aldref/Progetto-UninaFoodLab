@@ -15,7 +15,10 @@ public class Corso {
     private ArrayList<Sessione> sessioni = new ArrayList<>();
     private ArrayList<String> TipiDiCucina=new ArrayList<>();
 
-    
+    private String chefNome = "";
+    private String chefCognome = "";
+    private int chefEsperienza = 0;
+   
     public Corso(String nome, String descrizione, LocalDate dataInizio, LocalDate dataFine, String frequenzaDelleSessioni, int maxPersone, float prezzo, String url_Propic) {
         this.nome = nome;
         this.descrizione = descrizione;
@@ -133,6 +136,24 @@ public class Corso {
         }
     }
 
+    public String getChefNome() {
+        return chefNome;
+    }
+    public void setChefNome(String chefNome) {
+        this.chefNome = chefNome != null ? chefNome : "";
+    }
+    public String getChefCognome() {
+        return chefCognome;
+    }
+    public void setChefCognome(String chefCognome) {
+        this.chefCognome = chefCognome != null ? chefCognome : "";
+    }
+    public int getChefEsperienza() {
+        return chefEsperienza;
+    }
+    public void setChefEsperienza(int chefEsperienza) {
+        this.chefEsperienza = chefEsperienza;
+    }
 
 
 }

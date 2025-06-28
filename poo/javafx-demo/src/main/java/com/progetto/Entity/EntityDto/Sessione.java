@@ -1,19 +1,20 @@
 package com.progetto.Entity.EntityDto;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 abstract public class Sessione {
     private Chef chefList;
     private LocalDate  data;
-    private float orario;
+    private LocalTime orario;
     private String giorno;
-    private int durata;
+    private java.time.LocalTime durata;
     private int id_Sessione;
     private int id_Corso;
     private Chef chef;
 
     
-    public Sessione(String giorno, LocalDate data, float orario, int  durata, int id_Sessione) {
+    public Sessione(String giorno, LocalDate data, LocalTime orario, java.time.LocalTime durata, int id_Sessione) {
         this.giorno = giorno;
         this.data = data;
         this.orario = orario;
@@ -47,7 +48,7 @@ abstract public class Sessione {
         this.data = data;
     }
 
-    public float getOrario() {
+    public LocalTime getOrario() {
         return orario;
     }
 
@@ -59,25 +60,16 @@ abstract public class Sessione {
     }
 
 
-    public void setOrario(float orario) {
-    int ore = (int) orario;
-    int minuti = Math.round((orario - ore) * 100);
-
-    if (ore < 8 || ore > 19) {
-      //Aggiungi Errore ora fuori dal range
+    public void setOrario(LocalTime orario) {
+        this.orario = orario;
     }
-    if (minuti < 0 || minuti > 59) {
-        //Aggiungi Errore minuti fuori dal range
-    }
-    this.orario = orario;
-}   
 
 
-    public int  getDurata() {
+    public java.time.LocalTime getDurata() {
         return durata;
     }
 
-    public void setDurata(int durata) {
+    public void setDurata(java.time.LocalTime durata) {
         this.durata = durata;
     }
     public int getId_Sessione() {

@@ -13,6 +13,7 @@ import com.progetto.Entity.EntityDto.Utente;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
+import com.progetto.utils.ErrorCaricamentoPropic;
 
 public class UtenteVisitatoreDao extends UtenteDao {
    
@@ -47,7 +48,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
     }
     
     @Override
-    public void recuperaDatiUtente   (Utente utenteVisitatore) {
+    public void recuperaDatiUtente(Utente utenteVisitatore) {
         String query = "SELECT * FROM Partecipante WHERE email = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -67,6 +68,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
                 utenteVisitatore.setPassword(rs.getString("Password"));
                 utenteVisitatore.setDataDiNascita(rs.getDate("DataDiNascita").toLocalDate());
                 ((UtenteVisitatore) utenteVisitatore).setId_UtenteVisitatore(rs.getInt("IdPartecipante"));
+                ((UtenteVisitatore) utenteVisitatore).setUrl_Propic(rs.getString("Propic"));
             }
         } catch (SQLException sqe) {
             //gestire errore
@@ -78,7 +80,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
 
     @Override
     public void AssegnaCorso(Corso corso, Utente utente1) {
-    String query = "INSERT INTO  RICHIESTAPAGAMENTO (idPartecipante, idCorso, DataRichiesta,ImportoPagato,StatoPagamento) VALUES (?, ?,?, ?,'Pagato')";
+        String query = "INSERT INTO  RICHIESTAPAGAMENTO (idPartecipante, idCorso, DataRichiesta,ImportoPagato,StatoPagamento) VALUES (?, ?,?, ?,'Pagato')";
         LocalDate DataRichiesta= LocalDate.now();
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -123,7 +125,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
 
     @Override
     public void ModificaUtente(Utente utenteVisitatore) {
-        String query = "UPDATE Partecipante SET Nome = COALESCE(?, Nome), Cognome = COALESCE(?, Cognome), Email = COALESCE(?, Email), Password = COALESCE(?, Password), DataDiNascita = COALESCE(?, DataDiNascita) WHERE id_UtenteVisitatore = ?";
+        String query = "UPDATE Partecipante SET Nome = COALESCE(?, Nome), Cognome = COALESCE(?, Cognome), Email = COALESCE(?, Email), Password = COALESCE(?, Password), DataDiNascita = COALESCE(?, DataDiNascita), Propic = COALESCE(?, Propic) WHERE idpartecipante = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -141,7 +143,8 @@ public class UtenteVisitatoreDao extends UtenteDao {
         ps.setString(3, utenteVisitatore.getEmail());
         ps.setString(4, utenteVisitatore.getPassword());
         ps.setDate(5, sqlDataDiNascita);
-        ps.setInt(6, ((UtenteVisitatore)utenteVisitatore).getId_UtenteVisitatore());
+        ps.setString(6, utenteVisitatore.getUrl_Propic());
+        ps.setInt(7, ((UtenteVisitatore)utenteVisitatore).getId_UtenteVisitatore());
 
         ps.executeUpdate();
     } catch (SQLException e) {
@@ -152,7 +155,12 @@ public class UtenteVisitatoreDao extends UtenteDao {
     }
 }
      public void RecuperaCorsi (Utente utente){
-      String query = "SELECT C.* FROM RICHIESTAPAGAMENTO R NATURAL JOIN CORSO C WHERE R.IdPartecipante = ?";
+      String query = "SELECT C.*, CH.Nome AS chef_nome, CH.Cognome AS chef_cognome, CH.AnniDiEsperienza AS chef_esperienza " +
+                    "FROM RICHIESTAPAGAMENTO R " +
+                    "NATURAL JOIN CORSO C " +
+                    "LEFT JOIN chef_corso CC ON C.idcorso = CC.idcorso " +
+                    "LEFT JOIN chef CH ON CC.idchef = CH.idchef " +
+                    "WHERE R.IdPartecipante = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -164,13 +172,10 @@ public class UtenteVisitatoreDao extends UtenteDao {
             ps.setInt(1, ((UtenteVisitatore) utente).getId_UtenteVisitatore());
             rs = ps.executeQuery(); 
 
-             while (rs.next()){
-                LocalDate dataInizio = null;
-                LocalDate dataFine = null;
-                java.sql.Date sqlDataInizio = rs.getDate("DataInizio");
-                java.sql.Date sqlDataFine = rs.getDate("DataFine");
-
-                Corso Corso1 = new Corso(
+            while (rs.next()){
+                LocalDate dataInizio = rs.getDate("DataInizio") != null ? rs.getDate("DataInizio").toLocalDate() : null;
+                LocalDate dataFine = rs.getDate("DataFine") != null ? rs.getDate("DataFine").toLocalDate() : null;
+                Corso corso = new Corso(
                     rs.getString("Nome"),
                     rs.getString("Descrizione"),
                     dataInizio,
@@ -179,14 +184,14 @@ public class UtenteVisitatoreDao extends UtenteDao {
                     rs.getInt("MaxPersone"),
                     (float) rs.getDouble("Prezzo"),
                     rs.getString("Propic"));
-
-                    Corso1.setId_Corso(rs.getInt("IdCorso"));
-                    Corso1.setSessioni(new CorsoDao().recuperoSessioniPerCorso(Corso1));               
-                Corsi.add(Corso1);
-               
-              
-             
-            
+                corso.setId_Corso(rs.getInt("IdCorso"));
+                // Set info chef se disponibili
+                corso.setChefNome(rs.getString("chef_nome"));
+                corso.setChefCognome(rs.getString("chef_cognome"));
+                corso.setChefEsperienza(rs.getInt("chef_esperienza"));
+                corso.setSessioni(new CorsoDao().recuperoSessioniPerCorso(corso));
+                new CorsoDao().recuperaTipoCucinaCorsi(corso);
+                Corsi.add(corso);
             }
         } catch (SQLException sqe) {
             //gestire errore

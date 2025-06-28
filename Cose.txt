@@ -54,7 +54,9 @@ CREATE TYPE StatoPagamento AS ENUM ('In attesa', 'Pagato', 'Fallito');
 CREATE TYPE FDS AS ENUM (
   'Giornaliera',
   'Ogni due giorni',
+  'Ogni tre giorni'
   'Ogni quattro giorni',
+  'Ogni cinque giorni',
   'Ogni sei giorni',
   'Settimanale',
   'Mensile'
@@ -97,7 +99,7 @@ CREATE TABLE Possiede (
     IdCarta INT,
     PRIMARY KEY (IdPartecipante, IdCarta),
     FOREIGN KEY (IdPartecipante) REFERENCES Partecipante(IdPartecipante),
-    FOREIGN KEY (IdCarta) REFERENCES Carta(IdCarta)
+    FOREIGN KEY (IdCarta) REFERENCES Carta(IdCarta) on delete cascade 
 );
 
 CREATE TABLE Chef (
@@ -352,8 +354,9 @@ EXECUTE FUNCTION verifica_max_tipi_cucina_per_corso();
   CREATE OR REPLACE FUNCTION verifica_intervallo_date_corso()
     RETURNS TRIGGER AS $$
     BEGIN
-        IF NEW.DataInizio > NEW.DataFine OR NEW.DataInizio > CURRENT_DATE THEN
-            RAISE EXCEPTION 'Errore: La DataInizio del corso (%) non può essere successiva alla DataFine (%) e non può essere nel futuro (data corrente: %).', NEW.DataInizio, NEW.DataFine, CURRENT_DATE;
+        IF NEW.DataInizio > NEW.DataFine THEN
+            RAISE EXCEPTION 'Errore: La DataInizio del corso (%) non può essere successiva alla DataFine (%).',
+                NEW.DataInizio, NEW.DataFine;
         END IF;
 
         RETURN NEW;
@@ -621,65 +624,6 @@ BEFORE INSERT OR UPDATE ON Sessione_Telematica
 FOR EACH ROW
 EXECUTE FUNCTION verifica_sessioni_contemporanee_chef();
 
--trigger un corso o è in presenza o in telematica
-  CREATE OR REPLACE FUNCTION verifica_corso_tipo_sessione_esclusiva()
-    RETURNS TRIGGER AS $$
-    DECLARE
-        -- Conteggio delle sessioni di tipo 'presenza' per il corso corrente
-        conteggio_sessioni_presenza INTEGER;
-        -- Conteggio delle sessioni di tipo 'telematica' per il corso corrente
-        conteggio_sessioni_telematica INTEGER;
-        -- Nome del corso per un messaggio di errore più chiaro
-        nome_corso VARCHAR(100);
-    BEGIN
-        -- Recupera il nome del corso
-        SELECT Nome INTO nome_corso
-        FROM Corso
-        WHERE IdCorso = NEW.IdCorso;
-
-        -- Se l'operazione è su Sessione_Presenza
-        IF TG_TABLE_NAME = 'sessione_presenza' THEN
-            -- Conta le sessioni telematiche esistenti per questo corso
-            SELECT COUNT(*)
-            INTO conteggio_sessioni_telematica
-            FROM Sessione_Telematica
-            WHERE IdCorso = NEW.IdCorso;
-
-            -- Se esistono già sessioni telematiche, impedisci l'inserimento/aggiornamento della sessione in presenza
-            IF conteggio_sessioni_telematica > 0 THEN
-                RAISE EXCEPTION 'Errore: Il corso "%" (ID %) ha già sessioni telematiche associate. Non è possibile aggiungere sessioni in presenza.',
-                                nome_corso, NEW.IdCorso;
-            END IF;
-        -- Se l'operazione è su Sessione_Telematica
-        ELSIF TG_TABLE_NAME = 'sessione_telematica' THEN
-            -- Conta le sessioni in presenza esistenti per questo corso
-            SELECT COUNT(*)
-            INTO conteggio_sessioni_presenza
-            FROM Sessione_Presenza
-            WHERE IdCorso = NEW.IdCorso;
-
-            -- Se esistono già sessioni in presenza, impedisci l'inserimento/aggiornamento della sessione telematica
-            IF conteggio_sessioni_presenza > 0 THEN
-                RAISE EXCEPTION 'Errore: Il corso "%" (ID %) ha già sessioni in presenza associate. Non è possibile aggiungere sessioni telematiche.',
-                                nome_corso, NEW.IdCorso;
-            END IF;
-        END IF;
-
-        RETURN NEW; -- Permetti l'operazione se non ci sono violazioni
-    END;
-    $$ LANGUAGE plpgsql;
-
-    -- Trigger per Sessione_Presenza: attiva la funzione prima di ogni inserimento o aggiornamento
-    CREATE TRIGGER trg_corso_sessione_presenza_esclusiva
-    BEFORE INSERT OR UPDATE ON Sessione_Presenza
-    FOR EACH ROW
-    EXECUTE FUNCTION verifica_corso_tipo_sessione_esclusiva();
-
-    -- Trigger per Sessione_Telematica: attiva la funzione prima di ogni inserimento o aggiornamento
-    CREATE TRIGGER trg_corso_sessione_telematica_esclusiva
-    BEFORE INSERT OR UPDATE ON Sessione_Telematica
-    FOR EACH ROW
-    EXECUTE FUNCTION verifica_corso_tipo_sessione_esclusiva();
 -trigger finisce il corso tolgo gli ingredienti della ricetta
 -view per il grafico del report Mensile
   CREATE OR REPLACE VIEW vista_statistiche_mensili_chef AS
@@ -747,7 +691,40 @@ EXECUTE FUNCTION verifica_sessioni_contemporanee_chef();
       )
 
     GROUP BY ch.IdChef, ch.Nome, ch.Cognome;
+-trigger controllo modo scrittura email
+    CREATE OR REPLACE FUNCTION validate_email_full()
+RETURNS TRIGGER AS $$
+DECLARE
+    at_pos INT;
+    domain_part TEXT;
+BEGIN
+    -- Trova la posizione della chiocciola
+    at_pos := POSITION('@' IN NEW.Email);
 
+    -- Se non c'è la chiocciola
+    IF at_pos = 0 THEN
+        RAISE EXCEPTION 'Email non valida: manca la chiocciola (@).';
+    END IF;
+
+    -- Prende la parte dopo la chiocciola
+    domain_part := SUBSTRING(NEW.Email FROM at_pos + 1);
+
+    -- Se la parte dopo la chiocciola non contiene un punto
+    IF POSITION('.' IN domain_part) = 0 THEN
+        RAISE EXCEPTION 'Email non valida: manca il punto dopo la chiocciola.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER trg_validate_email_partecipante
+BEFORE INSERT OR UPDATE ON PARTECIPANTE
+FOR EACH ROW
+EXECUTE FUNCTION validate_email_full();
+CREATE TRIGGER trg_validate_email_chef
+BEFORE INSERT OR UPDATE ON CHEF
+FOR EACH ROW
+EXECUTE FUNCTION validate_email_full();
 
 //da fare in futuro
 db check percorso propic

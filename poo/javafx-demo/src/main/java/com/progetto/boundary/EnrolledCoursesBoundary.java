@@ -14,6 +14,7 @@ import java.util.ResourceBundle;
 public class EnrolledCoursesBoundary implements Initializable {
 
     @FXML private Label userNameLabel;
+    @FXML private javafx.scene.image.ImageView userProfileImage;
     @FXML private ComboBox<String> categoryComboBox;
     @FXML private ComboBox<String> frequencyComboBox;
     @FXML private ComboBox<String> lessonTypeComboBox;
@@ -29,6 +30,19 @@ public class EnrolledCoursesBoundary implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Imposta nome e immagine utente nella navbar
+        com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
+        if (utente != null) {
+            userNameLabel.setText(utente.getNome() + " " + utente.getCognome());
+            String propic = utente.getUrl_Propic();
+            if (propic != null && !propic.isEmpty()) {
+                java.io.File imgFile = new java.io.File("src/main/resources/" + propic);
+                if (imgFile.exists()) {
+                    javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 80, 80, true, true);
+                    userProfileImage.setImage(img);
+                }
+            }
+        }
         controller = new EnrolledCoursesController(
             userNameLabel, categoryComboBox, frequencyComboBox, lessonTypeComboBox,
             searchBtn, enrolledCoursesArea, enrolledCoursesScrollPane,

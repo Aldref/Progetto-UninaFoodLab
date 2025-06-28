@@ -49,6 +49,7 @@ com\progetto\boundary\HomepageChefBoundary.class
 com\progetto\controller\EnrolledCoursesController.class
 com\progetto\boundary\MonthlyReportBoundary.class
 com\progetto\controller\CreateCourseController.class
+com\progetto\utils\ErrorCaricamentoPropic.class
 com\progetto\boundary\LogoutDialogBoundary.class
 com\progetto\utils\SceneSwitcher.class
 com\progetto\Entity\entityDao\SessioneOnlineDao.class
@@ -73,6 +74,5 @@ com\progetto\controller\EditCourseController$1.class
 com\progetto\controller\CreateCourseController$CourseData$HybridDayData.class
 com\progetto\utils\SuccessDialogUtils.class
 com\progetto\boundary\CreateCourseBoundary.class
-com\progetto\controller\CalendarDialogController$Lezione.class
+com\progetto\boundary\UserCardsBoundary$1.class
 com\progetto\controller\EditCourseController$CourseData.class
-com\progetto\controller\CalendarDialogController$Ingrediente.class

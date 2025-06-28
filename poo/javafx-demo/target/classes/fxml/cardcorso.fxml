@@ -75,6 +75,13 @@
                                         <Label fx:id="lessonType" styleClass="detail-value" text="Presenza"/>
                                     </children>
                                 </HBox>
+                                <HBox styleClass="detail-row">
+                                    <children>
+                                        <Label styleClass="detail-label" text="Max persone"/>
+                                        <Region HBox.hgrow="ALWAYS"/>
+                                        <Label fx:id="maxPeople" styleClass="detail-value" text="20"/>
+                                    </children>
+                                </HBox>
                             </children>
                         </VBox>
                         <VBox styleClass="price-section" spacing="5.0" fx:id="priceSection">

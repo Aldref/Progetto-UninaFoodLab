@@ -21,33 +21,14 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class PaymentPageBoundary implements Initializable {
+    private com.progetto.Entity.EntityDto.Corso selectedCorso;
     
-    @FXML private TextField nomeField;
-    @FXML private TextField numeroCartaField;
-    @FXML private TextField scadenzaField;
-    @FXML private TextField cvcField;
+    @FXML private TextField nomeField, numeroCartaField, scadenzaField, cvcField;
     @FXML private CheckBox salvaCartaCheckBox;
-    @FXML private Button confermaBtn;
-    @FXML private Button annullaBtn;
-    @FXML private Button backBtn;
-    
-    @FXML private Label nomeErrorLabel;
-    @FXML private Label numeroCartaErrorLabel;
-    @FXML private Label scadenzaErrorLabel;
-    @FXML private Label cvcErrorLabel;
-    
-    @FXML private Label courseTitle;
-    @FXML private Label courseDetails;
-    @FXML private Label coursePrice;
-    @FXML private Label totalPrice;
-    
-    // Nuovi elementi per le carte salvate
-    @FXML private VBox savedCardsSection;
-    @FXML private VBox savedCardsContainer;
-    @FXML private VBox newCardSection;
-    @FXML private Button addNewCardBtn;
-    @FXML private Button useSavedCardBtn;
-    @FXML private Button backToSavedCardsBtn;
+    @FXML private Button confermaBtn, annullaBtn, backBtn, addNewCardBtn, useSavedCardBtn, backToSavedCardsBtn;
+    @FXML private Label nomeErrorLabel, numeroCartaErrorLabel, scadenzaErrorLabel, cvcErrorLabel;
+    @FXML private Label courseTitle, courseDetails, coursePrice, totalPrice;
+    @FXML private VBox savedCardsSection, savedCardsContainer, newCardSection;
     
     private PaymentPageController controller;
     private Map<String, Object> selectedCard; // Usa Map generica invece di SavedCard
@@ -56,12 +37,10 @@ public class PaymentPageBoundary implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         this.controller = new PaymentPageController(this);
         setupFieldListeners();
-        
         // Imposta i dati del corso di default
         setCourseDetails("Corso di Cucina Italiana", "Livello Avanzato • 12 lezioni", "€99.99");
-        
-        // Carica le carte salvate (simulazione - da sostituire con chiamata DB)
-        loadSavedCards();
+        // Carica le carte reali dell'utente dal DB
+        controller.loadSavedCardsForUser();
     }
     
     private void setupFieldListeners() {
@@ -107,43 +86,10 @@ public class PaymentPageBoundary implements Initializable {
         });
     }
     
-    private void loadSavedCards() {
-        // TODO: Sostituire con chiamata al DB
-        List<Map<String, Object>> cards = getSavedCardsFromDatabase();
-        
-        if (cards != null && !cards.isEmpty()) {
-            populateSavedCards(cards);
-            showSavedCards();
-        } else {
-            showNewCardForm();
-        }
-    }
+    // Metodo non più usato: la logica reale è ora nel controller
+    // private void loadSavedCards() { ... }
     
-    // Metodo stub per simulare il recupero dal DB
-    private List<Map<String, Object>> getSavedCardsFromDatabase() {
-        // TEMPORANEO: Simulazione carte per testare l'UI
-        List<Map<String, Object>> cards = new ArrayList<>();
-        
-        Map<String, Object> card1 = new HashMap<>();
-        card1.put("id", "1");
-        card1.put("maskedNumber", "**** **** **** 1234");
-        card1.put("holderName", "Mario Rossi");
-        card1.put("expiryDate", "12/25");
-        card1.put("cardType", "visa");
-        card1.put("isDefault", true);
-        cards.add(card1);
-        
-        Map<String, Object> card2 = new HashMap<>();
-        card2.put("id", "2");
-        card2.put("maskedNumber", "**** **** **** 5678");
-        card2.put("holderName", "Mario Rossi");
-        card2.put("expiryDate", "06/26");
-        card2.put("cardType", "mastercard");
-        card2.put("isDefault", false);
-        cards.add(card2);
-        
-        return cards;
-    }
+    // Metodo stub per simulazione carte rimosso: ora si usano solo carte reali dal DB
     
     private void populateSavedCards(List<Map<String, Object>> cards) {
         savedCardsContainer.getChildren().clear();
@@ -284,27 +230,17 @@ public class PaymentPageBoundary implements Initializable {
     // Metodi per mostrare errori
     public void showError(String field, String message) {
         switch (field.toLowerCase()) {
-            case "nome":
-                nomeErrorLabel.setText(message);
-                nomeErrorLabel.setVisible(true);
-                nomeField.setStyle(nomeField.getStyle() + "; -fx-border-color: #dc3545;");
-                break;
-            case "numerocarta":
-                numeroCartaErrorLabel.setText(message);
-                numeroCartaErrorLabel.setVisible(true);
-                numeroCartaField.setStyle(numeroCartaField.getStyle() + "; -fx-border-color: #dc3545;");
-                break;
-            case "scadenza":
-                scadenzaErrorLabel.setText(message);
-                scadenzaErrorLabel.setVisible(true);
-                scadenzaField.setStyle(scadenzaField.getStyle() + "; -fx-border-color: #dc3545;");
-                break;
-            case "cvc":
-                cvcErrorLabel.setText(message);
-                cvcErrorLabel.setVisible(true);
-                cvcField.setStyle(cvcField.getStyle() + "; -fx-border-color: #dc3545;");
-                break;
+            case "nome": setError(nomeErrorLabel, nomeField, message); break;
+            case "numerocarta": setError(numeroCartaErrorLabel, numeroCartaField, message); break;
+            case "scadenza": setError(scadenzaErrorLabel, scadenzaField, message); break;
+            case "cvc": setError(cvcErrorLabel, cvcField, message); break;
         }
+    }
+
+    private void setError(Label label, TextField field, String message) {
+        label.setText(message);
+        label.setVisible(true);
+        field.setStyle(field.getStyle() + "; -fx-border-color: #dc3545;");
     }
     
     private void clearError(Label errorLabel) {
@@ -312,15 +248,10 @@ public class PaymentPageBoundary implements Initializable {
     }
     
     public void clearAllErrors() {
-        clearError(nomeErrorLabel);
-        clearError(numeroCartaErrorLabel);
-        clearError(scadenzaErrorLabel);
-        clearError(cvcErrorLabel);
-        
-        nomeField.setStyle("");
-        numeroCartaField.setStyle("");
-        scadenzaField.setStyle("");
-        cvcField.setStyle("");
+        clearError(nomeErrorLabel); clearError(numeroCartaErrorLabel);
+        clearError(scadenzaErrorLabel); clearError(cvcErrorLabel);
+        nomeField.setStyle(""); numeroCartaField.setStyle("");
+        scadenzaField.setStyle(""); cvcField.setStyle("");
     }
     
     public void setCourseDetails(String title, String details, String price) {
@@ -345,6 +276,78 @@ public class PaymentPageBoundary implements Initializable {
     }
     
     public void refreshSavedCards() {
-        loadSavedCards();
+        controller.loadSavedCardsForUser();
+    }
+
+    // --- Metodi richiesti dal controller ---
+    /**
+     * Popola la UI con le carte di credito fornite dal controller.
+     * Sostituisce la logica di caricamento simulato con quella reale.
+     */
+    public void setSavedCards(java.util.List<com.progetto.Entity.EntityDto.CartaDiCredito> carte) {
+        savedCardsContainer.getChildren().clear();
+        if (carte != null && !carte.isEmpty()) {
+            for (com.progetto.Entity.EntityDto.CartaDiCredito carta : carte) {
+                java.util.HashMap<String, Object> cardMap = new java.util.HashMap<>();
+                cardMap.put("id", carta.getIdCarta());
+                cardMap.put("maskedNumber", "**** **** **** " + carta.getUltimeQuattroCifre());
+                cardMap.put("holderName", carta.getIntestatario());
+                cardMap.put("expiryDate", carta.getDataScadenza() != null ? String.format("%02d/%02d", carta.getDataScadenza().getMonthValue(), carta.getDataScadenza().getYear() % 100) : "");
+                cardMap.put("cardType", carta.getCircuito());
+                cardMap.put("isDefault", false); // Puoi gestire la logica della carta predefinita se serve
+                HBox cardItem = createSavedCardItem(cardMap);
+                savedCardsContainer.getChildren().add(cardItem);
+            }
+            showSavedCards();
+        } else {
+            showNewCardForm();
+        }
+    }
+
+    /**
+     * Imposta il corso selezionato da acquistare.
+     */
+    public void setSelectedCorso(com.progetto.Entity.EntityDto.Corso corso) {
+        System.out.println("[DEBUG] setSelectedCorso: idCorso=" + (corso != null ? corso.getId_Corso() : "null") + ", nomeCorso=" + (corso != null ? corso.getNome() : "null"));
+        this.selectedCorso = corso;
+        if (corso != null) {
+            setCourseDetails(corso.getNome(), corso.getDescrizione(), String.format("€%.2f", corso.getPrezzo()));
+        }
+    }
+
+    /**
+     * Restituisce il corso selezionato nella UI.
+     */
+    public com.progetto.Entity.EntityDto.Corso getSelectedCorso() {
+        return selectedCorso;
+    }
+
+    /**
+     * Costruisce una CartaDiCredito dai campi della form.
+     */
+    public com.progetto.Entity.EntityDto.CartaDiCredito getCartaInserita() {
+        com.progetto.Entity.EntityDto.CartaDiCredito carta = new com.progetto.Entity.EntityDto.CartaDiCredito();
+        carta.setIntestatario(getNome());
+        // Parsing data scadenza (MM/YY)
+        String scad = getScadenza();
+        try {
+            if (scad != null && scad.matches("\\d{2}/\\d{2}")) {
+                int month = Integer.parseInt(scad.substring(0, 2));
+                int year = 2000 + Integer.parseInt(scad.substring(3, 5));
+                java.time.LocalDate data = java.time.LocalDate.of(year, month, 1);
+                carta.setDataScadenza(data);
+            }
+        } catch (Exception e) {
+            carta.setDataScadenza(null);
+        }
+        String numero = getNumeroCarta();
+        if (numero.length() >= 4) {
+            carta.setUltimeQuattroCifre(numero.substring(numero.length() - 4));
+        } else {
+            carta.setUltimeQuattroCifre(numero);
+        }
+        // Valorizza il circuito (Visa/Mastercard)
+        carta.setCircuito(com.progetto.utils.CardValidator.getCardType(numero));
+        return carta;
     }
 }

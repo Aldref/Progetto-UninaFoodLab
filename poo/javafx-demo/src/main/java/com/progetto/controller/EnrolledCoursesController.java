@@ -10,11 +10,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.progetto.boundary.CardCorsoBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
 import com.progetto.utils.SceneSwitcher;
-
 import java.io.IOException;
 
 public class EnrolledCoursesController {
@@ -62,18 +60,15 @@ public class EnrolledCoursesController {
         categoryComboBox.getItems().clear();
         frequencyComboBox.getItems().clear();
         lessonTypeComboBox.getItems().clear();
-        
         // Aggiungi opzioni ai ComboBox
         categoryComboBox.getItems().addAll("Tutte le categorie", "Cucina Italiana", "Cucina Internazionale", "Pasticceria", "Panificazione");
         frequencyComboBox.getItems().addAll("Tutte le frequenze", "1 volta a settimana", "2 volte a settimana", "3 volte a settimana");
         lessonTypeComboBox.getItems().addAll("Tutti i tipi", "Presenza", "Online", "Ibrido");
-        
         // Imposta i valori di default
         categoryComboBox.setValue("Tutte le categorie");
         frequencyComboBox.setValue("Tutte le frequenze");
         lessonTypeComboBox.setValue("Tutti i tipi");
-        
-        userNameLabel.setText("Mario Rossi");
+        // Il nome utente viene impostato dalla boundary
     }
 
     public void handleSearch() {
@@ -94,76 +89,47 @@ public class EnrolledCoursesController {
     public void loadEnrolledCourses() {
         allCourseCards.clear();
         try {
-            // Dati di esempio per corsi iscritti
-            String[] courseTitles = {
-                "Corso di Pasta Fresca",
-                "Risotti e Cereali", 
-                "Dolci Tradizionali",
-                "Cucina Mediterranea",
-                "Pizza Napoletana",
-                "Cucina Vegana Italiana",
-                "Antipasti Creativi",
-                "Secondi di Pesce"
-            };
-            
-            String[] descriptions = {
-                "Impara l'arte della pasta fresca fatta in casa con tecniche tradizionali.",
-                "Scopri i segreti dei risotti cremosi e dei cereali della tradizione italiana.",
-                "Dolci della nonna: ricette autentiche tramandate di generazione in generazione.",
-                "Un viaggio nella cucina mediterranea con ingredienti freschi e genuini.",
-                "La vera pizza napoletana: dall'impasto alla cottura nel forno a legna.",
-                "Cucina plant-based italiana: sapori autentici senza ingredienti animali.",
-                "Antipasti creativi per stupire i tuoi ospiti con presentazioni uniche.",
-                "Pesce fresco del Mediterraneo: tecniche di cottura e preparazione."
-            };
-
-            // Array con nomi chef variabili
-            String[] chefNames = {
-                "Chef Mario Rossi",
-                "Chef Giuseppe Verdi", 
-                "Chef Anna Bianchi",
-                "Chef Francesco Neri",
-                "Chef Laura Gialli",
-                "Chef Roberto Blues",
-                "Chef Sofia Viola",
-                "Chef Alessandro Rosa"
-            };
-
-            // Array con anni di esperienza variabili
-            String[] experienceYears = {
-                "15", "12", "8", "20", "10", "18", "6", "25"
-            };
-            
-            for (int i = 0; i < courseTitles.length; i++) {
+            com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
+            if (utente == null) {
+                // Nessun utente loggato, non mostrare nulla
+                updateCourseCards();
+                updateTotalCoursesLabel();
+                return;
+            }
+            // Recupera i corsi dal database
+            utente.getUtenteVisitatoreDao().RecuperaCorsi(utente);
+            List<com.progetto.Entity.EntityDto.Corso> corsi = utente.getCorsi();
+            for (com.progetto.Entity.EntityDto.Corso corso : corsi) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
                 Node card = loader.load();
                 CardCorsoBoundary boundary = loader.getController();
-                
-                // Configura la card per la modalità iscritto
+                // FIX: Associa sempre il corso alla card
+                boundary.setCorso(corso);
                 boundary.setEnrolledMode(true);
-                
-                String title = courseTitles[i];
-                String description = descriptions[i];
-                String startDate = "15/0" + ((i % 9) + 1) + "/2025";
-                String endDate = "30/" + String.format("%02d", ((i % 12) + 1)) + "/2025";
-                String frequency = (i % 2 == 0) ? "2 volte a settimana" : "1 volta a settimana";
-                String price = "€" + (100 + i * 15) + ",00";
-                String chefName = chefNames[i % chefNames.length];
-                String experience = experienceYears[i % experienceYears.length];
-                
-                boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience);
-                
-                // Dati fittizi per i tipi di cucina: alterna tra uno e due tipi
-                String cucina1 = (i % 3 == 0) ? "Italiana" : (i % 3 == 1) ? "Vegetariana" : "Giapponese";
-                String cucina2 = (i % 2 == 0) ? "" : "Fusion"; // Solo per alcuni corsi
+                String title = corso.getNome();
+                String description = corso.getDescrizione();
+                String startDate = corso.getDataInizio() != null ? corso.getDataInizio().toString() : "";
+                String endDate = corso.getDataFine() != null ? corso.getDataFine().toString() : "";
+                String frequency = corso.getFrequenzaDelleSessioni();
+                String price = "€" + String.format("%.2f", corso.getPrezzo());
+                // Nome e cognome chef
+                String chefName = corso.getChefNome();
+                if (corso.getChefCognome() != null && !corso.getChefCognome().isEmpty()) {
+                    chefName += " " + corso.getChefCognome();
+                }
+                String experience = corso.getChefEsperienza() > 0 ? String.valueOf(corso.getChefEsperienza()) : "";
+                String maxPeople = String.valueOf(corso.getMaxPersone());
+                boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience, maxPeople);
+                // Targhette tipo cucina
+                List<String> tipiCucina = corso.getTipiDiCucina();
+                String cucina1 = tipiCucina.size() > 0 ? tipiCucina.get(0) : "";
+                String cucina2 = tipiCucina.size() > 1 ? tipiCucina.get(1) : "";
                 boundary.setCuisineTypes(cucina1, cucina2);
-                
-                String imagePath = "/immagini/corsi/esempio.png";
+                String imagePath = corso.getUrl_Propic() != null && !corso.getUrl_Propic().isEmpty() ? corso.getUrl_Propic() : "/immagini/corsi/esempio.png";
                 boundary.setCourseImage(imagePath);
-                
                 allCourseCards.add(card);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         updateCourseCards();

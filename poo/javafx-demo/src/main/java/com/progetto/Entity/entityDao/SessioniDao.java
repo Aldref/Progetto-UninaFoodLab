@@ -24,8 +24,8 @@ abstract public class SessioniDao {
             ps.setInt(1, chef.getId_Chef());
             ps.setString(2, sessione.getGiorno());
             ps.setDate(3, java.sql.Date.valueOf(sessione.getData()));
-            ps.setFloat(4, sessione.getOrario());
-            ps.setInt(5, sessione.getDurata());
+            ps.setTime(4, java.sql.Time.valueOf(sessione.getOrario()));
+            ps.setTime(5, java.sql.Time.valueOf(sessione.getDurata()));
             rs = ps.executeQuery();
             return rs.next();
         } catch (SQLException e) {

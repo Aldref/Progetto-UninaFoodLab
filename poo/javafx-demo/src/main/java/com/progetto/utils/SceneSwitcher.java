@@ -9,7 +9,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 import com.progetto.boundary.LogoutDialogBoundary;
+import com.progetto.Entity.EntityDto.Sessione;
 
 public class SceneSwitcher {
 
@@ -277,12 +279,14 @@ public class SceneSwitcher {
         }
     }
 
-    public static void showCalendarDialog(Stage owner, boolean isChef) throws IOException {
+    // Nuova versione: accetta lista sessioni reali
+    public static void showCalendarDialog(Stage owner, List<Sessione> sessioni, boolean isChef) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource("/fxml/calendardialog.fxml"));
         Parent dialogContent = loader.load();
 
         com.progetto.boundary.CalendarDialogBoundary dialogBoundary = loader.getController();
         dialogBoundary.setChefMode(isChef);
+        dialogBoundary.setSessioni(sessioni); // nuovo metodo da implementare nel boundary
         dialogBoundary.initialize();
 
         Stage dialogStage = new Stage();

@@ -29,8 +29,8 @@ public class SessioneInPresenzaDao extends SessioniDao {
             
             ps.setString(1, sessione.getGiorno());
             ps.setDate(2, java.sql.Date.valueOf(sessione.getData()));
-            ps.setFloat(3, sessione.getOrario());
-            ps.setInt(4, sessione.getDurata());
+            ps.setTime(3, java.sql.Time.valueOf(sessione.getOrario()));
+            ps.setTime(4, java.sql.Time.valueOf(sessione.getDurata()));
             ps.setString(5, ((SessioniInPresenza) sessione).getCitta());
             ps.setString(6, ((SessioniInPresenza) sessione).getVia());
             ps.setString(7, ((SessioniInPresenza) sessione).getCap());
@@ -47,7 +47,7 @@ public class SessioneInPresenzaDao extends SessioniDao {
     }
 
     public ArrayList<UtenteVisitatore> recuperaPartecipantiSessione(SessioniInPresenza Sessione) {
-        String query = "SELECT * FROM UTENTE_ WHERE id_Sessione = ?";
+        String query = "SELECT p.* FROM partecipante p JOIN adesione_sessionepresenza a ON p.idpartecipante = a.idpartecipante WHERE a.idsessionepresenza = ?";
         ArrayList<UtenteVisitatore> partecipanti = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -61,7 +61,13 @@ public class SessioneInPresenzaDao extends SessioniDao {
             rs = ps.executeQuery();
 
             while (rs.next()) {
-                UtenteVisitatore utente = new UtenteVisitatore(rs.getString("nome"), rs.getString("cognome"), rs.getString("email"), rs.getString("password"), rs.getDate("dataDiNascita").toLocalDate());
+                UtenteVisitatore utente = new UtenteVisitatore(
+                    rs.getString("nome"),
+                    rs.getString("cognome"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    rs.getDate("datadinascita").toLocalDate()
+                );
                 partecipanti.add(utente);
             }
         } catch (SQLException e) {
@@ -75,7 +81,7 @@ public class SessioneInPresenzaDao extends SessioniDao {
     }
 
     public ArrayList<Ricetta> recuperaRicetteSessione(Sessione idSessione) {
-        String query = "Select R.Nome,R.IdRicetta as Id from Ricetta R Natural Join SESSIONE_PRESENZA_RICETTA SP where So.IdSessione=?";
+        String query = "SELECT R.nome, R.idricetta FROM ricetta R JOIN sessione_presenza_ricetta SPR ON R.idricetta = SPR.idricetta WHERE SPR.idsessionepresenza = ?";
         ArrayList<Ricetta> ricette = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -90,7 +96,7 @@ public class SessioneInPresenzaDao extends SessioniDao {
 
             while (rs.next()) {
                 Ricetta ricetta = new Ricetta(rs.getString("nome"));
-                ricetta.setId_Ricetta(rs.getInt("id_Ricetta"));
+                ricetta.setId_Ricetta(rs.getInt("idricetta"));
                 ricetta.setIngredientiRicetta(new ricettaDao().getIngredientiRicetta(ricetta));
                 ricette.add(ricetta);
             }
