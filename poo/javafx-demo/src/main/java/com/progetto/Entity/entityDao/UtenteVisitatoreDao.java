@@ -232,6 +232,36 @@ public class UtenteVisitatoreDao extends UtenteDao {
             dbu.closeConnection(conn);
         }
     }
+ 
 
+    @Override
+    public String caricaPropic(Utente utente) throws ErrorCaricamentoPropic {
+    
+        String query = "SELECT Propic FROM Partecipante WHERE IdPartecipante = ?";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet RS = null;
 
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, ((UtenteVisitatore) utente).getId_UtenteVisitatore());
+            RS = ps.executeQuery();
+
+            if (!RS.next()) {
+                throw new ErrorCaricamentoPropic();
+            } else 
+            {
+                return(RS.getString("Propic"));
+            }
+        } catch (SQLException e) {
+           //
+        } finally {
+            dbu.closeAll(conn, ps, RS);
+        }
+        return null;
     }
+}
+
+

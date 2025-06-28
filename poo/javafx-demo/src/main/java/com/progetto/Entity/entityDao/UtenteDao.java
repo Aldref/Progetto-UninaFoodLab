@@ -70,6 +70,12 @@ public abstract class UtenteDao {
     return "n"; 
 }
     
+
+
+
+
+
+    public abstract String caricaPropic(Utente utente1);
     public abstract  void AssegnaCorso(Corso corso, Utente utente1);
     public abstract  void recuperaDatiUtente   (Utente utenteVisitatore);
     public abstract void RegistrazioneUtente(Utente utenteVisitatore);

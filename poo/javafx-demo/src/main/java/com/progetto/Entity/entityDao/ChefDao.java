@@ -211,6 +211,34 @@ public class ChefDao extends UtenteDao  {
         
 
     }
+     @Override
+    public String caricaPropic(Utente utente) throws ErrorCaricamentoPropic {
+    
+        String query = "SELECT Propic FROM chef WHERE IdPartecipante = ?";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet RS = null;
+
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, ((Chef) utente).getId_Chef());
+            RS = ps.executeQuery();
+
+            if (!RS.next()) {
+                throw new ErrorCaricamentoPropic();
+            } else 
+            {
+                return(RS.getString("Propic"));
+            }
+        } catch (SQLException e) {
+           //
+        } finally {
+            dbu.closeAll(conn, ps, RS);
+        }
+        return null;
+    }
     }
 
 
