@@ -72,7 +72,7 @@ public class ChefDao extends UtenteDao  {
      
     @Override
     public void  recuperaDatiUtente(Utente chef) {
-        String query = "SELECT * FROM Chef WHERE id_Chef = ?";
+        String query = "SELECT * FROM Chef WHERE email = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -81,7 +81,7 @@ public class ChefDao extends UtenteDao  {
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
-            ps.setInt(1, ((Chef)chef).getId_Chef());
+            ps.setString(1, ((Chef)chef).getEmail());
             rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -91,6 +91,7 @@ public class ChefDao extends UtenteDao  {
                 chef.setPassword(rs.getString("Password"));
                 chef.setDataDiNascita(rs.getDate("DataDiNascita").toLocalDate());
                 ((Chef)chef).setAnniDiEsperienza(rs.getInt("AnniDiEsperienza"));
+                ((Chef)chef).setId_Chef(rs.getInt("IdChef"));
             }
         } catch (SQLException sqe) {
             // aggiungi errore

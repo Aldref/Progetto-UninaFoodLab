@@ -45,9 +45,10 @@ public class UtenteVisitatoreDao extends UtenteDao {
             dbu.closeAll(conn, ps, generatedKeys);
         }
     }
+    
     @Override
     public void recuperaDatiUtente   (Utente utenteVisitatore) {
-        String query = "SELECT * FROM Partecipante WHERE id_UtenteVisitatore = ?";
+        String query = "SELECT * FROM Partecipante WHERE email = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -56,7 +57,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
-            ps.setInt(1, ((UtenteVisitatore) utenteVisitatore).getId_UtenteVisitatore());
+            ps.setString(1, ((UtenteVisitatore) utenteVisitatore).getEmail());
             rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -65,6 +66,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
                 utenteVisitatore.setEmail(rs.getString("Email"));
                 utenteVisitatore.setPassword(rs.getString("Password"));
                 utenteVisitatore.setDataDiNascita(rs.getDate("DataDiNascita").toLocalDate());
+                ((UtenteVisitatore) utenteVisitatore).setId_UtenteVisitatore(rs.getInt("IdPartecipante"));
             }
         } catch (SQLException sqe) {
             //gestire errore
