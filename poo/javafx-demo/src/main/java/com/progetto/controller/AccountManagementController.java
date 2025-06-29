@@ -1,3 +1,4 @@
+
 package com.progetto.controller;
 
 import javafx.stage.FileChooser;
@@ -13,6 +14,13 @@ import com.progetto.utils.SuccessDialogUtils;
 
 
 public class AccountManagementController {
+
+    // Utility statica per clip circolare, riutilizzabile ovunque
+    public static void setCircularClip(javafx.scene.image.ImageView imageView, double radius) {
+        if (imageView == null) return;
+        javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(radius, radius, radius);
+        imageView.setClip(clip);
+    }
 
     private AccountManagementBoundary boundary;
     private String originalName;
@@ -50,8 +58,14 @@ public class AccountManagementController {
                 File imgFile = new File("src/main/resources/" + propic);
                 if (imgFile.exists()) {
                     javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
-                    if (boundary.getUserProfileImage() != null) boundary.getUserProfileImage().setImage(img);
-                    if (boundary.getProfileImageLarge() != null) boundary.getProfileImageLarge().setImage(img);
+                    if (boundary.getUserProfileImage() != null) {
+                        boundary.getUserProfileImage().setImage(img);
+                        setCircularClip(boundary.getUserProfileImage(), 40);
+                    }
+                    if (boundary.getProfileImageLarge() != null) {
+                        boundary.getProfileImageLarge().setImage(img);
+                        setCircularClip(boundary.getProfileImageLarge(), 60);
+                    }
                 }
             }
         }
@@ -68,54 +82,24 @@ public class AccountManagementController {
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
-            try {
-                com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
-                if (utente != null) {
-                    File destDir = new File("src/main/resources/immagini/PropicUtente");
-                    if (!destDir.exists() || !destDir.isDirectory()) {
-                        boundary.showErrorMessage("La cartella delle immagini non esiste o non è accessibile: " + destDir.getAbsolutePath());
-                        return;
-                    }
-                    String nome = utente.getNome().replaceAll("\\s+", "_");
-                    String cognome = utente.getCognome().replaceAll("\\s+", "_");
-                    String ext = selectedFile.getName().substring(selectedFile.getName().lastIndexOf('.'));
-                    String newFileName = nome + "_" + cognome + ext;
-                    File destFile = new File(destDir, newFileName);
-                    if (destFile.exists()) {
-                        destFile.delete();
-                    }
-                    try {
-                        java.nio.file.Files.copy(selectedFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                    } catch (Exception copyEx) {
-                        boundary.showErrorMessage("Errore nel salvataggio fisico dell'immagine: " + copyEx.getMessage() + "\nPercorso: " + destFile.getAbsolutePath());
-                        return;
-                    }
-                    if (!destFile.exists()) {
-                        boundary.showErrorMessage("Copia fallita: il file non è stato creato in " + destFile.getAbsolutePath());
-                        return;
-                    }
-                    String relativePath = "immagini/PropicUtente/" + newFileName;
-                    utente.setUrl_Propic(relativePath);
-                    try {
-                        utente.getUtenteVisitatoreDao().ModificaUtente(utente);
-                    } catch (Exception dbEx) {
-                        boundary.showErrorMessage("Errore nel salvataggio del percorso nel database: " + dbEx.getMessage());
-                        return;
-                    }
-                    if (!destFile.exists()) {
-                        boundary.showErrorMessage("Errore: il file non esiste dopo la copia.");
-                        return;
-                    }
-                    javafx.scene.image.Image img = new javafx.scene.image.Image(destFile.toURI().toString());
-                    if (boundary.getUserProfileImage() != null) boundary.getUserProfileImage().setImage(img);
-                    if (boundary.getProfileImageLarge() != null) boundary.getProfileImageLarge().setImage(img);
-                    boundary.showSuccessMessage("Foto profilo aggiornata!");
-                }
-            } catch (Exception ex) {
-                boundary.showErrorMessage("Errore durante il caricamento della foto: " + ex.getMessage());
+            String ext = selectedFile.getName().toLowerCase();
+            if (!(ext.endsWith(".png") || ext.endsWith(".jpg") || ext.endsWith(".jpeg") || ext.endsWith(".gif"))) {
+                boundary.showErrorMessage("Formato immagine non supportato. Usa PNG, JPG, JPEG o GIF.");
+                return;
+            }
+            javafx.scene.image.Image img = new javafx.scene.image.Image(selectedFile.toURI().toString());
+            if (boundary.getUserProfileImage() != null) {
+                boundary.getUserProfileImage().setImage(img);
+                setCircularClip(boundary.getUserProfileImage(), 40);
+            }
+            if (boundary.getProfileImageLarge() != null) {
+                boundary.getProfileImageLarge().setImage(img);
+                setCircularClip(boundary.getProfileImageLarge(), 60);
             }
         }
+
     }
+
 
     public void saveChanges() {
         if (boundary.getNameField().getText().trim().isEmpty() ||

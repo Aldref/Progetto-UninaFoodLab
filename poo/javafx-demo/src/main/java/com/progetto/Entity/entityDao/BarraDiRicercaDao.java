@@ -11,7 +11,7 @@ import com.progetto.jdbc.SupportDb;
 
 public class BarraDiRicercaDao {
 public ArrayList<String> CeraEnumFrequenza() {
-	ArrayList<String> Enum = new ArrayList<>();
+    ArrayList<String> Enum = new ArrayList<>();
     SupportDb dbu = new SupportDb();
     Connection conn = null;
     PreparedStatement ps = null;
@@ -33,18 +33,18 @@ public ArrayList<String> CeraEnumFrequenza() {
             ex.printStackTrace();
         }
     }
-	return Enum;
+    return Enum;
 }
 
 
 
 public ArrayList<String> Categorie() {
-	ArrayList<String> Categorie = new ArrayList<>();
+    ArrayList<String> Categorie = new ArrayList<>();
     SupportDb dbu = new SupportDb();
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
-    String query = "Select DISTINCT Nome from TIPICUCINA";
+    String query = "SELECT DISTINCT Nome as valore FROM TIPODICUCINA";
     try {
         conn = ConnectionJavaDb.getConnection();
         ps = conn.prepareStatement(query);
@@ -61,6 +61,6 @@ public ArrayList<String> Categorie() {
             ex.printStackTrace();
         }
     }
-	return Categorie;
+    return Categorie;
 }
 }

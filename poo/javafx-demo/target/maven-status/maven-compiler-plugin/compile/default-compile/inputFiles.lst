@@ -29,7 +29,9 @@ C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\Entity\entityDao\SessioneInPresenzaDao.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\boundary\CreateCourseBoundary.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\boundary\SuccessDialogBoundary.java
+C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\utils\FrequenzaSessioniProvider.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\boundary\AccountManagementChefBoundary.java
+C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\Entity\entityDao\BarraDiRicercaDao.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\Entity\entityDao\GraficoChefDao.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\boundary\LoginBoundary.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\controller\AccountManagementController.java
@@ -40,6 +42,7 @@ C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\controller\AccountManagementChefController.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\boundary\MonthlyReportBoundary.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\boundary\RegisterBoundary.java
+C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\controller\EsempioSetRootPane.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\controller\CalendarDialogController.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\utils\ErroriEmail.java
 C:\Users\mario\Desktop\prova\Progetto-UninaFoodLab\poo\javafx-demo\src\main\java\com\progetto\Entity\entityDao\ricettaDao.java

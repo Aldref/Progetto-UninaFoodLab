@@ -1,15 +1,26 @@
+
 package com.progetto.controller;
 
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.Sessione;
+import com.progetto.Entity.EntityDto.SessioneOnline;
+import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
 
@@ -146,9 +157,9 @@ public class CalendarDialogController {
             for (Sessione sessione : sessions) {
                 String tipo = "";
                 String orario = sessione.getOrario() != null ? sessione.getOrario().toString() : "";
-                if (sessione instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
+                if (sessione instanceof SessioniInPresenza) {
                     tipo = "[P]"; // Presenza
-                } else if (sessione instanceof com.progetto.Entity.EntityDto.SessioneOnline) {
+                } else if (sessione instanceof SessioneOnline) {
                     tipo = "[T]"; // Telematica
                 }
                 Label lessonLabel = new Label(tipo + " " + orario);
@@ -217,8 +228,8 @@ public class CalendarDialogController {
         durationLabel.getStyleClass().add("detail-label");
         durationBox.getChildren().addAll(durationIcon, durationLabel);
 
-        if (sessione instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
-            com.progetto.Entity.EntityDto.SessioniInPresenza s = (com.progetto.Entity.EntityDto.SessioniInPresenza) sessione;
+        if (sessione instanceof SessioniInPresenza) {
+            SessioniInPresenza s = (SessioniInPresenza) sessione;
             String nomeRicetta = "";
             if (s.getRicette() != null && !s.getRicette().isEmpty() && s.getRicette().get(0) != null) {
                 nomeRicetta = s.getRicette().get(0).getNome();
@@ -240,8 +251,8 @@ public class CalendarDialogController {
             addressBox.getChildren().addAll(addressIcon, addressLabel);
 
             detailsContainer.getChildren().addAll(startTimeBox, durationBox, ricettaLabel, addressBox);
-        } else if (sessione instanceof com.progetto.Entity.EntityDto.SessioneOnline) {
-            com.progetto.Entity.EntityDto.SessioneOnline s = (com.progetto.Entity.EntityDto.SessioneOnline) sessione;
+        } else if (sessione instanceof SessioneOnline) {
+            SessioneOnline s = (SessioneOnline) sessione;
             String app = s.getApplicazione() != null ? s.getApplicazione() : "";
             String codice = s.getCodicechiamata() != null ? s.getCodicechiamata() : "";
 
@@ -264,15 +275,15 @@ public class CalendarDialogController {
 
         // Titolo/descrizione in alto: tipo e nome ricetta o app
         String descrizione;
-        if (sessione instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
-            com.progetto.Entity.EntityDto.SessioniInPresenza s = (com.progetto.Entity.EntityDto.SessioniInPresenza) sessione;
+        if (sessione instanceof SessioniInPresenza) {
+            SessioniInPresenza s = (SessioniInPresenza) sessione;
             String nomeRicetta = "";
             if (s.getRicette() != null && !s.getRicette().isEmpty() && s.getRicette().get(0) != null) {
                 nomeRicetta = s.getRicette().get(0).getNome();
             }
             descrizione = "[PRESENZA] " + nomeRicetta;
-        } else if (sessione instanceof com.progetto.Entity.EntityDto.SessioneOnline) {
-            com.progetto.Entity.EntityDto.SessioneOnline s = (com.progetto.Entity.EntityDto.SessioneOnline) sessione;
+        } else if (sessione instanceof SessioneOnline) {
+            SessioneOnline s = (SessioneOnline) sessione;
             descrizione = "[TELEMATICA] " + (s.getApplicazione() != null ? s.getApplicazione() : "");
         } else {
             descrizione = "Sessione";

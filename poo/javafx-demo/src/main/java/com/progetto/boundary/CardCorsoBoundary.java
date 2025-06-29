@@ -9,6 +9,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import com.progetto.controller.CardCorsoController;
 import com.progetto.Entity.EntityDto.Corso;
+import com.progetto.utils.FrequenzaSessioniProvider;
+import java.util.List;
 
 public class CardCorsoBoundary {
 
@@ -69,6 +71,35 @@ public class CardCorsoBoundary {
     @FXML
     private void handleShowCalendar() {
         controller.handleShowCalendar();
+    }
+
+        /**
+     * Metodo unico per configurare la card a partire da un oggetto Corso.
+     * Chiama tutti i metodi di settaggio dati, immagine, tipi cucina, enrolledMode.
+     */
+    public void setupFromCorso(Corso corso, boolean enrolledMode) {
+        setCorso(corso);
+        setEnrolledMode(enrolledMode);
+        String title = corso.getNome();
+        String description = corso.getDescrizione();
+        String startDate = corso.getDataInizio() != null ? corso.getDataInizio().toString() : "";
+        String endDate = corso.getDataFine() != null ? corso.getDataFine().toString() : "";
+        String frequency = corso.getFrequenzaDelleSessioni();
+        String price = "€" + String.format("%.2f", corso.getPrezzo());
+        String chefName = corso.getChefNome() + (corso.getChefCognome() != null && !corso.getChefCognome().isEmpty() ? (" " + corso.getChefCognome()) : "");
+        String experience = corso.getChefEsperienza() > 0 ? String.valueOf(corso.getChefEsperienza()) : "";
+        String maxPeople = String.valueOf(corso.getMaxPersone());
+        setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience, maxPeople);
+        // Tipi di cucina
+        java.util.List<String> tipiCucina = corso.getTipiDiCucina();
+        String cucina1 = tipiCucina.size() > 0 ? tipiCucina.get(0) : "";
+        String cucina2 = tipiCucina.size() > 1 ? tipiCucina.get(1) : "";
+        setCuisineTypes(cucina1, cucina2);
+        // Immagine
+        String imagePath = corso.getUrl_Propic() != null && !corso.getUrl_Propic().isEmpty() ? corso.getUrl_Propic() : "/immagini/corsi/esempio.png";
+        setCourseImage(imagePath);
+        // Nascondi il box delle frequenze aggiuntive: la frequenza è già mostrata sopra
+        // frequencyListBox rimosso: nessun box da gestire
     }
 
     public void setCourseImage(String imagePath) {

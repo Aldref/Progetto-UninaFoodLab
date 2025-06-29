@@ -13,7 +13,7 @@ import com.progetto.jdbc.SupportDb;
 public class ricettaDao {
 
     public ArrayList<Ingredienti> getIngredientiRicetta(Ricetta ricetta) {
-        String query = "Select I.Nome, I.UnitaDiMisura,I.IdIngrediente,P.QuantitaUnitaria from INGREDIENTI I Natural join PREPARAZIONEINGREDIENTE P where P.IdRicetta=?";
+        String query = "Select I.Nome, I.UnitaDiMisura, I.IdIngrediente, P.QuanititaUnitaria from INGREDIENTE I Natural join PREPARAZIONEINGREDIENTE P where P.IdRicetta=?";
         ArrayList<Ingredienti> ingredientiRic = new ArrayList<>();
         SupportDb dbu= new SupportDb();
         Connection conn=null;
@@ -25,7 +25,7 @@ public class ricettaDao {
             ps.setInt(1, ricetta.getId_Ricetta());
             rs = ps.executeQuery();
             while (rs.next()) {
-                Ingredienti ingrediente = new Ingredienti(rs.getString("Nome"), rs.getFloat("QuantitaUnitaria"), rs.getString("UnitaDiMisura"));
+                Ingredienti ingrediente = new Ingredienti(rs.getString("Nome"), rs.getFloat("QuanititaUnitaria"), rs.getString("UnitaDiMisura"));
                 ingrediente.setIdIngrediente(rs.getInt("IdIngrediente"));
                 new IngredientiDao().recuperaQuantitaTotale(ingrediente,ricetta);
                 ingredientiRic.add(ingrediente);

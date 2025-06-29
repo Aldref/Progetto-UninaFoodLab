@@ -16,8 +16,23 @@
 .profile-image-large {
     -fx-background-radius: 60;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);
+    -fx-shape: "M60,0a60,60 0 1,0 120,0a60,60 0 1,0 -120,0";
+    -fx-clip-shape: circle;
+    -fx-border-radius: 60;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-overflow: hidden;
 }
 
+#userProfileImage, .user-profile-image {
+    -fx-background-radius: 40;
+    -fx-border-radius: 40;
+    -fx-shape: "M40,0a40,40 0 1,0 80,0a40,40 0 1,0 -80,0";
+    -fx-clip-shape: circle;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-overflow: hidden;
+}
 .account-title {
     -fx-font-size: 28;
     -fx-font-weight: bold;

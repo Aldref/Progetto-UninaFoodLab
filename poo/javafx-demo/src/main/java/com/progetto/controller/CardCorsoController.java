@@ -1,6 +1,10 @@
 package com.progetto.controller;
 
 import com.progetto.utils.SceneSwitcher;
+import com.progetto.boundary.PaymentPageBoundary;
+import com.progetto.Entity.EntityDto.Corso;
+import com.progetto.Entity.EntityDto.Sessione;
+import com.progetto.Entity.entityDao.CorsoDao;
 
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
@@ -12,10 +16,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import com.progetto.Entity.EntityDto.Corso;
-import com.progetto.Entity.EntityDto.Sessione;
-import com.progetto.Entity.entityDao.CorsoDao;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import java.util.ArrayList;
 
 public class CardCorsoController {
@@ -210,9 +212,9 @@ public class CardCorsoController {
 
     public void handlePurchase(com.progetto.Entity.EntityDto.Corso corsoSelezionato) {
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/paymentpage.fxml"));
-            javafx.scene.Parent root = loader.load();
-            com.progetto.boundary.PaymentPageBoundary paymentBoundary = loader.getController();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/paymentpage.fxml"));
+            Parent root = loader.load();
+            PaymentPageBoundary paymentBoundary = loader.getController();
             paymentBoundary.setSelectedCorso(corsoSelezionato); // Passa il corso selezionato
             // Usa lo stage corrente, non uno nuovo!
             Stage stage = (Stage) buyButton.getScene().getWindow();

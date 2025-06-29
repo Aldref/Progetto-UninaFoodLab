@@ -5,7 +5,7 @@
 -- Dumped from database version 17.5 (Ubuntu 17.5-1.pgdg22.04+1)
 -- Dumped by pg_dump version 17.4
 
--- Started on 2025-06-28 11:47:24
+-- Started on 2025-06-29 21:35:52
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -180,6 +180,41 @@ CREATE FUNCTION public.impedisci_eliminazione_corso_se_iscritto() RETURNS trigge
 
 
 ALTER FUNCTION public.impedisci_eliminazione_corso_se_iscritto() OWNER TO name;
+
+--
+-- TOC entry 244 (class 1255 OID 17072)
+-- Name: validate_email_full(); Type: FUNCTION; Schema: public; Owner: name
+--
+
+CREATE FUNCTION public.validate_email_full() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    at_pos INT;
+    domain_part TEXT;
+BEGIN
+    
+    at_pos := POSITION('@' IN NEW.Email);
+
+    
+    IF at_pos = 0 THEN
+        RAISE EXCEPTION 'Email non valida: manca la chiocciola (@).';
+    END IF;
+
+    
+    domain_part := SUBSTRING(NEW.Email FROM at_pos + 1);
+
+   
+    IF POSITION('.' IN domain_part) = 0 THEN
+        RAISE EXCEPTION 'Email non valida: manca il punto dopo la chiocciola.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.validate_email_full() OWNER TO name;
 
 --
 -- TOC entry 262 (class 1255 OID 17040)
@@ -492,7 +527,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 236 (class 1259 OID 16920)
+-- TOC entry 235 (class 1259 OID 16920)
 -- Name: adesione_sessionepresenza; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -558,19 +593,6 @@ CREATE TABLE public.chef (
 ALTER TABLE public.chef OWNER TO name;
 
 --
--- TOC entry 226 (class 1259 OID 16815)
--- Name: chef_corso; Type: TABLE; Schema: public; Owner: name
---
-
-CREATE TABLE public.chef_corso (
-    idchef integer NOT NULL,
-    idcorso integer NOT NULL
-);
-
-
-ALTER TABLE public.chef_corso OWNER TO name;
-
---
 -- TOC entry 222 (class 1259 OID 16794)
 -- Name: chef_idchef_seq; Type: SEQUENCE; Schema: public; Owner: name
 --
@@ -600,6 +622,7 @@ CREATE TABLE public.corso (
     propic text,
     maxpersone integer,
     prezzo numeric(10,2),
+    idchef integer,
     CONSTRAINT corso_maxpersone_check CHECK ((maxpersone > 0)),
     CONSTRAINT corso_prezzo_check CHECK ((prezzo >= (0)::numeric))
 );
@@ -623,7 +646,7 @@ ALTER TABLE public.corso ALTER COLUMN idcorso ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 241 (class 1259 OID 16957)
+-- TOC entry 240 (class 1259 OID 16957)
 -- Name: ingrediente; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -637,7 +660,7 @@ CREATE TABLE public.ingrediente (
 ALTER TABLE public.ingrediente OWNER TO name;
 
 --
--- TOC entry 240 (class 1259 OID 16956)
+-- TOC entry 239 (class 1259 OID 16956)
 -- Name: ingrediente_idingrediente_seq; Type: SEQUENCE; Schema: public; Owner: name
 --
 
@@ -685,7 +708,7 @@ ALTER TABLE public.partecipante ALTER COLUMN idpartecipante ADD GENERATED ALWAYS
 
 
 --
--- TOC entry 235 (class 1259 OID 16905)
+-- TOC entry 234 (class 1259 OID 16905)
 -- Name: partecipante_sessionetelematica; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -711,7 +734,7 @@ CREATE TABLE public.possiede (
 ALTER TABLE public.possiede OWNER TO name;
 
 --
--- TOC entry 242 (class 1259 OID 16962)
+-- TOC entry 241 (class 1259 OID 16962)
 -- Name: preparazioneingrediente; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -728,7 +751,7 @@ CREATE TABLE public.preparazioneingrediente (
 ALTER TABLE public.preparazioneingrediente OWNER TO name;
 
 --
--- TOC entry 239 (class 1259 OID 16941)
+-- TOC entry 238 (class 1259 OID 16941)
 -- Name: sessione_presenza_ricetta; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -741,7 +764,7 @@ CREATE TABLE public.sessione_presenza_ricetta (
 ALTER TABLE public.sessione_presenza_ricetta OWNER TO name;
 
 --
--- TOC entry 243 (class 1259 OID 17053)
+-- TOC entry 242 (class 1259 OID 17053)
 -- Name: quantitapersessione; Type: VIEW; Schema: public; Owner: name
 --
 
@@ -762,7 +785,7 @@ CREATE VIEW public.quantitapersessione AS
 ALTER VIEW public.quantitapersessione OWNER TO name;
 
 --
--- TOC entry 238 (class 1259 OID 16936)
+-- TOC entry 237 (class 1259 OID 16936)
 -- Name: ricetta; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -775,7 +798,7 @@ CREATE TABLE public.ricetta (
 ALTER TABLE public.ricetta OWNER TO name;
 
 --
--- TOC entry 237 (class 1259 OID 16935)
+-- TOC entry 236 (class 1259 OID 16935)
 -- Name: ricetta_idricetta_seq; Type: SEQUENCE; Schema: public; Owner: name
 --
 
@@ -790,7 +813,7 @@ ALTER TABLE public.ricetta ALTER COLUMN idricetta ADD GENERATED ALWAYS AS IDENTI
 
 
 --
--- TOC entry 227 (class 1259 OID 16830)
+-- TOC entry 226 (class 1259 OID 16830)
 -- Name: richiestapagamento; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -807,7 +830,7 @@ CREATE TABLE public.richiestapagamento (
 ALTER TABLE public.richiestapagamento OWNER TO name;
 
 --
--- TOC entry 232 (class 1259 OID 16870)
+-- TOC entry 231 (class 1259 OID 16870)
 -- Name: sessione_presenza; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -830,7 +853,7 @@ CREATE TABLE public.sessione_presenza (
 ALTER TABLE public.sessione_presenza OWNER TO name;
 
 --
--- TOC entry 231 (class 1259 OID 16869)
+-- TOC entry 230 (class 1259 OID 16869)
 -- Name: sessione_presenza_idsessionepresenza_seq; Type: SEQUENCE; Schema: public; Owner: name
 --
 
@@ -845,7 +868,7 @@ ALTER TABLE public.sessione_presenza ALTER COLUMN idsessionepresenza ADD GENERAT
 
 
 --
--- TOC entry 234 (class 1259 OID 16888)
+-- TOC entry 233 (class 1259 OID 16888)
 -- Name: sessione_telematica; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -867,7 +890,7 @@ CREATE TABLE public.sessione_telematica (
 ALTER TABLE public.sessione_telematica OWNER TO name;
 
 --
--- TOC entry 233 (class 1259 OID 16887)
+-- TOC entry 232 (class 1259 OID 16887)
 -- Name: sessione_telematica_idsessionetelematica_seq; Type: SEQUENCE; Schema: public; Owner: name
 --
 
@@ -882,7 +905,7 @@ ALTER TABLE public.sessione_telematica ALTER COLUMN idsessionetelematica ADD GEN
 
 
 --
--- TOC entry 229 (class 1259 OID 16847)
+-- TOC entry 228 (class 1259 OID 16847)
 -- Name: tipodicucina; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -895,7 +918,7 @@ CREATE TABLE public.tipodicucina (
 ALTER TABLE public.tipodicucina OWNER TO name;
 
 --
--- TOC entry 230 (class 1259 OID 16854)
+-- TOC entry 229 (class 1259 OID 16854)
 -- Name: tipodicucina_corso; Type: TABLE; Schema: public; Owner: name
 --
 
@@ -908,7 +931,7 @@ CREATE TABLE public.tipodicucina_corso (
 ALTER TABLE public.tipodicucina_corso OWNER TO name;
 
 --
--- TOC entry 228 (class 1259 OID 16846)
+-- TOC entry 227 (class 1259 OID 16846)
 -- Name: tipodicucina_idtipocucina_seq; Type: SEQUENCE; Schema: public; Owner: name
 --
 
@@ -923,7 +946,7 @@ ALTER TABLE public.tipodicucina ALTER COLUMN idtipocucina ADD GENERATED ALWAYS A
 
 
 --
--- TOC entry 244 (class 1259 OID 17061)
+-- TOC entry 243 (class 1259 OID 17061)
 -- Name: vista_statistiche_mensili_chef; Type: VIEW; Schema: public; Owner: name
 --
 
@@ -935,13 +958,13 @@ CREATE VIEW public.vista_statistiche_mensili_chef AS
     COALESCE(max(spr_count.ricette_per_sessione), (0)::bigint) AS max_ricette_in_sessione,
     COALESCE(min(spr_count.ricette_per_sessione), (0)::bigint) AS min_ricette_in_sessione,
     COALESCE(avg(spr_count.ricette_per_sessione), (0)::numeric) AS media_ricette_per_sessione,
-    count(DISTINCT cc.idcorso) AS numero_corsi,
+    count(DISTINCT c.idcorso) AS numero_corsi,
     count(DISTINCT sp.idsessionepresenza) AS numero_sessioni_presenza,
     count(DISTINCT st.idsessionetelematica) AS numero_sessioni_telematiche,
     COALESCE(sum(rp.importopagato), (0)::numeric) AS guadagno_totale
    FROM ((((((public.chef ch
-     LEFT JOIN public.chef_corso cc ON ((ch.idchef = cc.idchef)))
-     LEFT JOIN public.sessione_presenza sp ON (((cc.idcorso = sp.idcorso) AND (sp.idchef = ch.idchef))))
+     LEFT JOIN public.corso c ON ((ch.idchef = c.idchef)))
+     LEFT JOIN public.sessione_presenza sp ON (((c.idcorso = sp.idcorso) AND (sp.idchef = ch.idchef))))
      LEFT JOIN public.sessione_presenza_ricetta spr ON ((spr.idsessionepresenza = sp.idsessionepresenza)))
      LEFT JOIN ( SELECT spr2.idsessionepresenza,
             count(*) AS ricette_per_sessione
@@ -949,8 +972,8 @@ CREATE VIEW public.vista_statistiche_mensili_chef AS
              JOIN public.sessione_presenza sp2 ON ((spr2.idsessionepresenza = sp2.idsessionepresenza)))
           WHERE ((date_part('month'::text, sp2.data) = date_part('month'::text, CURRENT_DATE)) AND (date_part('year'::text, sp2.data) = date_part('year'::text, CURRENT_DATE)))
           GROUP BY spr2.idsessionepresenza) spr_count ON ((spr_count.idsessionepresenza = sp.idsessionepresenza)))
-     LEFT JOIN public.sessione_telematica st ON (((cc.idcorso = st.idcorso) AND (st.idchef = ch.idchef) AND (date_part('month'::text, st.data) = date_part('month'::text, CURRENT_DATE)) AND (date_part('year'::text, st.data) = date_part('year'::text, CURRENT_DATE)))))
-     LEFT JOIN public.richiestapagamento rp ON (((rp.idcorso = cc.idcorso) AND (date_part('month'::text, rp.datarichiesta) = date_part('month'::text, CURRENT_DATE)) AND (date_part('year'::text, rp.datarichiesta) = date_part('year'::text, CURRENT_DATE)))))
+     LEFT JOIN public.sessione_telematica st ON (((c.idcorso = st.idcorso) AND (st.idchef = ch.idchef) AND (date_part('month'::text, st.data) = date_part('month'::text, CURRENT_DATE)) AND (date_part('year'::text, st.data) = date_part('year'::text, CURRENT_DATE)))))
+     LEFT JOIN public.richiestapagamento rp ON (((rp.idcorso = c.idcorso) AND (date_part('month'::text, rp.datarichiesta) = date_part('month'::text, CURRENT_DATE)) AND (date_part('year'::text, rp.datarichiesta) = date_part('year'::text, CURRENT_DATE)))))
   WHERE ((sp.data IS NULL) OR ((date_part('month'::text, sp.data) = date_part('month'::text, CURRENT_DATE)) AND (date_part('year'::text, sp.data) = date_part('year'::text, CURRENT_DATE))))
   GROUP BY ch.idchef, ch.nome, ch.cognome;
 
@@ -958,8 +981,8 @@ CREATE VIEW public.vista_statistiche_mensili_chef AS
 ALTER VIEW public.vista_statistiche_mensili_chef OWNER TO name;
 
 --
--- TOC entry 3547 (class 0 OID 16920)
--- Dependencies: 236
+-- TOC entry 3542 (class 0 OID 16920)
+-- Dependencies: 235
 -- Data for Name: adesione_sessionepresenza; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -969,17 +992,19 @@ t	4	12
 t	5	13
 t	12	26
 t	14	27
+t	15	32
+t	17	32
+t	19	32
 \.
 
 
 --
--- TOC entry 3529 (class 0 OID 16764)
+-- TOC entry 3525 (class 0 OID 16764)
 -- Dependencies: 218
 -- Data for Name: carta; Type: TABLE DATA; Schema: public; Owner: name
 --
 
 COPY public.carta (idcarta, intestatario, datascadenza, ultimequattrocifre, circuito) FROM stdin;
-1	Mario Rossi	2028-12-31	1234	Visa
 2	Giulia Bianchi	2027-06-30	5678	Mastercard
 5	Anna Bianchi	2029-01-20	9012	Visa
 6	Marco Gialli	2027-11-01	3456	Mastercard
@@ -988,11 +1013,13 @@ COPY public.carta (idcarta, intestatario, datascadenza, ultimequattrocifre, circ
 12	Martina Viola	2027-03-01	6789	Visa
 19	Filippo Bruno	2030-11-05	7788	Visa
 20	Greta Azzurra	2029-07-20	9900	Mastercard
+31	Marco Rossi Nuovo	2032-01-01	1010	Visa
+32	Anna Bianchi Nuova	2033-03-03	2020	Mastercard
 \.
 
 
 --
--- TOC entry 3534 (class 0 OID 16795)
+-- TOC entry 3530 (class 0 OID 16795)
 -- Dependencies: 223
 -- Data for Name: chef; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1006,52 +1033,38 @@ COPY public.chef (idchef, nome, cognome, email, password, datadinascita, descriz
 13	Francesco	Bianchi	francesco.bianchi@example.com	passFrancesco	1992-12-12	Giovane promessa della cucina molecolare	PropicChef/francesco_bianchi.jpg	8
 20	Carla	Moretti	carla.moretti@example.com	passCarla	1987-04-22	Specialista in pasticceria moderna	PropicChef/carla_moretti.jpg	13
 21	Fabio	Russo	fabio.russo@example.com	passFabio	1982-08-08	Esperto di cucina fusion	PropicChef/fabio_russo.png	16
+26	Elena	Ricci Nuova	elena.riccinuova@example.com	passElenaR	1978-11-11	Chef specializzata in cucina mediterranea	PropicChef/elena_ricci_nuova.jpg	20
+27	Luca	Mancini Nuovo	luca.mancininuovo@example.com	passLucaM	1985-03-25	Esperto di cucina internazionale	PropicChef/luca_mancini_nuovo.png	10
 \.
 
 
 --
--- TOC entry 3537 (class 0 OID 16815)
--- Dependencies: 226
--- Data for Name: chef_corso; Type: TABLE DATA; Schema: public; Owner: name
---
-
-COPY public.chef_corso (idchef, idcorso) FROM stdin;
-3	3
-6	6
-7	7
-12	12
-11	13
-13	14
-11	15
-20	26
-21	27
-11	28
-\.
-
-
---
--- TOC entry 3536 (class 0 OID 16806)
+-- TOC entry 3532 (class 0 OID 16806)
 -- Dependencies: 225
 -- Data for Name: corso; Type: TABLE DATA; Schema: public; Owner: name
 --
 
-COPY public.corso (idcorso, nome, descrizione, datainizio, datafine, frequenzadellesessioni, propic, maxpersone, prezzo) FROM stdin;
-3	Corso Base di Pasta Fresca	Impara a fare la pasta fresca da zero	2025-07-10	2025-08-10	Settimanale	corsi/pasta_fresca.jpg	15	120.00
-6	Corso di Pasticceria Francese	Dolci classici della tradizione francese	2025-09-01	2025-10-15	Ogni due giorni	corsi/pasticceria_francese.jpg	10	180.00
-7	Introduzione alla Cucina Giapponese	Base di sushi e ramen	2025-08-05	2025-08-25	Settimanale	corsi/cucina_giapponese.webp	12	150.00
-12	Cucina Vegana Avanzata	Tecniche e ricette innovative vegane	2025-09-20	2025-10-20	Settimanale	corsi/vegana_avanzata.jpg	8	200.00
-13	Laboratorio di Pane Fatto in Casa	Dalla lievitazione alla cottura	2025-10-05	2025-10-12	Ogni due giorni	corsi/pane_casa.webp	10	80.00
-14	Corso di Cucina Molecolare	Introduzione alle basi della gastronomia molecolare	2025-11-01	2025-11-30	Mensile	corsi/molecolare.png	5	300.00
-15	Cocktail Art e Mixology	Crea i tuoi cocktail d'autore	2026-01-10	2026-01-20	Giornaliera	corsi/mixology.jpg	12	150.00
-26	Corso di Cioccolateria Artigianale	Dalla fava al cioccolatino	2026-02-01	2026-03-01	Settimanale	corsi/cioccolateria.jpg	8	190.00
-27	Cucina Fusion Asiatica-Mediterranea	Esplorazione di nuovi sapori	2026-03-10	2026-04-10	Mensile	corsi/fusion.webp	10	220.00
-28	Masterclass di Panificazione Avanzata	Segreti dei grandi lievitati	2026-04-15	2026-05-15	Bisettimanale	corsi/panificazione_avanzata.jpg	7	280.00
+COPY public.corso (idcorso, nome, descrizione, datainizio, datafine, frequenzadellesessioni, propic, maxpersone, prezzo, idchef) FROM stdin;
+3	Corso Base di Pasta Fresca	Impara a fare la pasta fresca da zero	2025-07-10	2025-08-10	Settimanale	corsi/pasta_fresca.jpg	15	120.00	3
+6	Corso di Pasticceria Francese	Dolci classici della tradizione francese	2025-09-01	2025-10-15	Ogni due giorni	corsi/pasticceria_francese.jpg	10	180.00	6
+7	Introduzione alla Cucina Giapponese	Base di sushi e ramen	2025-08-05	2025-08-25	Settimanale	corsi/cucina_giapponese.webp	12	150.00	7
+12	Cucina Vegana Avanzata	Tecniche e ricette innovative vegane	2025-09-20	2025-10-20	Settimanale	corsi/vegana_avanzata.jpg	8	200.00	12
+13	Laboratorio di Pane Fatto in Casa	Dalla lievitazione alla cottura	2025-10-05	2025-10-12	Ogni due giorni	corsi/pane_casa.webp	10	80.00	11
+14	Corso di Cucina Molecolare	Introduzione alle basi della gastronomia molecolare	2025-11-01	2025-11-30	Mensile	corsi/molecolare.png	5	300.00	13
+15	Cocktail Art e Mixology	Crea i tuoi cocktail d'autore	2026-01-10	2026-01-20	Giornaliera	corsi/mixology.jpg	12	150.00	11
+26	Corso di Cioccolateria Artigianale	Dalla fava al cioccolatino	2026-02-01	2026-03-01	Settimanale	corsi/cioccolateria.jpg	8	190.00	20
+27	Cucina Fusion Asiatica-Mediterranea	Esplorazione di nuovi sapori	2026-03-10	2026-04-10	Mensile	corsi/fusion.webp	10	220.00	21
+28	Masterclass di Panificazione Avanzata	Segreti dei grandi lievitati	2026-04-15	2026-05-15	Bisettimanale	corsi/panificazione_avanzata.jpg	7	280.00	11
+37	Corso di Pasta Fresca Avanzata	Tecniche per pasta ripiena e formati speciali	2025-09-01	2025-09-28	Settimanale	corsi/pasta_fresca_avanzata.jpg	10	120.00	26
+38	Cucina Vegetariana Creativa	Ricette innovative senza carne e pesce	2025-10-06	2025-10-27	Bisettimanale	corsi/vegetariana_creativa.webp	12	150.00	27
+39	Dolci al Cucchiaio e Mignon	L'arte della piccola pasticceria	2025-11-01	2025-11-30	Ogni due giorni	corsi/dolci_mignon.png	8	180.00	20
+40	Corso di Cucina Messicana Autentica	Sapori e tradizioni del Messico	2025-12-01	2025-12-31	Settimanale	corsi/messicana.jpg	15	140.00	7
 \.
 
 
 --
--- TOC entry 3552 (class 0 OID 16957)
--- Dependencies: 241
+-- TOC entry 3547 (class 0 OID 16957)
+-- Dependencies: 240
 -- Data for Name: ingrediente; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -1073,17 +1086,20 @@ COPY public.ingrediente (idingrediente, nome, unitadimisura) FROM stdin;
 27	Gamberi	Grammi
 28	Curry Verde	Grammi
 29	Semola Rimacinata	Kilogrammi
+30	Zucca	Kilogrammi
+31	Ceci	Grammi
+32	Maiale	Grammi
+33	Ananas	Kilogrammi
 \.
 
 
 --
--- TOC entry 3531 (class 0 OID 16770)
+-- TOC entry 3527 (class 0 OID 16770)
 -- Dependencies: 220
 -- Data for Name: partecipante; Type: TABLE DATA; Schema: public; Owner: name
 --
 
 COPY public.partecipante (idpartecipante, nome, cognome, email, password, datadinascita, propic) FROM stdin;
-3	Luca	Verdi	luca.verdi@example.com	passwordLuca	2000-05-15	PropicUtente/luca_verdi.jpg
 6	Chiara	Russo	chiara.russo@example.com	passwordChiara	1995-03-22	PropicUtente/chiara_russo.webp
 7	Marco	Gialli	marco.gialli@example.com	passwordMarco	1998-08-10	PropicUtente/marco_gialli.jpeg
 12	Sofia	Neri	sofia.neri@example.com	passSofia	2001-07-01	PropicUtente/sofia_neri.jpg
@@ -1092,12 +1108,15 @@ COPY public.partecipante (idpartecipante, nome, cognome, email, password, datadi
 15	Paolo	Rossi	paolo.rossi@example.com	passPaolo	1988-06-01	PropicUtente/paolo_rossi.jpg
 26	Filippo	Bruno	filippo.bruno@example.com	passFilippo	1990-06-01	PropicUtente/filippo_bruno.jpg
 27	Greta	Azzurra	greta.azzurra@example.com	passGreta	1994-02-14	PropicUtente/greta_azzurra.png
+3	Luca	Verdi	luca.verdi@example.com	passLuca	2000-05-15	immagini/PropicUtente/Luca_Verdi.jpg
+32	Marco	Rossi Nuovo	marco.rossinuovo@example.com	passMarcoN	1995-05-10	PropicUtente/marco_rossi_nuovo.jpg
+33	Anna	Bianchi Nuova	anna.bianchinuova@example.com	passAnnaN	1998-08-22	PropicUtente/anna_bianchi_nuova.png
 \.
 
 
 --
--- TOC entry 3546 (class 0 OID 16905)
--- Dependencies: 235
+-- TOC entry 3541 (class 0 OID 16905)
+-- Dependencies: 234
 -- Data for Name: partecipante_sessionetelematica; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -1107,17 +1126,19 @@ COPY public.partecipante_sessionetelematica (idpartecipante, idsessionetelematic
 14	5
 26	12
 27	11
+33	13
+33	14
+33	20
 \.
 
 
 --
--- TOC entry 3532 (class 0 OID 16779)
+-- TOC entry 3528 (class 0 OID 16779)
 -- Dependencies: 221
 -- Data for Name: possiede; Type: TABLE DATA; Schema: public; Owner: name
 --
 
 COPY public.possiede (idpartecipante, idcarta) FROM stdin;
-3	1
 6	5
 7	6
 12	10
@@ -1125,12 +1146,14 @@ COPY public.possiede (idpartecipante, idcarta) FROM stdin;
 14	12
 26	19
 27	20
+32	31
+33	32
 \.
 
 
 --
--- TOC entry 3553 (class 0 OID 16962)
--- Dependencies: 242
+-- TOC entry 3548 (class 0 OID 16962)
+-- Dependencies: 241
 -- Data for Name: preparazioneingrediente; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -1150,12 +1173,16 @@ COPY public.preparazioneingrediente (idricetta, idingrediente, quantitatotale, q
 17	25	0.30	0.03
 18	27	0.40	0.04
 19	29	1.00	0.10
+20	30	0.50	0.05
+21	31	0.30	0.03
+22	32	0.60	0.06
+22	33	0.20	0.02
 \.
 
 
 --
--- TOC entry 3549 (class 0 OID 16936)
--- Dependencies: 238
+-- TOC entry 3544 (class 0 OID 16936)
+-- Dependencies: 237
 -- Data for Name: ricetta; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -1170,12 +1197,15 @@ COPY public.ricetta (idricetta, nome) FROM stdin;
 17	Cioccolatini al Caramello Salato
 18	Ravioli di Gamberi e Curry Verde
 19	Pane di Semola Rimacinata
+20	Tortellini di Zucca
+21	Curry di Verdure e Ceci
+22	Tacos al Pastor
 \.
 
 
 --
--- TOC entry 3538 (class 0 OID 16830)
--- Dependencies: 227
+-- TOC entry 3533 (class 0 OID 16830)
+-- Dependencies: 226
 -- Data for Name: richiestapagamento; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -1188,12 +1218,19 @@ COPY public.richiestapagamento (datarichiesta, statopagamento, importopagato, id
 2025-10-15 11:00:00	Pagato	300.00	14	14
 2026-01-20 10:00:00	Pagato	190.00	26	26
 2026-03-01 11:30:00	Pagato	220.00	27	27
+2025-06-28 00:00:00	Pagato	200.00	12	3
+2025-06-28 00:00:00	Pagato	80.00	13	3
+2025-06-29 00:00:00	Pagato	150.00	7	3
+2025-08-25 10:00:00	Pagato	120.00	37	32
+2025-09-30 14:00:00	Pagato	150.00	38	33
+2025-10-25 09:00:00	Pagato	180.00	39	32
+2025-11-20 16:00:00	Pagato	140.00	40	33
 \.
 
 
 --
--- TOC entry 3543 (class 0 OID 16870)
--- Dependencies: 232
+-- TOC entry 3538 (class 0 OID 16870)
+-- Dependencies: 231
 -- Data for Name: sessione_presenza; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -1204,12 +1241,31 @@ COPY public.sessione_presenza (idsessionepresenza, giorno, data, orario, durata,
 12	Lunedì	2026-02-08	15:00:00	02:00:00	Torino	Via Roma 5	10121	Tecniche di temperaggio del cioccolato	26	20
 13	Lunedì	2026-02-15	15:00:00	02:00:00	Torino	Via Roma 5	10121	Creazione praline e tavolette	26	20
 14	Mercoledì	2026-04-22	09:00:00	04:00:00	Napoli	Via Toledo 10	80134	Impasti ad alta idratazione	28	11
+15	Lunedì	2025-09-01	18:00:00	02:00:00	Bologna	Via del Sale 10	40121	Pasta fresca: impasti base	37	26
+16	Lunedì	2025-09-08	18:00:00	02:00:00	Bologna	Via del Sale 10	40121	Pasta fresca: formati lunghi	37	26
+17	Lunedì	2025-09-15	18:00:00	02:00:00	Bologna	Via del Sale 10	40121	Pasta fresca: ravioli e tortellini	37	26
+18	Lunedì	2025-09-22	18:00:00	02:00:00	Bologna	Via del Sale 10	40121	Pasta fresca: gnocchi e pici	37	26
+19	Sabato	2025-11-01	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Mousse e bavaresi	39	20
+20	Lunedì	2025-11-03	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Tiramisù e zuppe inglesi	39	20
+21	Mercoledì	2025-11-05	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Panna cotta e creme caramel	39	20
+22	Venerdì	2025-11-07	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Biscotti mignon: frollini e cantucci	39	20
+23	Domenica	2025-11-09	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Macarons e meringhe	39	20
+24	Martedì	2025-11-11	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Eclairs e bignè	39	20
+25	Giovedì	2025-11-13	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Monoporzioni moderne	39	20
+26	Sabato	2025-11-15	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Gelati e sorbetti al cucchiaio	39	20
+27	Lunedì	2025-11-17	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Mini cheesecake e tartellette	39	20
+28	Mercoledì	2025-11-19	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Dolci senza cottura	39	20
+29	Venerdì	2025-11-21	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Decorazioni per dolci al cucchiaio	39	20
+30	Domenica	2025-11-23	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Finger food dolci	39	20
+31	Martedì	2025-11-25	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Tecniche di glassatura	39	20
+32	Giovedì	2025-11-27	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Cioccolatini e tartufi	39	20
+33	Sabato	2025-11-29	10:00:00	02:30:00	Milano	Corso Garibaldi 20	20121	Presentazione finale e degustazione	39	20
 \.
 
 
 --
--- TOC entry 3550 (class 0 OID 16941)
--- Dependencies: 239
+-- TOC entry 3545 (class 0 OID 16941)
+-- Dependencies: 238
 -- Data for Name: sessione_presenza_ricetta; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -1218,12 +1274,14 @@ COPY public.sessione_presenza_ricetta (idricetta, idsessionepresenza) FROM stdin
 8	4
 9	5
 17	13
+20	17
+22	33
 \.
 
 
 --
--- TOC entry 3545 (class 0 OID 16888)
--- Dependencies: 234
+-- TOC entry 3540 (class 0 OID 16888)
+-- Dependencies: 233
 -- Data for Name: sessione_telematica; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -1233,12 +1291,23 @@ COPY public.sessione_telematica (idsessionetelematica, applicazione, codicechiam
 5	Microsoft Teams	MOL-2025-11-05-QWE	2025-11-05	18:00:00	01:00:00	Mercoledì	Tecniche di sferificazione	14	13
 11	Zoom	FUSI-2026-03-15-ABC	2026-03-15	19:00:00	01:30:00	Domenica	Introduzione alle spezie Fusion	27	21
 12	Google Meet	PANA-2026-05-06-XYZ	2026-05-06	18:00:00	02:00:00	Mercoledì	Analisi dei difetti di lievitazione	28	11
+13	Google Meet	VEG-2025-10-06-A	2025-10-06	19:00:00	01:30:00	Lunedì	Verdure di stagione: tecniche di cottura	38	27
+14	Google Meet	VEG-2025-10-09-B	2025-10-09	19:00:00	01:30:00	Giovedì	Proteine vegetali: legumi e tofu	38	27
+15	Google Meet	VEG-2025-10-13-C	2025-10-13	19:00:00	01:30:00	Lunedì	Cereali e pseudocereali	38	27
+16	Google Meet	VEG-2025-10-16-D	2025-10-16	19:00:00	01:30:00	Giovedì	Salse e condimenti vegetariani	38	27
+17	Google Meet	VEG-2025-10-20-E	2025-10-20	19:00:00	01:30:00	Lunedì	Piatti unici vegetariani	38	27
+18	Google Meet	VEG-2025-10-23-F	2025-10-23	19:00:00	01:30:00	Giovedì	Dessert vegetariani e vegani	38	27
+19	Microsoft Teams	MEX-2025-12-01-A	2025-12-01	18:00:00	01:45:00	Lunedì	Introduzione ai sapori messicani	40	7
+20	Microsoft Teams	MEX-2025-12-08-B	2025-12-08	18:00:00	01:45:00	Lunedì	Tacos e Tortillas fatte in casa	40	7
+21	Microsoft Teams	MEX-2025-12-15-C	2025-12-15	18:00:00	01:45:00	Lunedì	Salse e Guacamole	40	7
+22	Microsoft Teams	MEX-2025-12-22-D	2025-12-22	18:00:00	01:45:00	Lunedì	Fajitas e Quesadillas	40	7
+23	Microsoft Teams	MEX-2025-12-29-E	2025-12-29	18:00:00	01:45:00	Lunedì	Chili con carne e Tamales	40	7
 \.
 
 
 --
--- TOC entry 3540 (class 0 OID 16847)
--- Dependencies: 229
+-- TOC entry 3535 (class 0 OID 16847)
+-- Dependencies: 228
 -- Data for Name: tipodicucina; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -1253,12 +1322,16 @@ COPY public.tipodicucina (idtipocucina, nome) FROM stdin;
 14	Mixology
 25	Cioccolateria
 26	Fusion
+30	Pasticceria
+31	Pasta Fresca
+32	Vegetariana
+33	Messicana
 \.
 
 
 --
--- TOC entry 3541 (class 0 OID 16854)
--- Dependencies: 230
+-- TOC entry 3536 (class 0 OID 16854)
+-- Dependencies: 229
 -- Data for Name: tipodicucina_corso; Type: TABLE DATA; Schema: public; Owner: name
 --
 
@@ -1274,92 +1347,96 @@ COPY public.tipodicucina_corso (idtipocucina, idcorso) FROM stdin;
 25	26
 26	27
 12	28
+31	37
+32	38
+30	39
+33	40
 \.
 
 
 --
--- TOC entry 3559 (class 0 OID 0)
+-- TOC entry 3572 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: carta_idcarta_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.carta_idcarta_seq', 20, true);
+SELECT pg_catalog.setval('public.carta_idcarta_seq', 32, true);
 
 
 --
--- TOC entry 3560 (class 0 OID 0)
+-- TOC entry 3573 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: chef_idchef_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.chef_idchef_seq', 21, true);
+SELECT pg_catalog.setval('public.chef_idchef_seq', 27, true);
 
 
 --
--- TOC entry 3561 (class 0 OID 0)
+-- TOC entry 3574 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: corso_idcorso_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.corso_idcorso_seq', 28, true);
+SELECT pg_catalog.setval('public.corso_idcorso_seq', 40, true);
 
 
 --
--- TOC entry 3562 (class 0 OID 0)
--- Dependencies: 240
+-- TOC entry 3575 (class 0 OID 0)
+-- Dependencies: 239
 -- Name: ingrediente_idingrediente_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.ingrediente_idingrediente_seq', 29, true);
+SELECT pg_catalog.setval('public.ingrediente_idingrediente_seq', 33, true);
 
 
 --
--- TOC entry 3563 (class 0 OID 0)
+-- TOC entry 3576 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: partecipante_idpartecipante_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.partecipante_idpartecipante_seq', 27, true);
+SELECT pg_catalog.setval('public.partecipante_idpartecipante_seq', 33, true);
 
 
 --
--- TOC entry 3564 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 3577 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: ricetta_idricetta_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.ricetta_idricetta_seq', 19, true);
+SELECT pg_catalog.setval('public.ricetta_idricetta_seq', 22, true);
 
 
 --
--- TOC entry 3565 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 3578 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: sessione_presenza_idsessionepresenza_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.sessione_presenza_idsessionepresenza_seq', 14, true);
+SELECT pg_catalog.setval('public.sessione_presenza_idsessionepresenza_seq', 33, true);
 
 
 --
--- TOC entry 3566 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 3579 (class 0 OID 0)
+-- Dependencies: 232
 -- Name: sessione_telematica_idsessionetelematica_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.sessione_telematica_idsessionetelematica_seq', 12, true);
+SELECT pg_catalog.setval('public.sessione_telematica_idsessionetelematica_seq', 23, true);
 
 
 --
--- TOC entry 3567 (class 0 OID 0)
--- Dependencies: 228
+-- TOC entry 3580 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: tipodicucina_idtipocucina_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.tipodicucina_idtipocucina_seq', 26, true);
+SELECT pg_catalog.setval('public.tipodicucina_idtipocucina_seq', 33, true);
 
 
 --
--- TOC entry 3337 (class 2606 OID 16924)
+-- TOC entry 3332 (class 2606 OID 16924)
 -- Name: adesione_sessionepresenza adesione_sessionepresenza_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1368,7 +1445,7 @@ ALTER TABLE ONLY public.adesione_sessionepresenza
 
 
 --
--- TOC entry 3305 (class 2606 OID 16768)
+-- TOC entry 3302 (class 2606 OID 16768)
 -- Name: carta carta_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1377,16 +1454,7 @@ ALTER TABLE ONLY public.carta
 
 
 --
--- TOC entry 3321 (class 2606 OID 16819)
--- Name: chef_corso chef_corso_pkey; Type: CONSTRAINT; Schema: public; Owner: name
---
-
-ALTER TABLE ONLY public.chef_corso
-    ADD CONSTRAINT chef_corso_pkey PRIMARY KEY (idchef, idcorso);
-
-
---
--- TOC entry 3315 (class 2606 OID 16804)
+-- TOC entry 3312 (class 2606 OID 16804)
 -- Name: chef chef_email_key; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1395,7 +1463,7 @@ ALTER TABLE ONLY public.chef
 
 
 --
--- TOC entry 3317 (class 2606 OID 16802)
+-- TOC entry 3314 (class 2606 OID 16802)
 -- Name: chef chef_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1404,7 +1472,7 @@ ALTER TABLE ONLY public.chef
 
 
 --
--- TOC entry 3319 (class 2606 OID 16814)
+-- TOC entry 3316 (class 2606 OID 16814)
 -- Name: corso corso_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1413,7 +1481,7 @@ ALTER TABLE ONLY public.corso
 
 
 --
--- TOC entry 3343 (class 2606 OID 16961)
+-- TOC entry 3338 (class 2606 OID 16961)
 -- Name: ingrediente ingrediente_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1422,7 +1490,7 @@ ALTER TABLE ONLY public.ingrediente
 
 
 --
--- TOC entry 3309 (class 2606 OID 16778)
+-- TOC entry 3306 (class 2606 OID 16778)
 -- Name: partecipante partecipante_email_key; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1431,7 +1499,7 @@ ALTER TABLE ONLY public.partecipante
 
 
 --
--- TOC entry 3311 (class 2606 OID 16776)
+-- TOC entry 3308 (class 2606 OID 16776)
 -- Name: partecipante partecipante_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1440,7 +1508,7 @@ ALTER TABLE ONLY public.partecipante
 
 
 --
--- TOC entry 3335 (class 2606 OID 16909)
+-- TOC entry 3330 (class 2606 OID 16909)
 -- Name: partecipante_sessionetelematica partecipante_sessionetelematica_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1449,7 +1517,7 @@ ALTER TABLE ONLY public.partecipante_sessionetelematica
 
 
 --
--- TOC entry 3313 (class 2606 OID 16783)
+-- TOC entry 3310 (class 2606 OID 16783)
 -- Name: possiede possiede_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1458,7 +1526,7 @@ ALTER TABLE ONLY public.possiede
 
 
 --
--- TOC entry 3345 (class 2606 OID 16968)
+-- TOC entry 3340 (class 2606 OID 16968)
 -- Name: preparazioneingrediente preparazioneingrediente_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1467,7 +1535,7 @@ ALTER TABLE ONLY public.preparazioneingrediente
 
 
 --
--- TOC entry 3339 (class 2606 OID 16940)
+-- TOC entry 3334 (class 2606 OID 16940)
 -- Name: ricetta ricetta_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1476,7 +1544,7 @@ ALTER TABLE ONLY public.ricetta
 
 
 --
--- TOC entry 3323 (class 2606 OID 16835)
+-- TOC entry 3318 (class 2606 OID 16835)
 -- Name: richiestapagamento richiestapagamento_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1485,7 +1553,7 @@ ALTER TABLE ONLY public.richiestapagamento
 
 
 --
--- TOC entry 3331 (class 2606 OID 16876)
+-- TOC entry 3326 (class 2606 OID 16876)
 -- Name: sessione_presenza sessione_presenza_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1494,7 +1562,7 @@ ALTER TABLE ONLY public.sessione_presenza
 
 
 --
--- TOC entry 3341 (class 2606 OID 16945)
+-- TOC entry 3336 (class 2606 OID 16945)
 -- Name: sessione_presenza_ricetta sessione_presenza_ricetta_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1503,7 +1571,7 @@ ALTER TABLE ONLY public.sessione_presenza_ricetta
 
 
 --
--- TOC entry 3333 (class 2606 OID 16894)
+-- TOC entry 3328 (class 2606 OID 16894)
 -- Name: sessione_telematica sessione_telematica_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1512,7 +1580,7 @@ ALTER TABLE ONLY public.sessione_telematica
 
 
 --
--- TOC entry 3329 (class 2606 OID 16858)
+-- TOC entry 3324 (class 2606 OID 16858)
 -- Name: tipodicucina_corso tipodicucina_corso_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1521,7 +1589,7 @@ ALTER TABLE ONLY public.tipodicucina_corso
 
 
 --
--- TOC entry 3325 (class 2606 OID 16853)
+-- TOC entry 3320 (class 2606 OID 16853)
 -- Name: tipodicucina tipodicucina_nome_key; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1530,7 +1598,7 @@ ALTER TABLE ONLY public.tipodicucina
 
 
 --
--- TOC entry 3327 (class 2606 OID 16851)
+-- TOC entry 3322 (class 2606 OID 16851)
 -- Name: tipodicucina tipodicucina_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1539,7 +1607,7 @@ ALTER TABLE ONLY public.tipodicucina
 
 
 --
--- TOC entry 3307 (class 2606 OID 17002)
+-- TOC entry 3304 (class 2606 OID 17002)
 -- Name: carta uq_carta_details; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1548,7 +1616,7 @@ ALTER TABLE ONLY public.carta
 
 
 --
--- TOC entry 3374 (class 2620 OID 17032)
+-- TOC entry 3370 (class 2620 OID 17032)
 -- Name: richiestapagamento trg_controllo_max_partecipanti_corso; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1556,7 +1624,7 @@ CREATE TRIGGER trg_controllo_max_partecipanti_corso BEFORE INSERT OR UPDATE ON p
 
 
 --
--- TOC entry 3366 (class 2620 OID 17047)
+-- TOC entry 3360 (class 2620 OID 17047)
 -- Name: carta trg_impedisci_dettagli_carta_duplicati; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1564,7 +1632,7 @@ CREATE TRIGGER trg_impedisci_dettagli_carta_duplicati BEFORE INSERT OR UPDATE ON
 
 
 --
--- TOC entry 3372 (class 2620 OID 17030)
+-- TOC entry 3368 (class 2620 OID 17030)
 -- Name: corso trg_impedisci_eliminazione_corso; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1572,7 +1640,7 @@ CREATE TRIGGER trg_impedisci_eliminazione_corso BEFORE DELETE ON public.corso FO
 
 
 --
--- TOC entry 3375 (class 2620 OID 17039)
+-- TOC entry 3371 (class 2620 OID 17039)
 -- Name: richiestapagamento trg_impedisci_pagamento_tardivo; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1580,7 +1648,7 @@ CREATE TRIGGER trg_impedisci_pagamento_tardivo BEFORE INSERT OR UPDATE ON public
 
 
 --
--- TOC entry 3377 (class 2620 OID 17045)
+-- TOC entry 3373 (class 2620 OID 17045)
 -- Name: tipodicucina_corso trg_max_tipi_cucina_corso; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1588,7 +1656,7 @@ CREATE TRIGGER trg_max_tipi_cucina_corso BEFORE INSERT ON public.tipodicucina_co
 
 
 --
--- TOC entry 3369 (class 2620 OID 17041)
+-- TOC entry 3364 (class 2620 OID 17041)
 -- Name: chef trg_valida_anni_esperienza_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1596,7 +1664,7 @@ CREATE TRIGGER trg_valida_anni_esperienza_chef BEFORE INSERT OR UPDATE ON public
 
 
 --
--- TOC entry 3373 (class 2620 OID 17043)
+-- TOC entry 3369 (class 2620 OID 17043)
 -- Name: corso trg_valida_date_corso; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1604,7 +1672,7 @@ CREATE TRIGGER trg_valida_date_corso BEFORE INSERT OR UPDATE ON public.corso FOR
 
 
 --
--- TOC entry 3370 (class 2620 OID 17034)
+-- TOC entry 3365 (class 2620 OID 17034)
 -- Name: chef trg_valida_eta_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1612,7 +1680,7 @@ CREATE TRIGGER trg_valida_eta_chef BEFORE INSERT OR UPDATE ON public.chef FOR EA
 
 
 --
--- TOC entry 3367 (class 2620 OID 17035)
+-- TOC entry 3361 (class 2620 OID 17035)
 -- Name: partecipante trg_valida_eta_partecipante; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1620,7 +1688,7 @@ CREATE TRIGGER trg_valida_eta_partecipante BEFORE INSERT OR UPDATE ON public.par
 
 
 --
--- TOC entry 3376 (class 2620 OID 17037)
+-- TOC entry 3372 (class 2620 OID 17037)
 -- Name: richiestapagamento trg_valida_importo_pagamento; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1628,7 +1696,23 @@ CREATE TRIGGER trg_valida_importo_pagamento BEFORE INSERT OR UPDATE ON public.ri
 
 
 --
--- TOC entry 3371 (class 2620 OID 17052)
+-- TOC entry 3366 (class 2620 OID 17074)
+-- Name: chef trg_validate_email_chef; Type: TRIGGER; Schema: public; Owner: name
+--
+
+CREATE TRIGGER trg_validate_email_chef BEFORE INSERT OR UPDATE ON public.chef FOR EACH ROW EXECUTE FUNCTION public.validate_email_full();
+
+
+--
+-- TOC entry 3362 (class 2620 OID 17073)
+-- Name: partecipante trg_validate_email_partecipante; Type: TRIGGER; Schema: public; Owner: name
+--
+
+CREATE TRIGGER trg_validate_email_partecipante BEFORE INSERT OR UPDATE ON public.partecipante FOR EACH ROW EXECUTE FUNCTION public.validate_email_full();
+
+
+--
+-- TOC entry 3367 (class 2620 OID 17052)
 -- Name: chef trg_verifica_email_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1636,7 +1720,7 @@ CREATE TRIGGER trg_verifica_email_chef BEFORE INSERT OR UPDATE ON public.chef FO
 
 
 --
--- TOC entry 3368 (class 2620 OID 17051)
+-- TOC entry 3363 (class 2620 OID 17051)
 -- Name: partecipante trg_verifica_email_partecipante; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1644,7 +1728,7 @@ CREATE TRIGGER trg_verifica_email_partecipante BEFORE INSERT OR UPDATE ON public
 
 
 --
--- TOC entry 3378 (class 2620 OID 17027)
+-- TOC entry 3374 (class 2620 OID 17027)
 -- Name: sessione_presenza trg_verifica_sessione_presenza_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1652,7 +1736,7 @@ CREATE TRIGGER trg_verifica_sessione_presenza_chef BEFORE INSERT OR UPDATE ON pu
 
 
 --
--- TOC entry 3379 (class 2620 OID 17028)
+-- TOC entry 3375 (class 2620 OID 17028)
 -- Name: sessione_telematica trg_verifica_sessione_telematica_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1660,7 +1744,7 @@ CREATE TRIGGER trg_verifica_sessione_telematica_chef BEFORE INSERT OR UPDATE ON 
 
 
 --
--- TOC entry 3380 (class 2620 OID 17049)
+-- TOC entry 3376 (class 2620 OID 17049)
 -- Name: ricetta trigger_elimina_ingredienti_associati; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -1668,7 +1752,7 @@ CREATE TRIGGER trigger_elimina_ingredienti_associati BEFORE DELETE ON public.ric
 
 
 --
--- TOC entry 3360 (class 2606 OID 16930)
+-- TOC entry 3354 (class 2606 OID 16930)
 -- Name: adesione_sessionepresenza adesione_sessionepresenza_idpartecipante_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1677,7 +1761,7 @@ ALTER TABLE ONLY public.adesione_sessionepresenza
 
 
 --
--- TOC entry 3361 (class 2606 OID 16925)
+-- TOC entry 3355 (class 2606 OID 16925)
 -- Name: adesione_sessionepresenza adesione_sessionepresenza_idsessionepresenza_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1686,25 +1770,16 @@ ALTER TABLE ONLY public.adesione_sessionepresenza
 
 
 --
--- TOC entry 3348 (class 2606 OID 16820)
--- Name: chef_corso chef_corso_idchef_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
+-- TOC entry 3343 (class 2606 OID 17075)
+-- Name: corso fk_corso_chef; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
-ALTER TABLE ONLY public.chef_corso
-    ADD CONSTRAINT chef_corso_idchef_fkey FOREIGN KEY (idchef) REFERENCES public.chef(idchef);
-
-
---
--- TOC entry 3349 (class 2606 OID 16825)
--- Name: chef_corso chef_corso_idcorso_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
---
-
-ALTER TABLE ONLY public.chef_corso
-    ADD CONSTRAINT chef_corso_idcorso_fkey FOREIGN KEY (idcorso) REFERENCES public.corso(idcorso);
+ALTER TABLE ONLY public.corso
+    ADD CONSTRAINT fk_corso_chef FOREIGN KEY (idchef) REFERENCES public.chef(idchef);
 
 
 --
--- TOC entry 3346 (class 2606 OID 17066)
+-- TOC entry 3341 (class 2606 OID 17066)
 -- Name: possiede fk_possiede_idcarta_carta_cascade; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1713,7 +1788,7 @@ ALTER TABLE ONLY public.possiede
 
 
 --
--- TOC entry 3358 (class 2606 OID 16910)
+-- TOC entry 3352 (class 2606 OID 16910)
 -- Name: partecipante_sessionetelematica partecipante_sessionetelematica_idpartecipante_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1722,7 +1797,7 @@ ALTER TABLE ONLY public.partecipante_sessionetelematica
 
 
 --
--- TOC entry 3359 (class 2606 OID 16915)
+-- TOC entry 3353 (class 2606 OID 16915)
 -- Name: partecipante_sessionetelematica partecipante_sessionetelematica_idsessionetelematica_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1731,7 +1806,7 @@ ALTER TABLE ONLY public.partecipante_sessionetelematica
 
 
 --
--- TOC entry 3347 (class 2606 OID 16784)
+-- TOC entry 3342 (class 2606 OID 16784)
 -- Name: possiede possiede_idpartecipante_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1740,7 +1815,7 @@ ALTER TABLE ONLY public.possiede
 
 
 --
--- TOC entry 3364 (class 2606 OID 16974)
+-- TOC entry 3358 (class 2606 OID 16974)
 -- Name: preparazioneingrediente preparazioneingrediente_idingrediente_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1749,7 +1824,7 @@ ALTER TABLE ONLY public.preparazioneingrediente
 
 
 --
--- TOC entry 3365 (class 2606 OID 16969)
+-- TOC entry 3359 (class 2606 OID 16969)
 -- Name: preparazioneingrediente preparazioneingrediente_idricetta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1758,7 +1833,7 @@ ALTER TABLE ONLY public.preparazioneingrediente
 
 
 --
--- TOC entry 3350 (class 2606 OID 16836)
+-- TOC entry 3344 (class 2606 OID 16836)
 -- Name: richiestapagamento richiestapagamento_idcorso_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1767,7 +1842,7 @@ ALTER TABLE ONLY public.richiestapagamento
 
 
 --
--- TOC entry 3351 (class 2606 OID 16841)
+-- TOC entry 3345 (class 2606 OID 16841)
 -- Name: richiestapagamento richiestapagamento_idpartecipante_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1776,7 +1851,7 @@ ALTER TABLE ONLY public.richiestapagamento
 
 
 --
--- TOC entry 3354 (class 2606 OID 16882)
+-- TOC entry 3348 (class 2606 OID 16882)
 -- Name: sessione_presenza sessione_presenza_idchef_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1785,7 +1860,7 @@ ALTER TABLE ONLY public.sessione_presenza
 
 
 --
--- TOC entry 3355 (class 2606 OID 16877)
+-- TOC entry 3349 (class 2606 OID 16877)
 -- Name: sessione_presenza sessione_presenza_idcorso_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1794,7 +1869,7 @@ ALTER TABLE ONLY public.sessione_presenza
 
 
 --
--- TOC entry 3362 (class 2606 OID 16946)
+-- TOC entry 3356 (class 2606 OID 16946)
 -- Name: sessione_presenza_ricetta sessione_presenza_ricetta_idricetta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1803,7 +1878,7 @@ ALTER TABLE ONLY public.sessione_presenza_ricetta
 
 
 --
--- TOC entry 3363 (class 2606 OID 16951)
+-- TOC entry 3357 (class 2606 OID 16951)
 -- Name: sessione_presenza_ricetta sessione_presenza_ricetta_idsessionepresenza_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1812,7 +1887,7 @@ ALTER TABLE ONLY public.sessione_presenza_ricetta
 
 
 --
--- TOC entry 3356 (class 2606 OID 16900)
+-- TOC entry 3350 (class 2606 OID 16900)
 -- Name: sessione_telematica sessione_telematica_idchef_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1821,7 +1896,7 @@ ALTER TABLE ONLY public.sessione_telematica
 
 
 --
--- TOC entry 3357 (class 2606 OID 16895)
+-- TOC entry 3351 (class 2606 OID 16895)
 -- Name: sessione_telematica sessione_telematica_idcorso_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1830,7 +1905,7 @@ ALTER TABLE ONLY public.sessione_telematica
 
 
 --
--- TOC entry 3352 (class 2606 OID 16864)
+-- TOC entry 3346 (class 2606 OID 16864)
 -- Name: tipodicucina_corso tipodicucina_corso_idcorso_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1839,7 +1914,7 @@ ALTER TABLE ONLY public.tipodicucina_corso
 
 
 --
--- TOC entry 3353 (class 2606 OID 16859)
+-- TOC entry 3347 (class 2606 OID 16859)
 -- Name: tipodicucina_corso tipodicucina_corso_idtipocucina_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -1847,7 +1922,169 @@ ALTER TABLE ONLY public.tipodicucina_corso
     ADD CONSTRAINT tipodicucina_corso_idtipocucina_fkey FOREIGN KEY (idtipocucina) REFERENCES public.tipodicucina(idtipocucina);
 
 
--- Completed on 2025-06-28 11:47:24
+--
+-- TOC entry 3554 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: TABLE adesione_sessionepresenza; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.adesione_sessionepresenza TO "Mario";
+
+
+--
+-- TOC entry 3555 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: TABLE carta; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.carta TO "Mario";
+
+
+--
+-- TOC entry 3556 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: TABLE chef; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.chef TO "Mario";
+
+
+--
+-- TOC entry 3557 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: TABLE corso; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.corso TO "Mario";
+
+
+--
+-- TOC entry 3558 (class 0 OID 0)
+-- Dependencies: 240
+-- Name: TABLE ingrediente; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.ingrediente TO "Mario";
+
+
+--
+-- TOC entry 3559 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: TABLE partecipante; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.partecipante TO "Mario";
+
+
+--
+-- TOC entry 3560 (class 0 OID 0)
+-- Dependencies: 234
+-- Name: TABLE partecipante_sessionetelematica; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.partecipante_sessionetelematica TO "Mario";
+
+
+--
+-- TOC entry 3561 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: TABLE possiede; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.possiede TO "Mario";
+
+
+--
+-- TOC entry 3562 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: TABLE preparazioneingrediente; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.preparazioneingrediente TO "Mario";
+
+
+--
+-- TOC entry 3563 (class 0 OID 0)
+-- Dependencies: 238
+-- Name: TABLE sessione_presenza_ricetta; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.sessione_presenza_ricetta TO "Mario";
+
+
+--
+-- TOC entry 3564 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: TABLE quantitapersessione; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.quantitapersessione TO "Mario";
+
+
+--
+-- TOC entry 3565 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: TABLE ricetta; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.ricetta TO "Mario";
+
+
+--
+-- TOC entry 3566 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: TABLE richiestapagamento; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.richiestapagamento TO "Mario";
+
+
+--
+-- TOC entry 3567 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: TABLE sessione_presenza; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.sessione_presenza TO "Mario";
+
+
+--
+-- TOC entry 3568 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: TABLE sessione_telematica; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.sessione_telematica TO "Mario";
+
+
+--
+-- TOC entry 3569 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: TABLE tipodicucina; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.tipodicucina TO "Mario";
+
+
+--
+-- TOC entry 3570 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: TABLE tipodicucina_corso; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.tipodicucina_corso TO "Mario";
+
+
+--
+-- TOC entry 3571 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: TABLE vista_statistiche_mensili_chef; Type: ACL; Schema: public; Owner: name
+--
+
+GRANT ALL ON TABLE public.vista_statistiche_mensili_chef TO "Mario";
+
+
+-- Completed on 2025-06-29 21:35:52
 
 --
 -- PostgreSQL database dump complete

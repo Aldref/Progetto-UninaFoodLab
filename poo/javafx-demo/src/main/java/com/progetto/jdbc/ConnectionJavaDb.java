@@ -13,7 +13,7 @@ public class ConnectionJavaDb{
         try{
             Class.forName(driver);
         } catch (ClassNotFoundException e){
-            //Aggiungere messaggio di errore, non è stato trovato il driver
+            throw new SQLException("Driver PostgreSQL non trovato!", e);
         }
 
         return DriverManager.getConnection(URL,USER,PASSWORD);

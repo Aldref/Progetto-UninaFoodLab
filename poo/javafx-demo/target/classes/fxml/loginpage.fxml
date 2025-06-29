@@ -47,7 +47,7 @@
                             </image>
                         </ImageView>
                         <Label text="Accedi al tuo account" styleClass="form-title"/>
-                        <VBox spacing="20" styleClass="input-section">
+                        <VBox spacing="12" styleClass="input-section">
                             <children>
                                 <VBox spacing="8">
                                     <children>
@@ -63,12 +63,13 @@
                                 </VBox>
                             </children>
                         </VBox>
-                        <VBox spacing="15" styleClass="button-section">
-                            <children>
-                                <Button fx:id="loginBtn" text="Accedi" styleClass="login-button" maxWidth="Infinity" onAction="#LoginClick" defaultButton="true"/>
-                                <Button fx:id="registerBtn" text="Crea un account" styleClass="register-button" maxWidth="Infinity" onAction="#RegisterClick"/>
-                            </children>
-                        </VBox>
+                                <VBox spacing="10" styleClass="button-section">
+                                    <children>
+                                        <Label fx:id="errorLabel" text="" styleClass="error-label" visible="false" />
+                                        <Button fx:id="loginBtn" text="Accedi" styleClass="login-button" maxWidth="Infinity" onAction="#LoginClick" defaultButton="true"/>
+                                        <Button fx:id="registerBtn" text="Crea un account" styleClass="register-button" maxWidth="Infinity" onAction="#RegisterClick"/>
+                                    </children>
+                                </VBox>
                     </children>
                     <padding>
                         <Insets top="40" bottom="40" left="40" right="40"/>

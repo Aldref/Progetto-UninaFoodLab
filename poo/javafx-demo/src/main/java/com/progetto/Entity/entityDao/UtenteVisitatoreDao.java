@@ -157,9 +157,8 @@ public class UtenteVisitatoreDao extends UtenteDao {
      public void RecuperaCorsi (Utente utente){
       String query = "SELECT C.*, CH.Nome AS chef_nome, CH.Cognome AS chef_cognome, CH.AnniDiEsperienza AS chef_esperienza " +
                     "FROM RICHIESTAPAGAMENTO R " +
-                    "NATURAL JOIN CORSO C " +
-                    "LEFT JOIN chef_corso CC ON C.idcorso = CC.idcorso " +
-                    "LEFT JOIN chef CH ON CC.idchef = CH.idchef " +
+                    "JOIN CORSO C ON R.IdCorso = C.IdCorso " +
+                    "LEFT JOIN CHEF CH ON C.IdChef = CH.IdChef " +
                     "WHERE R.IdPartecipante = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;

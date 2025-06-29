@@ -14,13 +14,23 @@ public class LoginBoundary {
     @FXML
     private PasswordField passwordField;
 
+    @FXML
+    private javafx.scene.control.Label errorLabel;
+
     private final LoginController controller = new LoginController();
 
     @FXML
     private void LoginClick(ActionEvent event) {
         String email = emailField.getText();
         String password = passwordField.getText();
-        controller.handleLogin(event, email, password);
+        String errorMsg = controller.handleLogin(event, email, password);
+        if (errorMsg != null) {
+            errorLabel.setText(errorMsg);
+            errorLabel.setVisible(true);
+        } else {
+            errorLabel.setText("");
+            errorLabel.setVisible(false);
+        }
     }
 
     @FXML

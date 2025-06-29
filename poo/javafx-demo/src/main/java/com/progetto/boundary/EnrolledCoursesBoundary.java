@@ -2,14 +2,18 @@ package com.progetto.boundary;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
 import javafx.event.ActionEvent;
-import com.progetto.controller.EnrolledCoursesController;
-
+import javafx.scene.image.ImageView;
 import java.net.URL;
 import java.util.ResourceBundle;
+import com.progetto.controller.EnrolledCoursesController;
+import com.progetto.Entity.EntityDto.UtenteVisitatore;
+
 
 public class EnrolledCoursesBoundary implements Initializable {
 
@@ -17,7 +21,7 @@ public class EnrolledCoursesBoundary implements Initializable {
     @FXML private javafx.scene.image.ImageView userProfileImage;
     @FXML private ComboBox<String> categoryComboBox;
     @FXML private ComboBox<String> frequencyComboBox;
-    @FXML private ComboBox<String> lessonTypeComboBox;
+    // Rimossa lessonTypeComboBox
     @FXML private Button searchBtn;
     @FXML private FlowPane enrolledCoursesArea;
     @FXML private ScrollPane enrolledCoursesScrollPane;
@@ -25,13 +29,13 @@ public class EnrolledCoursesBoundary implements Initializable {
     @FXML private Button prevPageBtn;
     @FXML private Button nextPageBtn;
     @FXML private Label pageLabel;
+    @FXML private javafx.scene.control.ProgressIndicator loadingIndicator;
 
     private EnrolledCoursesController controller;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Imposta nome e immagine utente nella navbar
-        com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
+        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
         if (utente != null) {
             userNameLabel.setText(utente.getNome() + " " + utente.getCognome());
             String propic = utente.getUrl_Propic();
@@ -40,15 +44,31 @@ public class EnrolledCoursesBoundary implements Initializable {
                 if (imgFile.exists()) {
                     javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 80, 80, true, true);
                     userProfileImage.setImage(img);
+                    // Clip circolare come in AccountManagement
+                    com.progetto.controller.AccountManagementController.setCircularClip(userProfileImage, 40);
                 }
             }
         }
         controller = new EnrolledCoursesController(
-            userNameLabel, categoryComboBox, frequencyComboBox, lessonTypeComboBox,
+            userNameLabel, categoryComboBox, frequencyComboBox,
             searchBtn, enrolledCoursesArea, enrolledCoursesScrollPane,
-            pageLabel, prevPageBtn, nextPageBtn, enrolledCountLabel
+            pageLabel, prevPageBtn, nextPageBtn, enrolledCountLabel, this
         );
         controller.initialize();
+    }
+
+    // Mostra lo spinner di caricamento
+    public void showLoadingIndicator() {
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisible(true);
+        }
+    }
+
+    // Nasconde lo spinner di caricamento
+    public void hideLoadingIndicator() {
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisible(false);
+        }
     }
 
     @FXML

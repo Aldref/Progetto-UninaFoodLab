@@ -5,7 +5,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.event.ActionEvent;
+import javafx.scene.image.ImageView;
+import java.io.File;
 import com.progetto.controller.HomepageUtenteController;
+import com.progetto.Entity.EntityDto.UtenteVisitatore;
+
 
 public class HomepageUtenteBoundary {
 
@@ -13,31 +17,64 @@ public class HomepageUtenteBoundary {
     @FXML private Label pageLabel;
     @FXML private ComboBox<String> categoryComboBox;
     @FXML private ComboBox<String> frequencyComboBox;
-    @FXML private ComboBox<String> lessonTypeComboBox;
     @FXML private Label userNameLabel;
     @FXML private javafx.scene.image.ImageView userProfileImage;
+    @FXML private javafx.scene.control.ProgressIndicator loadingIndicator;
 
     private HomepageUtenteController controller;
 
     @FXML
     public void initialize() {
         // Imposta nome e immagine utente nella navbar
-        com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
+        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
         if (utente != null) {
             userNameLabel.setText(utente.getNome() + " " + utente.getCognome());
             String propic = utente.getUrl_Propic();
             if (propic != null && !propic.isEmpty()) {
-                java.io.File imgFile = new java.io.File("src/main/resources/" + propic);
+                File imgFile = new File("src/main/resources/" + propic);
                 if (imgFile.exists()) {
                     javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 80, 80, true, true);
                     userProfileImage.setImage(img);
+                    // Clip circolare come in AccountManagement
+                    com.progetto.controller.AccountManagementController.setCircularClip(userProfileImage, 40);
                 }
             }
         }
-        controller = new HomepageUtenteController(mainContentArea, pageLabel, categoryComboBox, 
-                                                frequencyComboBox, lessonTypeComboBox, userNameLabel);
-        controller.initializeSearchFilters();
+        controller = new HomepageUtenteController(mainContentArea, pageLabel, categoryComboBox, frequencyComboBox, userNameLabel, this);
+        initializeSearchFiltersFromDb();
         controller.loadCourses();
+    }
+    // Mostra lo spinner di caricamento
+    public void showLoadingIndicator() {
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisible(true);
+        }
+    }
+
+    // Nasconde lo spinner di caricamento
+    public void hideLoadingIndicator() {
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisible(false);
+        }
+    }
+
+    private void initializeSearchFiltersFromDb() {
+        // Popola i ComboBox usando BarraDiRicercaDao
+        com.progetto.Entity.entityDao.BarraDiRicercaDao dao = new com.progetto.Entity.entityDao.BarraDiRicercaDao();
+        categoryComboBox.getItems().clear();
+        frequencyComboBox.getItems().clear();
+        // Categoria
+        categoryComboBox.getItems().add("Tutte le categorie");
+        for (String cat : dao.Categorie()) {
+            categoryComboBox.getItems().add(cat);
+        }
+        categoryComboBox.setValue("Tutte le categorie");
+        // Frequenza
+        frequencyComboBox.getItems().add("Tutte le frequenze");
+        for (String freq : dao.CeraEnumFrequenza()) {
+            frequencyComboBox.getItems().add(freq);
+        }
+        frequencyComboBox.setValue("Tutte le frequenze");
     }
 
     @FXML
@@ -72,7 +109,7 @@ public class HomepageUtenteBoundary {
 
     @FXML
     private void searchCourses(ActionEvent event) {
-        controller.searchCourses(); 
+        controller.resetPageAndSearch();
     }
 
     
@@ -80,6 +117,8 @@ public class HomepageUtenteBoundary {
     public Label getPageLabel() { return pageLabel; }
     public ComboBox<String> getCategoryComboBox() { return categoryComboBox; }
     public ComboBox<String> getFrequencyComboBox() { return frequencyComboBox; }
-    public ComboBox<String> getLessonTypeComboBox() { return lessonTypeComboBox; }
     public Label getUserNameLabel() { return userNameLabel; }
+    public void setLoadingIndicatorVisible(boolean visible) {
+        if (loadingIndicator != null) loadingIndicator.setVisible(visible);
+    }
 }

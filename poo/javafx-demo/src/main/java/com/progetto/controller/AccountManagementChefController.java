@@ -1,3 +1,4 @@
+
 package com.progetto.controller;
 
 import javafx.stage.FileChooser;
@@ -12,6 +13,8 @@ import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
 
 public class AccountManagementChefController {
+
+
 
     private AccountManagementChefBoundary boundary;
     private String originalName;
@@ -69,7 +72,18 @@ public class AccountManagementChefController {
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
-            // TODO: Implementare caricamento foto con le classi dedicate
+            String ext = selectedFile.getName().toLowerCase();
+            if (!(ext.endsWith(".png") || ext.endsWith(".jpg") || ext.endsWith(".jpeg") || ext.endsWith(".gif"))) {
+                boundary.showErrorMessage("Formato immagine non supportato. Usa PNG, JPG, JPEG o GIF.");
+                return;
+            }
+            javafx.scene.image.Image img = new javafx.scene.image.Image(selectedFile.toURI().toString());
+            if (boundary.getUserProfileImage() != null) {
+                boundary.getUserProfileImage().setImage(img);
+            }
+            if (boundary.getProfileImageLarge() != null) {
+                boundary.getProfileImageLarge().setImage(img);
+            }
             boundary.showSuccessMessage("Foto profilo chef selezionata: " + selectedFile.getName());
         }
     }

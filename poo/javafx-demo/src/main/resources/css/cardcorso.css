@@ -1,3 +1,25 @@
+/* Frequenze enum visualizzate nella card */
+.frequency-enum-list {
+    -fx-padding: 4 0 0 0;
+}
+.frequency-enum-label {
+    -fx-background-color: #f3f3f3;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 2 10 2 10;
+    -fx-font-size: 11px;
+    -fx-text-fill: #444;
+    -fx-margin: 2 0 2 0;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-alignment: center-left;
+    -fx-max-width: 180;
+    -fx-min-width: 80;
+    -fx-pref-width: 120;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 2, 0, 0, 1);
+    -fx-label-padding: 2 8 2 8;
+    -fx-spacing: 2;
+}
 .background-container {
     -fx-background-color: transparent;
 }

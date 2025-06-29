@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import com.progetto.Entity.EntityDto.CartaDiCredito;
 
@@ -43,19 +44,75 @@ public class UserCardsBoundary {
     private boolean updatingExpiry = false;
     private boolean updatingCvv = false;
 
-    @FXML
-    private void initialize() {
-        controller = new UserCardsController(this);
-        controller.loadCardsFromDb(); // Carica sempre le carte dal DB all'apertura della pagina
-        cardsListView.setItems(cards);
-        updateCardsView();
-        setupFieldListeners();
-    }
+    // RIMUOVO IL SECONDO METODO initialize (duplicato) introdotto dalla patch precedente
 
 
     public void setCards(java.util.List<CartaDiCredito> cardList) {
         cards.setAll(cardList);
         updateCardsView();
+    }
+
+    @FXML
+    public void initialize() {
+        controller = new UserCardsController(this);
+        controller.loadCardsFromDb(); // Carica sempre le carte dal DB all'apertura della pagina
+        cardsListView.setItems(cards);
+        updateCardsView();
+        setupFieldListeners();
+        // Custom cell factory: bordo azzurro SOLO sulla carta selezionata, scompare se deselezionata
+        cardsListView.setCellFactory(listView -> new ListCell<CartaDiCredito>() {
+            private HBox row;
+
+            @Override
+            protected void updateItem(CartaDiCredito card, boolean empty) {
+                super.updateItem(card, empty);
+                if (empty || card == null) {
+                    setText(null);
+                    setGraphic(null);
+                    row = null;
+                } else {
+                    VBox info = new VBox(2);
+                    Label holder = new Label(card.getIntestatario());
+                    holder.getStyleClass().add("card-holder");
+                    Label number = new Label("•••• " + card.getUltimeQuattroCifre());
+                    number.getStyleClass().add("card-number");
+                    Label expiry = new Label("Scad. " + (card.getDataScadenza() != null
+                            ? String.format("%02d/%02d", card.getDataScadenza().getMonthValue(), card.getDataScadenza().getYear() % 100)
+                            : ""));
+                    expiry.getStyleClass().add("card-expiry");
+                    info.getChildren().addAll(holder, number, expiry);
+                    info.getStyleClass().add("card-info");
+
+                    Label badge = new Label(card.getCircuito());
+                    badge.getStyleClass().add("default-badge");
+
+                    row = new HBox(12, info, badge);
+                    row.getStyleClass().add("saved-card-item");
+
+                    // Stato iniziale selezione
+                    updateRowSelected(isSelected());
+
+                    setGraphic(row);
+                    setText(null);
+                }
+            }
+
+            @Override
+            public void updateSelected(boolean selected) {
+                super.updateSelected(selected);
+                updateRowSelected(selected);
+            }
+
+            private void updateRowSelected(boolean selected) {
+                if (row != null) {
+                    if (selected) {
+                        if (!row.getStyleClass().contains("selected")) row.getStyleClass().add("selected");
+                    } else {
+                        row.getStyleClass().remove("selected");
+                    }
+                }
+            }
+        });
     }
 
 
@@ -126,26 +183,6 @@ public class UserCardsBoundary {
                 clearAllErrors();
             }
             updatingExpiry = false;
-        });
-
-        // Imposta la cell factory per visualizzare le info della carta
-        cardsListView.setCellFactory(listView -> new ListCell<CartaDiCredito>() {
-            @Override
-            protected void updateItem(CartaDiCredito card, boolean empty) {
-                super.updateItem(card, empty);
-                if (empty || card == null) {
-                    setText(null);
-                } else {
-                    // Mostra solo MM/YY anche se nel DB è salvato come LocalDate
-                    String scadenza = "";
-                    if (card.getDataScadenza() != null) {
-                        int mese = card.getDataScadenza().getMonthValue();
-                        int anno = card.getDataScadenza().getYear() % 100;
-                        scadenza = String.format("%02d/%02d", mese, anno);
-                    }
-                    setText(card.getIntestatario() + " •••• " + card.getUltimeQuattroCifre() + " (" + card.getCircuito() + ")  Scad.: " + scadenza);
-                }
-            }
         });
     }
 

@@ -82,8 +82,7 @@ public class CorsoDao{
         ArrayList<Corso> corsi = new ArrayList<>();
         String query = "SELECT c.*, ch.Nome AS chef_nome, ch.Cognome AS chef_cognome, ch.AnniDiEsperienza AS chef_esperienza " +
                 "FROM corso c " +
-                "LEFT JOIN chef_corso cc ON c.idcorso = cc.idcorso " +
-                "LEFT JOIN chef ch ON cc.idchef = ch.idchef";
+                "LEFT JOIN chef ch ON c.idchef = ch.idchef";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -238,8 +237,9 @@ public class CorsoDao{
                   rs.getString("descrizione"),
                   rs.getInt("idsessionepresenza") 
               );
-              // Lazy loading: NON caricare subito ricette e partecipanti
-              // sessione.setRicette(new SessioneInPresenzaDao().recuperaRicetteSessione(sessione));
+              // Carica le ricette collegate a questa sessione
+              sessione.setRicette(new SessioneInPresenzaDao().recuperaRicetteSessione(sessione));
+              // Se vuoi anche i partecipanti, decommenta la riga sotto
               // sessione.setCorsoList(new SessioneInPresenzaDao().recuperaPartecipantiSessione(sessione));
               sessioni.add(sessione);
           }

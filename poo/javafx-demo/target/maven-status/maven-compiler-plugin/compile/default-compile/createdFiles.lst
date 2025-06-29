@@ -1,3 +1,4 @@
+com\progetto\Entity\entityDao\BarraDiRicercaDao.class
 com\progetto\controller\EditCourseController$5.class
 com\progetto\boundary\LoginBoundary.class
 com\progetto\boundary\UserCardsBoundary.class
@@ -18,6 +19,7 @@ com\progetto\Entity\EntityDto\Corso.class
 com\progetto\boundary\PaymentPageBoundary.class
 com\progetto\Entity\EntityDto\Utente.class
 com\progetto\controller\RegisterController.class
+com\progetto\controller\HomepageUtenteController$1.class
 com\progetto\controller\EditCourseController$2.class
 com\progetto\controller\EditCourseController$Ingredient.class
 com\progetto\controller\CreateCourseController$3.class
@@ -25,6 +27,7 @@ com\progetto\controller\EditCourseController$Recipe.class
 com\progetto\controller\MonthlyReportController$ReportData.class
 com\progetto\boundary\RegisterBoundary.class
 com\progetto\Entity\entityDao\UtenteVisitatoreDao.class
+com\progetto\utils\FrequenzaSessioniProvider.class
 com\progetto\boundary\CalendarDialogBoundary.class
 com\progetto\Entity\entityDao\ChefDao.class
 com\progetto\Entity\entityDao\IngredientiDao.class

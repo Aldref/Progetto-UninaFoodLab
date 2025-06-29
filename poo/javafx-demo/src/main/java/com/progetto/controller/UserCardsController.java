@@ -4,12 +4,19 @@ import com.progetto.boundary.UserCardsBoundary;
 import com.progetto.utils.CardValidator;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
+import com.progetto.Entity.EntityDto.UtenteVisitatore;
+import com.progetto.Entity.EntityDto.CartaDiCredito;
+import com.progetto.Entity.entityDao.CartaDiCreditoDao;
+import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
 
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.regex.Pattern;
+import java.time.format.DateTimeFormatter;
+import java.time.YearMonth;
+import java.time.LocalDate;
 
 public class UserCardsController {
     private static final Pattern NOME_PATTERN = Pattern.compile("^[a-zA-ZÀ-ÿ]+(?:\\s+[a-zA-ZÀ-ÿ]+)*$");
@@ -24,10 +31,10 @@ public class UserCardsController {
     
     public void loadCardsFromDb() {
         // Carica le carte dal DB e aggiorna la boundary
-        com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
+        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
         if (utente != null) {
-            com.progetto.Entity.entityDao.CartaDiCreditoDao dao = new com.progetto.Entity.entityDao.CartaDiCreditoDao();
-            java.util.List<com.progetto.Entity.EntityDto.CartaDiCredito> carte = dao.getCarteByUtenteId(utente.getId_UtenteVisitatore());
+            CartaDiCreditoDao dao = new CartaDiCreditoDao();
+            List<CartaDiCredito> carte = dao.getCarteByUtenteId(utente.getId_UtenteVisitatore());
             utente.setCarte(carte);
             boundary.setCards(carte);
         }
@@ -48,23 +55,23 @@ public class UserCardsController {
                 return;
             }
 
-            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("MM/yy");
-            java.time.YearMonth ym = java.time.YearMonth.parse(expiry, formatter);
-            java.time.LocalDate dataScadenza = ym.atEndOfMonth();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
+            YearMonth ym = YearMonth.parse(expiry, formatter);
+            LocalDate dataScadenza = ym.atEndOfMonth();
 
-            com.progetto.Entity.EntityDto.CartaDiCredito carta = new com.progetto.Entity.EntityDto.CartaDiCredito();
+            CartaDiCredito carta = new CartaDiCredito();
             carta.setIntestatario(holder);
             carta.setUltimeQuattroCifre(ultimeQuattro);
             carta.setCircuito(circuito); // Salva esattamente "Visa" o "Mastercard"
             carta.setDataScadenza(dataScadenza);
 
-            com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
+            UtenteVisitatore utente = UtenteVisitatore.loggedUser;
             if (utente != null) {
-                com.progetto.Entity.entityDao.CartaDiCreditoDao dao = new com.progetto.Entity.entityDao.CartaDiCreditoDao();
+                CartaDiCreditoDao dao = new CartaDiCreditoDao();
                 dao.memorizzaCarta(carta, utente.getId_UtenteVisitatore());
                 // Inserisci la relazione in POSSIEDE solo se l'ID carta è stato generato
                 if (carta.getIdCarta() != null) {
-                    com.progetto.Entity.entityDao.UtenteVisitatoreDao utenteDao = new com.progetto.Entity.entityDao.UtenteVisitatoreDao();
+                    UtenteVisitatoreDao utenteDao = new UtenteVisitatoreDao();
                     utenteDao.aggiungiCartaAPossiede(utente, carta);
                 }
                 showCardSaveSuccessDialog();
@@ -151,9 +158,9 @@ public class UserCardsController {
     }
     
     public void deleteCard(com.progetto.Entity.EntityDto.CartaDiCredito carta) {
-        com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
+        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
         if (utente != null) {
-            com.progetto.Entity.entityDao.CartaDiCreditoDao dao = new com.progetto.Entity.entityDao.CartaDiCreditoDao();
+            CartaDiCreditoDao dao = new CartaDiCreditoDao();
             dao.cancellaCarta(carta, utente.getId_UtenteVisitatore());
             boundary.showSuccessMessage("Carta eliminata con successo.");
             loadCardsFromDb();

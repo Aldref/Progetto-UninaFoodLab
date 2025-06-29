@@ -112,26 +112,17 @@
                         <children>
                            <Label text="Categoria" styleClass="dropdown-label" />
                            <ComboBox fx:id="categoryComboBox" styleClass="search-dropdown" prefWidth="180.0" promptText="Seleziona..." />
-                           </children>
+                        </children>
                         </VBox>
-                        
                         <VBox spacing="5.0">
                            <children>
-                           <Label text="Frequenza" styleClass="dropdown-label" />
-                           <ComboBox fx:id="frequencyComboBox" styleClass="search-dropdown" prefWidth="180.0" promptText="Seleziona..." />
+                              <Label text="Frequenza" styleClass="dropdown-label" />
+                              <ComboBox fx:id="frequencyComboBox" styleClass="search-dropdown" prefWidth="180.0" promptText="Seleziona..." />
                            </children>
                         </VBox>
-                        
-                        <VBox spacing="5.0">
-                           <children>
-                           <Label text="Tipo lezione" styleClass="dropdown-label" />
-                           <ComboBox fx:id="lessonTypeComboBox" styleClass="search-dropdown" prefWidth="180.0" promptText="Seleziona..." />
-                           </children>
-                        </VBox>
-                        
                         <VBox spacing="5.0" alignment="BOTTOM_CENTER">
                            <children>
-                           <Button fx:id="searchBtn" text="Cerca corso" styleClass="search-button" />
+                              <Button fx:id="searchBtn" text="Cerca corso" styleClass="search-button" onAction="#searchCourses" />
                            </children>
                         </VBox>
                   </children>
@@ -142,15 +133,20 @@
                </VBox.margin>
             </VBox>
             
-            <ScrollPane fx:id="coursesScrollPane" styleClass="courses-scroll-pane" VBox.vgrow="ALWAYS" fitToWidth="true">
-               <content>
-               <FlowPane fx:id="mainContentArea" hgap="30.0" vgap="30.0" styleClass="courses-flow-pane" alignment="CENTER">
-                  <padding>
-                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                  </padding>
-               </FlowPane>
-               </content>
-            </ScrollPane>
+            <StackPane alignment="CENTER" VBox.vgrow="ALWAYS">
+               <children>
+                  <ScrollPane fx:id="coursesScrollPane" styleClass="courses-scroll-pane" fitToWidth="true">
+                     <content>
+                        <FlowPane fx:id="mainContentArea" hgap="30.0" vgap="30.0" styleClass="courses-flow-pane" alignment="CENTER">
+                           <padding>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </padding>
+                        </FlowPane>
+                     </content>
+                  </ScrollPane>
+                  <ProgressIndicator fx:id="loadingIndicator" visible="false" maxWidth="80.0" maxHeight="80.0" style="-fx-progress-color: #4e9cff;" />
+               </children>
+            </StackPane>
             
             <HBox styleClass="pagination-section" alignment="CENTER" spacing="10.0">
                <children>

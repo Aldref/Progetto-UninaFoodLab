@@ -1,3 +1,17 @@
+/* ListCell background uguale a card per leggibilità */
+.list-cell {
+    -fx-background-color: #f8f9fa;
+}
+.list-cell:hover, .list-cell:selected, .list-cell:focused {
+    -fx-background-color: #f8f9fa;
+}
+/* Rende trasparente la ListCell per ListView custom card (usercards identico a paymentpage) */
+.list-cell {
+    -fx-background-color: transparent;
+}
+.list-cell:hover, .list-cell:selected, .list-cell:focused {
+    -fx-background-color: transparent;
+}
 .payment-page {
     -fx-background-color: #f8f9fa;
 }

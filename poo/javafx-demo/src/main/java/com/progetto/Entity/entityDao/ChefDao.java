@@ -51,18 +51,17 @@ public class ChefDao extends UtenteDao  {
 
     @Override
     public void AssegnaCorso(Corso corso, Utente chef1) {
-    String query = "INSERT INTO  Chef_Corso (id_Chef, id_Corso) VALUES (?, ?)";
+        // Ora l'assegnazione del corso allo chef avviene tramite la FK IdChef nella tabella Corso
+        String query = "UPDATE Corso SET IdChef = ? WHERE IdCorso = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
-
             ps.setInt(1, ((Chef) chef1).getId_Chef());
             ps.setInt(2, corso.getId_Corso());
-            ps.execute();
-
+            ps.executeUpdate();
         } catch (SQLException sqe) {
             sqe.printStackTrace();
         } finally {
@@ -107,10 +106,9 @@ public class ChefDao extends UtenteDao  {
    
     public void RecuperaCorsi (Utente utente){
       String query = "SELECT C.*, CH.Nome AS chef_nome, CH.Cognome AS chef_cognome, CH.AnniDiEsperienza AS chef_esperienza " +
-                    "FROM CHEF_CORSO CC " +
-                    "JOIN CORSO C ON CC.id_corso = C.idcorso " +
-                    "JOIN CHEF CH ON CC.id_chef = CH.idchef " +
-                    "WHERE CC.IdChef = ?";
+                    "FROM CORSO C " +
+                    "JOIN CHEF CH ON C.IdChef = CH.IdChef " +
+                    "WHERE CH.IdChef = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;

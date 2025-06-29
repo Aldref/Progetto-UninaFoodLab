@@ -20,9 +20,7 @@ POSSiEDE(IdPartecipante(fk), IdCarta(fk))
 
 CHEF(IdChef(pk), Nome, Cognome, Email, password, DataDiNascita, Descrizione, Propic, annidiesperienza)
 
-CORSO(IdCorso(pk), Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, Propic, MaxPersone, Prezzo)
-
-CHEF_CORSO(IdChef(fk), IdCorso(fk))
+CORSO(IdCorso(pk), Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, Propic, MaxPersone, Prezzo, IdChef(fk))
 
 RICHIESTAPAGAMENTO(DataRichiesta, StatoPagamento, ImportoPagato, IdCorso(fk), IdPartecipante(fk))
 
@@ -102,6 +100,7 @@ CREATE TABLE Possiede (
     FOREIGN KEY (IdCarta) REFERENCES Carta(IdCarta) on delete cascade 
 );
 
+
 CREATE TABLE Chef (
     IdChef INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     Nome VARCHAR(50) NOT NULL,
@@ -123,16 +122,11 @@ CREATE TABLE Corso (
     FrequenzaDelleSessioni VARCHAR(100) NOT NULL,
     Propic TEXT,
     MaxPersone INT CHECK (MaxPersone > 0),
-    Prezzo DECIMAL(10, 2) CHECK (Prezzo >= 0)
+    Prezzo DECIMAL(10, 2) CHECK (Prezzo >= 0),
+    IdChef INT NOT NULL,
+    FOREIGN KEY (IdChef) REFERENCES Chef(IdChef)
 );
 
-CREATE TABLE Chef_Corso (
-    IdChef INT,
-    IdCorso INT,
-    PRIMARY KEY (IdChef, IdCorso),
-    FOREIGN KEY (IdChef) REFERENCES Chef(IdChef),
-    FOREIGN KEY (IdCorso) REFERENCES Corso(IdCorso)
-);
 
 CREATE TABLE RichiestaPagamento (
     DataRichiesta TIMESTAMP NOT NULL,
@@ -628,69 +622,64 @@ EXECUTE FUNCTION verifica_sessioni_contemporanee_chef();
 -view per il grafico del report Mensile
   CREATE OR REPLACE VIEW vista_statistiche_mensili_chef AS
     SELECT
-      ch.IdChef,
-      ch.Nome,
-      ch.Cognome,
+    ch.IdChef,
+    ch.Nome,
+    ch.Cognome,
 
-      -- Totale ricette nelle sessioni in presenza nel mese corrente (senza DISTINCT)
-      COUNT(spr.IdRicetta) AS totale_ricette_mese,
+    COUNT(spr.IdRicetta) AS totale_ricette_mese,
 
-      -- Max/min/avg ricette per sessione in presenza nel mese corrente
-      COALESCE(MAX(spr_count.ricette_per_sessione), 0) AS max_ricette_in_sessione,
-      COALESCE(MIN(spr_count.ricette_per_sessione), 0) AS min_ricette_in_sessione,
-      COALESCE(AVG(spr_count.ricette_per_sessione), 0) AS media_ricette_per_sessione,
+    COALESCE(MAX(spr_count.ricette_per_sessione), 0) AS max_ricette_in_sessione,
+    COALESCE(MIN(spr_count.ricette_per_sessione), 0) AS min_ricette_in_sessione,
+    COALESCE(AVG(spr_count.ricette_per_sessione), 0) AS media_ricette_per_sessione,
 
-      -- Numero corsi insegnati dallo chef
-      COUNT(DISTINCT cc.IdCorso) AS numero_corsi,
+    COUNT(DISTINCT c.IdCorso) AS numero_corsi,
 
-      -- Numero sessioni in presenza
-      COUNT(DISTINCT sp.IdSessionePresenza) AS numero_sessioni_presenza,
+    COUNT(DISTINCT sp.IdSessionePresenza) AS numero_sessioni_presenza,
+    COUNT(DISTINCT st.IdSessioneTelematica) AS numero_sessioni_telematiche,
 
-      -- Numero sessioni telematiche
-      COUNT(DISTINCT st.IdSessioneTelematica) AS numero_sessioni_telematiche,
-
-      -- Guadagno totale derivante dai corsi dello chef
-      COALESCE(SUM(rp.ImportoPagato), 0) AS guadagno_totale
+    COALESCE(SUM(rp.ImportoPagato), 0) AS guadagno_totale
 
     FROM CHEF ch
 
-    -- Corsi assegnati allo chef
-    LEFT JOIN CHEF_CORSO cc ON ch.IdChef = cc.IdChef
+    -- Join diretto con la tabella corso, ora che contiene idchef
+    LEFT JOIN CORSO c ON ch.IdChef = c.IdChef
 
     -- Sessioni in presenza del corso
-    LEFT JOIN SESSIONE_PRESENZA sp ON cc.IdCorso = sp.IDcorso AND sp.IDChef = ch.IdChef
+    LEFT JOIN SESSIONE_PRESENZA sp ON c.IdCorso = sp.IDcorso AND sp.IDChef = ch.IdChef
+
     -- Ricette associate a sessioni in presenza
     LEFT JOIN SESSIONE_PRESENZA_RICETTA spr ON spr.IdSessionePresenza = sp.IdSessionePresenza
-    -- Conteggio ricette per sessione (per max/min/media)
+
+    -- Conteggio ricette per sessione
     LEFT JOIN (
-      SELECT spr2.IdSessionePresenza, COUNT(*) AS ricette_per_sessione
-      FROM SESSIONE_PRESENZA_RICETTA spr2
-      JOIN SESSIONE_PRESENZA sp2 ON spr2.IdSessionePresenza = sp2.IdSessionePresenza
-      WHERE DATE_PART('month', sp2.Data) = DATE_PART('month', CURRENT_DATE)
+    SELECT spr2.IdSessionePresenza, COUNT(*) AS ricette_per_sessione
+    FROM SESSIONE_PRESENZA_RICETTA spr2
+    JOIN SESSIONE_PRESENZA sp2 ON spr2.IdSessionePresenza = sp2.IdSessionePresenza
+    WHERE DATE_PART('month', sp2.Data) = DATE_PART('month', CURRENT_DATE)
         AND DATE_PART('year', sp2.Data) = DATE_PART('year', CURRENT_DATE)
-      GROUP BY spr2.IdSessionePresenza
+    GROUP BY spr2.IdSessionePresenza
     ) spr_count ON spr_count.IdSessionePresenza = sp.IdSessionePresenza
 
     -- Sessioni telematiche
-    LEFT JOIN SESSIONE_TELEMATICA st ON cc.IdCorso = st.IDcorso AND st.IDChef = ch.IdChef
-      AND DATE_PART('month', st.Data) = DATE_PART('month', CURRENT_DATE)
-      AND DATE_PART('year', st.Data) = DATE_PART('year', CURRENT_DATE)
+    LEFT JOIN SESSIONE_TELEMATICA st ON c.IdCorso = st.IDcorso AND st.IDChef = ch.IdChef
+    AND DATE_PART('month', st.Data) = DATE_PART('month', CURRENT_DATE)
+    AND DATE_PART('year', st.Data) = DATE_PART('year', CURRENT_DATE)
 
-    -- Guadagno dai corsi: partecipanti che hanno pagato per i corsi dello chef
-    LEFT JOIN RICHIESTAPAGAMENTO rp ON rp.IdCorso = cc.IdCorso
-      AND DATE_PART('month', rp.DataRichiesta) = DATE_PART('month', CURRENT_DATE)
-      AND DATE_PART('year', rp.DataRichiesta) = DATE_PART('year', CURRENT_DATE)
+    -- Guadagno dai corsi
+    LEFT JOIN RICHIESTAPAGAMENTO rp ON rp.IdCorso = c.IdCorso
+    AND DATE_PART('month', rp.DataRichiesta) = DATE_PART('month', CURRENT_DATE)
+    AND DATE_PART('year', rp.DataRichiesta) = DATE_PART('year', CURRENT_DATE)
 
-    -- Filtra sessioni e ricette solo nel mese corrente
     WHERE
-      (
+    (
         (sp.Data IS NULL OR (
-          DATE_PART('month', sp.Data) = DATE_PART('month', CURRENT_DATE)
-          AND DATE_PART('year', sp.Data) = DATE_PART('year', CURRENT_DATE)
+        DATE_PART('month', sp.Data) = DATE_PART('month', CURRENT_DATE)
+        AND DATE_PART('year', sp.Data) = DATE_PART('year', CURRENT_DATE)
         ))
-      )
+    )
 
     GROUP BY ch.IdChef, ch.Nome, ch.Cognome;
+
 -trigger controllo modo scrittura email
     CREATE OR REPLACE FUNCTION validate_email_full()
 RETURNS TRIGGER AS $$
@@ -725,6 +714,8 @@ CREATE TRIGGER trg_validate_email_chef
 BEFORE INSERT OR UPDATE ON CHEF
 FOR EACH ROW
 EXECUTE FUNCTION validate_email_full();
+
+-trigger obbligo che una sessione in presenza abbia almeno una ricetta
 
 //da fare in futuro
 db check percorso propic

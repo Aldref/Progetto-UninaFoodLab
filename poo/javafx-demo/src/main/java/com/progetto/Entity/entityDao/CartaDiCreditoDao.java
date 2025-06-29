@@ -1,8 +1,11 @@
+
 package com.progetto.Entity.entityDao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.progetto.Entity.EntityDto.CartaDiCredito;
 import com.progetto.jdbc.ConnectionJavaDb;
@@ -10,8 +13,8 @@ import com.progetto.jdbc.SupportDb;
 
 public class CartaDiCreditoDao {
     // Recupera tutte le carte di credito associate a un utente
-    public java.util.List<com.progetto.Entity.EntityDto.CartaDiCredito> getCarteByUtenteId(int idUtente) {
-        java.util.List<com.progetto.Entity.EntityDto.CartaDiCredito> carte = new java.util.ArrayList<>();
+    public List<CartaDiCredito> getCarteByUtenteId(int idUtente) {
+        List<CartaDiCredito> carte = new ArrayList<>();
         // JOIN tra POSSIEDE e CARTA per recuperare solo le carte effettivamente possedute dall'utente
         String query = "SELECT c.* FROM POSSIEDE p JOIN Carta c ON p.IdCarta = c.IdCarta WHERE p.IdPartecipante = ?";
         SupportDb dbu = new SupportDb();
@@ -24,7 +27,7 @@ public class CartaDiCreditoDao {
             ps.setInt(1, idUtente);
             rs = ps.executeQuery();
             while (rs.next()) {
-                com.progetto.Entity.EntityDto.CartaDiCredito carta = new com.progetto.Entity.EntityDto.CartaDiCredito();
+                CartaDiCredito carta = new CartaDiCredito();
                 carta.setIdCarta(rs.getString("IdCarta"));
                 carta.setIntestatario(rs.getString("Intestatario"));
                 // Conversione robusta della data
