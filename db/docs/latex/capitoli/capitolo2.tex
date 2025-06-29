@@ -1,4 +1,4 @@
-\section{progettazione concettuale}
+\section{Progettazione concettuale}
 \subsection{Introduzione}
 Il modello concettuale rappresenta la struttura logica del database, definendo le entità, gli attributi e le relazioni tra di esse. In questa fase, si è proceduto a identificare le principali entità del sistema e a stabilire le relazioni che le collegano, garantendo così una visione chiara e coerente delle informazioni da gestire.
 \subsection{UML non ristrutturato}
@@ -6,7 +6,7 @@ Il modello concettuale rappresenta la struttura logica del database, definendo l
     \noindent\makebox[\linewidth]{%
         \includegraphics[height=0.9\textheight,width=2\textwidth]{latex/immagini/uml_non_ristrutturato.pdf}
     }
-    \caption{Diagramma UML del sistema}
+    \caption{Diagramma UML non ristrutturato}
 \end{figure}
 \subsubsection{Entità principali}
 Le entità principali identificate nel sistema sono:
@@ -21,7 +21,7 @@ Le entità principali identificate nel sistema sono:
     \end{itemize}
     \item \textbf{Partecipante e Adesione}: La partecipazione ai corsi è modellata tramite l’entità Partecipante, che collega utenti e corsi. La partecipazione a sessioni pratiche richiede un’adesione esplicita, rappresentata dall'entità Adesione, che contiene un attributo booleano di conferma.
     \item \textbf{Ricetta e Ingredientemento}: Ogni sessione pratica può includere la preparazione di una o più ricette. Ogni ricetta è composta da uno o più ingredienti, ciascuno dei quali ha un nome, e un'unità di misura (enumerata). La relazione tra Ricetta e Ingrediente è associativa e include l'attributo QuantitàTotale e QuantitàUnitaria, utile per calcolare la quantità necessaria in base alle adesioni.
-    \item \textbf{Carta e RichiestaPagamento}: Gli utenti possono associare al proprio profilo una o più carte di pagamento, appartenenti a un circuito specificato tramite enumerazione (Visa, Mastercard). Le richieste di pagamento sono entità separate, con data, stato (in attesa, pagato, fallito) e importo.
+    \item \textbf{Carta e RichiestaPagamento}: I partecipanti  possono associare al proprio profilo una o più carte di pagamento, appartenenti a un circuito specificato tramite enumerazione (Visa, Mastercard). Le richieste di pagamento sono entità separate, con data, stato (in attesa, pagato, fallito) e importo.
 \end{itemize}
 \subsubsection{Gerarchie e generalizzazioni}
 Nel modello concettuale, sono state identificate le seguenti gerarchie e generalizzazioni:
@@ -82,3 +82,207 @@ Un altro esempio significativo riguarda la relazione tra "Ricetta" e "Ingredient
     }
     \caption{Scelte ristrutturato}
 \end{figure}
+
+\subsection{Dizionari}
+
+\subsubsection{Dizionario delle Classi (Entità)}
+
+\paragraph{Entità Principali - Parte 1}
+
+\begin{center}
+\begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Dizionario delle Classi (Entità) - Parte 1, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{p{3.2cm}p{4.8cm}X}
+\textbf{Classe} & \textbf{Descrizione} & \textbf{Attributi} \\
+\hline
+CARTA & Rappresenta una carta di pagamento associata a un partecipante. & IdCarta (PK), Intestatario, DataScadenza, UltimeQuattroCifre, Circuito \\
+\hline
+PARTECI\-PANTE & Utente che si iscrive e partecipa ai corsi di cucina. & IdPartecipante (PK), Nome, Cognome, Email, Password, DataDiNascita, Propic \\
+\hline
+POSSIEDE & Entità associativa che rappresenta il possesso di carte di pagamento da parte dei partecipanti. & IdPartecipante (FK, PK), IdCarta (FK, PK) \\
+\hline
+CHEF & Utente specializzato nell'organizzazione e gestione dei corsi di cucina. & IdChef (PK), Nome, Cognome, Email, Password, DataDiNascita, Descrizione, Propic, AnniDiEsperienza \\
+\hline
+CORSO & Rappresenta un corso di cucina tematico con tutte le sue caratteristiche. & IdCorso (PK), Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, Propic, MaxPersone, Prezzo, IdChef (FK) \\
+\hline
+RICHIESTA\-PAGAMENTO & Gestisce le richieste di pagamento per l'iscrizione ai corsi. & DataRichiesta, StatoPagamento, ImportoPagato, IdCorso (FK), IdPartecipante (FK) \\
+\hline
+TIPODICUCINA & Definisce le tipologie di cucina disponibili per i corsi. & IDTipoCucina (PK), Nome \\
+\hline
+TIPODICUCINA\_\-CORSO & Entità associativa che collega i corsi alle tipologie di cucina. & IDTipoCucina (FK, PK), IDCorso (FK, PK) \\
+\hline
+\end{tabularx}
+\end{tcolorbox}
+\end{center}
+
+\paragraph{Entità Principali - Parte 2}
+
+\begin{center}
+\begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Dizionario delle Classi (Entità) - Parte 2, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{p{3.2cm}p{4.8cm}X}
+\textbf{Classe} & \textbf{Descrizione} & \textbf{Attributi} \\
+\hline
+SESSIONE\_\-PRESENZA & Rappresenta una sessione di corso che si svolge fisicamente in presenza. & IdSessionePresenza (PK), Giorno, Data, Orario, Durata, Citta, Via, Cap, Attrezzatura, Descrizione, IDCorso (FK), IDChef (FK) \\
+\hline
+SESSIONE\_\-TELEMATICA & Rappresenta una sessione di corso che si svolge online in modalità telematica. & IdSessioneTelematica (PK), Applicazione, CodiceChiamata, Data, Orario, Durata, Giorno, Descrizione, IDCorso (FK), IdChef (FK) \\
+\hline
+PARTECIPANTE\_\-SESSIONETE\-LEMATICA & Entità associativa per la partecipazione alle sessioni telematiche. & IdPartecipante (FK, PK), IdSessioneTelematica (FK, PK) \\
+\hline
+ADESIONE\_\-SESSIONEPRE\-SENZA & Gestisce l'adesione dei partecipanti alle sessioni in presenza. & Conferma, IdSessionePresenza (FK, PK), IDPartecipante (FK, PK) \\
+\hline
+RICETTA & Rappresenta una ricetta culinaria utilizzata durante le sessioni. & IdRicetta (PK), Nome \\
+\hline
+SESSIONE\_\-PRESENZA\_\-RICETTA & Entità associativa che collega le sessioni in presenza alle ricette utilizzate. & IdRicetta (FK, PK), IdSessionePresenza (FK, PK) \\
+\hline
+INGREDIENTE & Rappresenta un ingrediente utilizzato nelle ricette. & IdIngrediente (PK), Nome, UnitaDiMisura \\
+\hline
+PREPARAZIONE\-INGREDIENTE & Entità associativa che definisce gli ingredienti necessari per ogni ricetta con le relative quantità. & IdRicetta (FK, PK), IdIngrediente (FK, PK), QuantitaTotale, QuantitaUnitaria \\
+\hline
+\end{tabularx}
+\end{tcolorbox}
+\end{center}
+
+
+% --- Dizionario delle Associazioni (Relazioni) - Parte 1 ---
+\subsubsection{Dizionario delle Associazioni (Relazioni) - Parte 1}
+\begin{center}
+\begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Dizionario delle Associazioni (Relazioni) - Parte 1, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{p{3.8cm}p{4.2cm}X}
+\textbf{Associazione} & \textbf{Descrizione} & \textbf{Classi coinvolte} \\
+\hline
+POSSIEDE & Relazione molti-a-molti che consente ai partecipanti di possedere multiple carte di pagamento. & \textbf{PARTECIPANTE} (0..n) $\leftrightarrow$ \textbf{CARTA} (0..n) \\
+\hline
+CORSO - CHEF & Relazione uno-a-molti: ogni corso è gestito da un solo chef, ma ogni chef può gestire più corsi contemporaneamente. & \textbf{CORSO} (0..n) $\rightarrow$ \textbf{CHEF} (1) \\
+\hline
+CORSO - TIPODICUCINA & Relazione molti-a-molti implementata tramite l'entità associativa TIPODICUCINA\_\-CORSO per gestire corsi con multiple tipologie. & \textbf{CORSO} (0..n) $\leftrightarrow$ \textbf{TIPODICUCINA} (0..n) \\
+\hline
+CORSO - SESSIONI & Relazione uno-a-molti: ogni corso può avere multiple sessioni (sia in presenza che telematiche). & \textbf{CORSO} (1) $\rightarrow$ \textbf{SESSIONE\_\-PRESENZA} (0..n), \textbf{SESSIONE\_\-TELEMATICA} (0..n) \\
+\hline
+SESSIONE\_\-PRESENZA - PARTECIPANTI & Relazione molti-a-molti tramite ADESIONE\_\-SESSIONEPRE\-SENZA per gestire la partecipazione alle sessioni in presenza. & \textbf{SESSIONE\_\-PRESENZA} (0..n) $\leftrightarrow$ \textbf{PARTECIPANTE} (0..n) \\
+\hline
+\end{tabularx}
+\end{tcolorbox}
+\end{center}
+
+% --- Dizionario delle Associazioni (Relazioni) - Parte 2 ---
+\subsubsection{Dizionario delle Associazioni (Relazioni) - Parte 2}
+\begin{center}
+\begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Dizionario delle Associazioni (Relazioni) - Parte 2, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{p{3.8cm}p{4.2cm}X}
+\textbf{Associazione} & \textbf{Descrizione} & \textbf{Classi coinvolte} \\
+\hline
+SESSIONE\_TELEMATICA\- - PARTECI\-PANTI & Relazione molti-a-molti tramite PARTECIPANTE\_\-SESSIONETE\-LEMATICA per gestire la partecipazione alle sessioni online. & \textbf{SESSIONE\_\-TELEMATICA} (0..n) $\leftrightarrow$ \textbf{PARTECIPANTE} (0..n) \\
+\hline
+SESSIONE\_\-PRESENZA - RICETTE & Relazione molti-a-molti tramite SESSIONE\_\-PRESENZA\_\-RICETTA per associare ricette alle sessioni pratiche. & \textbf{SESSIONE\_\-PRESENZA} (0..n) $\leftrightarrow$ \textbf{RICETTA} (0..n) \\
+\hline
+RICETTA - INGREDIENTI & Relazione molti-a-molti tramite PREPARAZIONE\-INGREDIENTE per definire gli ingredienti necessari per ogni ricetta. & \textbf{RICETTA} (0..n) $\leftrightarrow$ \textbf{INGREDIENTE} (0..n) \\
+\hline
+RICHIESTA\-PAGAMENTO & Relazione molti-a-uno che collega ogni richiesta di pagamento a un partecipante e a un corso specifico. & \textbf{PARTECIPANTE} (0..n), \textbf{CORSO} (1) $\rightarrow$ \textbf{RICHIESTAPAGAMENTO} \\
+\hline
+\end{tabularx}
+\end{tcolorbox}
+\end{center}
+
+\subsubsection{Dizionario dei vincoli }
+
+\paragraph{Vincoli di Dominio}
+
+\begin{center}
+\begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Vincoli di Dominio, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{p{4cm}X}
+\textbf{Attributo} & \textbf{Dominio e Vincoli} \\
+\hline
+\textbf{StatoPagamento} & $\in$ \{``In Attesa'', ``Pagato'', ``Fallito''\}. Rappresenta lo stato attuale di una transazione di pagamento. \\
+\hline
+\textbf{Circuito} & $\in$ \{``Visa'', ``Mastercard'', ``American Express''\}. Definisce il circuito della carta di pagamento utilizzata. \\
+\hline
+\textbf{Livello} & $\in$ \{``Principiante'', ``Intermedio'', ``Avanzato''\}. Indica il livello di difficoltà di un corso culinario. \\
+\hline
+\textbf{Email} & Deve rispettare il formato RFC 5322 (es. utente@dominio.it). Garantisce la validità dell'indirizzo email per le comunicazioni. \\
+\hline
+\textbf{NumeroTelefono} & Stringa numerica di 10 cifre (formato italiano). Deve iniziare con cifra valida per numerazione italiana. \\
+\hline
+\textbf{MaxPersone} & Intero positivo $> 0$ e $\leq 50$. Definisce la capacità massima di partecipanti per corso, limitata dalle strutture disponibili. \\
+\hline
+\textbf{Prezzo} & Decimale $\geq 0.00$ con precisione di 2 cifre decimali. Rappresenta il costo del corso in Euro. \\
+\hline
+\textbf{Durata} & Intero positivo espresso in minuti, $> 0$ e $\leq 480$ (8 ore). Definisce la durata di una sessione. \\
+\hline
+\end{tabularx}
+\end{tcolorbox}
+\end{center}
+
+\paragraph{Vincoli Intra-relazionali}
+
+\begin{center}
+\begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Vincoli Intra-relazionali, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{p{4cm}X}
+\textbf{Vincolo} & \textbf{Descrizione e Applicazione} \\
+\hline
+\textbf{Chiavi Primarie} & Ogni entità ha una chiave primaria univoca seguendo la convenzione IdNomeEntità (es. IdUtente, IdCorso). Garantisce identificazione univoca di ogni istanza. \\
+\hline
+\textbf{Vincoli NOT NULL} & Attributi obbligatori non possono essere nulli: tutte le chiavi primarie, attributi Nome, Email degli utenti, DataInizio/DataFine dei corsi, Titolo delle ricette. \\
+\hline
+\textbf{Vincoli di Unicità} & Email in UTENTE deve essere univoca nel sistema. NumeroTelefono in UTENTE deve essere univoco. Nome del corso + DataInizio devono essere univoci per CHEF. \\
+\hline
+\textbf{Vincoli CHECK} & DataInizio $<$ DataFine in CORSO. Prezzo $\geq 0$ in CORSO. MaxPersone $> 0$ in CORSO. Durata $> 0$ nelle sessioni. \\
+\hline
+\end{tabularx}
+\end{tcolorbox}
+\end{center}
+
+\paragraph{Vincoli Inter-relazionali}
+
+\begin{center}
+\begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Vincoli Inter-relazionali, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{p{4cm}X}
+\textbf{Vincolo} & \textbf{Descrizione e Applicazione} \\
+\hline
+\textbf{Integrità Referenziale} & Tutte le chiavi esterne devono riferirsi a valori esistenti nelle tabelle padre. Implementata tramite FOREIGN KEY con CASCADE/RESTRICT appropriati. \\
+\hline
+\textbf{Specializzazione UTENTE} & Ogni UTENTE deve essere esattamente uno tra CHEF o PARTECIPANTE (specializzazione totale e disgiunta). Implementata tramite vincoli CHECK o trigger. \\
+\hline
+\textbf{Specializzazione SESSIONE} & Ogni SESSIONE deve essere esattamente una tra SESSIONE\_PRESENZA o SESSIONE\_TELEMATICA (specializzazione totale e disgiunta). \\
+\hline
+\textbf{Vincoli di Cardinalità} & Un CORSO deve avere almeno 1 SESSIONE. Un PARTECIPANTE può avere 0..n CARTE. Una RICETTA deve avere almeno 1 INGREDIENTE (tramite PREPARAZIONEINGREDIENTE). \\
+\hline
+\textbf{Vincoli di Capacità} & Il numero di iscrizioni (ADESIONE) per un CORSO non può superare MaxPersone del corso stesso. Implementato tramite trigger o stored procedure. \\
+\hline
+\textbf{Vincoli Temporali} & Le SESSIONI di un CORSO devono avere Data compresa tra DataInizio e DataFine del corso. DataPagamento in RICHIESTAPAGAMENTO $\leq$ DataInizio del corso associato. \\
+\hline
+\end{tabularx}
+\end{tcolorbox}
+\end{center}
+
+\paragraph{Vincoli di Molteplicità (n-plu)}
+
+\begin{center}
+\begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Vincoli di Molteplicità, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{p{5cm}X}
+\textbf{Relazione} & \textbf{Cardinalità e Vincoli} \\
+\hline
+\textbf{CHEF - CORSO} & (1,n) : (1,1) - Ogni chef può creare più corsi, ogni corso è creato da un unico chef. \\
+\hline
+\textbf{PARTECIPANTE - ADESIONE} & (1,1) : (0,n) - Ogni adesione è di un partecipante, ogni partecipante può avere più adesioni. \\
+\hline
+\textbf{CORSO - ADESIONE} & (1,1) : (0,n) - Ogni adesione è per un corso, ogni corso può avere più adesioni (max MaxPersone). \\
+\hline
+\textbf{PARTECIPANTE - CARTA} & (1,1) : (0,n) - Ogni carta appartiene a un partecipante, ogni partecipante può avere più carte (max 5). \\
+\hline
+\textbf{RICETTA - INGREDIENTE} & (n,n) tramite PREPARAZIONEINGREDIENTE - Una ricetta usa più ingredienti, un ingrediente può essere in più ricette. \\
+\hline
+\textbf{SESSIONE\_PRESENZA - RICETTA} & (n,n) tramite SESSIONE\_PRESENZA\_RICETTA - Una sessione può usare più ricette, una ricetta può essere usata in più sessioni. \\
+\hline
+\end{tabularx}
+\end{tcolorbox}
+\end{center}
+
+
+

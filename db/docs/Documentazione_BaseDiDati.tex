@@ -1,21 +1,53 @@
-\documentclass{article}
-
+\documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{geometry}
-\usepackage{xcolor}
+\usepackage[table]{xcolor}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
 \usepackage{tocloft}
 \usepackage{float}
 \usepackage{ulem} 
 \usepackage{tcolorbox}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{listings}
 
-\geometry{margin=2.5cm}
 
+\usepackage[colorlinks=true, linkcolor=black, urlcolor=black, citecolor=black]{hyperref}
 
 \definecolor{myblue}{HTML}{2C56C9}
 \definecolor{myline}{HTML}{253555}
+\definecolor{sqlkeyword}{HTML}{0000FF}
+\definecolor{sqlstring}{HTML}{008000}
+\definecolor{sqlcomment}{HTML}{808080}
+
+
+\lstdefinestyle{sqlstyle}{
+    language=SQL,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{sqlkeyword}\bfseries,
+    stringstyle=\color{sqlstring},
+    commentstyle=\color{sqlcomment}\itshape,
+    numberstyle=\tiny\color{gray},
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    frame=none,
+    numbers=none,
+    tabsize=2,
+    captionpos=b,
+    morekeywords={GENERATED, ALWAYS, IDENTITY, PRIMARY, KEY, UNIQUE, NOT, NULL, CONSTRAINT, REFERENCES, CASCADE, CHECK, TRIGGER, FUNCTION, RETURNS, BEGIN, END, IF, THEN, ELSE, DECLARE, INTEGER, VARCHAR, TEXT, DATE, BOOLEAN}
+}
+
+
+\geometry{margin=2.5cm}
+
+\setlength{\headheight}{15.4pt}
+\addtolength{\topmargin}{-3.4pt}
+
 
 \titleformat{\section}
 {\color{myblue}\normalfont\Large\bfseries}
@@ -44,10 +76,10 @@
     \renewcommand{\footrule}{\color{myline}\hrule height 0.4pt \vspace{3pt}}
 }
 
-
-
 \renewcommand{\contentsname}{Indice}
 \renewcommand{\cftsecfont}{\color{myblue}\bfseries}
+\renewcommand{\cftsecpagefont}{\color{black}}
+\renewcommand{\cftsubsecfont}{\color{black}}
 
 \begin{document}
 
@@ -94,7 +126,10 @@
 
 \input{latex/capitoli/capitolo2.tex}
 
-
 \input{latex/capitoli/capitolo3.tex}
 
+\input{latex/capitoli/capitolo4.tex}
+
+
+\input{latex/capitoli/capitolo4.2.tex}
 \end{document}

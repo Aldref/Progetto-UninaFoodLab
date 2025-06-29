@@ -2,32 +2,47 @@
 
 In questa sezione viene presentata la progettazione logica della base di dati del sistema UninaFoodLab. Lo schema logico rappresenta la traduzione del modello concettuale in un insieme di tabelle relazionali, con particolare attenzione alle chiavi primarie (\underline{pk}), chiavi esterne (\uuline{fk}) e alle associazioni tra le entità.
 
-\subsection{Schema Logico Complessivo}
+\subsection{Schema Logico}
+
 \begin{center}
-\begin{tcolorbox}[colback=white!98!gray,colframe=myblue!80!black,title=Schema Logico,arc=4mm,boxrule=0.8pt,width=0.98\textwidth]
+\begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Schema Logico - Entità Principali, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|l|p{11cm}|}
-\hline
-\textbf{Tabella} & \textbf{Attributi} \\
+\begin{tabularx}{\textwidth}{lX}
+\textbf{Entità} & \textbf{Attributi} \\
 \hline
 CARTA & \underline{IdCarta}, Intestatario, DataScadenza, UltimeQuattroCifre, Circuito \\
+\hline
 PARTECIPANTE & \underline{IdPartecipante}, Nome, Cognome, Email, Password, DataDiNascita, Propic \\
+\hline
 POSSiEDE & \uuline{IdPartecipante}, \uuline{IdCarta} \\
+\hline
 CHEF & \underline{IdChef}, Nome, Cognome, Email, Password, DataDiNascita, Descrizione, Propic, annidiesperienza \\
+\hline
 CORSO & \underline{IdCorso}, Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, Propic, MaxPersone, Prezzo, \uuline{IdChef} \\
+\hline
 RICHIESTAPAGAMENTO & DataRichiesta, StatoPagamento, ImportoPagato, \uuline{IdCorso}, \uuline{IdPartecipante} \\
+\hline
 TIPODICUCINA & Nome, \underline{IDtipocucina} \\
+\hline
 TIPODICUCINA\_CORSO & \uuline{IDtipocucina}, \uuline{IDcorso} \\
+\hline
 SESSIONE\_PRESENZA & \underline{IdSessionePresenza}, giorno, Data, Orario, Durata, citta, via, cap, Attrezzatura, Descrizione, \uuline{IDcorso}, \uuline{IDChef} \\
+\hline
 SESSIONE\_TELEMATICA & \underline{IdSessioneTelematica}, Applicazione, Codicechiamata, Data, Orario, Durata, giorno, Descrizione, \uuline{IDcorso}, \uuline{IdChef} \\
+\hline
 PARTECIPANTE\_SESSIONETELEMATICA & \uuline{IdPartecipante}, \uuline{IdSessioneTelematica} \\
+\hline
 ADESIONE\_SESSIONEPRESENZA & Conferma, \uuline{Idsessionepresenza}, \uuline{IDpartecipante} \\
+\hline
 RICETTA & \underline{IdRicetta}, Nome \\
+\hline
 SESSIONE\_PRESENZA\_RICETTA & \uuline{Idricetta}, \uuline{idsessionepresenza} \\
+\hline
 INGREDIENTE & \underline{IdIngrediente}, Nome, UnitaDiMisura \\
+\hline
 PREPARAZIONEINGREDIENTE & \uuline{IdRicetta}, \uuline{IdIngrediente}, QuantitaTotale, QuanititaUnitaria \\
 \hline
-\end{tabular}
+\end{tabularx}
 \end{tcolorbox}
 \end{center}
 

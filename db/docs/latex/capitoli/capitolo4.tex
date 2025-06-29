@@ -1,0 +1,437 @@
+\section{Definizioni SQL}
+
+\subsection{Introduzione}
+
+In questo capitolo viene presentata l'implementazione pratica del database UninaFoodLab attraverso la definizione completa del codice SQL sviluppato in PostgreSQL. La sezione fornisce una panoramica dettagliata di tutti gli elementi che compongono il database, dalla creazione delle tabelle all'implementazione delle funzioni.
+
+
+\subsection{Definizione degli enumerati}
+
+Gli enumerati sono tipi di dato definiti dall’utente che permettono di vincolare il valore di un attributo a un insieme finito di possibilità predefinite. Nel database UninaFoodLab vengono utilizzati per rappresentare domini chiusi come circuiti di carte, stati di pagamento, frequenza delle sessioni, giorni della settimana e unità di misura degli ingredienti. Questo garantisce coerenza e integrità dei dati, semplificando la gestione delle regole applicative.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE TYPE Circuito AS ENUM ('Visa', 'Mastercard');
+
+CREATE TYPE StatoPagamento AS ENUM ('In attesa', 'Pagato', 'Fallito');
+
+CREATE TYPE FDS AS ENUM (
+  'Giornaliera',
+  'Ogni due giorni',
+  'Ogni tre giorni',
+  'Ogni quattro giorni',
+  'Ogni cinque giorni',
+  'Ogni sei giorni',
+  'Settimanale',
+  'Mensile'
+);
+
+CREATE TYPE Giorno AS ENUM (
+  'Lunedì',
+  'Martedì',
+  'Mercoledì',
+  'Giovedì',
+  'Venerdì',
+  'Sabato',
+  'Domenica'
+);
+
+CREATE TYPE UnitaDiMisura AS ENUM ('Grammi', 'Kilogrammi', 'Litro', 'Centilitro');
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\subsection{Definizione delle Tabelle}
+
+
+\subsubsection{Tabella Partecipante}
+
+La tabella \texttt{Partecipante} rappresenta gli utenti che si iscrivono e partecipano ai corsi di cucina. Ogni partecipante ha un identificativo univoco generato automaticamente e deve fornire informazioni personali essenziali per la registrazione.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Partecipante (
+    IdPartecipante INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL,
+    Cognome VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Password VARCHAR(100) NOT NULL,
+    DataDiNascita DATE NOT NULL,
+    Propic TEXT
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{IdPartecipante}: Chiave primaria auto-incrementale utilizzando \texttt{GENERATED ALWAYS AS IDENTITY} per garantire unicità automatica
+    \item \textbf{Email}: Constraint \texttt{UNIQUE} per evitare registrazioni duplicate
+    \item \textbf{Password}: Campo di lunghezza fissa per supportare hash di password sicure
+    \item \textbf{Propic}: Campo \texttt{TEXT} per supportare URL di immagini o dati base64
+\end{itemize}
+
+\subsubsection{Tabella Carta}
+
+La tabella \texttt{Carta} memorizza le carte di pagamento associate agli utenti. Ogni carta ha un identificativo univoco, intestatario, data di scadenza, ultime quattro cifre e circuito di appartenenza.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Carta (
+    IdCarta INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Intestatario VARCHAR(100) NOT NULL,
+    DataScadenza DATE NOT NULL,
+    UltimeQuattroCifre CHAR(4) NOT NULL,
+    Circuito VARCHAR(50) NOT NULL
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{IdCarta}: Chiave primaria auto-incrementale
+    \item \textbf{Intestatario, DataScadenza, UltimeQuattroCifre, Circuito}: Attributi essenziali per identificare una carta
+    \item \textbf{Circuito}: Vincolato tramite tipo enumerato per coerenza
+\end{itemize}
+
+\subsubsection{Tabella Possiede}
+
+La tabella \texttt{Possiede} rappresenta la relazione molti-a-molti tra partecipanti e carte, indicando quali carte sono possedute da ciascun partecipante.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Possiede (
+    IdPartecipante INT,
+    IdCarta INT,
+    PRIMARY KEY (IdPartecipante, IdCarta),
+    FOREIGN KEY (IdPartecipante) REFERENCES Partecipante(IdPartecipante),
+    FOREIGN KEY (IdCarta) REFERENCES Carta(IdCarta) on delete cascade 
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{Chiave primaria composta}: (IdPartecipante, IdCarta) per garantire unicità della relazione
+    \item \textbf{Vincoli di integrità}: Foreign key verso \texttt{Partecipante} e \texttt{Carta}
+    \item \textbf{Cascata}: Eliminazione a cascata delle carte
+\end{itemize}
+
+\subsubsection{Tabella Corso}
+
+La tabella \texttt{Corso} rappresenta i corsi di cucina offerti, con informazioni su nome, descrizione, periodo, frequenza, prezzo, chef responsabile e limiti di partecipazione.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Corso (
+    IdCorso INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL,
+    Descrizione VARCHAR(60) NOT NULL,
+    DataInizio DATE NOT NULL,
+    DataFine DATE NOT NULL,
+    FrequenzaDelleSessioni VARCHAR(100) NOT NULL,
+    Propic TEXT,
+    MaxPersone INT CHECK (MaxPersone > 0),
+    Prezzo DECIMAL(10, 2) CHECK (Prezzo >= 0),
+    IdChef INT NOT NULL,
+    FOREIGN KEY (IdChef) REFERENCES Chef(IdChef)
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{IdCorso}: Chiave primaria auto-incrementale
+    \item \textbf{MaxPersone, Prezzo}: Vincoli di validità sui valori
+    \item \textbf{IdChef}: Foreign key verso chef responsabile
+    \item \textbf{FrequenzaDelleSessioni}: Vincolata tramite tipo enumerato
+\end{itemize}
+
+\subsubsection{Tabella RichiestaPagamento}
+
+La tabella \texttt{RichiestaPagamento} registra le richieste di pagamento per i corsi, associando ogni richiesta a un partecipante e a un corso specifico, con informazioni su importo, stato e data.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE RichiestaPagamento (
+    DataRichiesta TIMESTAMP NOT NULL,
+    StatoPagamento VARCHAR(50) NOT NULL,
+    ImportoPagato DECIMAL(10, 2) CHECK (ImportoPagato >= 0),
+    IdCorso INT,
+    IdPartecipante INT,
+    PRIMARY KEY (DataRichiesta, IdCorso, IdPartecipante),
+    FOREIGN KEY (IdCorso) REFERENCES Corso(IdCorso),
+    FOREIGN KEY (IdPartecipante) REFERENCES Partecipante(IdPartecipante)
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{Chiave primaria composta}: (DataRichiesta, IdCorso, IdPartecipante)
+    \item \textbf{ImportoPagato}: Vincolo di non negatività
+    \item \textbf{StatoPagamento}: Vincolato tramite tipo enumerato
+    \item \textbf{Foreign key}: Collegamento a corso e partecipante
+\end{itemize}
+
+\subsubsection{Tabella TipoDiCucina}
+
+La tabella \texttt{TipoDiCucina} elenca le tipologie di cucina disponibili, ciascuna con un identificativo univoco e un nome.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE TipoDiCucina (
+    IDTipoCucina INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL UNIQUE
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{IDTipoCucina}: Chiave primaria auto-incrementale
+    \item \textbf{Nome}: Unicità per evitare duplicati
+\end{itemize}
+
+\subsubsection{Tabella TipoDiCucina\_Corso}
+
+La tabella \texttt{TipoDiCucina\_Corso} rappresenta l'associazione tra corsi e tipologie di cucina, permettendo di collegare più tipi di cucina a ciascun corso (fino a un massimo di due).
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE TipoDiCucina_Corso (
+    IDTipoCucina INT,
+    IDCorso INT,
+    PRIMARY KEY (IDTipoCucina, IDCorso),
+    FOREIGN KEY (IDTipoCucina) REFERENCES TipoDiCucina(IDTipoCucina),
+    FOREIGN KEY (IDCorso) REFERENCES Corso(IdCorso)
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{Chiave primaria composta}: (IDTipoCucina, IDCorso)
+    \item \textbf{Foreign key}: Collegamento a tipo di cucina e corso
+    \item \textbf{Vincolo applicativo}: Massimo due tipi di cucina per corso (gestito da trigger)
+\end{itemize}
+
+\subsubsection{Tabella Chef}
+
+La tabella \texttt{Chef} contiene le informazioni sugli chef che tengono i corsi. Oltre ai dati anagrafici, include una descrizione e gli anni di esperienza.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Chef (
+    IdChef INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL,
+    Cognome VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Password VARCHAR(100) NOT NULL,
+    DataDiNascita DATE NOT NULL,
+    Descrizione VARCHAR(60),
+    Propic TEXT,
+    AnniDiEsperienza INT CHECK (AnniDiEsperienza >= 0)
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{IdChef}: Chiave primaria auto-incrementale
+    \item \textbf{Email}: Unicità per evitare duplicati
+    \item \textbf{AnniDiEsperienza}: Vincolo di non negatività
+    \item \textbf{Propic}: Supporto per immagine profilo
+\end{itemize}
+
+\subsubsection{Tabella Sessione\_Presenza}
+
+La tabella \texttt{Sessione\_Presenza} descrive le sessioni in presenza dei corsi, con dettagli su luogo, data, orario, durata e chef responsabile.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Sessione_Presenza (
+    IdSessionePresenza INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Giorno VARCHAR(20) NOT NULL,
+    Data DATE NOT NULL,
+    Orario TIME NOT NULL,
+    Durata INTERVAL NOT NULL,
+    Citta VARCHAR(50) NOT NULL,
+    Via VARCHAR(100) NOT NULL,
+    Cap CHAR(5) NOT NULL,
+    Descrizione VARCHAR(60) NOT NULL,
+    IdCorso INT,
+    IdChef INT,
+    FOREIGN KEY (IdCorso) REFERENCES Corso(IdCorso),
+    FOREIGN KEY (IdChef) REFERENCES Chef(IdChef)
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{IdSessionePresenza}: Chiave primaria auto-incrementale
+    \item \textbf{Attributi luogo}: Città, via, cap per identificare la sede
+    \item \textbf{Foreign key}: Collegamento a corso e chef
+\end{itemize}
+
+\subsubsection{Tabella Adesione\_SessionePresenza}
+
+La tabella \texttt{Adesione\_SessionePresenza} registra l'adesione dei partecipanti alle sessioni in presenza, con conferma di partecipazione.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Adesione_SessionePresenza (
+    Conferma BOOLEAN,
+    IdSessionePresenza INT,
+    IdPartecipante INT,
+    PRIMARY KEY (IdSessionePresenza, IdPartecipante),
+    FOREIGN KEY (IdSessionePresenza) REFERENCES Sessione_Presenza(IdSessionePresenza),
+    FOREIGN KEY (IdPartecipante) REFERENCES Partecipante(IdPartecipante)
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{Chiave primaria composta}: (IdSessionePresenza, IdPartecipante)
+    \item \textbf{Conferma}: Indica la presenza effettiva
+    \item \textbf{Foreign key}: Collegamento a sessione presenza e partecipante
+\end{itemize}
+
+\subsubsection{Tabella Sessione\_Telematica}
+
+La tabella \texttt{Sessione\_Telematica} descrive le sessioni online dei corsi, con dettagli su applicazione, codice chiamata, data, orario, durata e chef responsabile.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Sessione_Telematica (
+    IdSessioneTelematica INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Applicazione VARCHAR(100) NOT NULL,
+    CodiceChiamata VARCHAR(100) NOT NULL,
+    Data DATE NOT NULL,
+    Orario TIME NOT NULL,
+    Durata INTERVAL NOT NULL,
+    Giorno VARCHAR(20) NOT NULL,
+    Descrizione VARCHAR(60) NOT NULL,
+    IdCorso INT,
+    IdChef INT,
+    FOREIGN KEY (IdCorso) REFERENCES Corso(IdCorso),
+    FOREIGN KEY (IdChef) REFERENCES Chef(IdChef)
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{IdSessioneTelematica}: Chiave primaria auto-incrementale
+    \item \textbf{Applicazione, CodiceChiamata}: Dettagli per l'accesso online
+    \item \textbf{Foreign key}: Collegamento a corso e chef
+\end{itemize}
+
+\subsubsection{Tabella Partecipante\_SessioneTelematica}
+
+La tabella \texttt{Partecipante\_SessioneTelematica} rappresenta la partecipazione dei partecipanti alle sessioni telematiche, associando ogni partecipante a una specifica sessione online.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Partecipante_SessioneTelematica (
+    IdPartecipante INT,
+    IdSessioneTelematica INT,
+    PRIMARY KEY (IdPartecipante, IdSessioneTelematica),
+    FOREIGN KEY (IdPartecipante) REFERENCES Partecipante(IdPartecipante),
+    FOREIGN KEY (IdSessioneTelematica) REFERENCES Sessione_Telematica(IdSessioneTelematica)
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{Chiave primaria composta}: (IdPartecipante, IdSessioneTelematica)
+    \item \textbf{Foreign key}: Collegamento a partecipante e sessione telematica
+\end{itemize}
+
+\subsubsection{Tabella Ricetta}
+
+La tabella \texttt{Ricetta} contiene le ricette che possono essere preparate durante le sessioni dei corsi.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Ricetta (
+    IdRicetta INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{IdRicetta}: Chiave primaria auto-incrementale
+    \item \textbf{Nome}: Nome della ricetta, obbligatorio
+\end{itemize}
+
+\subsubsection{Tabella Sessione\_Presenza\_Ricetta}
+
+La tabella \texttt{Sessione\_Presenza\_Ricetta} associa le ricette alle sessioni in presenza, indicando quali ricette vengono preparate in ciascuna sessione.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Sessione_Presenza_Ricetta (
+    IdRicetta INT,
+    IdSessionePresenza INT,
+    PRIMARY KEY (IdRicetta, IdSessionePresenza),
+    FOREIGN KEY (IdRicetta) REFERENCES Ricetta(IdRicetta),
+    FOREIGN KEY (IdSessionePresenza) REFERENCES Sessione_Presenza(IdSessionePresenza)
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{Chiave primaria composta}: (IdRicetta, IdSessionePresenza)
+    \item \textbf{Foreign key}: Collegamento a ricetta e sessione presenza
+\end{itemize}
+
+\subsubsection{Tabella Ingrediente}
+
+La tabella \texttt{Ingrediente} elenca tutti gli ingredienti disponibili, con nome e unità di misura.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE Ingrediente (
+    IdIngrediente INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL,
+    UnitaDiMisura VARCHAR(50) NOT NULL
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{IdIngrediente}: Chiave primaria auto-incrementale
+    \item \textbf{UnitaDiMisura}: Vincolata tramite tipo enumerato
+\end{itemize}
+
+\subsubsection{Tabella PreparazioneIngrediente}
+
+La tabella \texttt{PreparazioneIngrediente} collega le ricette agli ingredienti necessari, specificando quantità totale e unitaria per ogni ingrediente in una ricetta.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle]
+CREATE TABLE PreparazioneIngrediente (
+    IdRicetta INT,
+    IdIngrediente INT,
+    QuantitaTotale DECIMAL(10,2) CHECK (QuantitaTotale >= 0),
+    QuanititaUnitaria DECIMAL(10,2) NOT NULL CHECK (QuanititaUnitaria >= 0),
+    PRIMARY KEY (IdRicetta, IdIngrediente),
+    FOREIGN KEY (IdRicetta) REFERENCES Ricetta(IdRicetta),
+    FOREIGN KEY (IdIngrediente) REFERENCES Ingrediente(IdIngrediente)
+);
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Scelte progettuali:}
+\begin{itemize}
+    \item \textbf{Chiave primaria composta}: (IdRicetta, IdIngrediente)
+    \item \textbf{QuantitaTotale, QuanititaUnitaria}: Vincoli di non negatività
+    \item \textbf{Foreign key}: Collegamento a ricetta e ingrediente
+\end{itemize}
+

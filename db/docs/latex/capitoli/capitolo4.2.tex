@@ -1,0 +1,602 @@
+\subsection{Definizione dei Trigger}
+
+\subsubsection{Trigger: Unicità Email tra Chef e Partecipante}
+
+Questo trigger garantisce che lo stesso indirizzo email non possa essere usato contemporaneamente da un Chef e da un Partecipante. La funzione viene richiamata sia sulle tabelle Chef che Partecipante, in inserimento e aggiornamento.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION verifica_unicita_email()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_TABLE_NAME = 'chef' THEN
+        IF EXISTS (SELECT 1 FROM partecipante WHERE email = NEW.email) THEN
+            RAISE EXCEPTION 'Errore: L''email "%" è già utilizzata da un Partecipante.', NEW.email;
+        END IF;
+    ELSIF TG_TABLE_NAME = 'partecipante' THEN
+        IF EXISTS (SELECT 1 FROM chef WHERE email = NEW.email) THEN
+            RAISE EXCEPTION 'Errore: L''email "%" è già utilizzata da uno Chef.', NEW.email;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_verifica_email_partecipante
+BEFORE INSERT OR UPDATE ON partecipante
+FOR EACH ROW
+EXECUTE FUNCTION verifica_unicita_email();
+
+CREATE TRIGGER trg_verifica_email_chef
+BEFORE INSERT OR UPDATE ON chef
+FOR EACH ROW
+EXECUTE FUNCTION verifica_unicita_email();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item \texttt{IF TG\_TABLE\_NAME = 'chef'}: Se il trigger è attivato dalla tabella Chef, controlla che l'email inserita o aggiornata non sia già presente nella tabella \texttt{partecipante} (campo \texttt{email}).
+    \item \texttt{IF TG\_TABLE\_NAME = 'partecipante'}: Se il trigger è attivato dalla tabella Partecipante, controlla che l'email inserita o aggiornata non sia già presente nella tabella \texttt{chef} (campo \texttt{email}).
+    \item \texttt{IF EXISTS (SELECT 1 ...)}: In entrambi i casi, se trova una corrispondenza, solleva un'eccezione e blocca l'inserimento/aggiornamento.
+    \item \texttt{RAISE EXCEPTION}: Genera un errore se l'email è già in uso nell'altra tabella.
+    \item Il trigger si attiva prima dell'inserimento o aggiornamento di un record (\texttt{BEFORE INSERT OR UPDATE}) sia su Chef che su Partecipante, garantendo l'unicità trasversale dell'email tra le due tabelle.
+\end{itemize}
+
+\subsubsection{Trigger: Controllo Formato Email}
+
+Questo trigger verifica che l'indirizzo email inserito per Chef e Partecipante sia formalmente valido, ovvero contenga una chiocciola (@) e almeno un punto dopo la chiocciola, garantendo la correttezza sintattica degli indirizzi email memorizzati nel sistema.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION validate_email_full()
+RETURNS TRIGGER AS $$
+DECLARE
+    at_pos INT;
+    domain_part TEXT;
+BEGIN
+    at_pos := POSITION('@' IN NEW.Email);
+
+    IF at_pos = 0 THEN
+        RAISE EXCEPTION 'Email non valida: manca la chiocciola (@).';
+    END IF;
+
+    domain_part := SUBSTRING(NEW.Email FROM at_pos + 1);
+
+    IF POSITION('.' IN domain_part) = 0 THEN
+        RAISE EXCEPTION 'Email non valida: manca il punto dopo la chiocciola.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_validate_email_partecipante
+BEFORE INSERT OR UPDATE ON PARTECIPANTE
+FOR EACH ROW
+EXECUTE FUNCTION validate_email_full();
+
+CREATE TRIGGER trg_validate_email_chef
+BEFORE INSERT OR UPDATE ON CHEF
+FOR EACH ROW
+EXECUTE FUNCTION validate_email_full();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulle tabelle \texttt{Chef} e \texttt{Partecipante}.
+    \item La funzione controlla che l'email inserita contenga una chiocciola (@) e almeno un punto dopo la chiocciola.
+    \item Se il formato non è valido, viene sollevata un'eccezione e l'operazione viene bloccata.
+    \item In questo modo si garantisce che vengano accettati solo indirizzi email formalmente corretti.
+\end{itemize}
+
+\subsubsection{Trigger: Eliminazione Ingredienti Associati a Ricetta}
+
+Quando una ricetta viene eliminata, questo trigger elimina automaticamente tutti gli ingredienti associati tramite la tabella PreparazioneIngrediente.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION elimina_ingredienti_della_ricetta()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM PREPARAZIONEINGREDIENTE
+    WHERE IdRicetta = OLD.IdRicetta;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_elimina_ingredienti_associati
+BEFORE DELETE ON RICETTA
+FOR EACH ROW
+EXECUTE FUNCTION elimina_ingredienti_della_ricetta();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item \texttt{DELETE FROM PREPARAZIONEINGREDIENTE WHERE IdRicetta = OLD.IdRicetta}: Elimina tutti gli ingredienti collegati alla ricetta che sta per essere cancellata.
+    \item Il trigger si attiva prima della cancellazione di una ricetta (\texttt{BEFORE DELETE ON RICETTA}).
+    \item \texttt{RETURN OLD}: Permette la cancellazione della ricetta dopo aver eliminato i riferimenti.
+\end{itemize}
+
+\subsubsection{Trigger: Impedisci Inserimento di Carta Duplicata}
+
+Questo trigger impedisce l'inserimento o l'aggiornamento di una carta di pagamento se esiste già una carta con le stesse ultime quattro cifre, data di scadenza, circuito e intestatario, evitando duplicati nel sistema.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION impedisci_carta_duplicata_per_partecipante()
+RETURNS TRIGGER AS $$
+DECLARE
+    existing_card_id INT;
+BEGIN
+    IF TG_TABLE_NAME = 'carta' THEN
+        IF EXISTS (
+            SELECT 1
+            FROM Carta
+            WHERE UltimeQuattroCifre = NEW.UltimeQuattroCifre
+                AND DataScadenza = NEW.DataScadenza
+                AND Circuito = NEW.Circuito::VARCHAR(50)
+                AND Intestatario = NEW.Intestatario
+                AND IdCarta != NEW.IdCarta
+        ) THEN
+            RAISE EXCEPTION 'Errore: Una carta con queste ultime 4 cifre, data di scadenza, circuito e intestatario esiste già nel sistema.';
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_impedisci_dettagli_carta_duplicati
+BEFORE INSERT OR UPDATE ON Carta
+FOR EACH ROW
+EXECUTE FUNCTION impedisci_carta_duplicata_per_partecipante();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulla tabella \texttt{Carta}.
+    \item La funzione controlla se esiste già una carta con le stesse ultime quattro cifre, data di scadenza, circuito e intestatario, ma con un identificativo diverso.
+    \item Se trova una corrispondenza, viene sollevata un'eccezione e l'operazione viene bloccata.
+    \item Questo garantisce che non possano essere inserite carte duplicate nel sistema.
+\end{itemize}
+
+\subsubsection{Trigger: Massimo 2 Tipi di Cucina per Corso}
+
+Questo trigger impedisce di associare più di due tipi di cucina a uno stesso corso, garantendo il rispetto del vincolo applicativo.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION verifica_max_tipi_cucina_per_corso()
+RETURNS TRIGGER AS $$
+DECLARE
+    current_tipi_count INTEGER;
+BEGIN
+    SELECT COUNT(*)
+    INTO current_tipi_count
+    FROM TipoDiCucina_Corso
+    WHERE IDCorso = NEW.IDCorso;
+
+    IF current_tipi_count >= 2 THEN
+        RAISE EXCEPTION 'Errore: Il corso con ID % ha già raggiunto il limite massimo di 2 tipi di cucina associati.', NEW.IDCorso;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_max_tipi_cucina_corso
+BEFORE INSERT ON TipoDiCucina_Corso
+FOR EACH ROW
+EXECUTE FUNCTION verifica_max_tipi_cucina_per_corso();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima di ogni inserimento sulla tabella \texttt{TipoDiCucina\_Corso}.
+    \item La funzione conta quanti tipi di cucina sono già associati al corso specificato da \texttt{NEW.IDCorso}.
+    \item Se il numero è già 2 o più, viene sollevata un'eccezione e l'inserimento viene bloccato.
+    \item In questo modo si garantisce che ogni corso possa avere al massimo due tipi di cucina associati, come richiesto dal vincolo applicativo.
+\end{itemize}
+
+\subsubsection{Trigger: Validazione Intervallo Date Corso}
+
+Questo trigger garantisce che la data di inizio di un corso non sia successiva alla data di fine e che la data di inizio non sia antecedente alla data corrente, assicurando la coerenza temporale dei corsi inseriti o aggiornati.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION verifica_intervallo_date_corso()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.DataInizio > NEW.DataFine THEN
+        RAISE EXCEPTION 'Errore: La DataInizio del corso (%) non può essere successiva alla DataFine (%).',
+            NEW.DataInizio, NEW.DataFine;
+    END IF;
+
+    IF NEW.DataInizio < CURRENT_DATE THEN
+        RAISE EXCEPTION 'Errore: La DataInizio del corso (%) non può essere antecedente alla data corrente (%).',
+            NEW.DataInizio, CURRENT_DATE;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_valida_date_corso
+BEFORE INSERT OR UPDATE ON Corso
+FOR EACH ROW
+EXECUTE FUNCTION verifica_intervallo_date_corso();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulla tabella \texttt{Corso}.
+    \item La funzione controlla che la data di inizio non sia successiva a quella di fine e che non sia antecedente alla data corrente.
+    \item Se una delle due condizioni non è rispettata, viene sollevata un'eccezione e l'operazione viene bloccata.
+    \item In questo modo si garantisce la coerenza temporale dei dati relativi ai corsi.
+\end{itemize}
+
+\subsubsection{Trigger: Importo Pagato Deve Corrispondere al Costo del Corso}
+
+Questo trigger garantisce che l'importo pagato per una richiesta di pagamento corrisponda esattamente al prezzo del corso associato, evitando discrepanze tra quanto dovuto e quanto effettivamente pagato.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION verifica_importo_pagamento_corrisponde_prezzo_corso()
+RETURNS TRIGGER AS $$
+DECLARE
+    course_price DECIMAL(10,2);
+BEGIN
+    SELECT Prezzo INTO course_price
+    FROM Corso
+    WHERE IdCorso = NEW.IdCorso;
+
+    IF NEW.ImportoPagato != course_price THEN
+        RAISE EXCEPTION 'Errore: L''ImportoPagato (%.2f) deve corrispondere esattamente al Prezzo del corso (%.2f).', NEW.ImportoPagato, course_price;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_valida_importo_pagamento
+BEFORE INSERT OR UPDATE ON RichiestaPagamento
+FOR EACH ROW
+EXECUTE FUNCTION verifica_importo_pagamento_corrisponde_prezzo_corso();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulla tabella \texttt{RichiestaPagamento}.
+    \item La funzione recupera il prezzo del corso associato alla richiesta di pagamento tramite l'\texttt{IdCorso}.
+    \item Se l'\texttt{ImportoPagato} non corrisponde esattamente al prezzo del corso, viene sollevata un'eccezione e l'operazione viene bloccata.
+    \item In questo modo si garantisce che ogni pagamento sia coerente con il costo effettivo del corso.
+\end{itemize}
+
+\subsubsection{Trigger: Età Compresa tra 18 e 100 Anni}
+
+Questo trigger garantisce che la data di nascita inserita per Chef e Partecipante produca un'età compresa tra 18 e 100 anni, assicurando che solo utenti con età valida possano essere registrati nel sistema.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION verifica_intervallo_eta()
+RETURNS TRIGGER AS $$
+DECLARE
+    person_age_years INTEGER;
+    min_age CONSTANT INTEGER := 18;
+    max_age CONSTANT INTEGER := 100;
+BEGIN
+    IF NEW.DataDiNascita IS NULL THEN
+        RAISE EXCEPTION 'Errore: La DataDiNascita non può essere NULL.';
+    END IF;
+
+    person_age_years := EXTRACT(YEAR FROM AGE(CURRENT_DATE, NEW.DataDiNascita));
+
+    IF person_age_years < min_age THEN
+        RAISE EXCEPTION 'Errore: L''età della persona (%, calcolata dalla DataDiNascita %) è inferiore all''età minima consentita (%).', person_age_years, NEW.DataDiNascita, min_age;
+    END IF;
+
+    IF person_age_years > max_age THEN
+        RAISE EXCEPTION 'Errore: L''età della persona (%, calcolata dalla DataDiNascita %) è superiore all''età massima consentita (%).', person_age_years, NEW.DataDiNascita, max_age;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_valida_eta_chef
+BEFORE INSERT OR UPDATE ON Chef
+FOR EACH ROW
+EXECUTE FUNCTION verifica_intervallo_eta();
+
+CREATE TRIGGER trg_valida_eta_partecipante
+BEFORE INSERT OR UPDATE ON Partecipante
+FOR EACH ROW
+EXECUTE FUNCTION verifica_intervallo_eta();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulle tabelle \texttt{Chef} e \texttt{Partecipante}.
+    \item La funzione calcola l'età a partire dalla data di nascita fornita.
+    \item Se l'età è inferiore a 18 anni o superiore a 100 anni, viene sollevata un'eccezione e l'operazione viene bloccata.
+    \item In questo modo si garantisce che solo utenti con età valida possano essere registrati nel sistema.
+\end{itemize}
+
+\subsubsection{Trigger: Controllo Superamento Numero Massimo di Partecipanti per Corso}
+
+Questo trigger impedisce che il numero di partecipanti paganti a un corso superi il limite massimo definito dal campo \texttt{MaxPersone} della tabella \texttt{Corso}. In questo modo si garantisce che non vengano accettate richieste di pagamento che eccedono la capienza prevista per ciascun corso.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION verifica_superamento_max_partecipanti_corso()
+RETURNS TRIGGER AS $$
+DECLARE
+    course_max_people INTEGER;
+    current_paid_count INTEGER;
+    potential_paid_count INTEGER;
+    course_name VARCHAR(255);
+BEGIN
+    SELECT MaxPersone, Nome INTO course_max_people, course_name
+    FROM Corso
+    WHERE IdCorso = NEW.IdCorso;
+
+    IF course_max_people <= 0 OR course_max_people IS NULL THEN
+        RETURN NEW;
+    END IF;
+
+    SELECT COUNT(*)
+    INTO current_paid_count
+    FROM RichiestaPagamento
+    WHERE IdCorso = NEW.IdCorso
+        AND StatoPagamento = 'Pagato';
+
+    potential_paid_count := current_paid_count;
+
+    IF TG_OP = 'INSERT' THEN
+        IF NEW.StatoPagamento = 'Pagato' THEN
+            potential_paid_count := potential_paid_count + 1;
+        END IF;
+    ELSIF TG_OP = 'UPDATE' THEN
+        IF OLD.StatoPagamento != 'Pagato' AND NEW.StatoPagamento = 'Pagato' THEN
+            potential_paid_count := potential_paid_count + 1;
+        ELSIF OLD.StatoPagamento = 'Pagato' AND NEW.StatoPagamento != 'Pagato' THEN
+            potential_paid_count := potential_paid_count - 1;
+        END IF;
+    END IF;
+
+    IF potential_paid_count > course_max_people THEN
+        RAISE EXCEPTION 'Errore: Il corso "%" (ID %) ha raggiunto il limite massimo di % partecipanti paganti. Impossibile accettare questa richiesta di pagamento (attuali: %s, limite: %s).',
+                            course_name, NEW.IdCorso, course_max_people, current_paid_count, course_max_people;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_controllo_max_partecipanti_corso
+BEFORE INSERT OR UPDATE ON RichiestaPagamento
+FOR EACH ROW
+EXECUTE FUNCTION verifica_superamento_max_partecipanti_corso();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulla tabella \texttt{RichiestaPagamento}.
+    \item La funzione recupera il numero massimo di partecipanti paganti previsto per il corso e il numero attuale di pagamenti confermati.
+    \item In caso di inserimento o aggiornamento che porterebbe il totale dei paganti oltre il limite, viene sollevata un'eccezione e l'operazione viene bloccata.
+    \item In questo modo si garantisce il rispetto della capienza massima prevista per ciascun corso.
+\end{itemize}
+
+\subsubsection{Trigger: Impedire Eliminazione di Corsi con Iscritti Paganti}
+
+Questo trigger impedisce l'eliminazione di un corso se sono ancora presenti partecipanti che hanno già effettuato il pagamento, garantendo l'integrità delle iscrizioni e la correttezza dei dati gestiti dal sistema.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION impedisci_eliminazione_corso_se_iscritto()
+RETURNS TRIGGER AS $$
+DECLARE
+    enrolled_count INTEGER;
+    course_name VARCHAR(255);
+BEGIN
+    SELECT Nome INTO course_name
+    FROM Corso
+    WHERE IdCorso = OLD.IdCorso;
+
+    SELECT COUNT(*)
+    INTO enrolled_count
+    FROM RichiestaPagamento
+    WHERE IdCorso = OLD.IdCorso
+        AND StatoPagamento = 'Pagato';
+
+    IF enrolled_count > 0 THEN
+        RAISE EXCEPTION 'Errore: Impossibile eliminare il corso "%" (ID %). Ci sono ancora % partecipanti paganti iscritti.',
+                            course_name, OLD.IdCorso, enrolled_count;
+    END IF;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_impedisci_eliminazione_corso
+BEFORE DELETE ON Corso
+FOR EACH ROW
+EXECUTE FUNCTION impedisci_eliminazione_corso_se_iscritto();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima della cancellazione di un corso dalla tabella \texttt{Corso}.
+    \item La funzione verifica se esistono partecipanti paganti ancora iscritti al corso.
+    \item Se il numero di iscritti paganti è maggiore di zero, viene sollevata un'eccezione e l'eliminazione viene bloccata.
+    \item In questo modo si garantisce che non vengano eliminati corsi con iscritti attivi, preservando la coerenza dei dati.
+\end{itemize}
+
+\subsubsection{Trigger: Chef Non Può Essere Assegnato Contemporaneamente a Sessione Presenza e Telematica}
+
+Questo trigger impedisce che uno stesso chef sia assegnato contemporaneamente, nello stesso giorno, sia a una sessione in presenza che a una sessione telematica, garantendo la coerenza degli orari.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION verifica_sessioni_contemporanee_chef()
+RETURNS TRIGGER AS $$
+DECLARE
+    conflicting_session_count INTEGER;
+    chef_name VARCHAR(255);
+    session_type_being_inserted TEXT;
+    other_session_type TEXT;
+BEGIN
+    SELECT Nome || ' ' || Cognome INTO chef_name
+    FROM Chef
+    WHERE IdChef = NEW.IDChef;
+
+    IF TG_TABLE_NAME = 'sessione_presenza' THEN
+        session_type_being_inserted := 'presenza';
+        other_session_type := 'telematica';
+    ELSIF TG_TABLE_NAME = 'sessione_telematica' THEN
+        session_type_being_inserted := 'telematica';
+        other_session_type := 'presenza';
+    ELSE
+        RAISE EXCEPTION 'Errore interno del trigger: tabella sconosciuta (%).', TG_TABLE_NAME;
+    END IF;
+
+    IF session_type_being_inserted = 'presenza' THEN
+        SELECT COUNT(*)
+        INTO conflicting_session_count
+        FROM Sessione_Telematica
+        WHERE IDChef = NEW.IDChef
+            AND Data = NEW.Data;
+    ELSIF session_type_being_inserted = 'telematica' THEN
+        SELECT COUNT(*)
+        INTO conflicting_session_count
+        FROM Sessione_Presenza
+        WHERE IDChef = NEW.IDChef
+            AND Data = NEW.Data;
+    END IF;
+
+    IF conflicting_session_count > 0 THEN
+        RAISE EXCEPTION 'Errore: Lo Chef "%" (ID %) è già assegnato a una sessione di tipo "%" in data %. Impossibile assegnarlo anche a una sessione di tipo "%" nello stesso giorno.',
+                            chef_name, NEW.IDChef, other_session_type, NEW.Data, session_type_being_inserted;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_verifica_sessione_presenza_chef
+BEFORE INSERT OR UPDATE ON Sessione_Presenza
+FOR EACH ROW
+EXECUTE FUNCTION verifica_sessioni_contemporanee_chef();
+
+CREATE TRIGGER trg_verifica_sessione_telematica_chef
+BEFORE INSERT OR UPDATE ON Sessione_Telematica
+FOR EACH ROW
+EXECUTE FUNCTION verifica_sessioni_contemporanee_chef();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulle tabelle \texttt{Sessione\_Presenza} e \texttt{Sessione\_Telematica}.
+    \item La funzione controlla che lo stesso chef non sia già assegnato a una sessione di tipo diverso nello stesso giorno.
+    \item Se viene rilevata una sovrapposizione, viene sollevata un'eccezione e l'operazione viene bloccata.
+    \item In questo modo si garantisce che uno chef non possa essere assegnato contemporaneamente a sessioni di tipo diverso nello stesso giorno.
+\end{itemize}
+
+\subsection{Definizione delle View}
+
+\subsubsection{View: Statistiche Mensili Chef}
+
+Questa view fornisce una panoramica mensile delle attività di ciascun chef, utile per la generazione del grafico del report mensile. Riassume il numero di ricette preparate, i valori massimo, minimo e medio di ricette per sessione, il numero di corsi e sessioni tenuti, e il guadagno totale del mese corrente.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE VIEW vista_statistiche_mensili_chef AS
+  SELECT
+    ch.IdChef,
+    ch.Nome,
+    ch.Cognome,
+    COUNT(spr.IdRicetta) AS totale_ricette_mese,
+    COALESCE(MAX(spr_count.ricette_per_sessione), 0) AS max_ricette_in_sessione,
+    COALESCE(MIN(spr_count.ricette_per_sessione), 0) AS min_ricette_in_sessione,
+    COALESCE(AVG(spr_count.ricette_per_sessione), 0) AS media_ricette_per_sessione,
+    COUNT(DISTINCT c.IdCorso) AS numero_corsi,
+    COUNT(DISTINCT sp.IdSessionePresenza) AS numero_sessioni_presenza,
+    COUNT(DISTINCT st.IdSessioneTelematica) AS numero_sessioni_telematiche,
+    COALESCE(SUM(rp.ImportoPagato), 0) AS guadagno_totale
+    FROM CHEF ch
+    LEFT JOIN CORSO c ON ch.IdChef = c.IdChef
+    LEFT JOIN SESSIONE_PRESENZA sp ON c.IdCorso = sp.IDcorso AND sp.IDChef = ch.IdChef
+    LEFT JOIN SESSIONE_PRESENZA_RICETTA spr ON spr.IdSessionePresenza = sp.IdSessionePresenza
+    LEFT JOIN (
+        SELECT spr2.IdSessionePresenza, COUNT(*) AS ricette_per_sessione
+        FROM SESSIONE_PRESENZA_RICETTA spr2
+        JOIN SESSIONE_PRESENZA sp2 ON spr2.IdSessionePresenza = sp2.IdSessionePresenza
+        WHERE DATE_PART('month', sp2.Data) = DATE_PART('month', CURRENT_DATE)
+        AND DATE_PART('year', sp2.Data) = DATE_PART('year', CURRENT_DATE)
+        GROUP BY spr2.IdSessionePresenza
+    ) spr_count ON spr_count.IdSessionePresenza = sp.IdSessionePresenza
+    LEFT JOIN SESSIONE_TELEMATICA st ON c.IdCorso = st.IDcorso AND st.IDChef = ch.IdChef
+        AND DATE_PART('month', st.Data) = DATE_PART('month', CURRENT_DATE)
+        AND DATE_PART('year', st.Data) = DATE_PART('year', CURRENT_DATE)
+    LEFT JOIN RICHIESTAPAGAMENTO rp ON rp.IdCorso = c.IdCorso
+        AND DATE_PART('month', rp.DataRichiesta) = DATE_PART('month', CURRENT_DATE)
+        AND DATE_PART('year', rp.DataRichiesta) = DATE_PART('year', CURRENT_DATE)
+    WHERE
+    (
+    (sp.Data IS NULL OR (
+        DATE_PART('month', sp.Data) = DATE_PART('month', CURRENT_DATE)
+        AND DATE_PART('year', sp.Data) = DATE_PART('year', CURRENT_DATE)
+    ))
+    )
+    GROUP BY ch.IdChef, ch.Nome, ch.Cognome;
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item La view aggrega i dati per ogni chef, limitando i risultati al mese e anno correnti tramite la funzione \texttt{DATE\_PART}.
+    \item Calcola il totale delle ricette preparate nel mese, il massimo, minimo e media di ricette per sessione, il numero di corsi, sessioni in presenza e telematiche, e il guadagno totale.
+    \item Utilizza le funzioni di aggregazione SQL come \texttt{COUNT}, \texttt{MAX}, \texttt{MIN}, \texttt{AVG}, \texttt{SUM} e \texttt{COALESCE} per gestire i casi in cui non ci siano dati (restituendo zero).
+    \item Le join collegano chef, corsi, sessioni, ricette e pagamenti per ottenere una panoramica completa delle attività mensili di ciascun chef.
+    \item Questa view è pensata per essere utilizzata come base dati per la generazione di report e grafici mensili sulle performance degli chef.
+\end{itemize}
+
+\subsubsection{View: Quantità Ingredienti per Sessione}
+
+Questa view calcola dinamicamente la quantità totale necessaria di ciascun ingrediente per ogni sessione in presenza, in base al numero di partecipanti che hanno confermato la presenza. È utile per aggiornare automaticamente la quantità totale da preparare ogni volta che viene registrata una nuova adesione confermata.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE VIEW QuantitaPerSessione AS
+  SELECT 
+        pi.IdRicetta,
+        pi.IdIngrediente,
+        pi.QuanititaUnitaria,
+        COUNT(asp.IDpartecipante) AS NumeroPartecipanti,
+        pi.QuanititaUnitaria * COUNT(asp.IDpartecipante) AS QuantitaTotale,
+        spr.Idsessionepresenza
+    FROM PREPARAZIONEINGREDIENTE pi
+    JOIN SESSIONE_PRESENZA_RICETTA spr ON pi.IdRicetta = spr.Idricetta
+    JOIN ADESIONE_SESSIONEPRESENZA asp ON asp.Idsessionepresenza = spr.Idsessionepresenza
+    WHERE asp.Conferma = true
+    GROUP BY pi.IdRicetta, pi.IdIngrediente, pi.QuanititaUnitaria, spr.Idsessionepresenza;
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item La view collega le tabelle delle preparazioni ingredienti, delle sessioni in presenza e delle adesioni confermate.
+    \item Per ogni ingrediente di ogni ricetta associata a una sessione, calcola il numero di partecipanti confermati e la quantità totale necessaria (quantità unitaria moltiplicata per il numero di partecipanti).
+    \item Ogni volta che viene registrata una nuova adesione confermata, la view restituisce automaticamente il valore aggiornato della quantità totale da preparare.
+    \item Utile per la gestione logistica e l'approvvigionamento degli ingredienti in base alle presenze effettive.
+\end{itemize}
