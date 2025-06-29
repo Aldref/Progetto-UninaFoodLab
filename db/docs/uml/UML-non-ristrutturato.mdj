@@ -2959,6 +2959,24 @@
 											"height": 13,
 											"text": "«derivato»+QuantitàTotali[1]: Int",
 											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLAttributeView",
+											"_id": "AAAAAAGXutqcSZce+us=",
+											"_parent": {
+												"$ref": "AAAAAAGW3bKtW/BT/wk="
+											},
+											"model": {
+												"$ref": "AAAAAAGXutqcRJcYYwU="
+											},
+											"font": "Arial;13;0",
+											"parentStyle": true,
+											"left": 1381,
+											"top": 1477,
+											"width": 196.48876953125,
+											"height": 13,
+											"text": "+QuantitàUnitaria[1]: Int",
+											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
@@ -2966,7 +2984,7 @@
 									"left": 1376,
 									"top": 1457,
 									"width": 206.48876953125,
-									"height": 23
+									"height": 38
 								},
 								{
 									"_type": "UMLOperationCompartmentView",
@@ -2980,7 +2998,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": 1376,
-									"top": 1480,
+									"top": 1495,
 									"width": 206.48876953125,
 									"height": 10
 								},
@@ -3580,24 +3598,6 @@
 										},
 										{
 											"_type": "UMLAttributeView",
-											"_id": "AAAAAAGW3zhcaTaQ988=",
-											"_parent": {
-												"$ref": "AAAAAAGW3ze62iFRQ5Q="
-											},
-											"model": {
-												"$ref": "AAAAAAGW3zhcZDZ7kQY="
-											},
-											"font": "Arial;13;0",
-											"parentStyle": true,
-											"left": 1101,
-											"top": 1557,
-											"width": 207,
-											"height": 13,
-											"text": "+Quantità[1]: Int",
-											"horizontalAlignment": 0
-										},
-										{
-											"_type": "UMLAttributeView",
 											"_id": "AAAAAAGW30NHhGWKQEQ=",
 											"_parent": {
 												"$ref": "AAAAAAGW3ze62iFRQ5Q="
@@ -3608,7 +3608,7 @@
 											"font": "Arial;13;0",
 											"parentStyle": true,
 											"left": 1101,
-											"top": 1572,
+											"top": 1557,
 											"width": 207,
 											"height": 13,
 											"text": "+UnitaDiMisura: UnitaDiMisura",
@@ -3620,7 +3620,7 @@
 									"left": 1096,
 									"top": 1537,
 									"width": 217,
-									"height": 53
+									"height": 38
 								},
 								{
 									"_type": "UMLOperationCompartmentView",
@@ -3634,7 +3634,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": 1096,
-									"top": 1590,
+									"top": 1575,
 									"width": 217,
 									"height": 10
 								},
@@ -7952,7 +7952,7 @@
 							"top": 464,
 							"width": 100,
 							"height": 25,
-							"text": "1..*"
+							"text": "1..2"
 						},
 						{
 							"_type": "UMLAssociationView",
@@ -9832,6 +9832,15 @@
 							"name": "QuantitàTotali[1]",
 							"stereotype": "derivato",
 							"type": "Int"
+						},
+						{
+							"_type": "UMLAttribute",
+							"_id": "AAAAAAGXutqcRJcYYwU=",
+							"_parent": {
+								"$ref": "AAAAAAGW3bKtWvBLEnU="
+							},
+							"name": "QuantitàUnitaria[1]",
+							"type": "Int"
 						}
 					]
 				},
@@ -10191,15 +10200,6 @@
 							},
 							"name": "Nome[1]",
 							"type": "String"
-						},
-						{
-							"_type": "UMLAttribute",
-							"_id": "AAAAAAGW3zhcZDZ7kQY=",
-							"_parent": {
-								"$ref": "AAAAAAGW3ze62iFJd4M="
-							},
-							"name": "Quantità[1]",
-							"type": "Int"
 						},
 						{
 							"_type": "UMLAttribute",

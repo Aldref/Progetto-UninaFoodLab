@@ -12,3 +12,8 @@
 \contentsline {subsubsection}{\numberline {2.3.1}Modifiche rispetto al modello non ristrutturato}{8}{}%
 \contentsline {subsubsection}{\numberline {2.3.2}Comportamento del modello ristrutturato con le modifiche}{8}{}%
 \contentsline {subsubsection}{\numberline {2.3.3}Motivazioni delle scelte del modello ristrutturato}{8}{}%
+\contentsline {section}{\numberline {3}Progettazione Logica}{10}{}%
+\contentsline {subsection}{\numberline {3.1}Schema Logico Complessivo}{10}{}%
+\contentsline {subsection}{\numberline {3.2}Guida alla Lettura dello Schema Logico}{10}{}%
+\contentsline {subsection}{\numberline {3.3}Traduzione e Associazioni}{10}{}%
+\contentsline {subsection}{\numberline {3.4}Visualizzazione delle Chiavi Esterne e delle Associazioni}{11}{}%

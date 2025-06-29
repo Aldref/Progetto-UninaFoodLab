@@ -1,0 +1,261 @@
+\section{Progettazione Logica}
+
+In questa sezione viene presentata la progettazione logica della base di dati del sistema UninaFoodLab. Lo schema logico rappresenta la traduzione del modello concettuale in un insieme di tabelle relazionali, con particolare attenzione alle chiavi primarie (\underline{pk}), chiavi esterne (\uuline{fk}) e alle associazioni tra le entità.
+
+\subsection{Schema Logico Complessivo}
+\begin{center}
+\begin{tcolorbox}[colback=white!98!gray,colframe=myblue!80!black,title=Schema Logico,arc=4mm,boxrule=0.8pt,width=0.98\textwidth]
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|p{11cm}|}
+\hline
+\textbf{Tabella} & \textbf{Attributi} \\
+\hline
+CARTA & \underline{IdCarta}, Intestatario, DataScadenza, UltimeQuattroCifre, Circuito \\
+PARTECIPANTE & \underline{IdPartecipante}, Nome, Cognome, Email, Password, DataDiNascita, Propic \\
+POSSiEDE & \uuline{IdPartecipante}, \uuline{IdCarta} \\
+CHEF & \underline{IdChef}, Nome, Cognome, Email, Password, DataDiNascita, Descrizione, Propic, annidiesperienza \\
+CORSO & \underline{IdCorso}, Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, Propic, MaxPersone, Prezzo, \uuline{IdChef} \\
+RICHIESTAPAGAMENTO & DataRichiesta, StatoPagamento, ImportoPagato, \uuline{IdCorso}, \uuline{IdPartecipante} \\
+TIPODICUCINA & Nome, \underline{IDtipocucina} \\
+TIPODICUCINA\_CORSO & \uuline{IDtipocucina}, \uuline{IDcorso} \\
+SESSIONE\_PRESENZA & \underline{IdSessionePresenza}, giorno, Data, Orario, Durata, citta, via, cap, Attrezzatura, Descrizione, \uuline{IDcorso}, \uuline{IDChef} \\
+SESSIONE\_TELEMATICA & \underline{IdSessioneTelematica}, Applicazione, Codicechiamata, Data, Orario, Durata, giorno, Descrizione, \uuline{IDcorso}, \uuline{IdChef} \\
+PARTECIPANTE\_SESSIONETELEMATICA & \uuline{IdPartecipante}, \uuline{IdSessioneTelematica} \\
+ADESIONE\_SESSIONEPRESENZA & Conferma, \uuline{Idsessionepresenza}, \uuline{IDpartecipante} \\
+RICETTA & \underline{IdRicetta}, Nome \\
+SESSIONE\_PRESENZA\_RICETTA & \uuline{Idricetta}, \uuline{idsessionepresenza} \\
+INGREDIENTE & \underline{IdIngrediente}, Nome, UnitaDiMisura \\
+PREPARAZIONEINGREDIENTE & \uuline{IdRicetta}, \uuline{IdIngrediente}, QuantitaTotale, QuanititaUnitaria \\
+\hline
+\end{tabular}
+\end{tcolorbox}
+\end{center}
+
+\vspace{0.5em}
+\noindent\textbf{Legenda:} \underline{Sottolineato singolo} = chiave primaria, \uuline{Doppio sottolineato} = chiave esterna.
+
+\subsection{Guida alla Lettura dello Schema Logico}
+Ogni riga rappresenta una tabella, con i relativi attributi. Le chiavi primarie sono indicate con sottolineatura singola, le chiavi esterne con doppia sottolineatura. Le associazioni tra tabelle sono esplicitate tramite le chiavi esterne, che collegano le entità tra loro.
+
+\subsection{Traduzione e Associazioni}
+Di seguito si elencano tutte le chiavi esterne e le relative associazioni per ciascuna delle 17 tabelle:
+
+\begin{itemize}
+    \item \textbf{CARTA}: Nessuna chiave esterna.
+    \item \textbf{PARTECIPANTE}: Nessuna chiave esterna.
+    \item \textbf{POSSiEDE}: \uuline{IdPartecipante} \textrightarrow{} PARTECIPANTE(IdPartecipante), \uuline{IdCarta} \textrightarrow{} CARTA(IdCarta)
+    \item \textbf{CHEF}: Nessuna chiave esterna.
+    \item \textbf{CORSO}: \uuline{IdChef} \textrightarrow{} CHEF(IdChef)
+    \item \textbf{RICHIESTAPAGAMENTO}: \uuline{IdCorso} \textrightarrow{} CORSO(IdCorso), \uuline{IdPartecipante} \textrightarrow{} PARTECIPANTE(IdPartecipante)
+    \item \textbf{TIPODICUCINA}: Nessuna chiave esterna.
+    \item \textbf{TIPODICUCINA\_CORSO}: \uuline{IDtipocucina} \textrightarrow{} TIPODICUCINA(IDtipocucina), \uuline{IDcorso} \textrightarrow{} CORSO(IdCorso)
+    \item \textbf{SESSIONE\_PRESENZA}: \uuline{IDcorso} \textrightarrow{} CORSO(IdCorso), \uuline{IDChef} \textrightarrow{} CHEF(IdChef)
+    \item \textbf{SESSIONE\_TELEMATICA}: \uuline{IDcorso} \textrightarrow{} CORSO(IdCorso), \uuline{IdChef} \textrightarrow{} CHEF(IdChef)
+    \item \textbf{PARTECIPANTE\_SESSIONETELEMATICA}: \uuline{IdPartecipante} \textrightarrow{} PARTECIPANTE(IdPartecipante), \uuline{IdSessioneTelematica} \textrightarrow{} SESSIONE\_TELEMATICA(IdSessioneTelematica)
+    \item \textbf{ADESIONE\_SESSIONEPRESENZA}: \uuline{Idsessionepresenza} \textrightarrow{} SESSIONE\_PRESENZA(IdSessionePresenza), \uuline{IDpartecipante} \textrightarrow{} PARTECIPANTE(IdPartecipante)
+    \item \textbf{RICETTA}: Nessuna chiave esterna.
+    \item \textbf{SESSIONE\_PRESENZA\_RICETTA}: \uuline{Idricetta} \textrightarrow{} RICETTA(IdRicetta), \uuline{idsessionepresenza} \textrightarrow{} SESSIONE\_PRESENZA(IdSessionePresenza)
+    \item \textbf{INGREDIENTE}: Nessuna chiave esterna.
+    \item \textbf{PREPARAZIONEINGREDIENTE}: \uuline{IdRicetta} \textrightarrow{} RICETTA(IdRicetta), \uuline{IdIngrediente} \textrightarrow{} INGREDIENTE(IdIngrediente)
+\end{itemize}
+
+In questo modo, per ogni tabella è esplicitato se sono presenti chiavi esterne e, in caso affermativo, a quale tabella e attributo si collegano. Le tabelle senza chiavi esterne sono comunque collegate tramite le tabelle associative sopra elencate, garantendo l'integrità referenziale e la rappresentazione fedele delle associazioni tra le entità del dominio applicativo.
+
+\subsection{Visualizzazione delle Chiavi Esterne e delle Associazioni}
+Per rendere più intuitiva la lettura delle relazioni tra le tabelle, di seguito vengono presentate tutte le tabelle che contengono chiavi esterne, evidenziando graficamente i collegamenti e le associazioni. In questo modo si ha una visione completa delle relazioni e dei vincoli di integrità referenziale.
+
+\vspace{0.5em}
+\noindent
+
+
+\textbf{\large POSSiEDE}
+
+\noindent
+\fcolorbox{myblue!80!black}{white!98!gray}{
+\begin{minipage}{0.97\linewidth}
+\textbf{Struttura:} (\uuline{IdPartecipante}, \uuline{IdCarta})
+
+\vspace{0.2em}
+\textbf{Collegamenti:}
+
+\begin{tabular}{rl}
+\uuline{IdPartecipante} & $\longrightarrow$ PARTECIPANTE(\underline{IdPartecipante}) \\
+\uuline{IdCarta} & $\longrightarrow$ CARTA(\underline{IdCarta}) \\
+\end{tabular}
+\end{minipage}}
+
+\vspace{0.8em}
+
+
+\textbf{\large CORSO}
+
+\noindent
+\fcolorbox{myblue!80!black}{white!98!gray}{
+\begin{minipage}{0.97\linewidth}
+\textbf{Struttura:} (\underline{IdCorso}, ..., \uuline{IdChef})
+
+\vspace{0.2em}
+\textbf{Collegamenti:}
+
+\begin{tabular}{rl}
+\uuline{IdChef} & $\longrightarrow$ CHEF(\underline{IdChef}) \\
+\end{tabular}
+\end{minipage}}
+
+\vspace{0.8em}
+
+
+\textbf{\large RICHIESTAPAGAMENTO}
+
+\noindent
+\fcolorbox{myblue!80!black}{white!98!gray}{
+\begin{minipage}{0.97\linewidth}
+\textbf{Struttura:} (DataRichiesta, StatoPagamento, ImportoPagato, \uuline{IdCorso}, \uuline{IdPartecipante})
+
+\vspace{0.2em}
+\textbf{Collegamenti:}
+
+\begin{tabular}{rl}
+\uuline{IdCorso} & $\longrightarrow$ CORSO(\underline{IdCorso}) \\
+\uuline{IdPartecipante} & $\longrightarrow$ PARTECIPANTE(\underline{IdPartecipante}) \\
+\end{tabular}
+\end{minipage}}
+
+\vspace{0.8em}
+\noindent
+
+
+\textbf{\large TIPODICUCINA\_CORSO}
+
+\noindent
+\fcolorbox{myblue!80!black}{white!98!gray}{
+\begin{minipage}{0.97\linewidth}
+\textbf{Struttura:} (\uuline{IDtipocucina}, \uuline{IDcorso})
+
+\vspace{0.2em}
+\textbf{Collegamenti:}
+
+\begin{tabular}{rl}
+\uuline{IDtipocucina} & $\longrightarrow$ TIPODICUCINA(\underline{IDtipocucina}) \\
+\uuline{IDcorso} & $\longrightarrow$ CORSO(\underline{IdCorso}) \\
+\end{tabular}
+\end{minipage}}
+
+\vspace{0.8em}
+
+
+\textbf{\large SESSIONE\_PRESENZA}
+
+\noindent
+\fcolorbox{myblue!80!black}{white!98!gray}{
+\begin{minipage}{0.97\linewidth}
+\textbf{Struttura:} (\underline{IdSessionePresenza}, ..., \uuline{IDcorso}, \uuline{IDChef})
+
+\vspace{0.2em}
+\textbf{Collegamenti:}
+
+\begin{tabular}{rl}
+\uuline{IDcorso} & $\longrightarrow$ CORSO(\underline{IdCorso}) \\
+\uuline{IDChef} & $\longrightarrow$ CHEF(\underline{IdChef}) \\
+\end{tabular}
+\end{minipage}}
+
+\vspace{0.8em}
+\noindent
+
+
+\textbf{\large SESSIONE\_TELEMATICA}
+
+\noindent
+\fcolorbox{myblue!80!black}{white!98!gray}{
+\begin{minipage}{0.97\linewidth}
+\textbf{Struttura:} (\underline{IdSessioneTelematica}, ..., \uuline{IDcorso}, \uuline{IdChef})
+
+\vspace{0.2em}
+\textbf{Collegamenti:}
+
+\begin{tabular}{rl}
+\uuline{IDcorso} & $\longrightarrow$ CORSO(\underline{IdCorso}) \\
+\uuline{IdChef} & $\longrightarrow$ CHEF(\underline{IdChef}) \\
+\end{tabular}
+\end{minipage}}
+
+\vspace{0.8em}
+
+
+\textbf{\large PARTECIPANTE\_SESSIONETELEMATICA}
+
+\noindent
+\fcolorbox{myblue!80!black}{white!98!gray}{
+\begin{minipage}{0.97\linewidth}
+\textbf{Struttura:} (\uuline{IdPartecipante}, \uuline{IdSessioneTelematica})
+
+\vspace{0.2em}
+\textbf{Collegamenti:}
+
+\begin{tabular}{rl}
+\uuline{IdPartecipante} & $\longrightarrow$ PARTECIPANTE(\underline{IdPartecipante}) \\
+\uuline{IdSessioneTelematica} & $\longrightarrow$ SESSIONE\_TELEMATICA(\underline{IdSessioneTelematica}) \\
+\end{tabular}
+\end{minipage}}
+
+\vspace{0.8em}
+\noindent
+
+
+\textbf{\large ADESIONE\_SESSIONEPRESENZA}
+
+\noindent
+\fcolorbox{myblue!80!black}{white!98!gray}{
+\begin{minipage}{0.97\linewidth}
+\textbf{Struttura:} (Conferma, \uuline{Idsessionepresenza}, \uuline{IDpartecipante})
+
+\vspace{0.2em}
+\textbf{Collegamenti:}
+
+\begin{tabular}{rl}
+\uuline{Idsessionepresenza} & $\longrightarrow$ SESSIONE\_PRESENZA(\underline{IdSessionePresenza}) \\
+\uuline{IDpartecipante} & $\longrightarrow$ PARTECIPANTE(\underline{IdPartecipante}) \\
+\end{tabular}
+\end{minipage}}
+
+\vspace{0.8em}
+
+
+\textbf{\large SESSIONE\_PRESENZA\_RICETTA}
+
+\noindent
+\fcolorbox{myblue!80!black}{white!98!gray}{
+\begin{minipage}{0.97\linewidth}
+\textbf{Struttura:} (\uuline{Idricetta}, \uuline{idsessionepresenza})
+
+\vspace{0.2em}
+\textbf{Collegamenti:}
+
+\begin{tabular}{rl}
+\uuline{Idricetta} & $\longrightarrow$ RICETTA(\underline{IdRicetta}) \\
+\uuline{idsessionepresenza} & $\longrightarrow$ SESSIONE\_PRESENZA(\underline{IdSessionePresenza}) \\
+\end{tabular}
+\end{minipage}}
+
+\vspace{0.8em}
+\noindent
+
+
+\textbf{\large PREPARAZIONEINGREDIENTE}
+
+\noindent
+\fcolorbox{myblue!80!black}{white!98!gray}{
+\begin{minipage}{0.97\linewidth}
+\textbf{Struttura:} (\uuline{IdRicetta}, \uuline{IdIngrediente}, QuantitaTotale, QuanititaUnitaria)
+
+\vspace{0.2em}
+\textbf{Collegamenti:}
+
+\begin{tabular}{rl}
+\uuline{IdRicetta} & $\longrightarrow$ RICETTA(\underline{IdRicetta}) \\
+\uuline{IdIngrediente} & $\longrightarrow$ INGREDIENTE(\underline{IdIngrediente}) \\
+\end{tabular}
+\end{minipage}}
+
+\vspace{1em}
