@@ -2,10 +2,17 @@ package com.progetto.Entity.EntityDto;
 import java.time.LocalDate;
 import java.util.ArrayList;
 public class Chef extends Utente {
+    // Utente chef loggato attuale (per sessione)
+    public static Chef loggedUser = null;
+    private com.progetto.Entity.entityDao.ChefDao chefDao = new com.progetto.Entity.entityDao.ChefDao();
     private int anniDiEsperienza;
     private int  id_Chef;
-     private String Descrizione;
-     private GraficoChef grafico1;
+    private String Descrizione;
+    private GraficoChef grafico1;
+
+    public com.progetto.Entity.entityDao.ChefDao getChefDao() {
+        return chefDao;
+    }
     
     public Chef(String nome, String cognome, String email, String password, LocalDate dataDiNascita, int anniDiEsperienza) {
         super(nome, cognome, email, password,  dataDiNascita);

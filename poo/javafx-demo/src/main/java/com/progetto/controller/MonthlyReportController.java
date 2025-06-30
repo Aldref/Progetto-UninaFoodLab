@@ -16,46 +16,43 @@ import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
+import com.progetto.Entity.EntityDto.Chef;
+
+import com.progetto.Entity.entityDao.GraficoChefDao;
+import com.progetto.Entity.EntityDto.GraficoChef;
+
 public class MonthlyReportController {
-    
     private final Label monthYearLabel;
     private final ComboBox<String> monthComboBox;
     private final ComboBox<Integer> yearComboBox;
-    
+
     private final Label totalCoursesLabel;
     private final Label onlineSessionsLabel;
     private final Label practicalSessionsLabel;
     private final Label monthlyEarningsLabel;
-    
+
     private final PieChart sessionsChart;
     private final BarChart<String, Number> recipesChart;
-    
+
     private final Label avgRecipesLabel;
     private final Label maxRecipesLabel;
     private final Label minRecipesLabel;
     private final Label totalRecipesLabel;
-    
+
     private final LineChart<String, Number> earningsChart;
 
-    // Dati fittizi - facilmente sostituibili con dati dal DB
-    private static class ReportData {
-        int totalCourses = 12;
-        int onlineSessions = 48;
-        int practicalSessions = 24;
-        double monthlyEarnings = 4580.0;
-        double avgRecipes = 3.2;
-        int maxRecipes = 5;
-        int minRecipes = 2;
-        int totalRecipes = 76;
-    }
+    private final Chef chef;
+    private final GraficoChefDao graficoChefDao;
+
+
 
     public MonthlyReportController(
             Label monthYearLabel, ComboBox<String> monthComboBox, ComboBox<Integer> yearComboBox,
             Label totalCoursesLabel, Label onlineSessionsLabel, Label practicalSessionsLabel, Label monthlyEarningsLabel,
             PieChart sessionsChart, BarChart<String, Number> recipesChart,
             Label avgRecipesLabel, Label maxRecipesLabel, Label minRecipesLabel, Label totalRecipesLabel,
-            LineChart<String, Number> earningsChart) {
-        
+            LineChart<String, Number> earningsChart,
+            Chef chef) {
         this.monthYearLabel = monthYearLabel;
         this.monthComboBox = monthComboBox;
         this.yearComboBox = yearComboBox;
@@ -70,6 +67,9 @@ public class MonthlyReportController {
         this.minRecipesLabel = minRecipesLabel;
         this.totalRecipesLabel = totalRecipesLabel;
         this.earningsChart = earningsChart;
+        // Usa sempre lo chef loggato
+        this.chef = Chef.loggedUser;
+        this.graficoChefDao = new GraficoChefDao();
     }
 
     public void initialize() {
@@ -106,76 +106,70 @@ public class MonthlyReportController {
     }
 
     private void loadReportData() {
-        // TODO query del database
-        ReportData data = generateSampleData();
-        
-        updateStatistics(data);
-        updateChartsData(data);
+        // Recupera mese e anno selezionati
+        Integer selectedYear = yearComboBox.getValue();
+        int mese = monthComboBox.getSelectionModel().getSelectedIndex() + 1;
+        int anno = (selectedYear != null) ? selectedYear : LocalDate.now().getYear();
+        System.out.println("[DEBUG] IdChef selezionato: " + chef.getId_Chef());
+        System.out.println("[DEBUG] Mese selezionato: " + mese + ", Anno selezionato: " + anno);
+
+        GraficoChef grafico = new GraficoChef();
+        grafico.setNumeroMassimo(graficoChefDao.RicavaMassimo(chef, mese, anno));
+        grafico.setNumeroMinimo(graficoChefDao.RicavaMinimo(chef, mese, anno));
+        grafico.setMedia(graficoChefDao.RicavaMedia(chef, mese, anno));
+        grafico.setNumeriCorsi(graficoChefDao.RicavaNumeroCorsi(chef, mese, anno));
+        grafico.setNumeroSessioniInPresenza(graficoChefDao.RicavaNumeroSessioniInPresenza(chef, mese, anno));
+        grafico.setNumerosessionitelematiche(graficoChefDao.RicavaNumeroSesssioniTelematiche(chef, mese, anno));
+        double monthlyEarnings = graficoChefDao.ricavaGuadagno(chef, mese, anno);
+        int totalRecipes = (int) Math.round((grafico.getNumeroSessioniInPresenza() + grafico.getNumerosessionitelematiche()) * grafico.getMedia());
+
+        System.out.println("[CONTROLLER] DTO: max=" + grafico.getNumeroMassimo() + ", min=" + grafico.getNumeroMinimo() + ", media=" + grafico.getMedia() + ", corsi=" + grafico.getNumeriCorsi() + ", presenze=" + grafico.getNumeroSessioniInPresenza() + ", telematiche=" + grafico.getNumerosessionitelematiche() + ", guadagno=" + monthlyEarnings + ", ricetteTotali=" + totalRecipes);
+
+        updateStatistics(grafico, monthlyEarnings, totalRecipes);
+        updateChartsData(grafico, monthlyEarnings);
     }
 
-    private ReportData generateSampleData() {
-        
-        ReportData data = new ReportData();
-        
-        String selectedMonth = monthComboBox.getValue();
-        if (selectedMonth != null) {
-            
-            if (selectedMonth.equals("Dicembre") || selectedMonth.equals("Gennaio")) {
-                data.totalCourses += 3; 
-                data.monthlyEarnings += 1200;
-            } else if (selectedMonth.equals("Luglio") || selectedMonth.equals("Agosto")) {
-                data.totalCourses -= 2; 
-                data.monthlyEarnings -= 800;
-            }
-        }
-        
-        return data;
+    private void updateStatistics(GraficoChef grafico, double monthlyEarnings, int totalRecipes) {
+        totalCoursesLabel.setText(String.valueOf(grafico.getNumeriCorsi()));
+        onlineSessionsLabel.setText(String.valueOf(grafico.getNumerosessionitelematiche()));
+        practicalSessionsLabel.setText(String.valueOf(grafico.getNumeroSessioniInPresenza()));
+        monthlyEarningsLabel.setText(String.format("€ %.2f", monthlyEarnings));
+
+        avgRecipesLabel.setText(String.format("%.1f", grafico.getMedia()));
+        maxRecipesLabel.setText(String.valueOf(grafico.getNumeroMassimo()));
+        minRecipesLabel.setText(String.valueOf(grafico.getNumeroMinimo()));
+        totalRecipesLabel.setText(String.valueOf(totalRecipes));
     }
 
-    private void updateStatistics(ReportData data) {
-        totalCoursesLabel.setText(String.valueOf(data.totalCourses));
-        onlineSessionsLabel.setText(String.valueOf(data.onlineSessions));
-        practicalSessionsLabel.setText(String.valueOf(data.practicalSessions));
-        monthlyEarningsLabel.setText(String.format("€ %.2f", data.monthlyEarnings));
-        
-        avgRecipesLabel.setText(String.format("%.1f", data.avgRecipes));
-        maxRecipesLabel.setText(String.valueOf(data.maxRecipes));
-        minRecipesLabel.setText(String.valueOf(data.minRecipes));
-        totalRecipesLabel.setText(String.valueOf(data.totalRecipes));
-    }
-
-    private void updateChartsData(ReportData data) {
-        
+    private void updateChartsData(GraficoChef grafico, double monthlyEarnings) {
         ObservableList<PieChart.Data> sessionsData = FXCollections.observableArrayList(
-            new PieChart.Data("Sessioni Online", data.onlineSessions),
-            new PieChart.Data("Sessioni Pratiche", data.practicalSessions)
+            new PieChart.Data("Sessioni Online", grafico.getNumerosessionitelematiche()),
+            new PieChart.Data("Sessioni Pratiche", grafico.getNumeroSessioniInPresenza())
         );
         sessionsChart.setData(sessionsData);
         sessionsChart.setTitle("");
 
-        
         XYChart.Series<String, Number> recipesSeries = new XYChart.Series<>();
         recipesSeries.setName("Ricette per Sessione");
-        recipesSeries.getData().add(new XYChart.Data<>("Minimo", data.minRecipes));
-        recipesSeries.getData().add(new XYChart.Data<>("Media", data.avgRecipes));
-        recipesSeries.getData().add(new XYChart.Data<>("Massimo", data.maxRecipes));
-        
+        recipesSeries.getData().add(new XYChart.Data<>("Minimo", grafico.getNumeroMinimo()));
+        recipesSeries.getData().add(new XYChart.Data<>("Media", grafico.getMedia()));
+        recipesSeries.getData().add(new XYChart.Data<>("Massimo", grafico.getNumeroMassimo()));
+
         recipesChart.getData().clear();
         recipesChart.getData().add(recipesSeries);
         recipesChart.setTitle("");
         recipesChart.setLegendVisible(false);
 
-        
         XYChart.Series<String, Number> earningsSeries = new XYChart.Series<>();
         earningsSeries.setName("Guadagni Mensili");
-        
+
         String[] lastSixMonths = {"Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"};
-        double[] earnings = {3200, 2800, 4100, 4500, 4300, data.monthlyEarnings};
-        
+        double[] earnings = {3200, 2800, 4100, 4500, 4300, monthlyEarnings};
+
         for (int i = 0; i < lastSixMonths.length; i++) {
             earningsSeries.getData().add(new XYChart.Data<>(lastSixMonths[i], earnings[i]));
         }
-        
+
         earningsChart.getData().clear();
         earningsChart.getData().add(earningsSeries);
         earningsChart.setTitle("");

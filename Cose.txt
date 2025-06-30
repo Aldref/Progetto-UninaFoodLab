@@ -715,7 +715,39 @@ BEFORE INSERT OR UPDATE ON CHEF
 FOR EACH ROW
 EXECUTE FUNCTION validate_email_full();
 
--trigger obbligo che una sessione in presenza abbia almeno una ricetta
+-trigger obbligo iscrizione per partecipare al corso
+    CREATE OR REPLACE FUNCTION check_partecipazione_corso()
+        RETURNS TRIGGER AS $$
+        DECLARE
+            corso_id INT;
+            partecipante_id INT;
+            pagamento_count INT;
+        BEGIN
+            SELECT IDcorso INTO corso_id
+            FROM SESSIONE_PRESENZA
+            WHERE IdSessionePresenza = NEW.IdSessionePresenza;
+
+            partecipante_id := NEW.IDpartecipante;
+
+            
+            SELECT COUNT(*) INTO pagamento_count
+            FROM RICHIESTAPAGAMENTO
+            WHERE IdCorso = corso_id
+            AND IdPartecipante = partecipante_id;
+
+           
+            IF pagamento_count = 0 THEN
+                RAISE EXCEPTION 'Il partecipante % non è iscritto al corso %.', partecipante_id, corso_id;
+            END IF;
+
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_check_partecipazione_corso
+BEFORE INSERT ON ADESIONE_SESSIONEPRESENZA
+FOR EACH ROW
+EXECUTE FUNCTION check_partecipazione_corso();
 
 //da fare in futuro
 db check percorso propic

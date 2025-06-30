@@ -22,7 +22,11 @@ import com.progetto.Entity.EntityDto.Sessione;
 import com.progetto.Entity.EntityDto.SessioneOnline;
 import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
+import com.progetto.Entity.EntityDto.Ricetta;
+import com.progetto.Entity.EntityDto.Ingredienti;
 import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
+import com.progetto.Entity.entityDao.IngredientiDao;
+import com.progetto.utils.SuccessDialogUtils;
 
 public class CalendarDialogController {
 
@@ -228,6 +232,10 @@ public class CalendarDialogController {
         durationLabel.getStyleClass().add("detail-label");
         durationBox.getChildren().addAll(durationIcon, durationLabel);
 
+        // Conferma presenza button logic
+        Button confermaBtn = null;
+        Label confermaMsg = null;
+
         if (sessione instanceof SessioniInPresenza) {
             SessioniInPresenza s = (SessioniInPresenza) sessione;
             String nomeRicetta = "";
@@ -251,6 +259,70 @@ public class CalendarDialogController {
             addressBox.getChildren().addAll(addressIcon, addressLabel);
 
             detailsContainer.getChildren().addAll(startTimeBox, durationBox, ricettaLabel, addressBox);
+
+            if (s.getRicette() != null && !s.getRicette().isEmpty()) {
+                for (Ricetta ricetta : s.getRicette()) {
+                    if (ricetta != null && ricetta.getIngredientiRicetta() != null && !ricetta.getIngredientiRicetta().isEmpty()) {
+                        Label ingrTitle = new Label("Ingredienti per la sessione:");
+                        ingrTitle.getStyleClass().add("detail-label");
+                        detailsContainer.getChildren().add(ingrTitle);
+                        for (Ingredienti ingr : ricetta.getIngredientiRicetta()) {
+                            IngredientiDao ingrDao = new IngredientiDao();
+                            ingrDao.recuperaQuantitaTotale(ingr, ricetta);
+                            String ingrText = "- " + ingr.getNome() + ": " + ingr.getQuantitaTotale() + " " + ingr.getUnitaMisura();
+                            Label ingrLabel = new Label(ingrText);
+                            ingrLabel.getStyleClass().add("detail-label");
+                            detailsContainer.getChildren().add(ingrLabel);
+                        }
+                    }
+                }
+            }
+
+            // Conferma presenza button logic
+            // Only for UtenteVisitatore, not chef, and if not already confirmed
+            UtenteVisitatore user = UtenteVisitatore.loggedUser;
+            if (!isChef && user != null) {
+                boolean isIscritto = false;
+                boolean giaConfermato = false;
+                try {
+                    isIscritto = user.getUtenteVisitatoreDao().isUtenteIscrittoAlCorso(user.getId_UtenteVisitatore(), s.getId_Corso());
+                } catch (Exception e) {
+                    isIscritto = false;
+                }
+                if (!isIscritto) {
+                    confermaMsg = new Label("Iscriviti al corso per confermare la presenza");
+                    confermaMsg.getStyleClass().add("conferma-presenza-msg");
+                    confermaMsg.setWrapText(true);
+                } else {
+                    try {
+                        giaConfermato = user.getUtenteVisitatoreDao().haGiaConfermatoPresenza(s.getId_Sessione(), user.getId_UtenteVisitatore());
+                    } catch (Exception e) {
+                        giaConfermato = false;
+                    }
+                    if (!giaConfermato) {
+                        final Button confermaBtnFinal = new Button("Conferma presenza");
+                        confermaBtnFinal.getStyleClass().add("conferma-presenza-btn");
+                        final UtenteVisitatore userFinal = user;
+                        final SessioniInPresenza sessioneFinal = s;
+                        confermaBtnFinal.setOnAction(evt -> {
+                            userFinal.getUtenteVisitatoreDao().partecipaAllaSessioneDalVivo(sessioneFinal, userFinal);
+                            confermaBtnFinal.setDisable(true);
+                            confermaBtnFinal.setText("Presenza confermata");
+                            javafx.stage.Stage parentStage = null;
+                            try {
+                                parentStage = (javafx.stage.Stage) confermaBtnFinal.getScene().getWindow();
+                            } catch (Exception ignored) {}
+                            SuccessDialogUtils.showGenericSuccessDialog(parentStage, "Presenza confermata", "La tua presenza è stata confermata con successo.");
+                        });
+                        confermaBtn = confermaBtnFinal;
+                    } else {
+                        confermaMsg = new Label("Hai già confermato la presenza a questa sessione");
+                        confermaMsg.getStyleClass().add("conferma-presenza-msg");
+                        confermaMsg.setWrapText(true);
+                    }
+                }
+            }
+
         } else if (sessione instanceof SessioneOnline) {
             SessioneOnline s = (SessioneOnline) sessione;
             String app = s.getApplicazione() != null ? s.getApplicazione() : "";
@@ -293,6 +365,11 @@ public class CalendarDialogController {
         descLabel.setWrapText(true);
 
         item.getChildren().addAll(descLabel, separator, detailsContainer);
+        if (confermaBtn != null) {
+            item.getChildren().add(confermaBtn);
+        } else if (confermaMsg != null) {
+            item.getChildren().add(confermaMsg);
+        }
         return item;
     }
 

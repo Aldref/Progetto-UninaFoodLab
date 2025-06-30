@@ -3,18 +3,37 @@ package com.progetto.Entity.EntityDto;
 
 
 public class GraficoChef {
-private int numeroMassimo;
-private int NumeroMinimo;
-private float Media;
-private int NumeriCorsi;
-private int numeroSessioniInPresenza;
-private int numerosessionitelematiche;
+    private int numeroMassimo;
+    private int NumeroMinimo;
+    private float Media;
+    private int NumeriCorsi;
+    private int numeroSessioniInPresenza;
+    private int numerosessionitelematiche;
 
-public GraficoChef(){
-    numeroMassimo=0;
-    Media=0;
-    NumeroMinimo=0;
-}
+    public GraficoChef(){
+        numeroMassimo=0;
+        Media=0;
+        NumeroMinimo=0;
+    }
+    // Getter e Setter aggiuntivi
+    public int getNumeriCorsi() {
+        return NumeriCorsi;
+    }
+    public void setNumeriCorsi(int numeriCorsi) {
+        this.NumeriCorsi = numeriCorsi;
+    }
+    public int getNumeroSessioniInPresenza() {
+        return numeroSessioniInPresenza;
+    }
+    public void setNumeroSessioniInPresenza(int numeroSessioniInPresenza) {
+        this.numeroSessioniInPresenza = numeroSessioniInPresenza;
+    }
+    public int getNumerosessionitelematiche() {
+        return numerosessionitelematiche;
+    }
+    public void setNumerosessionitelematiche(int numerosessionitelematiche) {
+        this.numerosessionitelematiche = numerosessionitelematiche;
+    }
 
 public GraficoChef(int numeroMassimo,float Media,int NumeroMinimo,int NumeriCorsi,int numeroSessioniInPresenza,int numerosessionitelematiche){
     this.numeroMassimo=numeroMassimo;

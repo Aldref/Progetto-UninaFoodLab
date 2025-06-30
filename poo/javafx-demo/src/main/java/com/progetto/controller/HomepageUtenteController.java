@@ -110,25 +110,15 @@ public class HomepageUtenteController {
             @Override
             protected Void call() throws Exception {
                 try {
-                    CorsoDao corsoDao = new CorsoDao();
                     UtenteVisitatoreDao utenteDao = new UtenteVisitatoreDao();
                     UtenteVisitatore utente = UtenteVisitatore.loggedUser;
-                    // Recupera tutti i corsi
-                    ArrayList<Corso> corsi = corsoDao.recuperaCorsi();
-                    // Recupera i corsi a cui l'utente è iscritto
-                    utenteDao.RecuperaCorsi(utente);
-                    List<Corso> corsiIscritti = utente.getCorsi();
-                    HashSet<Integer> idCorsiIscritti = new HashSet<>();
-                    if (corsiIscritti != null) {
-                        for (Corso c : corsiIscritti) {
-                            idCorsiIscritti.add(c.getId_Corso());
-                        }
-                    }
+                    // Recupera solo i corsi a cui NON è iscritto e che non sono pieni
+                    utenteDao.RecuperaCorsiNonIscritto(utente);
+                    List<Corso> corsi = utente.getCorsi();
                     // Ottieni i filtri selezionati
                     String categoriaFiltro = categoryComboBox.getValue();
                     String frequenzaFiltro = frequencyComboBox.getValue();
                     for (Corso corso : corsi) {
-                        if (idCorsiIscritti.contains(corso.getId_Corso())) continue;
                         boolean matchCategoria = true;
                         if (categoriaFiltro != null && !categoriaFiltro.equals("Tutte le categorie")) {
                             List<String> tipiCucina = corso.getTipiDiCucina();

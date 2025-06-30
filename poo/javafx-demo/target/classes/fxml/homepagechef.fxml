@@ -132,13 +132,6 @@
                                 </children>
                             </VBox>
                             
-                            <VBox spacing="5.0">
-                                <children>
-                                <Label text="Tipo lezione" styleClass="dropdown-label" />
-                                <ComboBox fx:id="lessonTypeComboBox" styleClass="search-dropdown" prefWidth="180.0" promptText="Seleziona..." />
-                                </children>
-                            </VBox>
-                            
                             <VBox spacing="5.0" alignment="BOTTOM_CENTER">
                                 <children>
                                 <Button fx:id="searchBtn" text="Cerca corso" styleClass="search-button" onAction="#searchCourses" />

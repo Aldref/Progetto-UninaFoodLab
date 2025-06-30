@@ -1,5 +1,6 @@
 package com.progetto.controller;
 
+
 import javafx.scene.Node;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.Label;
@@ -8,20 +9,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
 
 import com.progetto.boundary.CardCorsoBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
 import com.progetto.utils.SceneSwitcher;
-
-import java.io.IOException;
+import com.progetto.Entity.EntityDto.Chef;
+import com.progetto.Entity.EntityDto.Corso;
+import com.progetto.Entity.entityDao.BarraDiRicercaDao;
 
 public class HomepageChefController {
     private FlowPane mainContentArea;
     private Label pageLabel;
     private ComboBox<String> categoryComboBox;
     private ComboBox<String> frequencyComboBox;
-    private ComboBox<String> lessonTypeComboBox;
     private Label chefNameLabel;
+    private javafx.scene.image.ImageView profileImageLarge;
 
     private List<Node> allCourseCards = new ArrayList<>();
     private int currentPage = 0;
@@ -29,118 +32,118 @@ public class HomepageChefController {
 
     public HomepageChefController(FlowPane mainContentArea, Label pageLabel, 
                                 ComboBox<String> categoryComboBox, ComboBox<String> frequencyComboBox,
-                                ComboBox<String> lessonTypeComboBox, Label chefNameLabel) {
+                                /*ComboBox<String> lessonTypeComboBox,*/ Label chefNameLabel,
+                                javafx.scene.image.ImageView profileImageLarge) {
         this.mainContentArea = mainContentArea;
         this.pageLabel = pageLabel;
         this.categoryComboBox = categoryComboBox;
         this.frequencyComboBox = frequencyComboBox;
-        this.lessonTypeComboBox = lessonTypeComboBox;
+        // this.lessonTypeComboBox = lessonTypeComboBox; // eliminato
         this.chefNameLabel = chefNameLabel;
+        this.profileImageLarge = profileImageLarge;
     }
 
+
     public void initializeSearchFilters() {
-        
         categoryComboBox.getItems().clear();
         frequencyComboBox.getItems().clear();
-        lessonTypeComboBox.getItems().clear();
-        
-        chefNameLabel.setText("Mario Rossi");
+
+        // Popola le comboBox con i valori dal DB tramite BarraDiRicercaDao
+        BarraDiRicercaDao barraDao = new BarraDiRicercaDao();
+        List<String> categorie = barraDao.Categorie();
+        List<String> frequenze = barraDao.CeraEnumFrequenza();
+        categoryComboBox.getItems().add("Tutte le categorie");
+        if (categorie != null) categoryComboBox.getItems().addAll(categorie);
+        frequencyComboBox.getItems().add("Tutte le frequenze");
+        if (frequenze != null) frequencyComboBox.getItems().addAll(frequenze);
+
+        // Recupera dati chef loggato dal DB solo se serve
+        Chef chef = Chef.loggedUser;
+        if (chef != null) {
+            if (chef.getNome() == null || chef.getCognome() == null) {
+                chef.getChefDao().recuperaDatiUtente(chef);
+            }
+            chefNameLabel.setText(chef.getNome() + " " + chef.getCognome());
+        }
     }
 
     public void searchCourses() {
         // Implementa la logica di ricerca nei corsi dello chef
         String categoria = categoryComboBox.getValue();
         String frequenza = frequencyComboBox.getValue();
-        String tipoLezione = lessonTypeComboBox.getValue();
-        
+        // tipoLezione rimosso
         // Per ora ricarica semplicemente tutti i corsi
         loadChefCourses();
     }
 
     public void loadChefCourses() {
         allCourseCards.clear();
-        try {
-            // Dati di esempio per corsi del chef
-            String[] courseTitles = {
-                "Corso di Pasta Fresca",
-                "Risotti e Cereali",
-                "Dolci Tradizionali",
-                "Cucina Mediterranea",
-                "Pizza Napoletana",
-                "Cucina Vegana Italiana",
-                "Antipasti Creativi",
-                "Secondi di Pesce",
-                "Salse e Sughi",
-                "Cucina Regionale"
-            };
-            
-            String[] descriptions = {
-                "Impara l'arte della pasta fresca fatta in casa con tecniche tradizionali.",
-                "Scopri i segreti dei risotti cremosi e dei cereali della tradizione italiana.",
-                "Dolci della nonna: ricette autentiche tramandate di generazione in generazione.",
-                "Un viaggio nella cucina mediterranea con ingredienti freschi e genuini.",
-                "La vera pizza napoletana: dall'impasto alla cottura nel forno a legna.",
-                "Cucina plant-based italiana: sapori autentici senza ingredienti animali.",
-                "Antipasti creativi per stupire i tuoi ospiti con presentazioni uniche.",
-                "Pesce fresco del Mediterraneo: tecniche di cottura e preparazione.",
-                "Salse tradizionali e sughi regionali per valorizzare ogni piatto.",
-                "Viaggio nelle cucine regionali italiane: dalla Sicilia al Trentino."
-            };
-
-            // Array con nomi chef variabili
-            String[] chefNames = {
-                "Chef Mario Rossi",
-                "Chef Giuseppe Verdi", 
-                "Chef Anna Bianchi",
-                "Chef Francesco Neri",
-                "Chef Laura Gialli",
-                "Chef Roberto Blues",
-                "Chef Sofia Viola",
-                "Chef Alessandro Rosa",
-                "Chef Elena Grigi",
-                "Chef Davide Azzurri"
-            };
-
-            // Array con anni di esperienza variabili
-            String[] experienceYears = {
-                "15", "12", "8", "20", "10", 
-                "18", "6", "25", "14", "22"
-            };
-            
-            for (int i = 0; i < courseTitles.length; i++) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
-                Node card = loader.load();
-                CardCorsoBoundary boundary = loader.getController();
-
-                // Configura la card per la modalità chef
-                boundary.setChefMode(true);
-
-                // Imposta i dati del corso con variabili
-                String title = courseTitles[i];
-                String description = descriptions[i];
-                String startDate = "15/0" + ((i % 9) + 1) + "/2025";
-                String endDate = "30/" + String.format("%02d", ((i % 12) + 1)) + "/2025";
-                String frequency = (i % 2 == 0) ? "2 volte a settimana" : "1 volta a settimana";
-                String price = null; // Per chef non serve il prezzo
-                String chefName = chefNames[i % chefNames.length];
-                String experience = experienceYears[i % experienceYears.length];
-                String maxPeople = String.valueOf(20 + (i % 5) * 5); // esempio: 20, 25, 30, 35, 40
-
-                boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience, maxPeople);
-
-                // Dati fittizi per i tipi di cucina: alterna tra uno e due tipi
-                String cucina1 = (i % 3 == 0) ? "Italiana" : (i % 3 == 1) ? "Vegetariana" : "Giapponese";
-                String cucina2 = (i % 2 == 0) ? "" : "Fusion"; // Solo per alcuni corsi
-                boundary.setCuisineTypes(cucina1, cucina2);
-
-                // Una sola immagine per tutte le card
-                String imagePath = "/immagini/corsi/esempio.png";
-                boundary.setCourseImage(imagePath);
-
-                allCourseCards.add(card);
+        Chef chef = Chef.loggedUser;
+        if (chef == null) {
+            updateCourseCards();
+            return;
+        }
+        // Recupera i corsi solo se id_Chef valorizzato
+        if (chef.getId_Chef() == 0) {
+            chef.getChefDao().recuperaDatiUtente(chef);
+        }
+        chef.getChefDao().RecuperaCorsi(chef);
+        List<Corso> corsi = chef.getCorsi();
+        // Ottieni i filtri selezionati
+        String categoriaFiltro = categoryComboBox.getValue();
+        String frequenzaFiltro = frequencyComboBox.getValue();
+        if (corsi != null) {
+            for (Corso corso : corsi) {
+                // Applica i filtri come in HomepageUtenteController
+                boolean matchCategoria = true;
+                if (categoriaFiltro != null && !categoriaFiltro.equals("Tutte le categorie")) {
+                    List<String> tipiCucina = corso.getTipiDiCucina();
+                    matchCategoria = false;
+                    String categoriaFiltroNorm = categoriaFiltro.trim().toLowerCase();
+                    if (tipiCucina != null) {
+                        for (String tipo : tipiCucina) {
+                            if (tipo != null && tipo.trim().toLowerCase().equals(categoriaFiltroNorm)) {
+                                matchCategoria = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                boolean matchFrequenza = true;
+                if (frequenzaFiltro != null && !frequenzaFiltro.equals("Tutte le frequenze")) {
+                    matchFrequenza = corso.getFrequenzaDelleSessioni() != null && corso.getFrequenzaDelleSessioni().equals(frequenzaFiltro);
+                }
+                if (!matchCategoria || !matchFrequenza) continue;
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
+                    Node card = loader.load();
+                    CardCorsoBoundary boundary = loader.getController();
+                    boundary.setChefMode(true);
+                    boundary.setCorso(corso); // Associa il corso alla card per il calendario
+                    // Imposta i dati reali del corso
+                    String title = corso.getNome();
+                    String description = corso.getDescrizione();
+                    String startDate = corso.getDataInizio() != null ? corso.getDataInizio().toString() : "";
+                    String endDate = corso.getDataFine() != null ? corso.getDataFine().toString() : "";
+                    String frequency = corso.getFrequenzaDelleSessioni();
+                    String price = null; // Per chef non serve il prezzo
+                    String chefName = chef.getNome() + " " + chef.getCognome();
+                    String experience = String.valueOf(chef.getAnniDiEsperienza());
+                    String maxPeople = corso.getMaxPersone() != 0 ? String.valueOf(corso.getMaxPersone()) : "";
+                    boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience, maxPeople);
+                    // Tipi di cucina
+                    List<String> tipiCucina = corso.getTipiDiCucina();
+                    String cucina1 = tipiCucina != null && tipiCucina.size() > 0 ? tipiCucina.get(0) : "";
+                    String cucina2 = tipiCucina != null && tipiCucina.size() > 1 ? tipiCucina.get(1) : "";
+                    boundary.setCuisineTypes(cucina1, cucina2);
+                    // Immagine del corso
+                    String imagePath = corso.getUrl_Propic() != null ? "/" + corso.getUrl_Propic() : "/immagini/corsi/esempio.png";
+                    boundary.setCourseImage(imagePath);
+                    allCourseCards.add(card);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         updateCourseCards();
     }

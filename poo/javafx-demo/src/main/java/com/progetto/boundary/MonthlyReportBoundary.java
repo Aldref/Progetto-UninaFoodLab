@@ -11,6 +11,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.event.ActionEvent;
 import com.progetto.controller.MonthlyReportController;
+import com.progetto.Entity.EntityDto.Chef;
 import com.progetto.boundary.LogoutDialogBoundary;
 import com.progetto.utils.SceneSwitcher;
 import javafx.stage.Stage;
@@ -49,18 +50,24 @@ public class MonthlyReportBoundary {
     @FXML private NumberAxis earningsYAxis;
 
     private MonthlyReportController controller;
+    private Chef chef;
 
     @FXML
     public void initialize() {
+        // Recupera o crea l'oggetto Chef corrente (qui esempio statico, da sostituire con quello reale)
+        chef = new Chef();
+        chef.setNome("Mario");
+        // ...eventuali altri settaggi necessari...
+
         controller = new MonthlyReportController(
             monthYearLabel, monthComboBox, yearComboBox,
             totalCoursesLabel, onlineSessionsLabel, practicalSessionsLabel, monthlyEarningsLabel,
             sessionsChart, recipesChart, avgRecipesLabel, maxRecipesLabel, minRecipesLabel, totalRecipesLabel,
-            earningsChart
+            earningsChart,
+            chef
         );
         controller.initialize();
-        
-        chefNameLabel.setText("Mario");
+        chefNameLabel.setText(chef.getNome());
     }
 
    

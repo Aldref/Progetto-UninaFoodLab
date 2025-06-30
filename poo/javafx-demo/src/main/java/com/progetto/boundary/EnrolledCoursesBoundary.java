@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import com.progetto.controller.EnrolledCoursesController;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
+import com.progetto.utils.ImageClipUtils;
 
 
 public class EnrolledCoursesBoundary implements Initializable {
@@ -44,8 +45,7 @@ public class EnrolledCoursesBoundary implements Initializable {
                 if (imgFile.exists()) {
                     javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 80, 80, true, true);
                     userProfileImage.setImage(img);
-                    // Clip circolare come in AccountManagement
-                    com.progetto.controller.AccountManagementController.setCircularClip(userProfileImage, 40);
+                    ImageClipUtils.setCircularClip(userProfileImage, 40);
                 }
             }
         }

@@ -6,6 +6,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.FlowPane;
 import javafx.event.ActionEvent;
 import com.progetto.controller.HomepageChefController;
+import com.progetto.utils.ImageClipUtils;
+import java.io.File;
 
 public class HomepageChefBoundary {
 
@@ -20,7 +22,7 @@ public class HomepageChefBoundary {
     @FXML
     private ComboBox<String> frequencyComboBox;
     @FXML
-    private ComboBox<String> lessonTypeComboBox;
+    private javafx.scene.image.ImageView chefProfileImage;
 
     private HomepageChefController controller;
 
@@ -33,9 +35,23 @@ public class HomepageChefBoundary {
             pageLabel, 
             categoryComboBox,
             frequencyComboBox,
-            lessonTypeComboBox,
-            chefNameLabel
+            chefNameLabel,
+            chefProfileImage
         );
+        // Imposta nome e immagine chef nella navbar
+        com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
+        if (chef != null) {
+            chefNameLabel.setText(chef.getNome() + " " + chef.getCognome());
+            String propic = chef.getUrl_Propic();
+            if (propic != null && !propic.isEmpty()) {
+                File imgFile = new File("src/main/resources/" + propic);
+                if (imgFile.exists()) {
+                    javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
+                    chefProfileImage.setImage(img);
+                    ImageClipUtils.setCircularClip(chefProfileImage, 0); // raggio automatico
+                }
+            }
+        }
         controller.loadChefCourses();
         controller.initializeSearchFilters();
     }

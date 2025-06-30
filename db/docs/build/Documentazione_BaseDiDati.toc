@@ -60,6 +60,7 @@
 \contentsline {subsubsection}{\numberline {4.4.9}Trigger: Controllo Superamento Numero Massimo di Partecipanti per Corso}{36}{subsubsection.4.4.9}%
 \contentsline {subsubsection}{\numberline {4.4.10}Trigger: Impedire Eliminazione di Corsi con Iscritti Paganti}{37}{subsubsection.4.4.10}%
 \contentsline {subsubsection}{\numberline {4.4.11}Trigger: Chef Non Può Essere Assegnato Contemporaneamente a Sessione Presenza e Telematica}{38}{subsubsection.4.4.11}%
-\contentsline {subsection}{\numberline {4.5}Definizione delle View}{40}{subsection.4.5}%
-\contentsline {subsubsection}{\numberline {4.5.1}View: Statistiche Mensili Chef}{40}{subsubsection.4.5.1}%
-\contentsline {subsubsection}{\numberline {4.5.2}View: Quantità Ingredienti per Sessione}{41}{subsubsection.4.5.2}%
+\contentsline {subsubsection}{\numberline {4.4.12}Trigger: Partecipante può aderire solo se iscritto al corso}{40}{subsubsection.4.4.12}%
+\contentsline {subsection}{\numberline {4.5}Definizione delle View}{41}{subsection.4.5}%
+\contentsline {subsubsection}{\numberline {4.5.1}View: Statistiche Mensili Chef}{41}{subsubsection.4.5.1}%
+\contentsline {subsubsection}{\numberline {4.5.2}View: Quantità Ingredienti per Sessione}{42}{subsubsection.4.5.2}%

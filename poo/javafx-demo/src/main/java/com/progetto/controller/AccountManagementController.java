@@ -1,4 +1,3 @@
-
 package com.progetto.controller;
 
 import javafx.stage.FileChooser;
@@ -11,16 +10,14 @@ import com.progetto.boundary.AccountManagementBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
+import com.progetto.Entity.EntityDto.UtenteVisitatore;
+import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
+
 
 
 public class AccountManagementController {
-
-    // Utility statica per clip circolare, riutilizzabile ovunque
-    public static void setCircularClip(javafx.scene.image.ImageView imageView, double radius) {
-        if (imageView == null) return;
-        javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(radius, radius, radius);
-        imageView.setClip(clip);
-    }
+    private static UtenteVisitatore loggedUser = UtenteVisitatore.loggedUser;
+    private static UtenteVisitatoreDao utenteDao = new UtenteVisitatoreDao();
 
     private AccountManagementBoundary boundary;
     private String originalName;
@@ -38,13 +35,12 @@ public class AccountManagementController {
 
     private void loadUserData() {
         // Carica i dati reali dell'utente loggato dal DB
-        com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
-        if (utente != null) {
-            utente.getUtenteVisitatoreDao().recuperaDatiUtente(utente);
-            originalName = utente.getNome();
-            originalSurname = utente.getCognome();
-            originalEmail = utente.getEmail();
-            originalBirthDate = utente.getDataDiNascita();
+        if (loggedUser != null) {
+            utenteDao.recuperaDatiUtente(loggedUser);
+            originalName = loggedUser.getNome();
+            originalSurname = loggedUser.getCognome();
+            originalEmail = loggedUser.getEmail();
+            originalBirthDate = loggedUser.getDataDiNascita();
 
             boundary.getNameField().setText(originalName);
             boundary.getSurnameField().setText(originalSurname);
@@ -53,21 +49,8 @@ public class AccountManagementController {
             boundary.getUserNameLabel().setText(originalName + " " + originalSurname);
 
             // Carica la foto profilo se presente
-            String propic = utente.getUrl_Propic();
-            if (propic != null && !propic.isEmpty()) {
-                File imgFile = new File("src/main/resources/" + propic);
-                if (imgFile.exists()) {
-                    javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
-                    if (boundary.getUserProfileImage() != null) {
-                        boundary.getUserProfileImage().setImage(img);
-                        setCircularClip(boundary.getUserProfileImage(), 40);
-                    }
-                    if (boundary.getProfileImageLarge() != null) {
-                        boundary.getProfileImageLarge().setImage(img);
-                        setCircularClip(boundary.getProfileImageLarge(), 60);
-                    }
-                }
-            }
+            String propic = loggedUser.getUrl_Propic();
+            boundary.setProfileImages(propic);
         }
     }
 
@@ -87,17 +70,40 @@ public class AccountManagementController {
                 boundary.showErrorMessage("Formato immagine non supportato. Usa PNG, JPG, JPEG o GIF.");
                 return;
             }
-            javafx.scene.image.Image img = new javafx.scene.image.Image(selectedFile.toURI().toString());
-            if (boundary.getUserProfileImage() != null) {
-                boundary.getUserProfileImage().setImage(img);
-                setCircularClip(boundary.getUserProfileImage(), 40);
-            }
-            if (boundary.getProfileImageLarge() != null) {
-                boundary.getProfileImageLarge().setImage(img);
-                setCircularClip(boundary.getProfileImageLarge(), 60);
-            }
+
+            // Costruisci il percorso di destinazione
+        if (loggedUser == null) {
+            boundary.showErrorMessage("Utente non trovato.");
+            return;
+        }
+        String nome = loggedUser.getNome() != null ? loggedUser.getNome().replaceAll("[^a-zA-Z0-9]", "_") : "utente";
+        String cognome = loggedUser.getCognome() != null ? loggedUser.getCognome().replaceAll("[^a-zA-Z0-9]", "_") : "profilo";
+        String extension = ext.substring(ext.lastIndexOf('.'));
+        String fileName = nome + "_" + cognome + extension;
+        String relativePath = "immagini/PropicUtente/" + fileName;
+        File destFile = new File("src/main/resources/" + relativePath);
+
+        // Copia il file selezionato nella destinazione
+        try {
+            java.nio.file.Files.copy(selectedFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            boundary.showErrorMessage("Errore nel salvataggio della foto profilo: " + e.getMessage());
+            return;
         }
 
+        // Aggiorna il path nell'oggetto utente e nel DB
+        loggedUser.setUrl_Propic(relativePath);
+        try {
+            utenteDao.ModificaUtente(loggedUser);
+        } catch (Exception e) {
+            boundary.showErrorMessage("Errore nel salvataggio della foto profilo nel database: " + e.getMessage());
+            return;
+        }
+
+        // Aggiorna la GUI
+        javafx.scene.image.Image img = new javafx.scene.image.Image(destFile.toURI().toString(), 256, 256, true, true);
+        boundary.setProfileImages(relativePath);
+        }
     }
 
 
@@ -124,8 +130,7 @@ public class AccountManagementController {
             return;
         }
 
-        com.progetto.Entity.EntityDto.UtenteVisitatore utente = com.progetto.Entity.EntityDto.UtenteVisitatore.loggedUser;
-        if (utente == null) {
+        if (loggedUser == null) {
             boundary.showErrorMessage("Utente non trovato.");
             return;
         }
@@ -143,7 +148,7 @@ public class AccountManagementController {
                 return;
             }
             // Controllo che la password attuale sia corretta
-            if (!utente.getPassword().equals(currentPwd)) {
+            if (!loggedUser.getPassword().equals(currentPwd)) {
                 boundary.showErrorMessage("La password attuale non è corretta.");
                 return;
             }
@@ -153,22 +158,22 @@ public class AccountManagementController {
                 return;
             }
             // Aggiorna la password
-            utente.setPassword(newPwd);
+            loggedUser.setPassword(newPwd);
         }
 
         // Aggiorna gli altri dati
-        utente.setNome(boundary.getNameField().getText());
-        utente.setCognome(boundary.getSurnameField().getText());
-        utente.setEmail(boundary.getEmailField().getText());
-        utente.setDataDiNascita(boundary.getBirthDatePicker().getValue());
+        loggedUser.setNome(boundary.getNameField().getText());
+        loggedUser.setCognome(boundary.getSurnameField().getText());
+        loggedUser.setEmail(boundary.getEmailField().getText());
+        loggedUser.setDataDiNascita(boundary.getBirthDatePicker().getValue());
 
         try {
-            utente.getUtenteVisitatoreDao().ModificaUtente(utente);
+            utenteDao.ModificaUtente(loggedUser);
 
-            originalName = utente.getNome();
-            originalSurname = utente.getCognome();
-            originalEmail = utente.getEmail();
-            originalBirthDate = utente.getDataDiNascita();
+            originalName = loggedUser.getNome();
+            originalSurname = loggedUser.getCognome();
+            originalEmail = loggedUser.getEmail();
+            originalBirthDate = loggedUser.getDataDiNascita();
 
             boundary.getUserNameLabel().setText(originalName + " " + originalSurname);
 

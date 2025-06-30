@@ -92,6 +92,7 @@ public class ChefDao extends UtenteDao  {
                 chef.setDataDiNascita(rs.getDate("DataDiNascita").toLocalDate());
                 ((Chef)chef).setAnniDiEsperienza(rs.getInt("AnniDiEsperienza"));
                 ((Chef)chef).setId_Chef(rs.getInt("IdChef"));
+                ((Chef)chef).setUrl_Propic(rs.getString("Propic"));
             }
         } catch (SQLException sqe) {
             // aggiungi errore
@@ -117,7 +118,7 @@ public class ChefDao extends UtenteDao  {
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
-            ps.setInt(1, ((UtenteVisitatore) utente).getId_UtenteVisitatore());
+            ps.setInt(1, ((Chef) utente).getId_Chef());
             rs = ps.executeQuery(); 
 
             while (rs.next()){
@@ -140,6 +141,21 @@ public class ChefDao extends UtenteDao  {
                 corso.setChefNome(rs.getString("chef_nome"));
                 corso.setChefCognome(rs.getString("chef_cognome"));
                 corso.setChefEsperienza(rs.getInt("chef_esperienza"));
+
+                // POPOLA I TIPI DI CUCINA (nuova connessione per evitare problemi con ResultSet)
+                ArrayList<String> tipiCucina = new ArrayList<>();
+                String queryTipi = "SELECT T.Nome FROM TIPODICUCINA_CORSO CT JOIN TIPODICUCINA T ON CT.IdTipoCucina = T.IdTipoCucina WHERE CT.IdCorso = ?";
+                try (Connection connTipi = ConnectionJavaDb.getConnection();
+                    PreparedStatement psTipi = connTipi.prepareStatement(queryTipi)) {
+                    psTipi.setInt(1, corso.getId_Corso());
+                    try (ResultSet rsTipi = psTipi.executeQuery()) {
+                        while (rsTipi.next()) {
+                            tipiCucina.add(rsTipi.getString("Nome"));
+                        }
+                    }
+                }
+                corso.setTipiDiCucina(tipiCucina);
+
                 Corsi.add(corso);
             }
         } catch (SQLException sqe) {
@@ -154,7 +170,8 @@ public class ChefDao extends UtenteDao  {
 
     
     public void eliminaCorso(Corso corso,Chef chef) {
-        String query = "DELETE FROM Corso WHERE id_Chef = ? and dataInizio = ? and dataFine = ? and nome = ?";
+        // Uniforma i nomi delle colonne con camel case come nel resto del codice
+        String query = "DELETE FROM CORSO WHERE IdChef = ? AND DataInizio = ? AND DataFine = ? AND Nome = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -162,7 +179,7 @@ public class ChefDao extends UtenteDao  {
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
-            ps.setInt(1, corso.getId_Corso());
+            ps.setInt(1, chef.getId_Chef());
             ps.setDate(2, java.sql.Date.valueOf(corso.getDataInizio()));
             ps.setDate(3, java.sql.Date.valueOf(corso.getDataFine()));
             ps.setString(4, corso.getNome());
@@ -172,7 +189,6 @@ public class ChefDao extends UtenteDao  {
         } finally {
             dbu.closeConnection(conn);
             dbu.closeStatement(ps);
-        
         }
     }
     
@@ -180,42 +196,41 @@ public class ChefDao extends UtenteDao  {
     
      @Override
     public void ModificaUtente(Utente chef) {
-        String query = "UPDATE CHEF SET Nome = COALESCE(?, Nome), Cognome = COALESCE(?, Cognome), Email = COALESCE(?, Email), Password = COALESCE(?, Password), DataDiNascita = COALESCE(?, DataDiNascita), Propic=COALESCE(?,Propic) , DESCRIZIONE=COALESCE(?,DESCRIZIONE) WHERE id_Chef = ?";
+        String query = "UPDATE CHEF SET Nome = COALESCE(?, Nome), Cognome = COALESCE(?, Cognome), Email = COALESCE(?, Email), Password = COALESCE(?, Password), DataDiNascita = COALESCE(?, DataDiNascita), Propic = COALESCE(?, Propic), Descrizione = COALESCE(?, Descrizione), AnniDiEsperienza = COALESCE(?, AnniDiEsperienza) WHERE idchef = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
 
         try {
-        conn = ConnectionJavaDb.getConnection();
-        ps = conn.prepareStatement(query);
-        java.sql.Date sqlDataDiNascita = null;
-        if (chef.getDataDiNascita() != null) {
-            sqlDataDiNascita = java.sql.Date.valueOf(chef.getDataDiNascita());
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            java.sql.Date sqlDataDiNascita = null;
+            if (chef.getDataDiNascita() != null) {
+                sqlDataDiNascita = java.sql.Date.valueOf(chef.getDataDiNascita());
+            }
+
+            ps.setString(1, chef.getNome());
+            ps.setString(2, chef.getCognome());
+            ps.setString(3, chef.getEmail());
+            ps.setString(4, chef.getPassword());
+            ps.setDate(5, sqlDataDiNascita);
+            ps.setString(6, ((Chef)chef).getUrl_Propic());
+            ps.setString(7, ((Chef)chef).getDescrizione());
+            ps.setInt(8, ((Chef)chef).getAnniDiEsperienza());
+            ps.setInt(9, ((Chef)chef).getId_Chef());
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            // Gestire l'errore
+        } finally {
+            dbu.closeStatement(ps);
+            dbu.closeConnection(conn);
         }
-
-        ps.setString(1, chef.getNome());
-        ps.setString(2, chef.getCognome());
-        ps.setString(3, chef.getEmail());
-        ps.setString(4, chef.getPassword());
-        ps.setDate(6, sqlDataDiNascita);
-        ps.setString(5, ((Chef)chef).getUrl_Propic());
-        ps.setString(6, ((Chef)chef).getDescrizione());
-        ps.setInt(7, ((Chef)chef).getId_Chef());
-
-        ps.executeUpdate();
-    } catch (SQLException e) {
-       // Gestire l'errore
-    } finally {
-        dbu.closeStatement(ps);
-        dbu.closeConnection(conn);
-    }
-        
-
     }
      @Override
     public String caricaPropic(Utente utente) throws ErrorCaricamentoPropic {
     
-        String query = "SELECT Propic FROM chef WHERE IdPartecipante = ?";
+        String query = "SELECT Propic FROM chef WHERE Idchef = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;

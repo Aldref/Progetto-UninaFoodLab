@@ -1253,7 +1253,7 @@ public class CreateCourseController {
     public void goToAccountManagement() {
         try {
             Stage stage = (Stage) courseNameField.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/accountmanagement.fxml", "UninaFoodLab - Gestione Account");
+            SceneSwitcher.switchScene(stage, "/fxml/accountmanagementchef.fxml", "UninaFoodLab - Gestione Account");
         } catch (Exception e) {
             e.printStackTrace();
         }

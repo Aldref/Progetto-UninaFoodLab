@@ -146,29 +146,29 @@ public class CorsoDao{
 
         }
 
-        public void recuperaTipoCucinaCorsi(Corso corso){
-            String query = "SELECT T.Nome FROM TIPODICUCINA_CORSO TC NATURAL JOIN TIPODICUCINA T WHERE TC.idcorso = ?";
-            SupportDb dbu = new SupportDb();
-            Connection conn = null;
-            PreparedStatement ps = null;
-            ResultSet rs = null;
+    public void recuperaTipoCucinaCorsi(Corso corso){
+        String query = "SELECT T.Nome FROM TIPODICUCINA_CORSO TC NATURAL JOIN TIPODICUCINA T WHERE TC.idcorso = ?";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-            try {
-                conn = ConnectionJavaDb.getConnection();
-                ps = conn.prepareStatement(query);
-                ps.setInt(1, corso.getId_Corso());
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    corso.addTipoDiCucina(rs.getString("Nome"));
-                }
-            } catch(SQLException e){
-                e.printStackTrace();
-            } finally {
-                dbu.closeAll(conn, ps, rs);
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, corso.getId_Corso());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                corso.addTipoDiCucina(rs.getString("Nome"));
             }
+        } catch(SQLException e){
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
         }
+    }
 
-  public ArrayList<Sessione> recuperoSessioniPerCorso(Corso corso) {
+    public ArrayList<Sessione> recuperoSessioniPerCorso(Corso corso) {
         ArrayList<Sessione> sessioni = new ArrayList<>();
         sessioni.addAll(this.recuperoSessionCorso(corso));
         sessioni.addAll(this.recuperoSessioniCorsoOnline(corso));
@@ -177,12 +177,12 @@ public class CorsoDao{
 
 
 
-  public ArrayList<SessioneOnline> recuperoSessioniCorsoOnline(Corso corso){
-      ArrayList<SessioneOnline> sessioni = new ArrayList<>();
-      String query = "SELECT * FROM SESSIONE_TELEMATICA WHERE idcorso = ?";
-      Connection conn = null;
-      PreparedStatement ps = null;
-      ResultSet rs = null;
+    public ArrayList<SessioneOnline> recuperoSessioniCorsoOnline(Corso corso){
+        ArrayList<SessioneOnline> sessioni = new ArrayList<>();
+        String query = "SELECT * FROM SESSIONE_TELEMATICA WHERE idcorso = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         SupportDb dbu = new SupportDb();
 
         try {
@@ -238,6 +238,8 @@ public class CorsoDao{
                   rs.getString("descrizione"),
                   rs.getInt("idsessionepresenza") 
               );
+              // FIX: Associa idCorso alla sessione recuperata
+              sessione.setId_Corso(corso.getId_Corso());
               // Carica le ricette collegate a questa sessione
               sessione.setRicette(new SessioneInPresenzaDao().recuperaRicetteSessione(sessione));
               // Se vuoi anche i partecipanti, decommenta la riga sotto

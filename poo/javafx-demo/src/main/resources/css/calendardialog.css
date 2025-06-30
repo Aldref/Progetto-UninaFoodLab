@@ -1,3 +1,28 @@
+/* Conferma presenza button and message */
+.conferma-presenza-btn {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 8 18 8 18;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-font-size: 14;
+    -fx-margin: 10 0 0 0;
+}
+.conferma-presenza-btn:disabled {
+    -fx-background-color: #b7e0c2;
+    -fx-text-fill: #fff;
+    -fx-cursor: default;
+}
+.conferma-presenza-msg {
+    -fx-background-color: #e8f5e9;
+    -fx-text-fill: #28a745;
+    -fx-background-radius: 12;
+    -fx-padding: 6 14 6 14;
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-margin: 10 0 0 0;
+}
 .calendar-dialog {
     -fx-background-color: white;
     -fx-background-radius: 15;

@@ -5,6 +5,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.event.ActionEvent;
 import com.progetto.controller.AccountManagementChefController;
+import com.progetto.utils.ImageClipUtils;
+import java.io.File;
 
 public class AccountManagementChefBoundary {
 
@@ -109,5 +111,22 @@ public class AccountManagementChefBoundary {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    
+    public void setProfileImages(String propicPath) {
+        if (propicPath != null && !propicPath.isEmpty()) {
+            File imgFile = new File("src/main/resources/" + propicPath);
+            if (imgFile.exists()) {
+                javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
+                if (userProfileImage != null) {
+                    userProfileImage.setImage(img);
+                    ImageClipUtils.setCircularClip(userProfileImage, 40);
+                }
+                if (profileImageLarge != null) {
+                    profileImageLarge.setImage(img);
+                    ImageClipUtils.setCircularClip(profileImageLarge, 60);
+                }
+            }
+        }
     }
 }

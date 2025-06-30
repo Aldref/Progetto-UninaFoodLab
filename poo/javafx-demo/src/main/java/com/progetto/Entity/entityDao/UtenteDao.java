@@ -39,8 +39,8 @@ public abstract class UtenteDao {
     }
     
     public String TipoDiAccount(Utente utente) {
-        String queryChef = "SELECT 1 FROM Chef WHERE Email = ?";
-        String queryPartecipante = "SELECT 1 FROM Partecipante WHERE Email = ?";
+        String queryChef = "SELECT 1 FROM Chef WHERE Email = ? AND Password = ?";
+        String queryPartecipante = "SELECT 1 FROM Partecipante WHERE Email = ? AND Password = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -51,6 +51,7 @@ public abstract class UtenteDao {
 
             ps = conn.prepareStatement(queryChef);
             ps.setString(1, utente.getEmail());
+            ps.setString(2, utente.getPassword());
             rs = ps.executeQuery();
             if (rs.next()) {
                 return "c";
@@ -60,6 +61,7 @@ public abstract class UtenteDao {
 
             ps = conn.prepareStatement(queryPartecipante);
             ps.setString(1, utente.getEmail());
+            ps.setString(2, utente.getPassword());
             rs = ps.executeQuery();
             if (rs.next()) {
                 return "v";
@@ -89,7 +91,7 @@ public abstract class UtenteDao {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
             ps.setString(1,Frequenza);
-              ps.setString(2,Categoria);
+            ps.setString(2,Categoria);
             rs = ps.executeQuery();
 
             while (rs.next()) {

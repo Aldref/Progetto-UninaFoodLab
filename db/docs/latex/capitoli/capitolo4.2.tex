@@ -506,6 +506,54 @@ EXECUTE FUNCTION verifica_sessioni_contemporanee_chef();
 
 \textbf{Spiegazione:}
 \begin{itemize}
+    \item La funzione \texttt{check\_partecipazione\_corso} viene utilizzata come trigger per la tabella \texttt{ADESIONE\_SESSIONEPRESENZA}.
+    \item Si attiva prima di ogni inserimento su questa tabella.
+    \item La funzione recupera l’ID del corso associato alla sessione di presenza (\texttt{SESSIONE\_PRESENZA}) a cui il partecipante si sta iscrivendo.
+    \item Verifica poi se il partecipante (\texttt{IDpartecipante}) ha almeno una richiesta di pagamento (\texttt{RICHIESTAPAGAMENTO}) associata a quel corso.
+    \item Se non esiste alcuna richiesta di pagamento per quel partecipante e corso, viene sollevata un’eccezione e l’inserimento viene bloccato.
+    \item In questo modo si garantisce che solo i partecipanti che hanno effettuato il pagamento (o almeno la richiesta di pagamento) possano iscriversi a una sessione di presenza di un corso.
+\end{itemize}
+\subsubsection{Trigger: Partecipante può aderire solo se iscritto al corso}
+
+Questo trigger impedisce che un partecipante possa aderire a una sessione in presenza se non risulta iscritto (cioè non ha una richiesta di pagamento associata al corso della sessione).
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION check_partecipazione_corso()
+RETURNS TRIGGER AS $$
+DECLARE
+    corso_id INT;
+    partecipante_id INT;
+    pagamento_count INT;
+BEGIN
+    SELECT IDcorso INTO corso_id
+    FROM SESSIONE_PRESENZA
+    WHERE IdSessionePresenza = NEW.IdSessionePresenza;
+
+    partecipante_id := NEW.IDpartecipante;
+
+    SELECT COUNT(*) INTO pagamento_count
+    FROM RICHIESTAPAGAMENTO
+    WHERE IdCorso = corso_id
+    AND IdPartecipante = partecipante_id;
+
+    IF pagamento_count = 0 THEN
+        RAISE EXCEPTION 'Il partecipante % non è iscritto al corso %.', partecipante_id, corso_id;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_check_partecipazione_corso
+BEFORE INSERT ON ADESIONE_SESSIONEPRESENZA
+FOR EACH ROW
+EXECUTE FUNCTION check_partecipazione_corso();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
     \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulle tabelle \texttt{Sessione\_Presenza} e \texttt{Sessione\_Telematica}.
     \item La funzione controlla che lo stesso chef non sia già assegnato a una sessione di tipo diverso nello stesso giorno.
     \item Se viene rilevata una sovrapposizione, viene sollevata un'eccezione e l'operazione viene bloccata.
@@ -521,18 +569,18 @@ Questa view fornisce una panoramica mensile delle attività di ciascun chef, uti
 \noindent\rule{\textwidth}{0.4pt}
 \begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
 CREATE OR REPLACE VIEW vista_statistiche_mensili_chef AS
-  SELECT
-    ch.IdChef,
-    ch.Nome,
-    ch.Cognome,
-    COUNT(spr.IdRicetta) AS totale_ricette_mese,
-    COALESCE(MAX(spr_count.ricette_per_sessione), 0) AS max_ricette_in_sessione,
-    COALESCE(MIN(spr_count.ricette_per_sessione), 0) AS min_ricette_in_sessione,
-    COALESCE(AVG(spr_count.ricette_per_sessione), 0) AS media_ricette_per_sessione,
-    COUNT(DISTINCT c.IdCorso) AS numero_corsi,
-    COUNT(DISTINCT sp.IdSessionePresenza) AS numero_sessioni_presenza,
-    COUNT(DISTINCT st.IdSessioneTelematica) AS numero_sessioni_telematiche,
-    COALESCE(SUM(rp.ImportoPagato), 0) AS guadagno_totale
+    SELECT
+        ch.IdChef,
+        ch.Nome,
+        ch.Cognome,
+        COUNT(spr.IdRicetta) AS totale_ricette_mese,
+        COALESCE(MAX(spr_count.ricette_per_sessione), 0) AS max_ricette_in_sessione,
+        COALESCE(MIN(spr_count.ricette_per_sessione), 0) AS min_ricette_in_sessione,
+        COALESCE(AVG(spr_count.ricette_per_sessione), 0) AS media_ricette_per_sessione,
+        COUNT(DISTINCT c.IdCorso) AS numero_corsi,
+        COUNT(DISTINCT sp.IdSessionePresenza) AS numero_sessioni_presenza,
+        COUNT(DISTINCT st.IdSessioneTelematica) AS numero_sessioni_telematiche,
+        COALESCE(SUM(rp.ImportoPagato), 0) AS guadagno_totale
     FROM CHEF ch
     LEFT JOIN CORSO c ON ch.IdChef = c.IdChef
     LEFT JOIN SESSIONE_PRESENZA sp ON c.IdCorso = sp.IDcorso AND sp.IDChef = ch.IdChef

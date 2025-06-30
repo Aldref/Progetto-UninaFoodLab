@@ -80,8 +80,8 @@ public class UtenteVisitatoreDao extends UtenteDao {
 
     @Override
     public void AssegnaCorso(Corso corso, Utente utente1) {
-        String query = "INSERT INTO  RICHIESTAPAGAMENTO (idPartecipante, idCorso, DataRichiesta,ImportoPagato,StatoPagamento) VALUES (?, ?,?, ?,'Pagato')";
-        LocalDate DataRichiesta= LocalDate.now();
+        String query = "INSERT INTO RICHIESTAPAGAMENTO (idPartecipante, idCorso, DataRichiesta, ImportoPagato, StatoPagamento) VALUES (?, ?, ?, ?, 'Pagato')";
+        LocalDate DataRichiesta = LocalDate.now();
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -89,12 +89,18 @@ public class UtenteVisitatoreDao extends UtenteDao {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
             java.sql.Date sqlData = java.sql.Date.valueOf(DataRichiesta);
-            ps.setInt(1, ((UtenteVisitatore)utente1).getId_UtenteVisitatore());
-            ps.setInt(2, corso.getId_Corso());
+            int idUtente = ((UtenteVisitatore) utente1).getId_UtenteVisitatore();
+            int idCorso = corso.getId_Corso();
+            // DEBUG: stampa id utente e corso
+            System.out.println("[DEBUG] AssegnaCorso - idUtente: " + idUtente + ", idCorso: " + idCorso);
+            ps.setInt(1, idUtente);
+            ps.setInt(2, idCorso);
             ps.setDate(3, sqlData);
             ps.setDouble(4, corso.getPrezzo());
             ps.execute();
-
+            // DEBUG: verifica inserimento
+            boolean iscritto = isUtenteIscrittoAlCorso(idUtente, idCorso);
+            System.out.println("[DEBUG] Dopo inserimento, isUtenteIscrittoAlCorso: " + iscritto);
         } catch (SQLException sqe) {
             sqe.printStackTrace();
         } finally {
@@ -102,9 +108,33 @@ public class UtenteVisitatoreDao extends UtenteDao {
             dbu.closeConnection(conn);
         }
     }
+    // Verifica se l'utente ha già confermato la presenza a una sessione in presenza
+    public boolean haGiaConfermatoPresenza(int idSessione, int idUtente) {
+        // Usa i nomi delle colonne corretti secondo lo schema reale
+        String query = "SELECT 1 FROM ADESIONE_SESSIONEPRESENZA WHERE idsessionepresenza = ? AND idpartecipante = ? AND conferma = TRUE";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, idSessione);
+            ps.setInt(2, idUtente);
+            rs = ps.executeQuery();
+            boolean result = rs.next();
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return false;
+    }
      
-     public void partecipaAllaSessioneDalVivo(SessioniInPresenza sessione,UtenteVisitatore UtenteVisitatore) {
-        String query = "INSERT INTO ADESIONE_SESSIONEPRESENZA (id_Sessione, id_Utente,Conferma) VALUES (?, ?,TRUE)";
+    public void partecipaAllaSessioneDalVivo(SessioniInPresenza sessione,UtenteVisitatore UtenteVisitatore) {
+        // Correggi i nomi delle colonne secondo lo schema reale del database
+        String query = "INSERT INTO ADESIONE_SESSIONEPRESENZA (idsessionepresenza, idpartecipante, conferma) VALUES (?, ?, TRUE)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -114,13 +144,36 @@ public class UtenteVisitatoreDao extends UtenteDao {
             ps = conn.prepareStatement(query);
             ps.setInt(1, sessione.getId_Sessione());
             ps.setInt(2, UtenteVisitatore.getId_UtenteVisitatore());
-            ps.executeUpdate();
+            int rows = ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             dbu.closeConnection(conn);
             dbu.closeStatement(ps);
         }
+    }
+
+    // Verifica se l'utente è iscritto al corso (pagamento effettuato)
+    public boolean isUtenteIscrittoAlCorso(int idUtente, int idCorso) {
+        String query = "SELECT 1 FROM RICHIESTAPAGAMENTO WHERE idpartecipante = ? AND idcorso = ? AND statopagamento = 'Pagato'";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, idUtente);
+            ps.setInt(2, idCorso);
+            rs = ps.executeQuery();
+            boolean result = rs.next();
+            return result;
+        } catch (SQLException e) {
+            // gestire errore
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return false;
     }
 
     @Override
@@ -154,8 +207,54 @@ public class UtenteVisitatoreDao extends UtenteDao {
         dbu.closeConnection(conn);
     }
 }
-     public void RecuperaCorsi (Utente utente){
-      String query = "SELECT C.*, CH.Nome AS chef_nome, CH.Cognome AS chef_cognome, CH.AnniDiEsperienza AS chef_esperienza " +
+    // Restituisce i corsi a cui l'utente NON è iscritto e che non sono pieni
+    public void RecuperaCorsiNonIscritto(Utente utente) {
+        String query = "SELECT C.*, CH.Nome AS chef_nome, CH.Cognome AS chef_cognome, CH.AnniDiEsperienza AS chef_esperienza " +
+                "FROM CORSO C " +
+                "LEFT JOIN CHEF CH ON C.IdChef = CH.IdChef " +
+                "WHERE C.IdCorso NOT IN (SELECT R.IdCorso FROM RICHIESTAPAGAMENTO R WHERE R.IdPartecipante = ? AND R.StatoPagamento = 'Pagato') " +
+                "AND (SELECT COUNT(*) FROM RICHIESTAPAGAMENTO R2 WHERE R2.IdCorso = C.IdCorso AND R2.StatoPagamento = 'Pagato') < C.MaxPersone";
+        SupportDb dbu = new SupportDb();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ArrayList<Corso> Corsi = new ArrayList<>();
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, ((UtenteVisitatore) utente).getId_UtenteVisitatore());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                LocalDate dataInizio = rs.getDate("DataInizio") != null ? rs.getDate("DataInizio").toLocalDate() : null;
+                LocalDate dataFine = rs.getDate("DataFine") != null ? rs.getDate("DataFine").toLocalDate() : null;
+                Corso corso = new Corso(
+                        rs.getString("Nome"),
+                        rs.getString("Descrizione"),
+                        dataInizio,
+                        dataFine,
+                        rs.getString("FrequenzaDelleSessioni"),
+                        rs.getInt("MaxPersone"),
+                        (float) rs.getDouble("Prezzo"),
+                        rs.getString("Propic"));
+                corso.setId_Corso(rs.getInt("IdCorso"));
+                // Set info chef se disponibili
+                corso.setChefNome(rs.getString("chef_nome"));
+                corso.setChefCognome(rs.getString("chef_cognome"));
+                corso.setChefEsperienza(rs.getInt("chef_esperienza"));
+                corso.setSessioni(new CorsoDao().recuperoSessioniPerCorso(corso));
+                new CorsoDao().recuperaTipoCucinaCorsi(corso);
+                Corsi.add(corso);
+            }
+        } catch (SQLException sqe) {
+            //gestire errore
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        utente.setcorso(Corsi);
+    }
+
+    public void RecuperaCorsi (Utente utente){
+        String query = "SELECT C.*, CH.Nome AS chef_nome, CH.Cognome AS chef_cognome, CH.AnniDiEsperienza AS chef_esperienza " +
                     "FROM RICHIESTAPAGAMENTO R " +
                     "JOIN CORSO C ON R.IdCorso = C.IdCorso " +
                     "LEFT JOIN CHEF CH ON C.IdChef = CH.IdChef " +
@@ -265,6 +364,14 @@ public class UtenteVisitatoreDao extends UtenteDao {
             dbu.closeAll(conn, ps, RS);
         }
         return null;
+    }
+
+    // Overload per login: determina tipo di account da email e password
+    public String TipoDiAccount(String email, String password) {
+        UtenteVisitatore utente = new UtenteVisitatore();
+        utente.setEmail(email);
+        utente.setPassword(password);
+        return TipoDiAccount(utente);
     }
 }
 
