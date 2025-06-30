@@ -47,10 +47,10 @@ public class EnrolledCoursesController {
     private Thread loadCoursesThread;
 
     public EnrolledCoursesController(Label userNameLabel, ComboBox<String> categoryComboBox,
-                                   ComboBox<String> frequencyComboBox,
-                                   Button searchButton, FlowPane mainContentArea, ScrollPane scrollPane,
-                                   Label pageLabel, Button prevButton, Button nextButton, Label totalCoursesLabel,
-                                   EnrolledCoursesBoundary boundary) {
+                                    ComboBox<String> frequencyComboBox,
+                                    Button searchButton, FlowPane mainContentArea, ScrollPane scrollPane,
+                                    Label pageLabel, Button prevButton, Button nextButton, Label totalCoursesLabel,
+                                    EnrolledCoursesBoundary boundary) {
         this.userNameLabel = userNameLabel;
         this.categoryComboBox = categoryComboBox;
         this.frequencyComboBox = frequencyComboBox;

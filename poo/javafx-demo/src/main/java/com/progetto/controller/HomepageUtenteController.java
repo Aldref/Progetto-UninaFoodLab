@@ -39,8 +39,8 @@ public class HomepageUtenteController {
 
     // Costruttore corretto: FlowPane, Label, ComboBox, ComboBox, Label, HomepageUtenteBoundary
     public HomepageUtenteController(FlowPane mainContentArea, Label pageLabel, 
-                                  ComboBox<String> categoryComboBox, ComboBox<String> frequencyComboBox,
-                                  Label userNameLabel, HomepageUtenteBoundary boundary) {
+                                    ComboBox<String> categoryComboBox, ComboBox<String> frequencyComboBox,
+                                    Label userNameLabel, HomepageUtenteBoundary boundary) {
         this.mainContentArea = mainContentArea;
         this.pageLabel = pageLabel;
         this.categoryComboBox = categoryComboBox;
@@ -63,9 +63,7 @@ public class HomepageUtenteController {
         // Il nome utente viene impostato dalla boundary
     }
 
-    /**
-     * Aggiunge un listener alla finestra principale per interrompere il thread di caricamento corsi alla chiusura.
-     */
+
     private void setupWindowCloseListener() {
         if (mainContentArea != null && mainContentArea.getScene() != null && mainContentArea.getScene().getWindow() != null) {
             Stage stage = (Stage) mainContentArea.getScene().getWindow();
