@@ -147,25 +147,26 @@ public class CorsoDao{
         }
 
         public void recuperaTipoCucinaCorsi(Corso corso){
-        String quarry="SELECT T.Nome FROM TIPODICUCINA_CORSO TC NATURAL JOIN TIPODICUCINA T WHERE TC.idcorso = ? ";
-        SupportDb dbu = new SupportDb();
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+            String query = "SELECT T.Nome FROM TIPODICUCINA_CORSO TC NATURAL JOIN TIPODICUCINA T WHERE TC.idcorso = ?";
+            SupportDb dbu = new SupportDb();
+            Connection conn = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
 
-        try {
-            conn = ConnectionJavaDb.getConnection();
-            ps = conn.prepareStatement(quarry);
-            ps.setInt(1, corso.getId_Corso());
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                corso.addTipoDiCucina(rs.getString("Nome"));
+            try {
+                conn = ConnectionJavaDb.getConnection();
+                ps = conn.prepareStatement(query);
+                ps.setInt(1, corso.getId_Corso());
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    corso.addTipoDiCucina(rs.getString("Nome"));
+                }
+            } catch(SQLException e){
+                e.printStackTrace();
+            } finally {
+                dbu.closeAll(conn, ps, rs);
             }
         }
-        catch(SQLException e){
-
-        }
-    }
 
   public ArrayList<Sessione> recuperoSessioniPerCorso(Corso corso) {
         ArrayList<Sessione> sessioni = new ArrayList<>();
