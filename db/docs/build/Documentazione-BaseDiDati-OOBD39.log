@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2025.6.30)  1 JUL 2025 18:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2025.6.30)  1 JUL 2025 19:23
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/mnt/c/Users/mario/Desktop/prova/Progetto-UninaFoodLab/db/docs/Documentazione_BaseDiDati.tex
-(/mnt/c/Users/mario/Desktop/prova/Progetto-UninaFoodLab/db/docs/Documentazione_BaseDiDati.tex
+**/mnt/c/Users/mario/Desktop/prova/Progetto-UninaFoodLab/db/docs/Documentazione-BaseDiDati-OOBD39.tex
+(/mnt/c/Users/mario/Desktop/prova/Progetto-UninaFoodLab/db/docs/Documentazione-BaseDiDati-OOBD39.tex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2022-01-21> (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
@@ -513,8 +513,8 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 28
 File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count311
 \l__pdf_internal_box=\box80
-) (./Documentazione_BaseDiDati.aux)
-\openout1 = `Documentazione_BaseDiDati.aux'.
+) (./Documentazione-BaseDiDati-OOBD39.aux)
+\openout1 = `Documentazione-BaseDiDati-OOBD39.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 84.
 LaTeX Font Info:    ... okay on input line 84.
@@ -601,9 +601,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 84.
 LaTeX Info: Redefining \pageref on input line 84.
 LaTeX Info: Redefining \nameref on input line 84.
- (./Documentazione_BaseDiDati.out) (./Documentazione_BaseDiDati.out)
+ (./Documentazione-BaseDiDati-OOBD39.out) (./Documentazione-BaseDiDati-OOBD39.out)
 \@outlinefile=\write4
-\openout4 = `Documentazione_BaseDiDati.out'.
+\openout4 = `Documentazione-BaseDiDati-OOBD39.out'.
 
 <latex/immagini/uni_logo.png, id=268, 200.75pt x 200.75pt>
 File: latex/immagini/uni_logo.png Graphic file (type png)
@@ -612,7 +612,7 @@ Package pdftex.def Info: latex/immagini/uni_logo.png  used on input line 92.
 (pdftex.def)             Requested size: 141.61081pt x 141.62065pt.
  [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./latex/immagini/uni_logo.png>] (./Documentazione_BaseDiDati.toc
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./latex/immagini/uni_logo.png>] (./Documentazione-BaseDiDati-OOBD39.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <10.95> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -621,7 +621,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 1.
  [2])
 \tf@toc=\write5
-\openout5 = `Documentazione_BaseDiDati.toc'.
+\openout5 = `Documentazione-BaseDiDati-OOBD39.toc'.
 
  (./latex/capitoli/capitolo1.tex
 
@@ -1171,30 +1171,6 @@ Package fancyhdr Warning: \headheight is too small (15.4pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [16]
-Underfull \hbox (badness 10000) in paragraph at lines 268--268
-[]|\OT1/cmr/bx/n/10.95 Integrit^^Ra Ref-eren-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 268--268
-[]|\OT1/cmr/bx/n/10.95 Specializzazione
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 268--268
-[]|\OT1/cmr/bx/n/10.95 Specializzazione
- []
-
-
-Underfull \hbox (badness 1412) in paragraph at lines 268--268
-[]|\OT1/cmr/m/n/10.95 Ogni SES-SIONE deve es-sere esat-ta-mente una tra SES-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 268--268
-[]|\OT1/cmr/bx/n/10.95 Vincoli di Car-di-
- []
-
 
 Package fancyhdr Warning: \headheight is too small (15.4pt): 
 (fancyhdr)                Make it at least 16.99998pt, for example:
@@ -1203,16 +1179,40 @@ Package fancyhdr Warning: \headheight is too small (15.4pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [17]
-Underfull \hbox (badness 10000) in paragraph at lines 292--292
+Underfull \hbox (badness 10000) in paragraph at lines 272--272
+[]|\OT1/cmr/bx/n/10.95 Integrit^^Ra Ref-eren-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 272--272
+[]|\OT1/cmr/bx/n/10.95 Specializzazione
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 272--272
+[]|\OT1/cmr/bx/n/10.95 Specializzazione
+ []
+
+
+Underfull \hbox (badness 1412) in paragraph at lines 272--272
+[]|\OT1/cmr/m/n/10.95 Ogni SES-SIONE deve es-sere esat-ta-mente una tra SES-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 272--272
+[]|\OT1/cmr/bx/n/10.95 Vincoli di Car-di-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 296--296
 []|\OT1/cmr/bx/n/10.95 PARTECIPANTE -
  []
 
 
-Underfull \hbox (badness 1902) in paragraph at lines 292--292
+Underfull \hbox (badness 1902) in paragraph at lines 296--296
 []|\OT1/cmr/bx/n/10.95 RICETTA - IN-GRE-DI-
  []
 
-) (./latex/capitoli/capitolo3.tex
 
 Package fancyhdr Warning: \headheight is too small (15.4pt): 
 (fancyhdr)                Make it at least 16.99998pt, for example:
@@ -1220,7 +1220,7 @@ Package fancyhdr Warning: \headheight is too small (15.4pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[18]
+[18]) (./latex/capitoli/capitolo3.tex
 Underfull \hbox (badness 1655) in paragraph at lines 45--45
 []|$[]$\OT1/cmr/m/n/10.95 , In-tes-tatario, DataS-ca-denza,
  []
@@ -1273,6 +1273,14 @@ Package fancyhdr Warning: \headheight is too small (15.4pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [19]
+
+Package fancyhdr Warning: \headheight is too small (15.4pt): 
+(fancyhdr)                Make it at least 16.99998pt, for example:
+(fancyhdr)                \setlength{\headheight}{16.99998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[20]
 Overfull \hbox (18.5337pt too wide) in paragraph at lines 61--62
 []\OT1/cmr/bx/n/10.95 POSSiEDE\OT1/cmr/m/n/10.95 : |   [] \TS1/cmr/m/n/10.95 ^^Y \OT1/cmr/m/n/10.95 PARTE-CI-PANTE(IdPartecipante), |   [] \TS1/cmr/m/n/10.95 ^^Y \OT1/cmr/m/n/10.95 CARTA(IdCarta) 
  []
@@ -1299,7 +1307,7 @@ Package fancyhdr Warning: \headheight is too small (15.4pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[20]
+[21]
 
 Package fancyhdr Warning: \headheight is too small (15.4pt): 
 (fancyhdr)                Make it at least 16.99998pt, for example:
@@ -1307,7 +1315,7 @@ Package fancyhdr Warning: \headheight is too small (15.4pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[21]) (./latex/capitoli/capitolo4.tex (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
+[22]) (./latex/capitoli/capitolo4.tex (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 )
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
@@ -1320,19 +1328,11 @@ Package fancyhdr Warning: \headheight is too small (15.4pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[22]
+[23]
 Overfull \hbox (26.05495pt too wide) in paragraph at lines 66--67
 []\OT1/cmr/bx/n/10.95 IdPartecipante\OT1/cmr/m/n/10.95 : Chi-ave pri-maria auto-incrementale uti-liz-zando \OT1/cmtt/m/n/10.95 GENERATED ALWAYS AS IDENTITY
  []
 
-
-Package fancyhdr Warning: \headheight is too small (15.4pt): 
-(fancyhdr)                Make it at least 16.99998pt, for example:
-(fancyhdr)                \setlength{\headheight}{16.99998pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[23]
 
 Package fancyhdr Warning: \headheight is too small (15.4pt): 
 (fancyhdr)                Make it at least 16.99998pt, for example:
@@ -1380,87 +1380,95 @@ Package fancyhdr Warning: \headheight is too small (15.4pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[29]) (./latex/capitoli/capitolo4.2.tex
-LaTeX Font Info:    Trying to load font information for TS1+cmtt on input line 13.
+[29]
+
+Package fancyhdr Warning: \headheight is too small (15.4pt): 
+(fancyhdr)                Make it at least 16.99998pt, for example:
+(fancyhdr)                \setlength{\headheight}{16.99998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[30]) (./latex/capitoli/capitolo4.2.tex
+LaTeX Font Info:    Trying to load font information for TS1+cmtt on input line 12.
  (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmtt.fd
 File: ts1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-) [30]
-Overfull \hbox (15.6685pt too wide) in paragraph at lines 44--45
+)
+Overfull \hbox (15.6685pt too wide) in paragraph at lines 43--44
 []\OT1/cmtt/m/n/10.95 IF EXISTS (SELECT 1 ...)\OT1/cmr/m/n/10.95 : In en-trambi i casi, se trova una cor-rispon-denza, soll-eva un'eccezione
  []
 
 [31]
-Overfull \hbox (4.44536pt too wide) in paragraph at lines 91--92
+Overfull \hbox (4.44536pt too wide) in paragraph at lines 90--91
 []\OT1/cmr/m/n/10.95 Il trig-ger si at-tiva prima di ogni in-ser-i-mento o ag-gior-na-mento sulle tabelle \OT1/cmtt/m/n/10.95 Chef \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 Partecipante\OT1/cmr/m/n/10.95 . 
  []
 
-
-Overfull \hbox (9.39977pt too wide) in paragraph at lines 121--122
+[32]
+Overfull \hbox (9.39977pt too wide) in paragraph at lines 120--121
 []\OT1/cmtt/m/n/10.95 DELETE FROM PREPARAZIONEINGREDIENTE WHERE IdRicetta = OLD.IdRicetta\OT1/cmr/m/n/10.95 : Elim-ina tutti
  []
 
-[32] [33] [34] [35]
-Overfull \hbox (7.42607pt too wide) in paragraph at lines 278--279
+[33] [34] [35]
+Overfull \hbox (7.42607pt too wide) in paragraph at lines 277--278
 []\OT1/cmr/m/n/10.95 Il trig-ger si at-tiva prima di ogni in-ser-i-mento o ag-gior-na-mento sulla tabella \OT1/cmtt/m/n/10.95 RichiestaPagamento\OT1/cmr/m/n/10.95 . 
  []
 
 
-Overfull \hbox (1.00887pt too wide) in paragraph at lines 279--280
+Overfull \hbox (1.00887pt too wide) in paragraph at lines 278--279
 []\OT1/cmr/m/n/10.95 La fun-zione re-cu-pera il prezzo del corso as-so-ci-ato alla richi-esta di paga-mento tramite l'\OT1/cmtt/m/n/10.95 IdCorso\OT1/cmr/m/n/10.95 . 
  []
 
 
-Overfull \hbox (9.67722pt too wide) in paragraph at lines 280--281
+Overfull \hbox (9.67722pt too wide) in paragraph at lines 279--280
 []\OT1/cmr/m/n/10.95 Se l'\OT1/cmtt/m/n/10.95 ImportoPagato \OT1/cmr/m/n/10.95 non cor-risponde esat-ta-mente al prezzo del corso, viene soll-e-vata un'eccezione
  []
 
 [36]
-Overfull \hbox (4.44536pt too wide) in paragraph at lines 329--330
+Overfull \hbox (4.44536pt too wide) in paragraph at lines 328--329
 []\OT1/cmr/m/n/10.95 Il trig-ger si at-tiva prima di ogni in-ser-i-mento o ag-gior-na-mento sulle tabelle \OT1/cmtt/m/n/10.95 Chef \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 Partecipante\OT1/cmr/m/n/10.95 . 
  []
 
-[37]
-Overfull \hbox (7.42607pt too wide) in paragraph at lines 395--396
+[37] [38]
+Overfull \hbox (7.42607pt too wide) in paragraph at lines 394--395
 []\OT1/cmr/m/n/10.95 Il trig-ger si at-tiva prima di ogni in-ser-i-mento o ag-gior-na-mento sulla tabella \OT1/cmtt/m/n/10.95 RichiestaPagamento\OT1/cmr/m/n/10.95 . 
  []
 
-[38] [39]
-Overfull \hbox (50.71149pt too wide) in paragraph at lines 501--502
+[39] [40]
+Overfull \hbox (50.71149pt too wide) in paragraph at lines 500--501
 []\OT1/cmr/m/n/10.95 Il trig-ger si at-tiva prima di ogni ag-gior-na-mento sulle tabelle \OT1/cmtt/m/n/10.95 SESSIONE[]PRESENZA \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 SESSIONE[]TELEMATICA\OT1/cmr/m/n/10.95 . 
  []
 
-[40] [41]
-Overfull \hbox (13.72232pt too wide) in paragraph at lines 585--586
+[41] [42]
+Overfull \hbox (13.72232pt too wide) in paragraph at lines 584--585
 []\OT1/cmr/m/n/10.95 Il trig-ger si at-tiva prima della can-cel-lazione di una richi-esta di paga-mento (\OT1/cmtt/m/n/10.95 RICHIESTAPAGAMENTO\OT1/cmr/m/n/10.95 ). 
  []
 
-[42] [43]
-Overfull \hbox (104.91669pt too wide) in paragraph at lines 685--686
+[43] [44]
+Overfull \hbox (104.91669pt too wide) in paragraph at lines 684--685
 []\OT1/cmr/m/n/10.95 La fun-zione \OT1/cmtt/m/n/10.95 check[]partecipazione[]corso \OT1/cmr/m/n/10.95 viene uti-liz-zata come trig-ger per la tabella \OT1/cmtt/m/n/10.95 ADESIONE[]SESSIONEPRESENZA\OT1/cmr/m/n/10.95 . 
  []
 
 
-Overfull \hbox (75.31514pt too wide) in paragraph at lines 688--689
+Overfull \hbox (75.31514pt too wide) in paragraph at lines 687--688
 []\OT1/cmr/m/n/10.95 Verifica poi se il parte-ci-pante (\OT1/cmtt/m/n/10.95 IDpartecipante\OT1/cmr/m/n/10.95 ) ha al-meno una richi-esta di paga-mento (\OT1/cmtt/m/n/10.95 RICHIESTAPAGAMENTO\OT1/cmr/m/n/10.95 )
  []
 
-[44] [45] [46]) [47] (./Documentazione_BaseDiDati.aux)
-Package rerunfilecheck Info: File `Documentazione_BaseDiDati.out' has not changed.
+[45] [46] [47]) [48] (./Documentazione-BaseDiDati-OOBD39.aux)
+Package rerunfilecheck Info: File `Documentazione-BaseDiDati-OOBD39.out' has not changed.
 (rerunfilecheck)             Checksum: B29B80BE4333E93F5751249E28BE816E;15679.
  ) 
 Here is how much of TeX's memory you used:
  23052 strings out of 480236
- 417901 string characters out of 5895675
- 945305 words of memory out of 5000000
- 39793 multiletter control sequences out of 15000+600000
+ 418036 string characters out of 5895675
+ 960973 words of memory out of 5000000
+ 39792 multiletter control sequences out of 15000+600000
  475856 words of font info for 51 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 83i,16n,80p,1175b,2153s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 83i,16n,80p,1182b,2153s stack positions out of 5000i,500n,10000p,200000b,80000s
  </home/aldref/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tctt1000.600pk> </home/aldref/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1095.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on Documentazione_BaseDiDati.pdf (47 pages, 578959 bytes).
+Output written on Documentazione-BaseDiDati-OOBD39.pdf (48 pages, 580385 bytes).
 PDF statistics:
- 1537 PDF objects out of 1728 (max. 8388607)
- 1439 compressed objects within 15 object streams
- 840 named destinations out of 1000 (max. 500000)
+ 1542 PDF objects out of 1728 (max. 8388607)
+ 1443 compressed objects within 15 object streams
+ 841 named destinations out of 1000 (max. 500000)
  558 words of extra memory for PDF output out of 10000 (max. 10000000)
 

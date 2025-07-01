@@ -80,7 +80,7 @@ CREATE TABLE Carta (
     Intestatario VARCHAR(100) NOT NULL,
     DataScadenza DATE NOT NULL,
     UltimeQuattroCifre CHAR(4) NOT NULL,
-    Circuito VARCHAR(50) NOT NULL
+    Circuito Circuito NOT NULL
 );
 \end{lstlisting}
 \noindent\rule{\textwidth}{0.4pt}
@@ -127,7 +127,7 @@ CREATE TABLE Corso (
     Descrizione VARCHAR(60) NOT NULL,
     DataInizio DATE NOT NULL,
     DataFine DATE NOT NULL,
-    FrequenzaDelleSessioni VARCHAR(100) NOT NULL,
+    FrequenzaDelleSessioni FDS NOT NULL,
     Propic TEXT,
     MaxPersone INT CHECK (MaxPersone > 0),
     Prezzo DECIMAL(10, 2) CHECK (Prezzo >= 0),
@@ -153,7 +153,7 @@ La tabella \texttt{RichiestaPagamento} registra le richieste di pagamento per i 
 \begin{lstlisting}[language=SQL, style=sqlstyle]
 CREATE TABLE RichiestaPagamento (
     DataRichiesta TIMESTAMP NOT NULL,
-    StatoPagamento VARCHAR(50) NOT NULL,
+    StatoPagamento StatoPagamento NOT NULL,
     ImportoPagato DECIMAL(10, 2) CHECK (ImportoPagato >= 0),
     IdCorso INT,
     IdPartecipante INT,
@@ -250,7 +250,7 @@ La tabella \texttt{Sessione\_Presenza} descrive le sessioni in presenza dei cors
 \begin{lstlisting}[language=SQL, style=sqlstyle]
 CREATE TABLE Sessione_Presenza (
     IdSessionePresenza INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    Giorno VARCHAR(20) NOT NULL,
+    Giorno Giorno NOT NULL,
     Data DATE NOT NULL,
     Orario TIME NOT NULL,
     Durata INTERVAL NOT NULL,
@@ -310,7 +310,7 @@ CREATE TABLE Sessione_Telematica (
     Data DATE NOT NULL,
     Orario TIME NOT NULL,
     Durata INTERVAL NOT NULL,
-    Giorno VARCHAR(20) NOT NULL,
+    Giorno Giorno NOT NULL,
     Descrizione VARCHAR(60) NOT NULL,
     IdCorso INT,
     IdChef INT,
@@ -399,7 +399,7 @@ La tabella \texttt{Ingrediente} elenca tutti gli ingredienti disponibili, con no
 CREATE TABLE Ingrediente (
     IdIngrediente INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     Nome VARCHAR(100) NOT NULL,
-    UnitaDiMisura VARCHAR(50) NOT NULL
+    UnitaDiMisura UnitaDiMisura NOT NULL
 );
 \end{lstlisting}
 \noindent\rule{\textwidth}{0.4pt}
@@ -419,7 +419,6 @@ La tabella \texttt{PreparazioneIngrediente} collega le ricette agli ingredienti 
 CREATE TABLE PreparazioneIngrediente (
     IdRicetta INT,
     IdIngrediente INT,
-    QuantitaTotale DECIMAL(10,2) CHECK (QuantitaTotale >= 0),
     QuanititaUnitaria DECIMAL(10,2) NOT NULL CHECK (QuanititaUnitaria >= 0),
     PRIMARY KEY (IdRicetta, IdIngrediente),
     FOREIGN KEY (IdRicetta) REFERENCES Ricetta(IdRicetta),

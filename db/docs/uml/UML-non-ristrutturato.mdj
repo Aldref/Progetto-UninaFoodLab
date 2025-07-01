@@ -1188,7 +1188,7 @@
 											"parentStyle": true,
 											"left": 1789,
 											"top": 581,
-											"width": 107.95166015625,
+											"width": 121.90380859375,
 											"height": 13,
 											"text": "«enumeration»"
 										},
@@ -1202,7 +1202,7 @@
 											"parentStyle": true,
 											"left": 1789,
 											"top": 596,
-											"width": 107.95166015625,
+											"width": 121.90380859375,
 											"height": 13,
 											"text": "F.D.S"
 										},
@@ -1240,7 +1240,7 @@
 									"parentStyle": true,
 									"left": 1784,
 									"top": 576,
-									"width": 117.95166015625,
+									"width": 131.90380859375,
 									"height": 38,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGW3ZFae+rdkfk="
@@ -1346,99 +1346,9 @@
 											"parentStyle": true,
 											"left": 1789,
 											"top": 619,
-											"width": 107.95166015625,
+											"width": 121.90380859375,
 											"height": 13,
 											"text": "Giornaliera",
-											"horizontalAlignment": 0
-										},
-										{
-											"_type": "UMLEnumerationLiteralView",
-											"_id": "AAAAAAGW3ZGdGOsY/xo=",
-											"_parent": {
-												"$ref": "AAAAAAGW3ZFae+rlc4c="
-											},
-											"model": {
-												"$ref": "AAAAAAGW3ZGdFesVj/g="
-											},
-											"font": "Arial;13;0",
-											"parentStyle": true,
-											"left": 1789,
-											"top": 634,
-											"width": 107.95166015625,
-											"height": 13,
-											"text": "Ogni due giorni",
-											"horizontalAlignment": 0
-										},
-										{
-											"_type": "UMLEnumerationLiteralView",
-											"_id": "AAAAAAGW3ZG2zesf1e4=",
-											"_parent": {
-												"$ref": "AAAAAAGW3ZFae+rlc4c="
-											},
-											"model": {
-												"$ref": "AAAAAAGW3ZG2yusciWY="
-											},
-											"font": "Arial;13;0",
-											"parentStyle": true,
-											"left": 1789,
-											"top": 649,
-											"width": 107.95166015625,
-											"height": 13,
-											"text": "Ogni tre giorni",
-											"horizontalAlignment": 0
-										},
-										{
-											"_type": "UMLEnumerationLiteralView",
-											"_id": "AAAAAAGW3ZH4eusuoCE=",
-											"_parent": {
-												"$ref": "AAAAAAGW3ZFae+rlc4c="
-											},
-											"model": {
-												"$ref": "AAAAAAGW3ZH4d+sr6EY="
-											},
-											"font": "Arial;13;0",
-											"parentStyle": true,
-											"left": 1789,
-											"top": 664,
-											"width": 107.95166015625,
-											"height": 13,
-											"text": "Ogni quattro giorni",
-											"horizontalAlignment": 0
-										},
-										{
-											"_type": "UMLEnumerationLiteralView",
-											"_id": "AAAAAAGW3ZIbN+s2YLs=",
-											"_parent": {
-												"$ref": "AAAAAAGW3ZFae+rlc4c="
-											},
-											"model": {
-												"$ref": "AAAAAAGW3ZIbNOszhkI="
-											},
-											"font": "Arial;13;0",
-											"parentStyle": true,
-											"left": 1789,
-											"top": 679,
-											"width": 107.95166015625,
-											"height": 13,
-											"text": "Ogni cinque giorni",
-											"horizontalAlignment": 0
-										},
-										{
-											"_type": "UMLEnumerationLiteralView",
-											"_id": "AAAAAAGW3ZIttOs9eCs=",
-											"_parent": {
-												"$ref": "AAAAAAGW3ZFae+rlc4c="
-											},
-											"model": {
-												"$ref": "AAAAAAGW3ZItsus6r3Q="
-											},
-											"font": "Arial;13;0",
-											"parentStyle": true,
-											"left": 1789,
-											"top": 694,
-											"width": 107.95166015625,
-											"height": 13,
-											"text": "Ogni sei giorni",
 											"horizontalAlignment": 0
 										},
 										{
@@ -1453,10 +1363,46 @@
 											"font": "Arial;13;0",
 											"parentStyle": true,
 											"left": 1789,
-											"top": 709,
-											"width": 107.95166015625,
+											"top": 634,
+											"width": 121.90380859375,
 											"height": 13,
 											"text": "Settimanale",
+											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLEnumerationLiteralView",
+											"_id": "AAAAAAGXxtnwOoisfyg=",
+											"_parent": {
+												"$ref": "AAAAAAGW3ZFae+rlc4c="
+											},
+											"model": {
+												"$ref": "AAAAAAGXxtnwMYipP+w="
+											},
+											"font": "Arial;13;0",
+											"parentStyle": true,
+											"left": 1789,
+											"top": 649,
+											"width": 121.90380859375,
+											"height": 13,
+											"text": "Bisettimanale",
+											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLEnumerationLiteralView",
+											"_id": "AAAAAAGXxtoS141GKLc=",
+											"_parent": {
+												"$ref": "AAAAAAGW3ZFae+rlc4c="
+											},
+											"model": {
+												"$ref": "AAAAAAGXxtoS041Dptc="
+											},
+											"font": "Arial;13;0",
+											"parentStyle": true,
+											"left": 1789,
+											"top": 664,
+											"width": 121.90380859375,
+											"height": 13,
+											"text": "Tre volte a settimana",
 											"horizontalAlignment": 0
 										},
 										{
@@ -1471,8 +1417,8 @@
 											"font": "Arial;13;0",
 											"parentStyle": true,
 											"left": 1789,
-											"top": 724,
-											"width": 107.95166015625,
+											"top": 679,
+											"width": 121.90380859375,
 											"height": 13,
 											"text": "Mensile",
 											"horizontalAlignment": 0
@@ -1482,8 +1428,8 @@
 									"parentStyle": true,
 									"left": 1784,
 									"top": 614,
-									"width": 117.95166015625,
-									"height": 128
+									"width": 131.90380859375,
+									"height": 83
 								}
 							],
 							"font": "Arial;13;0",
@@ -1491,7 +1437,7 @@
 							"containerChangeable": true,
 							"left": 1784,
 							"top": 576,
-							"width": 116.95166015625,
+							"width": 130.90380859375,
 							"height": 166,
 							"nameCompartment": {
 								"$ref": "AAAAAAGW3ZFae+rckm8="
@@ -9683,51 +9629,27 @@
 						},
 						{
 							"_type": "UMLEnumerationLiteral",
-							"_id": "AAAAAAGW3ZGdFesVj/g=",
-							"_parent": {
-								"$ref": "AAAAAAGW3ZFaeurZ4Tk="
-							},
-							"name": "Ogni due giorni"
-						},
-						{
-							"_type": "UMLEnumerationLiteral",
-							"_id": "AAAAAAGW3ZG2yusciWY=",
-							"_parent": {
-								"$ref": "AAAAAAGW3ZFaeurZ4Tk="
-							},
-							"name": "Ogni tre giorni"
-						},
-						{
-							"_type": "UMLEnumerationLiteral",
-							"_id": "AAAAAAGW3ZH4d+sr6EY=",
-							"_parent": {
-								"$ref": "AAAAAAGW3ZFaeurZ4Tk="
-							},
-							"name": "Ogni quattro giorni"
-						},
-						{
-							"_type": "UMLEnumerationLiteral",
-							"_id": "AAAAAAGW3ZIbNOszhkI=",
-							"_parent": {
-								"$ref": "AAAAAAGW3ZFaeurZ4Tk="
-							},
-							"name": "Ogni cinque giorni"
-						},
-						{
-							"_type": "UMLEnumerationLiteral",
-							"_id": "AAAAAAGW3ZItsus6r3Q=",
-							"_parent": {
-								"$ref": "AAAAAAGW3ZFaeurZ4Tk="
-							},
-							"name": "Ogni sei giorni"
-						},
-						{
-							"_type": "UMLEnumerationLiteral",
 							"_id": "AAAAAAGW3ZFyq+sHyEk=",
 							"_parent": {
 								"$ref": "AAAAAAGW3ZFaeurZ4Tk="
 							},
 							"name": "Settimanale"
+						},
+						{
+							"_type": "UMLEnumerationLiteral",
+							"_id": "AAAAAAGXxtnwMYipP+w=",
+							"_parent": {
+								"$ref": "AAAAAAGW3ZFaeurZ4Tk="
+							},
+							"name": "Bisettimanale"
+						},
+						{
+							"_type": "UMLEnumerationLiteral",
+							"_id": "AAAAAAGXxtoS041Dptc=",
+							"_parent": {
+								"$ref": "AAAAAAGW3ZFaeurZ4Tk="
+							},
+							"name": "Tre volte a settimana"
 						},
 						{
 							"_type": "UMLEnumerationLiteral",

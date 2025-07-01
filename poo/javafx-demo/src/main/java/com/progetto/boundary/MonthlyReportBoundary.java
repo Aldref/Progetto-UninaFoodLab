@@ -66,7 +66,6 @@ public class MonthlyReportBoundary {
             monthYearLabel, monthComboBox, yearComboBox,
             totalCoursesLabel, onlineSessionsLabel, practicalSessionsLabel, monthlyEarningsLabel,
             sessionsChart, recipesChart, avgRecipesLabel, maxRecipesLabel, minRecipesLabel, totalRecipesLabel,
-            earningsChart,
             chef
         );
         controller.initialize();

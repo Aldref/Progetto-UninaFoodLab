@@ -233,19 +233,7 @@
                        </HBox>
                      </children>
                   </VBox>
-                  <VBox styleClass="chart-card full-width" spacing="15.0">
-                     <children>
-                       <Label text="Andamento Guadagni Mensili" styleClass="chart-title" />
-                       <LineChart fx:id="earningsChart" prefHeight="250" prefWidth="800">
-                         <xAxis>
-                           <CategoryAxis fx:id="earningsXAxis" />
-                         </xAxis>
-                         <yAxis>
-                           <NumberAxis fx:id="earningsYAxis" />
-                         </yAxis>
-                       </LineChart>
-                     </children>
-                  </VBox>
+                  <!-- Rimosso il grafico dei guadagni mensili -->
                 </children>
                 <padding>
                   <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />

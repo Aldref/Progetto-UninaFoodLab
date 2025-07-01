@@ -28,7 +28,6 @@ public int RicavaMinimo(Chef chef1, int mese, int anno){
         if (rs.next()) {
             ValoreMinimo = rs.getInt(1);
         }
-        System.out.println("[DAO] RicavaMinimo: chef=" + chef1.getId_Chef() + ", mese=" + mese + ", anno=" + anno + " -> " + ValoreMinimo);
     } catch (SQLException e) {
         // log error
     } finally {
@@ -55,7 +54,6 @@ public int RicavaMassimo(Chef chef1, int mese, int anno){
         if (rs.next()) {
             ValoreMassimo = rs.getInt(1);
         }
-        System.out.println("[DAO] RicavaMassimo: chef=" + chef1.getId_Chef() + ", mese=" + mese + ", anno=" + anno + " -> " + ValoreMassimo);
     } catch (SQLException e) {
         // log error
     } finally {
@@ -81,7 +79,6 @@ public float RicavaMedia(Chef chef1, int mese, int anno){
         if (rs.next()) {
             media = rs.getFloat(1);
         }
-        System.out.println("[DAO] RicavaMedia: chef=" + chef1.getId_Chef() + ", mese=" + mese + ", anno=" + anno + " -> " + media);
     } catch (SQLException e) {
         // log error
     } finally {
@@ -107,7 +104,6 @@ public int RicavaNumeroCorsi(Chef chef1, int mese, int anno){
         if (rs.next()) {
             NumeroCorsi = rs.getInt(1);
         }
-        System.out.println("[DAO] RicavaNumeroCorsi: chef=" + chef1.getId_Chef() + ", mese=" + mese + ", anno=" + anno + " -> " + NumeroCorsi);
     } catch (SQLException e) {
         // log error
     } finally {
@@ -133,7 +129,6 @@ public int RicavaNumeroSessioniInPresenza(Chef chef1, int mese, int anno){
         if (rs.next()) {
             numeroSessioniInPresenza = rs.getInt(1);
         }
-        System.out.println("[DAO] RicavaNumeroSessioniInPresenza: chef=" + chef1.getId_Chef() + ", mese=" + mese + ", anno=" + anno + " -> " + numeroSessioniInPresenza);
     } catch (SQLException e) {
         // log error
     } finally {
@@ -159,7 +154,6 @@ public int RicavaNumeroSesssioniTelematiche(Chef chef1, int mese, int anno){
         if (rs.next()) {
             numeroSessioneTelematiche = rs.getInt(1);
         }
-        System.out.println("[DAO] RicavaNumeroSesssioniTelematiche: chef=" + chef1.getId_Chef() + ", mese=" + mese + ", anno=" + anno + " -> " + numeroSessioneTelematiche);
     } catch (SQLException e) {
         // log error
     } finally {
@@ -185,7 +179,6 @@ public float ricavaGuadagno (Chef chef1, int mese, int anno){
         if (rs.next()) {
             guadagnoTotale = rs.getFloat(1);
         }
-        System.out.println("[DAO] ricavaGuadagno: chef=" + chef1.getId_Chef() + ", mese=" + mese + ", anno=" + anno + " -> " + guadagnoTotale);
     } catch (SQLException e) {
         // log error
     } finally {
@@ -225,9 +218,6 @@ public float ricavaGuadagno (Chef chef1, int mese, int anno){
                         + ", mese: " + rs.getInt("mese")
                         + ", anno: " + rs.getInt("anno")
                 );
-            }
-            if (!trovato) {
-                System.out.println("[DEBUG-VIEW] Nessun risultato trovato per IdChef=" + chef1.getId_Chef() + ", mese=" + mese + ", anno=" + anno);
             }
         } catch (SQLException e) {
             e.printStackTrace();

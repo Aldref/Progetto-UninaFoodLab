@@ -2,9 +2,12 @@ package com.progetto.controller;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import com.progetto.boundary.AccountManagementBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
@@ -12,8 +15,6 @@ import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
-
-
 
 public class AccountManagementController {
     private static UtenteVisitatore loggedUser = UtenteVisitatore.loggedUser;
@@ -71,38 +72,39 @@ public class AccountManagementController {
                 return;
             }
 
-            // Costruisci il percorso di destinazione
-        if (loggedUser == null) {
-            boundary.showErrorMessage("Utente non trovato.");
-            return;
-        }
-        String nome = loggedUser.getNome() != null ? loggedUser.getNome().replaceAll("[^a-zA-Z0-9]", "_") : "utente";
-        String cognome = loggedUser.getCognome() != null ? loggedUser.getCognome().replaceAll("[^a-zA-Z0-9]", "_") : "profilo";
-        String extension = ext.substring(ext.lastIndexOf('.'));
-        String fileName = nome + "_" + cognome + extension;
-        String relativePath = "immagini/PropicUtente/" + fileName;
-        File destFile = new File("src/main/resources/" + relativePath);
+            if (loggedUser == null) {
+                boundary.showErrorMessage("Utente non trovato.");
+                return;
+            }
+            String nome = loggedUser.getNome() != null ? loggedUser.getNome().replaceAll("[^a-zA-Z0-9]", "_") : "utente";
+            String cognome = loggedUser.getCognome() != null ? loggedUser.getCognome().replaceAll("[^a-zA-Z0-9]", "_") : "profilo";
+            String extension = ext.substring(ext.lastIndexOf('.'));
+            String fileName = nome + "_" + cognome + extension;
+            String userImgDir = "user_data/immagini/PropicUtente/";
+            new File(userImgDir).mkdirs();
+            String absolutePath = userImgDir + fileName;
+            File destFile = new File(absolutePath);
 
-        // Copia il file selezionato nella destinazione
-        try {
-            java.nio.file.Files.copy(selectedFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e) {
-            boundary.showErrorMessage("Errore nel salvataggio della foto profilo: " + e.getMessage());
-            return;
-        }
+            // Copia il file selezionato nella destinazione
+            try {
+                Files.copy(selectedFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (Exception e) {
+                boundary.showErrorMessage("Errore nel salvataggio della foto profilo: " + e.getMessage());
+                return;
+            }
 
-        // Aggiorna il path nell'oggetto utente e nel DB
-        loggedUser.setUrl_Propic(relativePath);
-        try {
-            utenteDao.ModificaUtente(loggedUser);
-        } catch (Exception e) {
-            boundary.showErrorMessage("Errore nel salvataggio della foto profilo nel database: " + e.getMessage());
-            return;
-        }
+            // Aggiorna il path nell'oggetto utente e nel DB
+            loggedUser.setUrl_Propic(destFile.getAbsolutePath());
+            try {
+                utenteDao.ModificaUtente(loggedUser);
+            } catch (Exception e) {
+                boundary.showErrorMessage("Errore nel salvataggio della foto profilo nel database: " + e.getMessage());
+                return;
+            }
 
-        // Aggiorna la GUI
-        javafx.scene.image.Image img = new javafx.scene.image.Image(destFile.toURI().toString(), 256, 256, true, true);
-        boundary.setProfileImages(relativePath);
+            // Aggiorna la GUI
+            Image img = new Image(destFile.toURI().toString(), 256, 256, true, true);
+            boundary.setProfileImages(destFile.getAbsolutePath());
         }
     }
 

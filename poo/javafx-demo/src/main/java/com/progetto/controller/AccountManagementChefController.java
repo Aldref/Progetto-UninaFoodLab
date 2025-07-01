@@ -5,6 +5,9 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import javafx.scene.image.Image;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import com.progetto.boundary.AccountManagementChefBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
@@ -26,6 +29,9 @@ public class AccountManagementChefController {
     private LocalDate originalBirthDate;
     private String originalDescription;
     private String originalExperienceYears;
+
+    private File tempSelectedPhoto = null;
+    private String tempAbsolutePhotoPath = null;
 
     public AccountManagementChefController(AccountManagementChefBoundary boundary) {
         this.boundary = boundary;
@@ -66,13 +72,27 @@ public class AccountManagementChefController {
 
             // Carica la foto profilo se presente
             String propic = loggedChef.getUrl_Propic();
-            boundary.setProfileImages(propic);
+            if (propic != null && !propic.isEmpty()) {
+                // Prova a caricare come risorsa dal classpath (funziona anche in JAR)
+                String resourcePath = "/" + propic.replace("\\", "/");
+                java.net.URL imgUrl = getClass().getResource(resourcePath);
+                if (imgUrl != null) {
+                    boundary.setProfileImages(imgUrl.toExternalForm());
+                } else {
+                    // fallback: prova a caricare da file system in sviluppo
+                    File imgFile = new File("src/main/resources/" + propic.replace("/", java.io.File.separator));
+                    if (imgFile.exists()) {
+                        boundary.setProfileImages(imgFile.getAbsolutePath());
+                    } else {
+                        boundary.setProfileImages(null); // o un'immagine di default
+                    }
+                }
+            } else {
+                boundary.setProfileImages(null); // o un'immagine di default
+            }
         }
     }
 
-    // Variabili temporanee per la nuova foto selezionata
-    private File tempSelectedPhoto = null;
-    private String tempRelativePhotoPath = null;
 
     public void changePhoto() {
         FileChooser fileChooser = new FileChooser();
@@ -99,16 +119,20 @@ public class AccountManagementChefController {
             String cognome = loggedChef.getCognome() != null ? loggedChef.getCognome().replaceAll("[^a-zA-Z0-9]", "_") : "profilo";
             String extension = ext.substring(ext.lastIndexOf('.'));
             String fileName = nome + "_" + cognome + extension;
+            // Path relativo da salvare nel DB e per resources
             String relativePath = "immagini/PropicChef/" + fileName;
-
-            // Salva solo temporaneamente la foto selezionata e il path
+            // Path assoluto per copia in resources (dev)
+            String resourcesDir = "src/main/resources/immagini/PropicChef/";
+            new File(resourcesDir).mkdirs();
+            String absolutePath = resourcesDir + fileName;
             tempSelectedPhoto = selectedFile;
-            tempRelativePhotoPath = relativePath;
+            tempAbsolutePhotoPath = absolutePath;
 
-            // Mostra anteprima nella GUI (ma non salva ancora su disco/db)
-            javafx.scene.image.Image img = new javafx.scene.image.Image(selectedFile.toURI().toString(), 256, 256, true, true);
-            boundary.setProfileImages(selectedFile.toURI().toString());
-            // Nessun alert dopo la selezione della foto valida
+            // Preview immediata: passa il path assoluto al boundary che si occupa del clip
+            boundary.setProfileImages(selectedFile.getAbsolutePath());
+
+            // Imposta il path relativo su loggedChef (così viene salvato nel DB al salvataggio)
+            loggedChef.setUrl_Propic(relativePath);
         }
     }
 
@@ -200,12 +224,15 @@ public class AccountManagementChefController {
             changed = true;
         }
 
-        // Se è stata selezionata una nuova foto, copia il file e aggiorna il path
-        if (tempSelectedPhoto != null && tempRelativePhotoPath != null) {
-            File destFile = new File("src/main/resources/" + tempRelativePhotoPath);
+        // Se è stata selezionata una nuova foto, copia il file in resources/immagini/PropicChef/ e salva il path relativo
+        if (tempSelectedPhoto != null && tempAbsolutePhotoPath != null) {
+            File destFile = new File(tempAbsolutePhotoPath);
             try {
-                java.nio.file.Files.copy(tempSelectedPhoto.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                loggedChef.setUrl_Propic(tempRelativePhotoPath);
+                Files.copy(tempSelectedPhoto.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                // Salva solo il path relativo per il DB
+                String fileName = destFile.getName();
+                String relativePath = "immagini/PropicChef/" + fileName;
+                loggedChef.setUrl_Propic(relativePath);
                 changed = true;
             } catch (Exception e) {
                 boundary.showErrorMessage("Errore nel salvataggio della foto profilo: " + e.getMessage());
@@ -230,7 +257,7 @@ public class AccountManagementChefController {
 
             // Reset variabili temporanee dopo il salvataggio
             tempSelectedPhoto = null;
-            tempRelativePhotoPath = null;
+            tempAbsolutePhotoPath = null;
 
             boundary.getUserNameLabel().setText(originalName + " " + originalSurname);
 

@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Run JavaFX Demo App",
+			"command": "mvn clean javafx:run",
+			"group": "build",
+			"isBackground": false
+		}
+	]
+}

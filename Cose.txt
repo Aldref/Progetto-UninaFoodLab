@@ -51,12 +51,9 @@ CREATE TYPE StatoPagamento AS ENUM ('In attesa', 'Pagato', 'Fallito');
 
 CREATE TYPE FDS AS ENUM (
   'Giornaliera',
-  'Ogni due giorni',
-  'Ogni tre giorni'
-  'Ogni quattro giorni',
-  'Ogni cinque giorni',
-  'Ogni sei giorni',
   'Settimanale',
+  'Bisettimanale',
+  'Tre volte a settimana',
   'Mensile'
 );
 
@@ -79,7 +76,7 @@ CREATE TABLE Carta (
     Intestatario VARCHAR(100) NOT NULL,
     DataScadenza DATE NOT NULL,
     UltimeQuattroCifre CHAR(4) NOT NULL,
-    Circuito VARCHAR(50) NOT NULL
+    Circuito Circuito NOT NULL
 );
 
 CREATE TABLE Partecipante (
@@ -119,7 +116,7 @@ CREATE TABLE Corso (
     Descrizione VARCHAR(60) NOT NULL,
     DataInizio DATE NOT NULL,
     DataFine DATE NOT NULL,
-    FrequenzaDelleSessioni VARCHAR(100) NOT NULL,
+    FrequenzaDelleSessioni FDS NOT NULL,
     Propic TEXT,
     MaxPersone INT CHECK (MaxPersone > 0),
     Prezzo DECIMAL(10, 2) CHECK (Prezzo >= 0),
@@ -130,7 +127,7 @@ CREATE TABLE Corso (
 
 CREATE TABLE RichiestaPagamento (
     DataRichiesta TIMESTAMP NOT NULL,
-    StatoPagamento VARCHAR(50) NOT NULL,
+    StatoPagamento StatoPagamento NOT NULL,
     ImportoPagato DECIMAL(10, 2) CHECK (ImportoPagato >= 0),
     IdCorso INT,
     IdPartecipante INT,
@@ -154,7 +151,7 @@ CREATE TABLE TipoDiCucina_Corso (
 
 CREATE TABLE Sessione_Presenza (
     IdSessionePresenza INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    Giorno VARCHAR(20) NOT NULL,
+    Giorno Giorno NOT NULL,
     Data DATE NOT NULL,
     Orario TIME NOT NULL,
     Durata INTERVAL NOT NULL,
@@ -175,7 +172,7 @@ CREATE TABLE Sessione_Telematica (
     Data DATE NOT NULL,
     Orario TIME NOT NULL,
     Durata INTERVAL NOT NULL,
-    Giorno VARCHAR(20) NOT NULL,
+    Giorno Giorno NOT NULL,
     Descrizione VARCHAR(60) NOT NULL,
     IdCorso INT,
     IdChef INT,
@@ -216,7 +213,7 @@ CREATE TABLE Sessione_Presenza_Ricetta (
 CREATE TABLE Ingrediente (
     IdIngrediente INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     Nome VARCHAR(100) NOT NULL,
-    UnitaDiMisura VARCHAR(50) NOT NULL
+    UnitaDiMisura UnitaDiMisura NOT NULL
 );
 
 CREATE TABLE PreparazioneIngrediente (
@@ -784,6 +781,83 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trg_check_sessione_presenza
 BEFORE INSERT OR UPDATE ON SESSIONE_PRESENZA
 FOR EACH ROW EXECUTE FUNCTION check_orario_e_durata();
+
+-trigger  disiscrizione a un corso
+CREATE OR REPLACE FUNCTION prevent_unsubscribe_if_course_started()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM CORSO
+    WHERE IdCorso = OLD.IdCorso
+      AND DataInizio <= CURRENT_DATE
+  ) THEN
+    RAISE EXCEPTION 'Non è possibile disiscriversi da un corso già iniziato.';
+  END IF;
+
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_prevent_unsubscribe_if_course_started
+BEFORE DELETE ON RICHIESTAPAGAMENTO
+FOR EACH ROW
+EXECUTE FUNCTION prevent_unsubscribe_if_course_started();
+
+-trigger modifica corso date
+CREATE OR REPLACE FUNCTION prevent_course_modification_if_started()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF OLD.DataInizio <= CURRENT_DATE THEN
+    RAISE EXCEPTION 'Il corso è già iniziato e non può essere modificato.';
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_prevent_course_modification_if_started
+BEFORE UPDATE ON CORSO
+FOR EACH ROW
+EXECUTE FUNCTION prevent_course_modification_if_started();
+
+-trigger sessioni range corso
+CREATE OR REPLACE FUNCTION prevent_invalid_session_update()
+RETURNS TRIGGER AS $$
+DECLARE
+  corso_data_inizio DATE;
+  corso_data_fine DATE;
+  nuova_data DATE;
+BEGIN
+  SELECT DataInizio, DataFine INTO corso_data_inizio, corso_data_fine
+  FROM CORSO
+  WHERE IdCorso = NEW.IDcorso;
+
+  nuova_data := NEW.Data;
+
+  IF nuova_data < CURRENT_DATE THEN
+    RAISE EXCEPTION 'Non è possibile modificare una sessione con una data nel passato (%).', nuova_data;
+  END IF;
+
+  IF nuova_data < corso_data_inizio OR nuova_data > corso_data_fine THEN
+    RAISE EXCEPTION 'La data della sessione (%) deve essere compresa tra l’inizio e la fine del corso (% - %).', nuova_data, corso_data_inizio, corso_data_fine;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_prevent_invalid_update_sessione_presenza
+BEFORE UPDATE ON SESSIONE_PRESENZA
+FOR EACH ROW
+EXECUTE FUNCTION prevent_invalid_session_update();
+
+CREATE TRIGGER trg_prevent_invalid_update_sessione_telematica
+BEFORE UPDATE ON SESSIONE_TELEMATICA
+FOR EACH ROW
+EXECUTE FUNCTION prevent_invalid_session_update();
+
+
 //da fare in futuro
 db check percorso propic
 

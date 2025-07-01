@@ -6,7 +6,6 @@ com\progetto\boundary\UserCardsBoundary.class
 com\progetto\controller\CreateCourseController$1.class
 com\progetto\boundary\AccountManagementChefBoundary.class
 com\progetto\Entity\EntityDto\GraficoChef.class
-com\progetto\controller\CreateCourseController$Ingredient.class
 com\progetto\controller\PaymentPageController.class
 com\progetto\Entity\EntityDto\CartaDiCredito.class
 com\progetto\utils\ErroriEmail.class
@@ -27,6 +26,7 @@ com\progetto\controller\CreateCourseController$3.class
 com\progetto\controller\EditCourseController$Recipe.class
 com\progetto\boundary\RegisterBoundary.class
 com\progetto\Entity\entityDao\UtenteVisitatoreDao.class
+com\progetto\boundary\CreateCourseBoundary$3.class
 com\progetto\utils\FrequenzaSessioniProvider.class
 com\progetto\boundary\CalendarDialogBoundary.class
 com\progetto\Entity\entityDao\ChefDao.class
@@ -35,6 +35,7 @@ com\progetto\Entity\entityDao\SessioneInPresenzaDao.class
 com\progetto\controller\EditCourseController$3.class
 com\progetto\controller\EditCourseController.class
 com\progetto\controller\MonthlyReportController.class
+com\progetto\controller\CreateCourseController$4.class
 com\progetto\Entity\entityDao\GraficoChefDao.class
 com\progetto\controller\CardCorsoController.class
 com\progetto\controller\EditCourseController$4.class
@@ -46,10 +47,10 @@ com\progetto\Entity\EntityDto\SessioneOnline.class
 com\progetto\Entity\EntityDto\SessioniInPresenza.class
 com\progetto\boundary\AccountManagementBoundary.class
 com\progetto\boundary\HomepageUtenteBoundary.class
-com\progetto\controller\CreateCourseController$HybridDay.class
 com\progetto\Entity\entityDao\ricettaDao.class
 com\progetto\boundary\HomepageChefBoundary.class
 com\progetto\controller\EnrolledCoursesController.class
+com\progetto\boundary\CreateCourseBoundary$2.class
 com\progetto\boundary\MonthlyReportBoundary.class
 com\progetto\controller\CreateCourseController.class
 com\progetto\utils\ErrorCaricamentoPropic.class
@@ -60,8 +61,8 @@ com\progetto\utils\CardValidator.class
 com\progetto\controller\CreateCourseController$2.class
 com\progetto\Entity\entityDao\CorsoDao.class
 com\progetto\jdbc\SupportDb.class
-com\progetto\controller\CreateCourseController$Recipe.class
 com\progetto\Entity\entityDao\CartaDiCreditoDao.class
+com\progetto\boundary\CreateCourseBoundary$HybridSessionData.class
 com\progetto\controller\LoginController.class
 com\progetto\Entity\EntityDto\Chef.class
 com\progetto\boundary\SuccessDialogBoundary.class
@@ -71,11 +72,10 @@ com\progetto\Entity\EntityDto\Sessione.class
 com\progetto\Entity\EntityDto\Ricetta.class
 com\progetto\boundary\EditCourseBoundary.class
 com\progetto\Entity\entityDao\UtenteDao.class
-com\progetto\controller\CreateCourseController$CourseData.class
 com\progetto\Entity\EntityDto\UtenteVisitatore.class
 com\progetto\controller\EditCourseController$1.class
-com\progetto\controller\CreateCourseController$CourseData$HybridDayData.class
 com\progetto\utils\SuccessDialogUtils.class
 com\progetto\boundary\CreateCourseBoundary.class
+com\progetto\boundary\CreateCourseBoundary$1.class
 com\progetto\boundary\UserCardsBoundary$1.class
 com\progetto\controller\EditCourseController$CourseData.class

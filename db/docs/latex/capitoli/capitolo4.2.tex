@@ -1,5 +1,7 @@
 \subsection{Definizione dei Trigger}
 
+\setlength{\headheight}{17pt}
+
 \subsubsection{Trigger: Unicità Email tra Chef e Partecipante}
 
 Questo trigger garantisce che lo stesso indirizzo email non possa essere usato contemporaneamente da un Chef e da un Partecipante. La funzione viene richiamata sia sulle tabelle Chef che Partecipante, in inserimento e aggiornamento.
@@ -365,7 +367,7 @@ BEGIN
         END IF;
     ELSIF TG_OP = 'UPDATE' THEN
         IF OLD.StatoPagamento != 'Pagato' AND NEW.StatoPagamento = 'Pagato' THEN
-            potential_paid_count := potential_paid_count + 1;
+potential_paid_count := potential_paid_count + 1;
         ELSIF OLD.StatoPagamento = 'Pagato' AND NEW.StatoPagamento != 'Pagato' THEN
             potential_paid_count := potential_paid_count - 1;
         END IF;
@@ -394,9 +396,10 @@ EXECUTE FUNCTION verifica_superamento_max_partecipanti_corso();
     \item In caso di inserimento o aggiornamento che porterebbe il totale dei paganti oltre il limite, viene sollevata un'eccezione e l'operazione viene bloccata.
     \item In questo modo si garantisce il rispetto della capienza massima prevista per ciascun corso.
 \end{itemize}
+
 \subsubsection{Trigger: Controllo Orario e Durata Sessione Presenza}
 
-Questo trigger garantisce che l'orario di inizio e la durata di una sessione in presenza siano coerenti e rispettino i vincoli applicativi: la durata deve essere compresa tra 1 e 8 ore, l'orario deve essere valido (ore < 23, minuti < 60) e la fine della lezione non può superare le 23.
+Questo trigger garantisce che l'orario di inizio e la durata di una sessione in presenza siano coerenti e rispettino i vincoli applicativi: la durata deve essere compresa tra 1 e 8 ore, l'orario deve essere valido (ore < 23, minuti < 60) e la fine della lezione non puo' superare le 23.
 
 \noindent\rule{\textwidth}{0.4pt}
 \begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
@@ -416,17 +419,18 @@ BEGIN
     orario_minuti := ROUND((NEW.Orario - orario_ora) * 100);
 
     IF orario_ora >= 23 THEN
-        RAISE EXCEPTION 'La parte intera dell''orario deve essere minore di 23';
+        RAISE EXCEPTION 'La parte intera dell\'orario deve essere minore di 23';
     ELSIF orario_minuti >= 60 THEN
-        RAISE EXCEPTION 'La parte decimale dell''orario deve essere minore di 60';
+        RAISE EXCEPTION 'La parte decimale dell\'orario deve essere minore di 60';
     END IF;
 
     durata_frazionaria := NEW.Durata;
     fine_lezione := NEW.Orario + durata_frazionaria;
 
     IF fine_lezione > 23 THEN
-        RAISE EXCEPTION 'L''orario di fine lezione non può superare le 23';
+        RAISE EXCEPTION 'L\'orario di fine lezione non puo\' superare le 23';
     END IF;
+
 
     RETURN NEW;
 END;
@@ -444,8 +448,61 @@ FOR EACH ROW EXECUTE FUNCTION check_orario_e_durata();
     \item Controlla che la durata sia maggiore di 1 e minore di 8 ore.
     \item Verifica che la parte intera dell'orario (ore) sia minore di 23 e la parte decimale (minuti) sia minore di 60.
     \item Calcola l'orario di fine lezione e verifica che non superi le 23.
-    \item Se uno di questi vincoli non è rispettato, viene sollevata un'eccezione e l'operazione viene bloccata.
+    \item Se uno di questi vincoli non e' rispettato, viene sollevata un'eccezione e l'operazione viene bloccata.
     \item In questo modo si garantisce la correttezza e la coerenza degli orari delle sessioni in presenza.
+\end{itemize}
+
+\subsubsection{Trigger: Validazione Range Data Sessione rispetto al Corso}
+
+Questo trigger impedisce che la data di una sessione (sia in presenza che telematica) venga aggiornata a una data non compresa nell’intervallo di validità del corso associato, o a una data nel passato. Garantisce che tutte le sessioni si svolgano entro le date di inizio e fine del corso e che non vengano spostate retroattivamente.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION prevent_invalid_session_update()
+RETURNS TRIGGER AS $$
+DECLARE
+    corso_data_inizio DATE;
+    corso_data_fine DATE;
+    nuova_data DATE;
+BEGIN
+    SELECT DataInizio, DataFine INTO corso_data_inizio, corso_data_fine
+    FROM CORSO
+    WHERE IdCorso = NEW.IDcorso;
+
+    nuova_data := NEW.Data;
+
+    IF nuova_data < CURRENT_DATE THEN
+        RAISE EXCEPTION 'Non è possibile modificare una sessione con una data nel passato (%).', nuova_data;
+    END IF;
+
+    IF nuova_data < corso_data_inizio OR nuova_data > corso_data_fine THEN
+        RAISE EXCEPTION 'La data della sessione (%) deve essere compresa tra l''inizio e la fine del corso (% - %).', nuova_data, corso_data_inizio, corso_data_fine;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_prevent_invalid_update_sessione_presenza
+BEFORE UPDATE ON SESSIONE_PRESENZA
+FOR EACH ROW
+EXECUTE FUNCTION prevent_invalid_session_update();
+
+CREATE TRIGGER trg_prevent_invalid_update_sessione_telematica
+BEFORE UPDATE ON SESSIONE_TELEMATICA
+FOR EACH ROW
+EXECUTE FUNCTION prevent_invalid_session_update();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima di ogni aggiornamento sulle tabelle \texttt{SESSIONE\_PRESENZA} e \texttt{SESSIONE\_TELEMATICA}.
+    \item Recupera le date di inizio e fine del corso associato alla sessione.
+    \item Impedisce di aggiornare la data della sessione a una data nel passato.
+    \item Impedisce di impostare una data di sessione al di fuori dell’intervallo di validità del corso.
+    \item Se una delle condizioni non è rispettata, viene sollevata un’eccezione e l’operazione viene bloccata.
+    \item In questo modo si garantisce che tutte le sessioni si svolgano in un periodo valido e non retroattivo rispetto al corso.
 \end{itemize}
 
 \subsubsection{Trigger: Impedire Eliminazione di Corsi con Iscritti Paganti}
@@ -493,7 +550,72 @@ EXECUTE FUNCTION impedisci_eliminazione_corso_se_iscritto();
     \item Se il numero di iscritti paganti è maggiore di zero, viene sollevata un'eccezione e l'eliminazione viene bloccata.
     \item In questo modo si garantisce che non vengano eliminati corsi con iscritti attivi, preservando la coerenza dei dati.
 \end{itemize}
+\subsubsection{Trigger: Disiscrizione da un Corso Solo se non Iniziato}
 
+Questo trigger impedisce la disiscrizione (cancellazione della richiesta di pagamento) da un corso che è già iniziato.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION prevent_unsubscribe_if_course_started()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM CORSO
+        WHERE IdCorso = OLD.IdCorso
+            AND DataInizio <= CURRENT_DATE
+    ) THEN
+        RAISE EXCEPTION 'Non e' possibile disiscriversi da un corso gia' iniziato.';
+    END IF;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_prevent_unsubscribe_if_course_started
+BEFORE DELETE ON RICHIESTAPAGAMENTO
+FOR EACH ROW
+EXECUTE FUNCTION prevent_unsubscribe_if_course_started();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+        \item Il trigger si attiva prima della cancellazione di una richiesta di pagamento (\texttt{RICHIESTAPAGAMENTO}).
+        \item Se la data di inizio del corso è già passata o è oggi, la disiscrizione viene bloccata.
+        \item In questo modo si impedisce la disiscrizione da corsi già iniziati.
+\end{itemize}
+
+\subsubsection{Trigger: Modifica Corso Solo se non Iniziato}
+
+Questo trigger impedisce la modifica dei dati di un corso che è già iniziato.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION prevent_course_modification_if_started()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF OLD.DataInizio <= CURRENT_DATE THEN
+        RAISE EXCEPTION 'Il corso e' gia' iniziato e non puo' essere modificato.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_prevent_course_modification_if_started
+BEFORE UPDATE ON CORSO
+FOR EACH ROW
+EXECUTE FUNCTION prevent_course_modification_if_started();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+        \item Il trigger si attiva prima di ogni aggiornamento sulla tabella \texttt{CORSO}.
+        \item Se la data di inizio del corso è già passata o è oggi, la modifica viene bloccata.
+        \item In questo modo si impedisce la modifica di corsi già iniziati.
+\end{itemize}
 \subsubsection{Trigger: Chef Non Può Essere Assegnato Contemporaneamente a Sessione Presenza e Telematica}
 
 Questo trigger impedisce che uno stesso chef sia assegnato contemporaneamente, nello stesso giorno, sia a una sessione in presenza che a una sessione telematica, garantendo la coerenza degli orari.
@@ -626,24 +748,20 @@ CREATE OR REPLACE VIEW vista_statistiche_mensili_chef AS
         ch.IdChef,
         ch.Nome,
         ch.Cognome,
-
         COUNT(spr.IdRicetta) AS totale_ricette_mese,
-
         COALESCE(MAX(spr_count.ricette_per_sessione), 0) AS max_ricette_in_sessione,
         COALESCE(MIN(spr_count.ricette_per_sessione), 0) AS min_ricette_in_sessione,
         COALESCE(AVG(spr_count.ricette_per_sessione), 0) AS media_ricette_in_sessione,
-
         COUNT(DISTINCT c.IdCorso) AS numero_corsi,
         COUNT(DISTINCT sp.IdSessionePresenza) AS numero_sessioni_presenza,
         COUNT(DISTINCT st.IdSessioneTelematica) AS numero_sessioni_telematiche,
         COALESCE(SUM(rp.ImportoPagato), 0) AS guadagno_totale,
-        -- Usa la data più significativa disponibile per ogni riga
         EXTRACT(MONTH FROM COALESCE(
             sp.Data,
             st.Data,
             rp.DataRichiesta,
-            c.DataInizio,   -- fallback: data inizio corso
-            c.DataFine      -- fallback: data fine corso
+            c.DataInizio,  
+            c.DataFine      
         )) AS mese,
         EXTRACT(YEAR FROM COALESCE(
             sp.Data,
@@ -662,11 +780,8 @@ CREATE OR REPLACE VIEW vista_statistiche_mensili_chef AS
         JOIN SESSIONE_PRESENZA sp2 ON spr2.IdSessionePresenza = sp2.IdSessionePresenza
         GROUP BY spr2.IdSessionePresenza
     ) spr_count ON spr_count.IdSessionePresenza = sp.IdSessionePresenza
-
     LEFT JOIN SESSIONE_TELEMATICA st ON c.IdCorso = st.IDcorso AND st.IDChef = ch.IdChef
-
     LEFT JOIN RICHIESTAPAGAMENTO rp ON rp.IdCorso = c.IdCorso
-
     GROUP BY ch.IdChef, ch.Nome, ch.Cognome,
         EXTRACT(MONTH FROM COALESCE(sp.Data, st.Data, rp.DataRichiesta, c.DataInizio, c.DataFine)),
         EXTRACT(YEAR FROM COALESCE(sp.Data, st.Data, rp.DataRichiesta, c.DataInizio, c.DataFine));
@@ -685,7 +800,7 @@ CREATE OR REPLACE VIEW vista_statistiche_mensili_chef AS
     \end{itemize}
     \item Le \texttt{LEFT JOIN} collegano chef, corsi, sessioni, ricette e pagamenti per ottenere una panoramica completa delle attività mensili di ciascun chef.
     \item La view utilizza \texttt{COALESCE} per gestire i casi in cui non ci siano dati, restituendo zero dove necessario.
-    \item Questa view è pensata per essere utilizzata come base dati per la generazione di report e grafici mensili sulle performance degli chef.
+    \item Questa view e' pensata per essere utilizzata come base dati per la generazione di report e grafici mensili sulle performance degli chef.
 \end{itemize}
 
 \subsubsection{View: Quantità Ingredienti per Sessione}
@@ -695,7 +810,7 @@ Questa view calcola dinamicamente la quantità totale necessaria di ciascun ingr
 \noindent\rule{\textwidth}{0.4pt}
 \begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
 CREATE OR REPLACE VIEW QuantitaPerSessione AS
-  SELECT 
+    SELECT 
         pi.IdRicetta,
         pi.IdIngrediente,
         pi.QuanititaUnitaria,

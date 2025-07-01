@@ -5,7 +5,7 @@
 -- Dumped from database version 17.5 (Ubuntu 17.5-1.pgdg22.04+1)
 -- Dumped by pg_dump version 17.4
 
--- Started on 2025-07-01 13:08:18
+-- Started on 2025-07-01 19:08:22
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -20,7 +20,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 887 (class 1247 OID 16707)
+-- TOC entry 890 (class 1247 OID 16707)
 -- Name: circuito; Type: TYPE; Schema: public; Owner: name
 --
 
@@ -33,18 +33,15 @@ CREATE TYPE public.circuito AS ENUM (
 ALTER TYPE public.circuito OWNER TO name;
 
 --
--- TOC entry 893 (class 1247 OID 16720)
+-- TOC entry 953 (class 1247 OID 17537)
 -- Name: fds; Type: TYPE; Schema: public; Owner: name
 --
 
 CREATE TYPE public.fds AS ENUM (
     'Giornaliera',
-    'Ogni due giorni',
-    'Ogni tre giorni',
-    'Ogni quattro giorni',
-    'Ogni cinque giorni',
-    'Ogni sei giorni',
     'Settimanale',
+    'Bisettimanale',
+    'Tre volte a settimana',
     'Mensile'
 );
 
@@ -70,7 +67,7 @@ CREATE TYPE public.giorno AS ENUM (
 ALTER TYPE public.giorno OWNER TO name;
 
 --
--- TOC entry 890 (class 1247 OID 16712)
+-- TOC entry 893 (class 1247 OID 16712)
 -- Name: statopagamento; Type: TYPE; Schema: public; Owner: name
 --
 
@@ -99,7 +96,7 @@ CREATE TYPE public.unitadimisura AS ENUM (
 ALTER TYPE public.unitadimisura OWNER TO name;
 
 --
--- TOC entry 263 (class 1255 OID 17534)
+-- TOC entry 266 (class 1255 OID 17534)
 -- Name: check_orario_e_durata(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -178,7 +175,7 @@ CREATE FUNCTION public.check_partecipazione_corso() RETURNS trigger
 ALTER FUNCTION public.check_partecipazione_corso() OWNER TO name;
 
 --
--- TOC entry 267 (class 1255 OID 17048)
+-- TOC entry 270 (class 1255 OID 17048)
 -- Name: elimina_ingredienti_della_ricetta(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -196,7 +193,7 @@ CREATE FUNCTION public.elimina_ingredienti_della_ricetta() RETURNS trigger
 ALTER FUNCTION public.elimina_ingredienti_della_ricetta() OWNER TO name;
 
 --
--- TOC entry 266 (class 1255 OID 17046)
+-- TOC entry 269 (class 1255 OID 17046)
 -- Name: impedisci_carta_duplicata_per_partecipante(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -227,7 +224,7 @@ CREATE FUNCTION public.impedisci_carta_duplicata_per_partecipante() RETURNS trig
 ALTER FUNCTION public.impedisci_carta_duplicata_per_partecipante() OWNER TO name;
 
 --
--- TOC entry 258 (class 1255 OID 17029)
+-- TOC entry 261 (class 1255 OID 17029)
 -- Name: impedisci_eliminazione_corso_se_iscritto(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -261,7 +258,86 @@ CREATE FUNCTION public.impedisci_eliminazione_corso_se_iscritto() RETURNS trigge
 ALTER FUNCTION public.impedisci_eliminazione_corso_se_iscritto() OWNER TO name;
 
 --
--- TOC entry 245 (class 1255 OID 17072)
+-- TOC entry 246 (class 1255 OID 17581)
+-- Name: prevent_course_modification_if_started(); Type: FUNCTION; Schema: public; Owner: name
+--
+
+CREATE FUNCTION public.prevent_course_modification_if_started() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF OLD.DataInizio <= CURRENT_DATE THEN
+    RAISE EXCEPTION 'Il corso è già iniziato e non può essere modificato.';
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.prevent_course_modification_if_started() OWNER TO name;
+
+--
+-- TOC entry 247 (class 1255 OID 17583)
+-- Name: prevent_invalid_session_update(); Type: FUNCTION; Schema: public; Owner: name
+--
+
+CREATE FUNCTION public.prevent_invalid_session_update() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  corso_data_inizio DATE;
+  corso_data_fine DATE;
+  nuova_data DATE;
+BEGIN
+  SELECT DataInizio, DataFine INTO corso_data_inizio, corso_data_fine
+  FROM CORSO
+  WHERE IdCorso = NEW.IDcorso;
+
+  nuova_data := NEW.Data;
+
+  IF nuova_data < CURRENT_DATE THEN
+    RAISE EXCEPTION 'Non è possibile modificare una sessione con una data nel passato (%).', nuova_data;
+  END IF;
+
+  IF nuova_data < corso_data_inizio OR nuova_data > corso_data_fine THEN
+    RAISE EXCEPTION 'La data della sessione (%) deve essere compresa tra l’inizio e la fine del corso (% - %).', nuova_data, corso_data_inizio, corso_data_fine;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.prevent_invalid_session_update() OWNER TO name;
+
+--
+-- TOC entry 245 (class 1255 OID 17579)
+-- Name: prevent_unsubscribe_if_course_started(); Type: FUNCTION; Schema: public; Owner: name
+--
+
+CREATE FUNCTION public.prevent_unsubscribe_if_course_started() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM CORSO
+    WHERE IdCorso = OLD.IdCorso
+      AND DataInizio <= CURRENT_DATE
+  ) THEN
+    RAISE EXCEPTION 'Non è possibile disiscriversi da un corso già iniziato.';
+  END IF;
+
+  RETURN OLD;
+END;
+$$;
+
+
+ALTER FUNCTION public.prevent_unsubscribe_if_course_started() OWNER TO name;
+
+--
+-- TOC entry 248 (class 1255 OID 17072)
 -- Name: validate_email_full(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -296,7 +372,7 @@ $$;
 ALTER FUNCTION public.validate_email_full() OWNER TO name;
 
 --
--- TOC entry 264 (class 1255 OID 17040)
+-- TOC entry 267 (class 1255 OID 17040)
 -- Name: verifica_anni_esperienza_chef(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -333,7 +409,7 @@ CREATE FUNCTION public.verifica_anni_esperienza_chef() RETURNS trigger
 ALTER FUNCTION public.verifica_anni_esperienza_chef() OWNER TO name;
 
 --
--- TOC entry 262 (class 1255 OID 17038)
+-- TOC entry 265 (class 1255 OID 17038)
 -- Name: verifica_data_pagamento_prima_inizio_corso(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -361,7 +437,7 @@ CREATE FUNCTION public.verifica_data_pagamento_prima_inizio_corso() RETURNS trig
 ALTER FUNCTION public.verifica_data_pagamento_prima_inizio_corso() OWNER TO name;
 
 --
--- TOC entry 261 (class 1255 OID 17036)
+-- TOC entry 264 (class 1255 OID 17036)
 -- Name: verifica_importo_pagamento_corrisponde_prezzo_corso(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -387,7 +463,7 @@ CREATE FUNCTION public.verifica_importo_pagamento_corrisponde_prezzo_corso() RET
 ALTER FUNCTION public.verifica_importo_pagamento_corrisponde_prezzo_corso() OWNER TO name;
 
 --
--- TOC entry 269 (class 1255 OID 17042)
+-- TOC entry 272 (class 1255 OID 17042)
 -- Name: verifica_intervallo_date_corso(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -408,7 +484,7 @@ END;
 ALTER FUNCTION public.verifica_intervallo_date_corso() OWNER TO name;
 
 --
--- TOC entry 260 (class 1255 OID 17033)
+-- TOC entry 263 (class 1255 OID 17033)
 -- Name: verifica_intervallo_eta(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -442,7 +518,7 @@ $$;
 ALTER FUNCTION public.verifica_intervallo_eta() OWNER TO name;
 
 --
--- TOC entry 265 (class 1255 OID 17044)
+-- TOC entry 268 (class 1255 OID 17044)
 -- Name: verifica_max_tipi_cucina_per_corso(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -469,7 +545,7 @@ CREATE FUNCTION public.verifica_max_tipi_cucina_per_corso() RETURNS trigger
 ALTER FUNCTION public.verifica_max_tipi_cucina_per_corso() OWNER TO name;
 
 --
--- TOC entry 257 (class 1255 OID 17026)
+-- TOC entry 260 (class 1255 OID 17026)
 -- Name: verifica_sessioni_contemporanee_chef(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -523,7 +599,7 @@ CREATE FUNCTION public.verifica_sessioni_contemporanee_chef() RETURNS trigger
 ALTER FUNCTION public.verifica_sessioni_contemporanee_chef() OWNER TO name;
 
 --
--- TOC entry 259 (class 1255 OID 17031)
+-- TOC entry 262 (class 1255 OID 17031)
 -- Name: verifica_superamento_max_partecipanti_corso(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -577,7 +653,7 @@ CREATE FUNCTION public.verifica_superamento_max_partecipanti_corso() RETURNS tri
 ALTER FUNCTION public.verifica_superamento_max_partecipanti_corso() OWNER TO name;
 
 --
--- TOC entry 268 (class 1255 OID 17050)
+-- TOC entry 271 (class 1255 OID 17050)
 -- Name: verifica_unicita_email(); Type: FUNCTION; Schema: public; Owner: name
 --
 
@@ -629,7 +705,7 @@ CREATE TABLE public.carta (
     intestatario character varying(100) NOT NULL,
     datascadenza date NOT NULL,
     ultimequattrocifre character(4) NOT NULL,
-    circuito character varying(50) NOT NULL
+    circuito public.circuito NOT NULL
 );
 
 
@@ -697,7 +773,7 @@ CREATE TABLE public.corso (
     descrizione character varying(60) NOT NULL,
     datainizio date NOT NULL,
     datafine date NOT NULL,
-    frequenzadellesessioni character varying(100) NOT NULL,
+    frequenzadellesessioni public.fds NOT NULL,
     propic text,
     maxpersone integer,
     prezzo numeric(10,2),
@@ -732,7 +808,7 @@ ALTER TABLE public.corso ALTER COLUMN idcorso ADD GENERATED ALWAYS AS IDENTITY (
 CREATE TABLE public.ingrediente (
     idingrediente integer NOT NULL,
     nome character varying(100) NOT NULL,
-    unitadimisura character varying(50) NOT NULL
+    unitadimisura public.unitadimisura NOT NULL
 );
 
 
@@ -896,7 +972,7 @@ ALTER TABLE public.ricetta ALTER COLUMN idricetta ADD GENERATED ALWAYS AS IDENTI
 
 CREATE TABLE public.richiestapagamento (
     datarichiesta timestamp without time zone NOT NULL,
-    statopagamento character varying(50) NOT NULL,
+    statopagamento public.statopagamento NOT NULL,
     importopagato numeric(10,2),
     idcorso integer NOT NULL,
     idpartecipante integer NOT NULL,
@@ -913,7 +989,7 @@ ALTER TABLE public.richiestapagamento OWNER TO name;
 
 CREATE TABLE public.sessione_presenza (
     idsessionepresenza integer NOT NULL,
-    giorno character varying(20) NOT NULL,
+    giorno public.giorno NOT NULL,
     data date NOT NULL,
     orario time without time zone NOT NULL,
     durata interval NOT NULL,
@@ -956,7 +1032,7 @@ CREATE TABLE public.sessione_telematica (
     data date NOT NULL,
     orario time without time zone NOT NULL,
     durata interval NOT NULL,
-    giorno character varying(20) NOT NULL,
+    giorno public.giorno NOT NULL,
     descrizione text NOT NULL,
     idcorso integer,
     idchef integer,
@@ -1058,7 +1134,7 @@ CREATE VIEW public.vista_statistiche_mensili_chef AS
 ALTER VIEW public.vista_statistiche_mensili_chef OWNER TO postgres;
 
 --
--- TOC entry 3545 (class 0 OID 16920)
+-- TOC entry 3552 (class 0 OID 16920)
 -- Dependencies: 235
 -- Data for Name: adesione_sessionepresenza; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1069,7 +1145,7 @@ t	52	1
 
 
 --
--- TOC entry 3528 (class 0 OID 16764)
+-- TOC entry 3535 (class 0 OID 16764)
 -- Dependencies: 218
 -- Data for Name: carta; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1089,20 +1165,17 @@ COPY public.carta (idcarta, intestatario, datascadenza, ultimequattrocifre, circ
 
 
 --
--- TOC entry 3533 (class 0 OID 16795)
+-- TOC entry 3540 (class 0 OID 16795)
 -- Dependencies: 223
 -- Data for Name: chef; Type: TABLE DATA; Schema: public; Owner: name
 --
 
 COPY public.chef (idchef, nome, cognome, email, password, datadinascita, descrizione, propic, annidiesperienza) FROM stdin;
-1	Mario	Rossi	mario.rossi@email.com	password1	1980-05-10	Specialista cucina italiana	\N	15
-2	Luca	Bianchi	luca.bianchi@email.com	password2	1975-03-22	Esperto pasticceria	\N	20
 3	Giulia	Verdi	giulia.verdi@email.com	password3	1985-07-15	Chef vegano	\N	12
 4	Francesca	Neri	francesca.neri@email.com	password4	1990-11-30	Cucina fusion	\N	8
 5	Alessandro	Russo	alessandro.russo@email.com	password5	1982-01-18	Cucina tradizionale	\N	18
 6	Elena	Gallo	elena.gallo@email.com	password6	1988-09-05	Cucina mediterranea	\N	10
 8	Martina	Greco	martina.greco@email.com	password8	1992-04-25	Cucina salutare	\N	7
-9	Davide	Conti	davide.conti@email.com	password9	1983-06-17	Cucina gourmet	\N	16
 10	Sara	Leone	sara.leone@email.com	password10	1986-08-29	Cucina regionale	\N	13
 11	Yuki	Tanaka	yuki.tanaka@email.com	password11	1987-02-14	Specialista sushi	\N	14
 12	Pierre	Dubois	pierre.dubois@email.com	password12	1979-10-03	Cucina francese	\N	20
@@ -1145,71 +1218,124 @@ COPY public.chef (idchef, nome, cognome, email, password, datadinascita, descriz
 49	Lars	Eriksson	lars.eriksson@email.com	password49	1977-08-28	Cucina svedese	\N	23
 50	Chloe	Martin	chloe.martin@email.com	password50	1991-05-06	Cucina francese moderna	\N	9
 7	Simone	Fontana	simone.fontana@email.com	password77	1978-12-12	Cucina asiatica	\N	22
+1	Mario	Rossi	mario.rossi@email.com	password111	1980-05-10	Specialista cucina italiana	\N	15
+9	Davide	Conti	davide.conti@email.com	password9	1983-06-17	Cucina gourmet	immagini/PropicChef/Davide_Conti.jpg	16
+2	Luca	Bianchi	luca.bianchi@email.com	password2	1975-03-22	Esperto pasticceria	immagini/PropicChef/Luca_Bianchi.jpg	20
 \.
 
 
 --
--- TOC entry 3535 (class 0 OID 16806)
+-- TOC entry 3542 (class 0 OID 16806)
 -- Dependencies: 225
 -- Data for Name: corso; Type: TABLE DATA; Schema: public; Owner: name
 --
 
 COPY public.corso (idcorso, nome, descrizione, datainizio, datafine, frequenzadellesessioni, propic, maxpersone, prezzo, idchef) FROM stdin;
-1	Corso di Pasta	Impara a fare la pasta fresca	2025-09-02	2025-09-25	Martedì e Giovedì	\N	10	120.00	1
-2	Dolci Italiani	Pasticceria tradizionale	2025-09-02	2025-09-25	Martedì e Giovedì	\N	12	150.00	2
-3	Cucina Vegana	Ricette vegane creative	2025-09-02	2025-09-25	Martedì e Giovedì	\N	8	110.00	3
-4	Fusion Experience	Sapori dal mondo	2025-09-02	2025-09-25	Martedì e Giovedì	\N	15	130.00	4
-5	Tradizione Italiana	Piatti tipici regionali	2025-09-02	2025-09-25	Martedì e Giovedì	\N	10	140.00	5
-6	Mediterraneo	Cucina sana e gustosa	2025-09-02	2025-09-25	Martedì e Giovedì	\N	10	125.00	6
-7	Asian Taste	Sapori d'Oriente	2025-09-02	2025-09-25	Martedì e Giovedì	\N	10	135.00	7
-8	Healthy Cooking	Cucina salutare	2025-09-02	2025-09-25	Martedì e Giovedì	\N	10	115.00	8
-9	Gourmet Lab	Tecniche gourmet	2025-09-02	2025-09-25	Martedì e Giovedì	\N	10	160.00	9
-10	Sapori Regionali	Viaggio tra le regioni	2025-09-02	2025-09-25	Martedì e Giovedì	\N	10	145.00	10
-11	Sushi Masterclass	Tecniche avanzate di sushi	2025-10-06	2025-10-20	Lunedì e Mercoledì	\N	8	180.00	11
-12	Cuisine Française	Classici francesi	2025-10-07	2025-10-21	Martedì e Venerdì	\N	10	170.00	12
-13	Fiesta Española	Tapas e paella	2025-10-08	2025-10-22	Mercoledì e Sabato	\N	12	150.00	13
-14	Sapori di Baviera	Piatti tipici tedeschi	2025-10-09	2025-10-23	Giovedì e Domenica	\N	9	140.00	14
-15	Middle East Flavours	Cucina mediorientale	2025-10-10	2025-10-24	Venerdì e Sabato	\N	11	160.00	15
-16	Sapori di Mosca	Piatti tipici russi	2025-11-03	2025-11-17	Lunedì e Giovedì	\N	10	150.00	16
-17	Pho & Banh Mi	Street food vietnamita	2025-11-04	2025-11-18	Martedì e Sabato	\N	12	120.00	17
-18	American BBQ	Grigliate e affumicature	2025-11-05	2025-11-19	Mercoledì e Domenica	\N	15	180.00	18
-19	Brasil Sabor	Cucina brasiliana	2025-11-06	2025-11-20	Giovedì e Venerdì	\N	11	140.00	19
-20	Sapori del Nilo	Cucina egiziana	2025-11-07	2025-11-21	Venerdì e Sabato	\N	9	130.00	20
-21	Polonia in Tavola	Piatti tradizionali polacchi	2025-11-08	2025-11-22	Sabato e Lunedì	\N	10	125.00	21
-22	Grecia Gourmet	Cucina greca autentica	2025-11-09	2025-11-23	Domenica e Mercoledì	\N	13	135.00	22
-23	Gluten Free Lab	Cucina senza glutine	2025-11-10	2025-11-24	Lunedì e Martedì	\N	8	110.00	23
-24	China Taste	Sapori della Cina	2025-11-11	2025-11-25	Martedì e Venerdì	\N	14	160.00	24
-25	Moroccan Magic	Cucina marocchina	2025-11-12	2025-11-26	Mercoledì e Sabato	\N	12	145.00	25
-26	Sapori di Kiev	Cucina ucraina tradizionale	2025-12-01	2025-12-15	Lunedì e Giovedì	\N	10	130.00	26
-27	India Spice	Spezie e curry indiani	2025-12-02	2025-12-16	Martedì e Venerdì	\N	12	140.00	27
-28	Tapas y Paella	Specialità spagnole	2025-12-03	2025-12-17	Mercoledì e Sabato	\N	14	135.00	28
-29	British Classics	Piatti inglesi iconici	2025-12-04	2025-12-18	Giovedì e Domenica	\N	11	120.00	29
-30	Austria Gourmet	Sapori austriaci	2025-12-05	2025-12-19	Venerdì e Lunedì	\N	9	125.00	30
-31	Istanbul Street Food	Cibo di strada turco	2025-12-06	2025-12-20	Sabato e Martedì	\N	13	115.00	31
-32	Nordic Cuisine	Cucina scandinava moderna	2025-12-07	2025-12-21	Domenica e Mercoledì	\N	10	150.00	32
-33	Bavarian Flavours	Piatti tipici tedeschi	2025-12-08	2025-12-22	Lunedì e Giovedì	\N	12	140.00	33
-34	Veggie World	Cucina vegetariana creativa	2025-12-09	2025-12-23	Martedì e Venerdì	\N	8	110.00	34
-35	Paris Bistro	Cucina francese bistrot	2025-12-10	2025-12-24	Mercoledì e Sabato	\N	14	160.00	35
-36	American Diner	Classici USA	2025-12-11	2025-12-25	Giovedì e Domenica	\N	10	120.00	36
-37	Tokyo Nights	Cucina giapponese moderna	2025-12-12	2025-12-26	Venerdì e Lunedì	\N	11	170.00	37
-38	Polish Table	Sapori della Polonia	2025-12-13	2025-12-27	Sabato e Martedì	\N	9	115.00	38
-39	Brasil Fusion	Fusion brasiliana	2025-12-14	2025-12-28	Domenica e Mercoledì	\N	13	145.00	39
-40	Senegal Taste	Cucina senegalese	2025-12-15	2025-12-29	Lunedì e Giovedì	\N	10	130.00	40
-41	China Street	Street food cinese	2025-12-16	2025-12-30	Martedì e Venerdì	\N	12	140.00	41
-42	Buenos Aires Grill	Grigliate argentine	2025-12-17	2025-12-31	Mercoledì e Sabato	\N	14	135.00	42
-43	Swiss Alps	Cucina svizzera	2025-12-18	2026-01-01	Giovedì e Domenica	\N	11	120.00	43
-44	Beirut Flavours	Sapori libanesi	2025-12-19	2026-01-02	Venerdì e Lunedì	\N	9	125.00	44
-45	Arabian Nights	Cucina araba	2025-12-20	2026-01-03	Sabato e Martedì	\N	13	115.00	45
-46	Hungarian Soul	Cucina ungherese	2025-12-21	2026-01-04	Domenica e Mercoledì	\N	10	150.00	46
-47	Czech Delights	Piatti cechi tradizionali	2025-12-22	2026-01-05	Lunedì e Giovedì	\N	12	140.00	47
-48	Danish Hygge	Cucina danese	2025-12-23	2026-01-06	Martedì e Venerdì	\N	8	110.00	48
-49	Swedish Smorgasbord	Buffet svedese	2025-12-24	2026-01-07	Mercoledì e Sabato	\N	14	160.00	49
-50	French Modern	Cucina francese contemporanea	2025-12-25	2026-01-08	Giovedì e Domenica	\N	10	120.00	50
+1	Corso di Pasta	Impara a fare la pasta fresca	2025-09-02	2025-09-25	Bisettimanale	\N	10	120.00	1
+2	Dolci Italiani	Pasticceria tradizionale	2025-09-02	2025-09-25	Bisettimanale	\N	12	150.00	2
+3	Cucina Vegana	Ricette vegane creative	2025-09-02	2025-09-25	Bisettimanale	\N	8	110.00	3
+4	Fusion Experience	Sapori dal mondo	2025-09-02	2025-09-25	Bisettimanale	\N	15	130.00	4
+5	Tradizione Italiana	Piatti tipici regionali	2025-09-02	2025-09-25	Bisettimanale	\N	10	140.00	5
+6	Mediterraneo	Cucina sana e gustosa	2025-09-02	2025-09-25	Bisettimanale	\N	10	125.00	6
+7	Asian Taste	Sapori d'Oriente	2025-09-02	2025-09-25	Bisettimanale	\N	10	135.00	7
+8	Healthy Cooking	Cucina salutare	2025-09-02	2025-09-25	Bisettimanale	\N	10	115.00	8
+9	Gourmet Lab	Tecniche gourmet	2025-09-02	2025-09-25	Bisettimanale	\N	10	160.00	9
+10	Sapori Regionali	Viaggio tra le regioni	2025-09-02	2025-09-25	Bisettimanale	\N	10	145.00	10
+11	Sushi Masterclass	Tecniche avanzate di sushi	2025-10-06	2025-10-20	Bisettimanale	\N	8	180.00	11
+12	Cuisine Française	Classici francesi	2025-10-07	2025-10-21	Bisettimanale	\N	10	170.00	12
+13	Fiesta Española	Tapas e paella	2025-10-08	2025-10-22	Bisettimanale	\N	12	150.00	13
+14	Sapori di Baviera	Piatti tipici tedeschi	2025-10-09	2025-10-23	Bisettimanale	\N	9	140.00	14
+15	Middle East Flavours	Cucina mediorientale	2025-10-10	2025-10-24	Bisettimanale	\N	11	160.00	15
+51	Corso Speciale Chef 1	Corso unico di Chef 1	2025-10-01	2025-10-15	Settimanale	\N	10	100.00	1
+52	Corso Speciale Chef 2	Corso unico di Chef 2	2025-10-02	2025-10-16	Settimanale	\N	10	100.00	2
+53	Corso Speciale Chef 3	Corso unico di Chef 3	2025-10-03	2025-10-17	Settimanale	\N	10	100.00	3
+54	Corso Speciale Chef 4	Corso unico di Chef 4	2025-10-04	2025-10-18	Settimanale	\N	10	100.00	4
+55	Corso Speciale Chef 5	Corso unico di Chef 5	2025-10-05	2025-10-19	Settimanale	\N	10	100.00	5
+56	Corso Speciale Chef 6	Corso unico di Chef 6	2025-10-06	2025-10-20	Settimanale	\N	10	100.00	6
+57	Corso Speciale Chef 7	Corso unico di Chef 7	2025-10-07	2025-10-21	Settimanale	\N	10	100.00	7
+58	Corso Speciale Chef 8	Corso unico di Chef 8	2025-10-08	2025-10-22	Settimanale	\N	10	100.00	8
+59	Corso Speciale Chef 9	Corso unico di Chef 9	2025-10-09	2025-10-23	Settimanale	\N	10	100.00	9
+60	Corso Speciale Chef 10	Corso unico di Chef 10	2025-10-10	2025-10-24	Settimanale	\N	10	100.00	10
+61	Corso Speciale Chef 11	Corso unico di Chef 11	2025-10-11	2025-10-25	Settimanale	\N	10	100.00	11
+62	Corso Speciale Chef 12	Corso unico di Chef 12	2025-10-12	2025-10-26	Settimanale	\N	10	100.00	12
+63	Corso Speciale Chef 13	Corso unico di Chef 13	2025-10-13	2025-10-27	Settimanale	\N	10	100.00	13
+64	Corso Speciale Chef 14	Corso unico di Chef 14	2025-10-14	2025-10-28	Settimanale	\N	10	100.00	14
+65	Corso Speciale Chef 15	Corso unico di Chef 15	2025-10-15	2025-10-29	Settimanale	\N	10	100.00	15
+66	Corso Speciale Chef 16	Corso unico di Chef 16	2025-10-16	2025-10-30	Settimanale	\N	10	100.00	16
+67	Corso Speciale Chef 17	Corso unico di Chef 17	2025-10-17	2025-10-31	Settimanale	\N	10	100.00	17
+68	Corso Speciale Chef 18	Corso unico di Chef 18	2025-10-18	2025-11-01	Settimanale	\N	10	100.00	18
+69	Corso Speciale Chef 19	Corso unico di Chef 19	2025-10-19	2025-11-02	Settimanale	\N	10	100.00	19
+70	Corso Speciale Chef 20	Corso unico di Chef 20	2025-10-20	2025-11-03	Settimanale	\N	10	100.00	20
+71	Corso Speciale Chef 21	Corso unico di Chef 21	2025-10-21	2025-11-04	Settimanale	\N	10	100.00	21
+72	Corso Speciale Chef 22	Corso unico di Chef 22	2025-10-22	2025-11-05	Settimanale	\N	10	100.00	22
+73	Corso Speciale Chef 23	Corso unico di Chef 23	2025-10-23	2025-11-06	Settimanale	\N	10	100.00	23
+74	Corso Speciale Chef 24	Corso unico di Chef 24	2025-10-24	2025-11-07	Settimanale	\N	10	100.00	24
+75	Corso Speciale Chef 25	Corso unico di Chef 25	2025-10-25	2025-11-08	Settimanale	\N	10	100.00	25
+76	Corso Speciale Chef 26	Corso unico di Chef 26	2025-10-26	2025-11-09	Settimanale	\N	10	100.00	26
+77	Corso Speciale Chef 27	Corso unico di Chef 27	2025-10-27	2025-11-10	Settimanale	\N	10	100.00	27
+78	Corso Speciale Chef 28	Corso unico di Chef 28	2025-10-28	2025-11-11	Settimanale	\N	10	100.00	28
+79	Corso Speciale Chef 29	Corso unico di Chef 29	2025-10-29	2025-11-12	Settimanale	\N	10	100.00	29
+80	Corso Speciale Chef 30	Corso unico di Chef 30	2025-10-30	2025-11-13	Settimanale	\N	10	100.00	30
+81	Corso Speciale Chef 31	Corso unico di Chef 31	2025-10-31	2025-11-14	Settimanale	\N	10	100.00	31
+82	Corso Speciale Chef 32	Corso unico di Chef 32	2025-11-01	2025-11-15	Settimanale	\N	10	100.00	32
+83	Corso Speciale Chef 33	Corso unico di Chef 33	2025-11-02	2025-11-16	Settimanale	\N	10	100.00	33
+84	Corso Speciale Chef 34	Corso unico di Chef 34	2025-11-03	2025-11-17	Settimanale	\N	10	100.00	34
+85	Corso Speciale Chef 35	Corso unico di Chef 35	2025-11-04	2025-11-18	Settimanale	\N	10	100.00	35
+86	Corso Speciale Chef 36	Corso unico di Chef 36	2025-11-05	2025-11-19	Settimanale	\N	10	100.00	36
+87	Corso Speciale Chef 37	Corso unico di Chef 37	2025-11-06	2025-11-20	Settimanale	\N	10	100.00	37
+88	Corso Speciale Chef 38	Corso unico di Chef 38	2025-11-07	2025-11-21	Settimanale	\N	10	100.00	38
+89	Corso Speciale Chef 39	Corso unico di Chef 39	2025-11-08	2025-11-22	Settimanale	\N	10	100.00	39
+90	Corso Speciale Chef 40	Corso unico di Chef 40	2025-11-09	2025-11-23	Settimanale	\N	10	100.00	40
+91	Corso Speciale Chef 41	Corso unico di Chef 41	2025-11-10	2025-11-24	Settimanale	\N	10	100.00	41
+92	Corso Speciale Chef 42	Corso unico di Chef 42	2025-11-11	2025-11-25	Settimanale	\N	10	100.00	42
+93	Corso Speciale Chef 43	Corso unico di Chef 43	2025-11-12	2025-11-26	Settimanale	\N	10	100.00	43
+94	Corso Speciale Chef 44	Corso unico di Chef 44	2025-11-13	2025-11-27	Settimanale	\N	10	100.00	44
+95	Corso Speciale Chef 45	Corso unico di Chef 45	2025-11-14	2025-11-28	Settimanale	\N	10	100.00	45
+96	Corso Speciale Chef 46	Corso unico di Chef 46	2025-11-15	2025-11-29	Settimanale	\N	10	100.00	46
+97	Corso Speciale Chef 47	Corso unico di Chef 47	2025-11-16	2025-11-30	Settimanale	\N	10	100.00	47
+98	Corso Speciale Chef 48	Corso unico di Chef 48	2025-11-17	2025-12-01	Settimanale	\N	10	100.00	48
+99	Corso Speciale Chef 49	Corso unico di Chef 49	2025-11-18	2025-12-02	Settimanale	\N	10	100.00	49
+100	Corso Speciale Chef 50	Corso unico di Chef 50	2025-11-19	2025-12-03	Settimanale	\N	10	100.00	50
+16	Sapori di Mosca	Piatti tipici russi	2025-11-03	2025-11-17	Bisettimanale	\N	10	150.00	16
+17	Pho & Banh Mi	Street food vietnamita	2025-11-04	2025-11-18	Bisettimanale	\N	12	120.00	17
+18	American BBQ	Grigliate e affumicature	2025-11-05	2025-11-19	Bisettimanale	\N	15	180.00	18
+19	Brasil Sabor	Cucina brasiliana	2025-11-06	2025-11-20	Bisettimanale	\N	11	140.00	19
+20	Sapori del Nilo	Cucina egiziana	2025-11-07	2025-11-21	Bisettimanale	\N	9	130.00	20
+21	Polonia in Tavola	Piatti tradizionali polacchi	2025-11-08	2025-11-22	Bisettimanale	\N	10	125.00	21
+22	Grecia Gourmet	Cucina greca autentica	2025-11-09	2025-11-23	Bisettimanale	\N	13	135.00	22
+23	Gluten Free Lab	Cucina senza glutine	2025-11-10	2025-11-24	Bisettimanale	\N	8	110.00	23
+24	China Taste	Sapori della Cina	2025-11-11	2025-11-25	Bisettimanale	\N	14	160.00	24
+25	Moroccan Magic	Cucina marocchina	2025-11-12	2025-11-26	Bisettimanale	\N	12	145.00	25
+26	Sapori di Kiev	Cucina ucraina tradizionale	2025-12-01	2025-12-15	Bisettimanale	\N	10	130.00	26
+27	India Spice	Spezie e curry indiani	2025-12-02	2025-12-16	Bisettimanale	\N	12	140.00	27
+28	Tapas y Paella	Specialità spagnole	2025-12-03	2025-12-17	Bisettimanale	\N	14	135.00	28
+29	British Classics	Piatti inglesi iconici	2025-12-04	2025-12-18	Bisettimanale	\N	11	120.00	29
+30	Austria Gourmet	Sapori austriaci	2025-12-05	2025-12-19	Bisettimanale	\N	9	125.00	30
+31	Istanbul Street Food	Cibo di strada turco	2025-12-06	2025-12-20	Bisettimanale	\N	13	115.00	31
+32	Nordic Cuisine	Cucina scandinava moderna	2025-12-07	2025-12-21	Bisettimanale	\N	10	150.00	32
+33	Bavarian Flavours	Piatti tipici tedeschi	2025-12-08	2025-12-22	Bisettimanale	\N	12	140.00	33
+34	Veggie World	Cucina vegetariana creativa	2025-12-09	2025-12-23	Bisettimanale	\N	8	110.00	34
+35	Paris Bistro	Cucina francese bistrot	2025-12-10	2025-12-24	Bisettimanale	\N	14	160.00	35
+36	American Diner	Classici USA	2025-12-11	2025-12-25	Bisettimanale	\N	10	120.00	36
+37	Tokyo Nights	Cucina giapponese moderna	2025-12-12	2025-12-26	Bisettimanale	\N	11	170.00	37
+38	Polish Table	Sapori della Polonia	2025-12-13	2025-12-27	Bisettimanale	\N	9	115.00	38
+39	Brasil Fusion	Fusion brasiliana	2025-12-14	2025-12-28	Bisettimanale	\N	13	145.00	39
+40	Senegal Taste	Cucina senegalese	2025-12-15	2025-12-29	Bisettimanale	\N	10	130.00	40
+41	China Street	Street food cinese	2025-12-16	2025-12-30	Bisettimanale	\N	12	140.00	41
+42	Buenos Aires Grill	Grigliate argentine	2025-12-17	2025-12-31	Bisettimanale	\N	14	135.00	42
+43	Swiss Alps	Cucina svizzera	2025-12-18	2026-01-01	Bisettimanale	\N	11	120.00	43
+44	Beirut Flavours	Sapori libanesi	2025-12-19	2026-01-02	Bisettimanale	\N	9	125.00	44
+45	Arabian Nights	Cucina araba	2025-12-20	2026-01-03	Bisettimanale	\N	13	115.00	45
+46	Hungarian Soul	Cucina ungherese	2025-12-21	2026-01-04	Bisettimanale	\N	10	150.00	46
+47	Czech Delights	Piatti cechi tradizionali	2025-12-22	2026-01-05	Bisettimanale	\N	12	140.00	47
+48	Danish Hygge	Cucina danese	2025-12-23	2026-01-06	Bisettimanale	\N	8	110.00	48
+49	Swedish Smorgasbord	Buffet svedese	2025-12-24	2026-01-07	Bisettimanale	\N	14	160.00	49
+50	French Modern	Cucina francese contemporanea	2025-12-25	2026-01-08	Bisettimanale	\N	10	120.00	50
 \.
 
 
 --
--- TOC entry 3550 (class 0 OID 16957)
+-- TOC entry 3557 (class 0 OID 16957)
 -- Dependencies: 240
 -- Data for Name: ingrediente; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1250,7 +1376,6 @@ COPY public.ingrediente (idingrediente, nome, unitadimisura) FROM stdin;
 33	Pasta Brisée	Grammi
 34	Manzo	Grammi
 35	Riso	Grammi
-36	Uova	Unità
 37	Salsiccia	Grammi
 38	Cavolo	Grammi
 39	Ceci	Grammi
@@ -1293,24 +1418,24 @@ COPY public.ingrediente (idingrediente, nome, unitadimisura) FROM stdin;
 76	Carne Macinata	Grammi
 77	Formaggio Svizzero	Grammi
 78	Prezzemolo	Grammi
-79	Uova	Unità
 80	Paprika	Grammi
 81	Pane	Grammi
 82	Aringa	Grammi
 83	Panna	Centilitro
 84	Latte	Centilitro
 85	Bacon	Grammi
+36	Uova	Grammi
+79	Uova	Grammi
 \.
 
 
 --
--- TOC entry 3530 (class 0 OID 16770)
+-- TOC entry 3537 (class 0 OID 16770)
 -- Dependencies: 220
 -- Data for Name: partecipante; Type: TABLE DATA; Schema: public; Owner: name
 --
 
 COPY public.partecipante (idpartecipante, nome, cognome, email, password, datadinascita, propic) FROM stdin;
-1	Alberto	Ferrari	alberto.ferrari@email.com	pass1	1990-01-15	\N
 2	Beatrice	Russo	beatrice.russo@email.com	pass2	1992-02-20	\N
 3	Carlo	Bianchi	carlo.bianchi@email.com	pass3	1988-03-10	\N
 4	Diana	Verdi	diana.verdi@email.com	pass4	1995-04-25	\N
@@ -1360,11 +1485,12 @@ COPY public.partecipante (idpartecipante, nome, cognome, email, password, datadi
 48	Xavier	Pagani	xavier.pagani@email.com	pass48	1993-12-05	\N
 49	Ylenia	Coppola	ylenia.coppola@email.com	pass49	1994-01-17	\N
 50	Zeno	Fiore	zeno.fiore@email.com	pass50	1996-02-28	\N
+1	Alberto	Ferrari	alberto.ferrari@email.com	pass1	1990-01-15	immagini/PropicUtente/Alberto_Ferrari.jpg
 \.
 
 
 --
--- TOC entry 3544 (class 0 OID 16905)
+-- TOC entry 3551 (class 0 OID 16905)
 -- Dependencies: 234
 -- Data for Name: partecipante_sessionetelematica; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1374,7 +1500,7 @@ COPY public.partecipante_sessionetelematica (idpartecipante, idsessionetelematic
 
 
 --
--- TOC entry 3531 (class 0 OID 16779)
+-- TOC entry 3538 (class 0 OID 16779)
 -- Dependencies: 221
 -- Data for Name: possiede; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1394,7 +1520,7 @@ COPY public.possiede (idpartecipante, idcarta) FROM stdin;
 
 
 --
--- TOC entry 3551 (class 0 OID 16962)
+-- TOC entry 3558 (class 0 OID 16962)
 -- Dependencies: 241
 -- Data for Name: preparazioneingrediente; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1489,7 +1615,7 @@ COPY public.preparazioneingrediente (idricetta, idingrediente, quanititaunitaria
 
 
 --
--- TOC entry 3547 (class 0 OID 16936)
+-- TOC entry 3554 (class 0 OID 16936)
 -- Dependencies: 237
 -- Data for Name: ricetta; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1584,7 +1710,7 @@ COPY public.ricetta (idricetta, nome) FROM stdin;
 
 
 --
--- TOC entry 3536 (class 0 OID 16830)
+-- TOC entry 3543 (class 0 OID 16830)
 -- Dependencies: 226
 -- Data for Name: richiestapagamento; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1614,7 +1740,7 @@ COPY public.richiestapagamento (datarichiesta, statopagamento, importopagato, id
 
 
 --
--- TOC entry 3541 (class 0 OID 16870)
+-- TOC entry 3548 (class 0 OID 16870)
 -- Dependencies: 231
 -- Data for Name: sessione_presenza; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1734,7 +1860,7 @@ COPY public.sessione_presenza (idsessionepresenza, giorno, data, orario, durata,
 
 
 --
--- TOC entry 3548 (class 0 OID 16941)
+-- TOC entry 3555 (class 0 OID 16941)
 -- Dependencies: 238
 -- Data for Name: sessione_presenza_ricetta; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1851,17 +1977,117 @@ COPY public.sessione_presenza_ricetta (idricetta, idsessionepresenza) FROM stdin
 
 
 --
--- TOC entry 3543 (class 0 OID 16888)
+-- TOC entry 3550 (class 0 OID 16888)
 -- Dependencies: 233
 -- Data for Name: sessione_telematica; Type: TABLE DATA; Schema: public; Owner: name
 --
 
 COPY public.sessione_telematica (idsessionetelematica, applicazione, codicechiamata, data, orario, durata, giorno, descrizione, idcorso, idchef) FROM stdin;
+3	Zoom	zoom-special-1	2025-10-01	18:00:00	02:00:00	Mercoledì	Sessione online Chef 1	51	1
+4	Teams	teams-special-2	2025-10-02	18:00:00	02:00:00	Giovedì	Sessione online Chef 2	52	2
+5	Meet	meet-special-3	2025-10-03	18:00:00	02:00:00	Venerdì	Sessione online Chef 3	53	3
+6	Zoom	Zoom-special-4	2025-10-04	18:00:00	02:00:00	Sabato	Sessione online Chef 4	54	4
+7	Zoom	zoom-special-5	2025-10-05	18:00:00	02:00:00	Domenica	Sessione online Chef 5	55	5
+8	Teams	teams-special-6	2025-10-06	18:00:00	02:00:00	Lunedì	Sessione online Chef 6	56	6
+9	Meet	meet-special-7	2025-10-07	18:00:00	02:00:00	Martedì	Sessione online Chef 7	57	7
+10	Zoom	Zoom-special-8	2025-10-08	18:00:00	02:00:00	Mercoledì	Sessione online Chef 8	58	8
+11	Zoom	zoom-special-9	2025-10-09	18:00:00	02:00:00	Giovedì	Sessione online Chef 9	59	9
+12	Teams	teams-special-10	2025-10-10	18:00:00	02:00:00	Venerdì	Sessione online Chef 10	60	10
+13	Meet	meet-special-11	2025-10-11	18:00:00	02:00:00	Sabato	Sessione online Chef 11	61	11
+14	Zoom	Zoom-special-12	2025-10-12	18:00:00	02:00:00	Domenica	Sessione online Chef 12	62	12
+15	Zoom	zoom-special-13	2025-10-13	18:00:00	02:00:00	Lunedì	Sessione online Chef 13	63	13
+16	Teams	teams-special-14	2025-10-14	18:00:00	02:00:00	Martedì	Sessione online Chef 14	64	14
+17	Meet	meet-special-15	2025-10-15	18:00:00	02:00:00	Mercoledì	Sessione online Chef 15	65	15
+18	Zoom	Zoom-special-16	2025-10-16	18:00:00	02:00:00	Giovedì	Sessione online Chef 16	66	16
+19	Zoom	zoom-special-17	2025-10-17	18:00:00	02:00:00	Venerdì	Sessione online Chef 17	67	17
+20	Teams	teams-special-18	2025-10-18	18:00:00	02:00:00	Sabato	Sessione online Chef 18	68	18
+21	Meet	meet-special-19	2025-10-19	18:00:00	02:00:00	Domenica	Sessione online Chef 19	69	19
+22	Zoom	Zoom-special-20	2025-10-20	18:00:00	02:00:00	Lunedì	Sessione online Chef 20	70	20
+23	Zoom	zoom-special-21	2025-10-21	18:00:00	02:00:00	Martedì	Sessione online Chef 21	71	21
+24	Teams	teams-special-22	2025-10-22	18:00:00	02:00:00	Mercoledì	Sessione online Chef 22	72	22
+25	Meet	meet-special-23	2025-10-23	18:00:00	02:00:00	Giovedì	Sessione online Chef 23	73	23
+26	Zoom	Zoom-special-24	2025-10-24	18:00:00	02:00:00	Venerdì	Sessione online Chef 24	74	24
+27	Zoom	zoom-special-25	2025-10-25	18:00:00	02:00:00	Sabato	Sessione online Chef 25	75	25
+28	Teams	teams-special-26	2025-10-26	18:00:00	02:00:00	Domenica	Sessione online Chef 26	76	26
+29	Meet	meet-special-27	2025-10-27	18:00:00	02:00:00	Lunedì	Sessione online Chef 27	77	27
+30	Zoom	Zoom-special-28	2025-10-28	18:00:00	02:00:00	Martedì	Sessione online Chef 28	78	28
+31	Zoom	zoom-special-29	2025-10-29	18:00:00	02:00:00	Mercoledì	Sessione online Chef 29	79	29
+32	Teams	teams-special-30	2025-10-30	18:00:00	02:00:00	Giovedì	Sessione online Chef 30	80	30
+33	Meet	meet-special-31	2025-10-31	18:00:00	02:00:00	Venerdì	Sessione online Chef 31	81	31
+34	Zoom	Zoom-special-32	2025-11-01	18:00:00	02:00:00	Sabato	Sessione online Chef 32	82	32
+35	Zoom	zoom-special-33	2025-11-02	18:00:00	02:00:00	Domenica	Sessione online Chef 33	83	33
+36	Teams	teams-special-34	2025-11-03	18:00:00	02:00:00	Lunedì	Sessione online Chef 34	84	34
+37	Meet	meet-special-35	2025-11-04	18:00:00	02:00:00	Martedì	Sessione online Chef 35	85	35
+38	Zoom	Zoom-special-36	2025-11-05	18:00:00	02:00:00	Mercoledì	Sessione online Chef 36	86	36
+39	Zoom	zoom-special-37	2025-11-06	18:00:00	02:00:00	Giovedì	Sessione online Chef 37	87	37
+40	Teams	teams-special-38	2025-11-07	18:00:00	02:00:00	Venerdì	Sessione online Chef 38	88	38
+41	Meet	meet-special-39	2025-11-08	18:00:00	02:00:00	Sabato	Sessione online Chef 39	89	39
+42	Zoom	Zoom-special-40	2025-11-09	18:00:00	02:00:00	Domenica	Sessione online Chef 40	90	40
+43	Zoom	zoom-special-41	2025-11-10	18:00:00	02:00:00	Lunedì	Sessione online Chef 41	91	41
+44	Teams	teams-special-42	2025-11-11	18:00:00	02:00:00	Martedì	Sessione online Chef 42	92	42
+45	Meet	meet-special-43	2025-11-12	18:00:00	02:00:00	Mercoledì	Sessione online Chef 43	93	43
+46	Zoom	Zoom-special-44	2025-11-13	18:00:00	02:00:00	Giovedì	Sessione online Chef 44	94	44
+47	Zoom	zoom-special-45	2025-11-14	18:00:00	02:00:00	Venerdì	Sessione online Chef 45	95	45
+48	Teams	teams-special-46	2025-11-15	18:00:00	02:00:00	Sabato	Sessione online Chef 46	96	46
+49	Meet	meet-special-47	2025-11-16	18:00:00	02:00:00	Domenica	Sessione online Chef 47	97	47
+50	Zoom	Zoom-special-48	2025-11-17	18:00:00	02:00:00	Lunedì	Sessione online Chef 48	98	48
+51	Zoom	zoom-special-49	2025-11-18	18:00:00	02:00:00	Martedì	Sessione online Chef 49	99	49
+52	Teams	teams-special-50	2025-11-19	18:00:00	02:00:00	Mercoledì	Sessione online Chef 50	100	50
+53	Zoom	zoom-special-1b	2025-10-08	18:00:00	02:00:00	Mercoledì	Sessione online Chef 1 - bis	51	1
+54	Teams	teams-special-2b	2025-10-09	18:00:00	02:00:00	Giovedì	Sessione online Chef 2 - bis	52	2
+55	Meet	meet-special-3b	2025-10-10	18:00:00	02:00:00	Venerdì	Sessione online Chef 3 - bis	53	3
+56	Webex	webex-special-4b	2025-10-11	18:00:00	02:00:00	Sabato	Sessione online Chef 4 - bis	54	4
+57	Zoom	zoom-special-5b	2025-10-12	18:00:00	02:00:00	Domenica	Sessione online Chef 5 - bis	55	5
+58	Teams	teams-special-6b	2025-10-13	18:00:00	02:00:00	Lunedì	Sessione online Chef 6 - bis	56	6
+59	Meet	meet-special-7b	2025-10-14	18:00:00	02:00:00	Martedì	Sessione online Chef 7 - bis	57	7
+60	Webex	webex-special-8b	2025-10-15	18:00:00	02:00:00	Mercoledì	Sessione online Chef 8 - bis	58	8
+61	Zoom	zoom-special-9b	2025-10-16	18:00:00	02:00:00	Giovedì	Sessione online Chef 9 - bis	59	9
+62	Teams	teams-special-10b	2025-10-17	18:00:00	02:00:00	Venerdì	Sessione online Chef 10 - bis	60	10
+63	Meet	meet-special-11b	2025-10-18	18:00:00	02:00:00	Sabato	Sessione online Chef 11 - bis	61	11
+64	Webex	webex-special-12b	2025-10-19	18:00:00	02:00:00	Domenica	Sessione online Chef 12 - bis	62	12
+65	Zoom	zoom-special-13b	2025-10-20	18:00:00	02:00:00	Lunedì	Sessione online Chef 13 - bis	63	13
+66	Teams	teams-special-14b	2025-10-21	18:00:00	02:00:00	Martedì	Sessione online Chef 14 - bis	64	14
+67	Meet	meet-special-15b	2025-10-22	18:00:00	02:00:00	Mercoledì	Sessione online Chef 15 - bis	65	15
+68	Webex	webex-special-16b	2025-10-23	18:00:00	02:00:00	Giovedì	Sessione online Chef 16 - bis	66	16
+69	Zoom	zoom-special-17b	2025-10-24	18:00:00	02:00:00	Venerdì	Sessione online Chef 17 - bis	67	17
+70	Teams	teams-special-18b	2025-10-25	18:00:00	02:00:00	Sabato	Sessione online Chef 18 - bis	68	18
+71	Meet	meet-special-19b	2025-10-26	18:00:00	02:00:00	Domenica	Sessione online Chef 19 - bis	69	19
+72	Webex	webex-special-20b	2025-10-27	18:00:00	02:00:00	Lunedì	Sessione online Chef 20 - bis	70	20
+73	Zoom	zoom-special-21b	2025-10-28	18:00:00	02:00:00	Martedì	Sessione online Chef 21 - bis	71	21
+74	Teams	teams-special-22b	2025-10-29	18:00:00	02:00:00	Mercoledì	Sessione online Chef 22 - bis	72	22
+75	Meet	meet-special-23b	2025-10-30	18:00:00	02:00:00	Giovedì	Sessione online Chef 23 - bis	73	23
+76	Webex	webex-special-24b	2025-10-31	18:00:00	02:00:00	Venerdì	Sessione online Chef 24 - bis	74	24
+77	Zoom	zoom-special-25b	2025-11-01	18:00:00	02:00:00	Sabato	Sessione online Chef 25 - bis	75	25
+78	Teams	teams-special-26b	2025-11-02	18:00:00	02:00:00	Domenica	Sessione online Chef 26 - bis	76	26
+79	Meet	meet-special-27b	2025-11-03	18:00:00	02:00:00	Lunedì	Sessione online Chef 27 - bis	77	27
+80	Webex	webex-special-28b	2025-11-04	18:00:00	02:00:00	Martedì	Sessione online Chef 28 - bis	78	28
+81	Zoom	zoom-special-29b	2025-11-05	18:00:00	02:00:00	Mercoledì	Sessione online Chef 29 - bis	79	29
+82	Teams	teams-special-30b	2025-11-06	18:00:00	02:00:00	Giovedì	Sessione online Chef 30 - bis	80	30
+83	Meet	meet-special-31b	2025-11-07	18:00:00	02:00:00	Venerdì	Sessione online Chef 31 - bis	81	31
+84	Webex	webex-special-32b	2025-11-08	18:00:00	02:00:00	Sabato	Sessione online Chef 32 - bis	82	32
+85	Zoom	zoom-special-33b	2025-11-09	18:00:00	02:00:00	Domenica	Sessione online Chef 33 - bis	83	33
+86	Teams	teams-special-34b	2025-11-10	18:00:00	02:00:00	Lunedì	Sessione online Chef 34 - bis	84	34
+87	Meet	meet-special-35b	2025-11-11	18:00:00	02:00:00	Martedì	Sessione online Chef 35 - bis	85	35
+88	Webex	webex-special-36b	2025-11-12	18:00:00	02:00:00	Mercoledì	Sessione online Chef 36 - bis	86	36
+89	Zoom	zoom-special-37b	2025-11-13	18:00:00	02:00:00	Giovedì	Sessione online Chef 37 - bis	87	37
+90	Teams	teams-special-38b	2025-11-14	18:00:00	02:00:00	Venerdì	Sessione online Chef 38 - bis	88	38
+91	Meet	meet-special-39b	2025-11-15	18:00:00	02:00:00	Sabato	Sessione online Chef 39 - bis	89	39
+92	Webex	webex-special-40b	2025-11-16	18:00:00	02:00:00	Domenica	Sessione online Chef 40 - bis	90	40
+93	Zoom	zoom-special-41b	2025-11-17	18:00:00	02:00:00	Lunedì	Sessione online Chef 41 - bis	91	41
+94	Teams	teams-special-42b	2025-11-18	18:00:00	02:00:00	Martedì	Sessione online Chef 42 - bis	92	42
+95	Meet	meet-special-43b	2025-11-19	18:00:00	02:00:00	Mercoledì	Sessione online Chef 43 - bis	93	43
+96	Webex	webex-special-44b	2025-11-20	18:00:00	02:00:00	Giovedì	Sessione online Chef 44 - bis	94	44
+97	Zoom	zoom-special-45b	2025-11-21	18:00:00	02:00:00	Venerdì	Sessione online Chef 45 - bis	95	45
+98	Teams	teams-special-46b	2025-11-22	18:00:00	02:00:00	Sabato	Sessione online Chef 46 - bis	96	46
+99	Meet	meet-special-47b	2025-11-23	18:00:00	02:00:00	Domenica	Sessione online Chef 47 - bis	97	47
+100	Webex	webex-special-48b	2025-11-24	18:00:00	02:00:00	Lunedì	Sessione online Chef 48 - bis	98	48
+101	Zoom	zoom-special-49b	2025-11-25	18:00:00	02:00:00	Martedì	Sessione online Chef 49 - bis	99	49
+102	Teams	teams-special-50b	2025-11-26	18:00:00	02:00:00	Mercoledì	Sessione online Chef 50 - bis	100	50
 \.
 
 
 --
--- TOC entry 3538 (class 0 OID 16847)
+-- TOC entry 3545 (class 0 OID 16847)
 -- Dependencies: 228
 -- Data for Name: tipodicucina; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1943,7 +2169,7 @@ COPY public.tipodicucina (idtipocucina, nome) FROM stdin;
 
 
 --
--- TOC entry 3539 (class 0 OID 16854)
+-- TOC entry 3546 (class 0 OID 16854)
 -- Dependencies: 229
 -- Data for Name: tipodicucina_corso; Type: TABLE DATA; Schema: public; Owner: name
 --
@@ -1999,11 +2225,86 @@ COPY public.tipodicucina_corso (idtipocucina, idcorso) FROM stdin;
 48	48
 49	49
 50	50
+1	51
+2	51
+3	52
+4	53
+5	53
+6	54
+7	55
+8	55
+9	56
+10	57
+11	57
+12	58
+13	59
+14	59
+15	60
+16	61
+17	61
+18	62
+19	63
+20	63
+21	64
+22	65
+23	65
+24	66
+25	67
+26	67
+27	68
+28	69
+29	69
+30	70
+31	71
+32	71
+33	72
+34	73
+35	73
+36	74
+37	75
+38	75
+39	76
+40	77
+41	77
+42	78
+43	79
+44	79
+45	80
+46	81
+47	81
+48	82
+49	83
+50	83
+1	84
+2	85
+3	85
+4	86
+5	87
+6	87
+7	88
+8	89
+9	89
+10	90
+11	91
+12	91
+13	92
+14	93
+15	93
+16	94
+17	95
+18	95
+19	96
+20	97
+21	97
+22	98
+23	99
+24	99
+25	100
 \.
 
 
 --
--- TOC entry 3575 (class 0 OID 0)
+-- TOC entry 3582 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: carta_idcarta_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
@@ -2012,7 +2313,7 @@ SELECT pg_catalog.setval('public.carta_idcarta_seq', 11, true);
 
 
 --
--- TOC entry 3576 (class 0 OID 0)
+-- TOC entry 3583 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: chef_idchef_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
@@ -2021,16 +2322,16 @@ SELECT pg_catalog.setval('public.chef_idchef_seq', 50, true);
 
 
 --
--- TOC entry 3577 (class 0 OID 0)
+-- TOC entry 3584 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: corso_idcorso_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.corso_idcorso_seq', 50, true);
+SELECT pg_catalog.setval('public.corso_idcorso_seq', 100, true);
 
 
 --
--- TOC entry 3578 (class 0 OID 0)
+-- TOC entry 3585 (class 0 OID 0)
 -- Dependencies: 239
 -- Name: ingrediente_idingrediente_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
@@ -2039,7 +2340,7 @@ SELECT pg_catalog.setval('public.ingrediente_idingrediente_seq', 85, true);
 
 
 --
--- TOC entry 3579 (class 0 OID 0)
+-- TOC entry 3586 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: partecipante_idpartecipante_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
@@ -2048,7 +2349,7 @@ SELECT pg_catalog.setval('public.partecipante_idpartecipante_seq', 50, true);
 
 
 --
--- TOC entry 3580 (class 0 OID 0)
+-- TOC entry 3587 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: ricetta_idricetta_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
@@ -2057,7 +2358,7 @@ SELECT pg_catalog.setval('public.ricetta_idricetta_seq', 85, true);
 
 
 --
--- TOC entry 3581 (class 0 OID 0)
+-- TOC entry 3588 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: sessione_presenza_idsessionepresenza_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
@@ -2066,16 +2367,16 @@ SELECT pg_catalog.setval('public.sessione_presenza_idsessionepresenza_seq', 110,
 
 
 --
--- TOC entry 3582 (class 0 OID 0)
+-- TOC entry 3589 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: sessione_telematica_idsessionetelematica_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
 
-SELECT pg_catalog.setval('public.sessione_telematica_idsessionetelematica_seq', 2, true);
+SELECT pg_catalog.setval('public.sessione_telematica_idsessionetelematica_seq', 102, true);
 
 
 --
--- TOC entry 3583 (class 0 OID 0)
+-- TOC entry 3590 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: tipodicucina_idtipocucina_seq; Type: SEQUENCE SET; Schema: public; Owner: name
 --
@@ -2084,7 +2385,7 @@ SELECT pg_catalog.setval('public.tipodicucina_idtipocucina_seq', 72, true);
 
 
 --
--- TOC entry 3333 (class 2606 OID 16924)
+-- TOC entry 3336 (class 2606 OID 16924)
 -- Name: adesione_sessionepresenza adesione_sessionepresenza_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2093,7 +2394,7 @@ ALTER TABLE ONLY public.adesione_sessionepresenza
 
 
 --
--- TOC entry 3303 (class 2606 OID 16768)
+-- TOC entry 3306 (class 2606 OID 16768)
 -- Name: carta carta_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2102,7 +2403,7 @@ ALTER TABLE ONLY public.carta
 
 
 --
--- TOC entry 3313 (class 2606 OID 16804)
+-- TOC entry 3316 (class 2606 OID 16804)
 -- Name: chef chef_email_key; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2111,7 +2412,7 @@ ALTER TABLE ONLY public.chef
 
 
 --
--- TOC entry 3315 (class 2606 OID 16802)
+-- TOC entry 3318 (class 2606 OID 16802)
 -- Name: chef chef_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2120,7 +2421,7 @@ ALTER TABLE ONLY public.chef
 
 
 --
--- TOC entry 3317 (class 2606 OID 16814)
+-- TOC entry 3320 (class 2606 OID 16814)
 -- Name: corso corso_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2129,7 +2430,7 @@ ALTER TABLE ONLY public.corso
 
 
 --
--- TOC entry 3339 (class 2606 OID 16961)
+-- TOC entry 3342 (class 2606 OID 16961)
 -- Name: ingrediente ingrediente_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2138,7 +2439,7 @@ ALTER TABLE ONLY public.ingrediente
 
 
 --
--- TOC entry 3307 (class 2606 OID 16778)
+-- TOC entry 3310 (class 2606 OID 16778)
 -- Name: partecipante partecipante_email_key; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2147,7 +2448,7 @@ ALTER TABLE ONLY public.partecipante
 
 
 --
--- TOC entry 3309 (class 2606 OID 16776)
+-- TOC entry 3312 (class 2606 OID 16776)
 -- Name: partecipante partecipante_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2156,7 +2457,7 @@ ALTER TABLE ONLY public.partecipante
 
 
 --
--- TOC entry 3331 (class 2606 OID 16909)
+-- TOC entry 3334 (class 2606 OID 16909)
 -- Name: partecipante_sessionetelematica partecipante_sessionetelematica_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2165,7 +2466,7 @@ ALTER TABLE ONLY public.partecipante_sessionetelematica
 
 
 --
--- TOC entry 3311 (class 2606 OID 16783)
+-- TOC entry 3314 (class 2606 OID 16783)
 -- Name: possiede possiede_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2174,7 +2475,7 @@ ALTER TABLE ONLY public.possiede
 
 
 --
--- TOC entry 3341 (class 2606 OID 16968)
+-- TOC entry 3344 (class 2606 OID 16968)
 -- Name: preparazioneingrediente preparazioneingrediente_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2183,7 +2484,7 @@ ALTER TABLE ONLY public.preparazioneingrediente
 
 
 --
--- TOC entry 3335 (class 2606 OID 16940)
+-- TOC entry 3338 (class 2606 OID 16940)
 -- Name: ricetta ricetta_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2192,7 +2493,7 @@ ALTER TABLE ONLY public.ricetta
 
 
 --
--- TOC entry 3319 (class 2606 OID 16835)
+-- TOC entry 3322 (class 2606 OID 16835)
 -- Name: richiestapagamento richiestapagamento_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2201,7 +2502,7 @@ ALTER TABLE ONLY public.richiestapagamento
 
 
 --
--- TOC entry 3327 (class 2606 OID 16876)
+-- TOC entry 3330 (class 2606 OID 16876)
 -- Name: sessione_presenza sessione_presenza_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2210,7 +2511,7 @@ ALTER TABLE ONLY public.sessione_presenza
 
 
 --
--- TOC entry 3337 (class 2606 OID 16945)
+-- TOC entry 3340 (class 2606 OID 16945)
 -- Name: sessione_presenza_ricetta sessione_presenza_ricetta_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2219,7 +2520,7 @@ ALTER TABLE ONLY public.sessione_presenza_ricetta
 
 
 --
--- TOC entry 3329 (class 2606 OID 16894)
+-- TOC entry 3332 (class 2606 OID 16894)
 -- Name: sessione_telematica sessione_telematica_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2228,7 +2529,7 @@ ALTER TABLE ONLY public.sessione_telematica
 
 
 --
--- TOC entry 3325 (class 2606 OID 16858)
+-- TOC entry 3328 (class 2606 OID 16858)
 -- Name: tipodicucina_corso tipodicucina_corso_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2237,7 +2538,7 @@ ALTER TABLE ONLY public.tipodicucina_corso
 
 
 --
--- TOC entry 3321 (class 2606 OID 16853)
+-- TOC entry 3324 (class 2606 OID 16853)
 -- Name: tipodicucina tipodicucina_nome_key; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2246,7 +2547,7 @@ ALTER TABLE ONLY public.tipodicucina
 
 
 --
--- TOC entry 3323 (class 2606 OID 16851)
+-- TOC entry 3326 (class 2606 OID 16851)
 -- Name: tipodicucina tipodicucina_pkey; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2255,7 +2556,7 @@ ALTER TABLE ONLY public.tipodicucina
 
 
 --
--- TOC entry 3305 (class 2606 OID 17002)
+-- TOC entry 3308 (class 2606 OID 17554)
 -- Name: carta uq_carta_details; Type: CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2264,7 +2565,7 @@ ALTER TABLE ONLY public.carta
 
 
 --
--- TOC entry 3378 (class 2620 OID 17082)
+-- TOC entry 3385 (class 2620 OID 17082)
 -- Name: adesione_sessionepresenza trg_check_partecipazione_corso; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2272,7 +2573,7 @@ CREATE TRIGGER trg_check_partecipazione_corso BEFORE INSERT ON public.adesione_s
 
 
 --
--- TOC entry 3375 (class 2620 OID 17535)
+-- TOC entry 3380 (class 2620 OID 17535)
 -- Name: sessione_presenza trg_check_sessione_presenza; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2280,7 +2581,7 @@ CREATE TRIGGER trg_check_sessione_presenza BEFORE INSERT OR UPDATE ON public.ses
 
 
 --
--- TOC entry 3371 (class 2620 OID 17032)
+-- TOC entry 3375 (class 2620 OID 17032)
 -- Name: richiestapagamento trg_controllo_max_partecipanti_corso; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2288,7 +2589,7 @@ CREATE TRIGGER trg_controllo_max_partecipanti_corso BEFORE INSERT OR UPDATE ON p
 
 
 --
--- TOC entry 3361 (class 2620 OID 17047)
+-- TOC entry 3364 (class 2620 OID 17047)
 -- Name: carta trg_impedisci_dettagli_carta_duplicati; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2296,7 +2597,7 @@ CREATE TRIGGER trg_impedisci_dettagli_carta_duplicati BEFORE INSERT OR UPDATE ON
 
 
 --
--- TOC entry 3369 (class 2620 OID 17030)
+-- TOC entry 3372 (class 2620 OID 17030)
 -- Name: corso trg_impedisci_eliminazione_corso; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2304,7 +2605,7 @@ CREATE TRIGGER trg_impedisci_eliminazione_corso BEFORE DELETE ON public.corso FO
 
 
 --
--- TOC entry 3372 (class 2620 OID 17039)
+-- TOC entry 3376 (class 2620 OID 17039)
 -- Name: richiestapagamento trg_impedisci_pagamento_tardivo; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2312,7 +2613,7 @@ CREATE TRIGGER trg_impedisci_pagamento_tardivo BEFORE INSERT OR UPDATE ON public
 
 
 --
--- TOC entry 3374 (class 2620 OID 17045)
+-- TOC entry 3379 (class 2620 OID 17045)
 -- Name: tipodicucina_corso trg_max_tipi_cucina_corso; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2320,7 +2621,39 @@ CREATE TRIGGER trg_max_tipi_cucina_corso BEFORE INSERT ON public.tipodicucina_co
 
 
 --
--- TOC entry 3365 (class 2620 OID 17041)
+-- TOC entry 3373 (class 2620 OID 17582)
+-- Name: corso trg_prevent_course_modification_if_started; Type: TRIGGER; Schema: public; Owner: name
+--
+
+CREATE TRIGGER trg_prevent_course_modification_if_started BEFORE UPDATE ON public.corso FOR EACH ROW EXECUTE FUNCTION public.prevent_course_modification_if_started();
+
+
+--
+-- TOC entry 3381 (class 2620 OID 17584)
+-- Name: sessione_presenza trg_prevent_invalid_update_sessione_presenza; Type: TRIGGER; Schema: public; Owner: name
+--
+
+CREATE TRIGGER trg_prevent_invalid_update_sessione_presenza BEFORE UPDATE ON public.sessione_presenza FOR EACH ROW EXECUTE FUNCTION public.prevent_invalid_session_update();
+
+
+--
+-- TOC entry 3383 (class 2620 OID 17585)
+-- Name: sessione_telematica trg_prevent_invalid_update_sessione_telematica; Type: TRIGGER; Schema: public; Owner: name
+--
+
+CREATE TRIGGER trg_prevent_invalid_update_sessione_telematica BEFORE UPDATE ON public.sessione_telematica FOR EACH ROW EXECUTE FUNCTION public.prevent_invalid_session_update();
+
+
+--
+-- TOC entry 3377 (class 2620 OID 17580)
+-- Name: richiestapagamento trg_prevent_unsubscribe_if_course_started; Type: TRIGGER; Schema: public; Owner: name
+--
+
+CREATE TRIGGER trg_prevent_unsubscribe_if_course_started BEFORE DELETE ON public.richiestapagamento FOR EACH ROW EXECUTE FUNCTION public.prevent_unsubscribe_if_course_started();
+
+
+--
+-- TOC entry 3368 (class 2620 OID 17041)
 -- Name: chef trg_valida_anni_esperienza_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2328,7 +2661,7 @@ CREATE TRIGGER trg_valida_anni_esperienza_chef BEFORE INSERT OR UPDATE ON public
 
 
 --
--- TOC entry 3370 (class 2620 OID 17043)
+-- TOC entry 3374 (class 2620 OID 17043)
 -- Name: corso trg_valida_date_corso; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2336,7 +2669,7 @@ CREATE TRIGGER trg_valida_date_corso BEFORE INSERT OR UPDATE ON public.corso FOR
 
 
 --
--- TOC entry 3366 (class 2620 OID 17034)
+-- TOC entry 3369 (class 2620 OID 17034)
 -- Name: chef trg_valida_eta_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2344,7 +2677,7 @@ CREATE TRIGGER trg_valida_eta_chef BEFORE INSERT OR UPDATE ON public.chef FOR EA
 
 
 --
--- TOC entry 3362 (class 2620 OID 17035)
+-- TOC entry 3365 (class 2620 OID 17035)
 -- Name: partecipante trg_valida_eta_partecipante; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2352,7 +2685,7 @@ CREATE TRIGGER trg_valida_eta_partecipante BEFORE INSERT OR UPDATE ON public.par
 
 
 --
--- TOC entry 3373 (class 2620 OID 17037)
+-- TOC entry 3378 (class 2620 OID 17037)
 -- Name: richiestapagamento trg_valida_importo_pagamento; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2360,7 +2693,7 @@ CREATE TRIGGER trg_valida_importo_pagamento BEFORE INSERT OR UPDATE ON public.ri
 
 
 --
--- TOC entry 3367 (class 2620 OID 17074)
+-- TOC entry 3370 (class 2620 OID 17074)
 -- Name: chef trg_validate_email_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2368,7 +2701,7 @@ CREATE TRIGGER trg_validate_email_chef BEFORE INSERT OR UPDATE ON public.chef FO
 
 
 --
--- TOC entry 3363 (class 2620 OID 17073)
+-- TOC entry 3366 (class 2620 OID 17073)
 -- Name: partecipante trg_validate_email_partecipante; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2376,7 +2709,7 @@ CREATE TRIGGER trg_validate_email_partecipante BEFORE INSERT OR UPDATE ON public
 
 
 --
--- TOC entry 3368 (class 2620 OID 17052)
+-- TOC entry 3371 (class 2620 OID 17052)
 -- Name: chef trg_verifica_email_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2384,7 +2717,7 @@ CREATE TRIGGER trg_verifica_email_chef BEFORE INSERT OR UPDATE ON public.chef FO
 
 
 --
--- TOC entry 3364 (class 2620 OID 17051)
+-- TOC entry 3367 (class 2620 OID 17051)
 -- Name: partecipante trg_verifica_email_partecipante; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2392,7 +2725,7 @@ CREATE TRIGGER trg_verifica_email_partecipante BEFORE INSERT OR UPDATE ON public
 
 
 --
--- TOC entry 3376 (class 2620 OID 17027)
+-- TOC entry 3382 (class 2620 OID 17027)
 -- Name: sessione_presenza trg_verifica_sessione_presenza_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2400,7 +2733,7 @@ CREATE TRIGGER trg_verifica_sessione_presenza_chef BEFORE INSERT OR UPDATE ON pu
 
 
 --
--- TOC entry 3377 (class 2620 OID 17028)
+-- TOC entry 3384 (class 2620 OID 17028)
 -- Name: sessione_telematica trg_verifica_sessione_telematica_chef; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2408,7 +2741,7 @@ CREATE TRIGGER trg_verifica_sessione_telematica_chef BEFORE INSERT OR UPDATE ON 
 
 
 --
--- TOC entry 3379 (class 2620 OID 17049)
+-- TOC entry 3386 (class 2620 OID 17049)
 -- Name: ricetta trigger_elimina_ingredienti_associati; Type: TRIGGER; Schema: public; Owner: name
 --
 
@@ -2416,7 +2749,7 @@ CREATE TRIGGER trigger_elimina_ingredienti_associati BEFORE DELETE ON public.ric
 
 
 --
--- TOC entry 3355 (class 2606 OID 16930)
+-- TOC entry 3358 (class 2606 OID 16930)
 -- Name: adesione_sessionepresenza adesione_sessionepresenza_idpartecipante_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2425,7 +2758,7 @@ ALTER TABLE ONLY public.adesione_sessionepresenza
 
 
 --
--- TOC entry 3356 (class 2606 OID 16925)
+-- TOC entry 3359 (class 2606 OID 16925)
 -- Name: adesione_sessionepresenza adesione_sessionepresenza_idsessionepresenza_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2434,7 +2767,7 @@ ALTER TABLE ONLY public.adesione_sessionepresenza
 
 
 --
--- TOC entry 3344 (class 2606 OID 17075)
+-- TOC entry 3347 (class 2606 OID 17075)
 -- Name: corso fk_corso_chef; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2443,7 +2776,7 @@ ALTER TABLE ONLY public.corso
 
 
 --
--- TOC entry 3342 (class 2606 OID 17066)
+-- TOC entry 3345 (class 2606 OID 17066)
 -- Name: possiede fk_possiede_idcarta_carta_cascade; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2452,7 +2785,7 @@ ALTER TABLE ONLY public.possiede
 
 
 --
--- TOC entry 3353 (class 2606 OID 16910)
+-- TOC entry 3356 (class 2606 OID 16910)
 -- Name: partecipante_sessionetelematica partecipante_sessionetelematica_idpartecipante_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2461,7 +2794,7 @@ ALTER TABLE ONLY public.partecipante_sessionetelematica
 
 
 --
--- TOC entry 3354 (class 2606 OID 16915)
+-- TOC entry 3357 (class 2606 OID 16915)
 -- Name: partecipante_sessionetelematica partecipante_sessionetelematica_idsessionetelematica_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2470,7 +2803,7 @@ ALTER TABLE ONLY public.partecipante_sessionetelematica
 
 
 --
--- TOC entry 3343 (class 2606 OID 16784)
+-- TOC entry 3346 (class 2606 OID 16784)
 -- Name: possiede possiede_idpartecipante_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2479,7 +2812,7 @@ ALTER TABLE ONLY public.possiede
 
 
 --
--- TOC entry 3359 (class 2606 OID 16974)
+-- TOC entry 3362 (class 2606 OID 16974)
 -- Name: preparazioneingrediente preparazioneingrediente_idingrediente_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2488,7 +2821,7 @@ ALTER TABLE ONLY public.preparazioneingrediente
 
 
 --
--- TOC entry 3360 (class 2606 OID 16969)
+-- TOC entry 3363 (class 2606 OID 16969)
 -- Name: preparazioneingrediente preparazioneingrediente_idricetta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2497,7 +2830,7 @@ ALTER TABLE ONLY public.preparazioneingrediente
 
 
 --
--- TOC entry 3345 (class 2606 OID 16836)
+-- TOC entry 3348 (class 2606 OID 16836)
 -- Name: richiestapagamento richiestapagamento_idcorso_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2506,7 +2839,7 @@ ALTER TABLE ONLY public.richiestapagamento
 
 
 --
--- TOC entry 3346 (class 2606 OID 16841)
+-- TOC entry 3349 (class 2606 OID 16841)
 -- Name: richiestapagamento richiestapagamento_idpartecipante_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2515,7 +2848,7 @@ ALTER TABLE ONLY public.richiestapagamento
 
 
 --
--- TOC entry 3349 (class 2606 OID 16882)
+-- TOC entry 3352 (class 2606 OID 16882)
 -- Name: sessione_presenza sessione_presenza_idchef_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2524,7 +2857,7 @@ ALTER TABLE ONLY public.sessione_presenza
 
 
 --
--- TOC entry 3350 (class 2606 OID 16877)
+-- TOC entry 3353 (class 2606 OID 16877)
 -- Name: sessione_presenza sessione_presenza_idcorso_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2533,7 +2866,7 @@ ALTER TABLE ONLY public.sessione_presenza
 
 
 --
--- TOC entry 3357 (class 2606 OID 16946)
+-- TOC entry 3360 (class 2606 OID 16946)
 -- Name: sessione_presenza_ricetta sessione_presenza_ricetta_idricetta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2542,7 +2875,7 @@ ALTER TABLE ONLY public.sessione_presenza_ricetta
 
 
 --
--- TOC entry 3358 (class 2606 OID 16951)
+-- TOC entry 3361 (class 2606 OID 16951)
 -- Name: sessione_presenza_ricetta sessione_presenza_ricetta_idsessionepresenza_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2551,7 +2884,7 @@ ALTER TABLE ONLY public.sessione_presenza_ricetta
 
 
 --
--- TOC entry 3351 (class 2606 OID 16900)
+-- TOC entry 3354 (class 2606 OID 16900)
 -- Name: sessione_telematica sessione_telematica_idchef_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2560,7 +2893,7 @@ ALTER TABLE ONLY public.sessione_telematica
 
 
 --
--- TOC entry 3352 (class 2606 OID 16895)
+-- TOC entry 3355 (class 2606 OID 16895)
 -- Name: sessione_telematica sessione_telematica_idcorso_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2569,7 +2902,7 @@ ALTER TABLE ONLY public.sessione_telematica
 
 
 --
--- TOC entry 3347 (class 2606 OID 16864)
+-- TOC entry 3350 (class 2606 OID 16864)
 -- Name: tipodicucina_corso tipodicucina_corso_idcorso_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2578,7 +2911,7 @@ ALTER TABLE ONLY public.tipodicucina_corso
 
 
 --
--- TOC entry 3348 (class 2606 OID 16859)
+-- TOC entry 3351 (class 2606 OID 16859)
 -- Name: tipodicucina_corso tipodicucina_corso_idtipocucina_fkey; Type: FK CONSTRAINT; Schema: public; Owner: name
 --
 
@@ -2587,7 +2920,7 @@ ALTER TABLE ONLY public.tipodicucina_corso
 
 
 --
--- TOC entry 3557 (class 0 OID 0)
+-- TOC entry 3564 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: TABLE adesione_sessionepresenza; Type: ACL; Schema: public; Owner: name
 --
@@ -2596,7 +2929,7 @@ GRANT ALL ON TABLE public.adesione_sessionepresenza TO "Mario";
 
 
 --
--- TOC entry 3558 (class 0 OID 0)
+-- TOC entry 3565 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: TABLE carta; Type: ACL; Schema: public; Owner: name
 --
@@ -2605,7 +2938,7 @@ GRANT ALL ON TABLE public.carta TO "Mario";
 
 
 --
--- TOC entry 3559 (class 0 OID 0)
+-- TOC entry 3566 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: TABLE chef; Type: ACL; Schema: public; Owner: name
 --
@@ -2614,7 +2947,7 @@ GRANT ALL ON TABLE public.chef TO "Mario";
 
 
 --
--- TOC entry 3560 (class 0 OID 0)
+-- TOC entry 3567 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: TABLE corso; Type: ACL; Schema: public; Owner: name
 --
@@ -2623,7 +2956,7 @@ GRANT ALL ON TABLE public.corso TO "Mario";
 
 
 --
--- TOC entry 3561 (class 0 OID 0)
+-- TOC entry 3568 (class 0 OID 0)
 -- Dependencies: 240
 -- Name: TABLE ingrediente; Type: ACL; Schema: public; Owner: name
 --
@@ -2632,7 +2965,7 @@ GRANT ALL ON TABLE public.ingrediente TO "Mario";
 
 
 --
--- TOC entry 3562 (class 0 OID 0)
+-- TOC entry 3569 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: TABLE partecipante; Type: ACL; Schema: public; Owner: name
 --
@@ -2641,7 +2974,7 @@ GRANT ALL ON TABLE public.partecipante TO "Mario";
 
 
 --
--- TOC entry 3563 (class 0 OID 0)
+-- TOC entry 3570 (class 0 OID 0)
 -- Dependencies: 234
 -- Name: TABLE partecipante_sessionetelematica; Type: ACL; Schema: public; Owner: name
 --
@@ -2650,7 +2983,7 @@ GRANT ALL ON TABLE public.partecipante_sessionetelematica TO "Mario";
 
 
 --
--- TOC entry 3564 (class 0 OID 0)
+-- TOC entry 3571 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: TABLE possiede; Type: ACL; Schema: public; Owner: name
 --
@@ -2659,7 +2992,7 @@ GRANT ALL ON TABLE public.possiede TO "Mario";
 
 
 --
--- TOC entry 3565 (class 0 OID 0)
+-- TOC entry 3572 (class 0 OID 0)
 -- Dependencies: 241
 -- Name: TABLE preparazioneingrediente; Type: ACL; Schema: public; Owner: name
 --
@@ -2668,7 +3001,7 @@ GRANT ALL ON TABLE public.preparazioneingrediente TO "Mario";
 
 
 --
--- TOC entry 3566 (class 0 OID 0)
+-- TOC entry 3573 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: TABLE sessione_presenza_ricetta; Type: ACL; Schema: public; Owner: name
 --
@@ -2677,7 +3010,7 @@ GRANT ALL ON TABLE public.sessione_presenza_ricetta TO "Mario";
 
 
 --
--- TOC entry 3567 (class 0 OID 0)
+-- TOC entry 3574 (class 0 OID 0)
 -- Dependencies: 242
 -- Name: TABLE quantitapersessione; Type: ACL; Schema: public; Owner: name
 --
@@ -2686,7 +3019,7 @@ GRANT ALL ON TABLE public.quantitapersessione TO "Mario";
 
 
 --
--- TOC entry 3568 (class 0 OID 0)
+-- TOC entry 3575 (class 0 OID 0)
 -- Dependencies: 237
 -- Name: TABLE ricetta; Type: ACL; Schema: public; Owner: name
 --
@@ -2695,7 +3028,7 @@ GRANT ALL ON TABLE public.ricetta TO "Mario";
 
 
 --
--- TOC entry 3569 (class 0 OID 0)
+-- TOC entry 3576 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: TABLE richiestapagamento; Type: ACL; Schema: public; Owner: name
 --
@@ -2704,7 +3037,7 @@ GRANT ALL ON TABLE public.richiestapagamento TO "Mario";
 
 
 --
--- TOC entry 3570 (class 0 OID 0)
+-- TOC entry 3577 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: TABLE sessione_presenza; Type: ACL; Schema: public; Owner: name
 --
@@ -2713,7 +3046,7 @@ GRANT ALL ON TABLE public.sessione_presenza TO "Mario";
 
 
 --
--- TOC entry 3571 (class 0 OID 0)
+-- TOC entry 3578 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: TABLE sessione_telematica; Type: ACL; Schema: public; Owner: name
 --
@@ -2722,7 +3055,7 @@ GRANT ALL ON TABLE public.sessione_telematica TO "Mario";
 
 
 --
--- TOC entry 3572 (class 0 OID 0)
+-- TOC entry 3579 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: TABLE tipodicucina; Type: ACL; Schema: public; Owner: name
 --
@@ -2731,7 +3064,7 @@ GRANT ALL ON TABLE public.tipodicucina TO "Mario";
 
 
 --
--- TOC entry 3573 (class 0 OID 0)
+-- TOC entry 3580 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: TABLE tipodicucina_corso; Type: ACL; Schema: public; Owner: name
 --
@@ -2740,7 +3073,7 @@ GRANT ALL ON TABLE public.tipodicucina_corso TO "Mario";
 
 
 --
--- TOC entry 3574 (class 0 OID 0)
+-- TOC entry 3581 (class 0 OID 0)
 -- Dependencies: 243
 -- Name: TABLE vista_statistiche_mensili_chef; Type: ACL; Schema: public; Owner: postgres
 --
@@ -2748,7 +3081,7 @@ GRANT ALL ON TABLE public.tipodicucina_corso TO "Mario";
 GRANT ALL ON TABLE public.vista_statistiche_mensili_chef TO "Mario";
 
 
--- Completed on 2025-07-01 13:08:18
+-- Completed on 2025-07-01 19:08:23
 
 --
 -- PostgreSQL database dump complete

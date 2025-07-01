@@ -44,6 +44,15 @@ Le relazioni tra le entità sono state definite come segue:
 \end{itemize}
 \subsubsection{Motivazione delle scelte progettuali}
 Le scelte progettuali sono state guidate dalla necessità di garantire una rappresentazione chiara e coerente delle informazioni, facilitando la gestione dei corsi, delle sessioni e delle partecipazioni. La specializzazione delle sessioni in Presenza e Telematica consente di gestire le specificità di ciascun tipo di sessione, mentre la distinzione tra Partecipante e Chef permette di differenziare i ruoli degli utenti nel sistema. Inoltre, l'uso di relazioni molti-a-molti per gestire le adesioni alle sessioni pratiche e le associazioni tra ricette e ingredienti garantisce flessibilità e scalabilità nel modello.
+\subsubsection{Diagramma ER}
+Il diagramma ER (Entity-Relationship) rappresenta graficamente le entità principali del sistema, i loro attributi e le relazioni tra di esse, fornendo una visione sintetica e formale della struttura informativa del database.
+
+\begin{figure}[H]
+    \noindent\makebox[\linewidth]{%
+        \includegraphics[page=2, height=0.8\textheight, width=1\textwidth]{latex/immagini/ER.pdf}
+    }
+    \caption{Diagramma ER del sistema}
+\end{figure}
 \subsection{UML ristrutturato}
 \begin{figure}[H]
     \noindent\makebox[\linewidth]{%
@@ -144,7 +153,7 @@ PREPARAZIONE\-INGREDIENTE & Entità associativa che definisce gli ingredienti ne
 \end{center}
 
 
-% --- Dizionario delle Associazioni (Relazioni) - Parte 1 ---
+
 \subsubsection{Dizionario delle Associazioni (Relazioni) - Parte 1}
 \begin{center}
 \begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Dizionario delle Associazioni (Relazioni) - Parte 1, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
@@ -166,7 +175,7 @@ SESSIONE\_\-PRESENZA - PARTECIPANTI & Relazione molti-a-molti tramite ADESIONE\_
 \end{tcolorbox}
 \end{center}
 
-% --- Dizionario delle Associazioni (Relazioni) - Parte 2 ---
+
 \subsubsection{Dizionario delle Associazioni (Relazioni) - Parte 2}
 \begin{center}
 \begin{tcolorbox}[colback=white!98!gray, colframe=myblue!80!black, title=Dizionario delle Associazioni (Relazioni) - Parte 2, arc=4mm, boxrule=0.8pt, width=0.98\textwidth]
@@ -198,19 +207,19 @@ RICHIESTA\-PAGAMENTO & Relazione molti-a-uno che collega ogni richiesta di pagam
 \hline
 \textbf{StatoPagamento} & $\in$ \{``In Attesa'', ``Pagato'', ``Fallito''\}. Rappresenta lo stato attuale di una transazione di pagamento. \\
 \hline
-\textbf{Circuito} & $\in$ \{``Visa'', ``Mastercard'', ``American Express''\}. Definisce il circuito della carta di pagamento utilizzata. \\
+\textbf{Circuito} & $\in$ \{``Visa'', ``Mastercard''\}. Definisce il circuito della carta di pagamento utilizzata. \\
 \hline
-\textbf{Livello} & $\in$ \{``Principiante'', ``Intermedio'', ``Avanzato''\}. Indica il livello di difficoltà di un corso culinario. \\
+\textbf{Email} & Deve rispettare il formato (es. utente@dominio.com). Garantisce la validità dell'indirizzo email per le comunicazioni. \\
 \hline
-\textbf{Email} & Deve rispettare il formato RFC 5322 (es. utente@dominio.it). Garantisce la validità dell'indirizzo email per le comunicazioni. \\
-\hline
-\textbf{NumeroTelefono} & Stringa numerica di 10 cifre (formato italiano). Deve iniziare con cifra valida per numerazione italiana. \\
-\hline
-\textbf{MaxPersone} & Intero positivo $> 0$ e $\leq 50$. Definisce la capacità massima di partecipanti per corso, limitata dalle strutture disponibili. \\
+\textbf{MaxPersone} & Intero positivo $> 0$. Definisce la capacità massima di partecipanti per corso. \\
 \hline
 \textbf{Prezzo} & Decimale $\geq 0.00$ con precisione di 2 cifre decimali. Rappresenta il costo del corso in Euro. \\
 \hline
 \textbf{Durata} & Intero positivo espresso in minuti, $> 0$ e $\leq 480$ (8 ore). Definisce la durata di una sessione. \\
+\hline
+\textbf{Età} & Data di nascita deve corrispondere a età compresa tra 18 e 100 anni. Validata tramite trigger per garantire utenti maggiorenni. \\
+\hline
+\textbf{TipoCucina} & Massimo 2 tipi di cucina diversi per corso. Implementato tramite trigger per limitare la varietà culinaria per corso. \\
 \hline
 \end{tabularx}
 \end{tcolorbox}
@@ -228,9 +237,11 @@ RICHIESTA\-PAGAMENTO & Relazione molti-a-uno che collega ogni richiesta di pagam
 \hline
 \textbf{Vincoli NOT NULL} & Attributi obbligatori non possono essere nulli: tutte le chiavi primarie, attributi Nome, Email degli utenti, DataInizio/DataFine dei corsi, Titolo delle ricette. \\
 \hline
-\textbf{Vincoli di Unicità} & Email in UTENTE deve essere univoca nel sistema. NumeroTelefono in UTENTE deve essere univoco. Nome del corso + DataInizio devono essere univoci per CHEF. \\
+\textbf{Vincoli di Unicità} & Email in UTENTE deve essere univoca nel sistema sia per chef che partecipante e tra loro . \\
 \hline
 \textbf{Vincoli CHECK} & DataInizio $<$ DataFine in CORSO. Prezzo $\geq 0$ in CORSO. MaxPersone $> 0$ in CORSO. Durata $> 0$ nelle sessioni. \\
+\hline
+\textbf{Vincoli via Trigger} & Implementati 16 trigger specifici per vincoli complessi (dettagliati nel Cap. 4.2): unicità email Chef/Partecipante, validazione formato email, controllo età (18-100 anni), limite 2 tipi cucina per corso, controllo capacità massima, validazione date/orari sessioni, controllo pagamenti, gestione modifiche corsi non iniziati, impedimento conflitti sessioni Chef, controllo adesioni solo per iscritti. \\
 \hline
 \end{tabularx}
 \end{tcolorbox}
@@ -252,9 +263,11 @@ RICHIESTA\-PAGAMENTO & Relazione molti-a-uno che collega ogni richiesta di pagam
 \hline
 \textbf{Vincoli di Cardinalità} & Un CORSO deve avere almeno 1 SESSIONE. Un PARTECIPANTE può avere 0..n CARTE. Una RICETTA deve avere almeno 1 INGREDIENTE (tramite PREPARAZIONEINGREDIENTE). \\
 \hline
-\textbf{Vincoli di Capacità} & Il numero di iscrizioni (ADESIONE) per un CORSO non può superare MaxPersone del corso stesso. Implementato tramite trigger o stored procedure. \\
+\textbf{Vincoli di Capacità} & Il numero di iscrizioni per un CORSO non può superare MaxPersone del corso stesso. Il numero di carte per PARTECIPANTE è limitato (max 5). Impedimento eliminazione corsi con iscritti paganti. Implementati tramite trigger specifici. \\
 \hline
-\textbf{Vincoli Temporali} & Le SESSIONI di un CORSO devono avere Data compresa tra DataInizio e DataFine del corso. DataPagamento in RICHIESTAPAGAMENTO $\leq$ DataInizio del corso associato. \\
+\textbf{Vincoli Temporali} & Le SESSIONI di un CORSO devono avere Data compresa tra DataInizio e DataFine del corso. DataPagamento in RICHIESTAPAGAMENTO $\leq$ DataInizio del corso associato. Controllo orario e durata sessioni. Impedimento modifiche/disiscrizioni dopo inizio corso. Validazione corrispondenza importo pagato con costo corso. \\
+\hline
+\textbf{Vincoli di Conflitto} & Un CHEF non può essere assegnato contemporaneamente a sessioni di presenza e telematiche nello stesso orario. Un PARTECIPANTE può aderire solo a sessioni di corsi a cui è iscritto. Eliminazione automatica ingredienti quando viene eliminata la ricetta associata. \\
 \hline
 \end{tabularx}
 \end{tcolorbox}

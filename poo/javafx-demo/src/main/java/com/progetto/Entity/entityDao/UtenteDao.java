@@ -93,7 +93,7 @@ public abstract class UtenteDao {
             ps.setString(1,Frequenza);
             ps.setString(2,Categoria);
             rs = ps.executeQuery();
-
+            CorsoDao corsoDao = new CorsoDao();
             while (rs.next()) {
                 Corso corso = new Corso(
                         rs.getString("Nome"),
@@ -110,7 +110,6 @@ public abstract class UtenteDao {
                 corso.setChefCognome(rs.getString("chef_cognome"));
                 corso.setChefEsperienza(rs.getInt("chef_esperienza"));
                 corso.setSessioni(new CorsoDao().recuperoSessioniPerCorso(corso));
-                CorsoDao corsoDao = new CorsoDao();
                 corsoDao.recuperaTipoCucinaCorsi(corso);
                 corsi.add(corso);
             }

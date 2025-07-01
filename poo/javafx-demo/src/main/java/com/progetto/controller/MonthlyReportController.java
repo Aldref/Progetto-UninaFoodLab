@@ -39,7 +39,7 @@ public class MonthlyReportController {
     private final Label minRecipesLabel;
     private final Label totalRecipesLabel;
 
-    private final LineChart<String, Number> earningsChart;
+    // private final LineChart<String, Number> earningsChart;
 
     private final Chef chef;
     private final GraficoChefDao graficoChefDao;
@@ -51,7 +51,7 @@ public class MonthlyReportController {
             Label totalCoursesLabel, Label onlineSessionsLabel, Label practicalSessionsLabel, Label monthlyEarningsLabel,
             PieChart sessionsChart, BarChart<String, Number> recipesChart,
             Label avgRecipesLabel, Label maxRecipesLabel, Label minRecipesLabel, Label totalRecipesLabel,
-            LineChart<String, Number> earningsChart,
+            /*LineChart<String, Number> earningsChart,*/
             Chef chef) {
         this.monthYearLabel = monthYearLabel;
         this.monthComboBox = monthComboBox;
@@ -66,7 +66,7 @@ public class MonthlyReportController {
         this.maxRecipesLabel = maxRecipesLabel;
         this.minRecipesLabel = minRecipesLabel;
         this.totalRecipesLabel = totalRecipesLabel;
-        this.earningsChart = earningsChart;
+        // this.earningsChart = earningsChart;
         // Usa sempre lo chef loggato
         this.chef = Chef.loggedUser;
         this.graficoChefDao = new GraficoChefDao();
@@ -137,38 +137,38 @@ public class MonthlyReportController {
     }
 
     private void updateChartsData(GraficoChef grafico, double monthlyEarnings) {
-        ObservableList<PieChart.Data> sessionsData = FXCollections.observableArrayList(
-            new PieChart.Data("Sessioni Online", grafico.getNumerosessionitelematiche()),
-            new PieChart.Data("Sessioni Pratiche", grafico.getNumeroSessioniInPresenza())
-        );
-        sessionsChart.setData(sessionsData);
-        sessionsChart.setTitle("");
-
-        XYChart.Series<String, Number> recipesSeries = new XYChart.Series<>();
-        recipesSeries.setName("Ricette per Sessione");
-        recipesSeries.getData().add(new XYChart.Data<>("Minimo", grafico.getNumeroMinimo()));
-        recipesSeries.getData().add(new XYChart.Data<>("Media", grafico.getMedia()));
-        recipesSeries.getData().add(new XYChart.Data<>("Massimo", grafico.getNumeroMassimo()));
-
-        recipesChart.getData().clear();
-        recipesChart.getData().add(recipesSeries);
-        recipesChart.setTitle("");
-        recipesChart.setLegendVisible(false);
-
-        XYChart.Series<String, Number> earningsSeries = new XYChart.Series<>();
-        earningsSeries.setName("Guadagni Mensili");
-
-        String[] lastSixMonths = {"Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"};
-        double[] earnings = {3200, 2800, 4100, 4500, 4300, monthlyEarnings};
-
-        for (int i = 0; i < lastSixMonths.length; i++) {
-            earningsSeries.getData().add(new XYChart.Data<>(lastSixMonths[i], earnings[i]));
+        // PieChart: aggiorna dati senza ricreare l'oggetto
+        ObservableList<PieChart.Data> sessionsData = sessionsChart.getData();
+        if (sessionsData == null || sessionsData.size() != 2) {
+            sessionsData = FXCollections.observableArrayList(
+                new PieChart.Data("Sessioni Online", grafico.getNumerosessionitelematiche()),
+                new PieChart.Data("Sessioni Pratiche", grafico.getNumeroSessioniInPresenza())
+            );
+            sessionsChart.setData(sessionsData);
+        } else {
+            sessionsData.get(0).setPieValue(grafico.getNumerosessionitelematiche());
+            sessionsData.get(1).setPieValue(grafico.getNumeroSessioniInPresenza());
         }
 
-        earningsChart.getData().clear();
-        earningsChart.getData().add(earningsSeries);
-        earningsChart.setTitle("");
-        earningsChart.setLegendVisible(false);
+        XYChart.Series<String, Number> recipesSeries;
+        if (recipesChart.getData().isEmpty()) {
+            recipesSeries = new XYChart.Series<>();
+            recipesSeries.setName("Ricette per Sessione");
+            recipesSeries.getData().add(new XYChart.Data<>("Minimo", grafico.getNumeroMinimo()));
+            recipesSeries.getData().add(new XYChart.Data<>("Media", grafico.getMedia()));
+            recipesSeries.getData().add(new XYChart.Data<>("Massimo", grafico.getNumeroMassimo()));
+            recipesChart.getData().add(recipesSeries);
+        } else {
+            recipesSeries = recipesChart.getData().get(0);
+            // Aggiorna i valori esistenti
+            if (recipesSeries.getData().size() == 3) {
+                recipesSeries.getData().get(0).setYValue(grafico.getNumeroMinimo());
+                recipesSeries.getData().get(1).setYValue(grafico.getMedia());
+                recipesSeries.getData().get(2).setYValue(grafico.getNumeroMassimo());
+            }
+        }
+
+        // Rimosso grafico dei guadagni mensili
     }
 
     public void updateReport() {
