@@ -1,0 +1,487 @@
+SELECT 'TRUNCATE TABLE ' || quote_ident(schemaname) || '.' || quote_ident(tablename) || ' RESTART IDENTITY CASCADE;'
+FROM pg_tables
+WHERE schemaname = 'public'
+  AND tablename NOT IN ('tabella_da_escludere_1', 'tabella_da_escludere_2')
+ORDER BY schemaname, tablename;
+
+ 
+INSERT INTO Chef (Nome, Cognome, Email, Password, DataDiNascita, Descrizione, Propic, AnniDiEsperienza) VALUES
+('Mario', 'Rossi', 'mario.rossi@email.com', 'password1', '1980-05-10', 'Specialista cucina italiana', NULL, 15),
+('Luca', 'Bianchi', 'luca.bianchi@email.com', 'password2', '1975-03-22', 'Esperto pasticceria', NULL, 20),
+('Giulia', 'Verdi', 'giulia.verdi@email.com', 'password3', '1985-07-15', 'Chef vegano', NULL, 12),
+('Francesca', 'Neri', 'francesca.neri@email.com', 'password4', '1990-11-30', 'Cucina fusion', NULL, 8),
+('Alessandro', 'Russo', 'alessandro.russo@email.com', 'password5', '1982-01-18', 'Cucina tradizionale', NULL, 18),
+('Elena', 'Gallo', 'elena.gallo@email.com', 'password6', '1988-09-05', 'Cucina mediterranea', NULL, 10),
+('Simone', 'Fontana', 'simone.fontana@email.com', 'password7', '1978-12-12', 'Cucina asiatica', NULL, 22),
+('Martina', 'Greco', 'martina.greco@email.com', 'password8', '1992-04-25', 'Cucina salutare', NULL, 7),
+('Davide', 'Conti', 'davide.conti@email.com', 'password9', '1983-06-17', 'Cucina gourmet', NULL, 16),
+('Sara', 'Leone', 'sara.leone@email.com', 'password10', '1986-08-29', 'Cucina regionale', NULL, 13),
+('Yuki', 'Tanaka', 'yuki.tanaka@email.com', 'password11', '1987-02-14', 'Specialista sushi', NULL, 14),
+('Pierre', 'Dubois', 'pierre.dubois@email.com', 'password12', '1979-10-03', 'Cucina francese', NULL, 20),
+('Carlos', 'Ramirez', 'carlos.ramirez@email.com', 'password13', '1984-06-21', 'Tapas e paella', NULL, 17),
+('Anna', 'Schmidt', 'anna.schmidt@email.com', 'password14', '1991-12-01', 'Cucina tedesca', NULL, 9),
+('Fatima', 'Hassan', 'fatima.hassan@email.com', 'password15', '1986-04-18', 'Cucina mediorientale', NULL, 13),
+('Ivan', 'Petrov', 'ivan.petrov@email.com', 'password16', '1982-03-15', 'Cucina russa', NULL, 18),
+('Linda', 'Nguyen', 'linda.nguyen@email.com', 'password17', '1990-07-22', 'Street food vietnamita', NULL, 10),
+('John', 'Smith', 'john.smith@email.com', 'password18', '1977-11-05', 'BBQ americano', NULL, 25),
+('Maria', 'Silva', 'maria.silva@email.com', 'password19', '1985-01-30', 'Cucina brasiliana', NULL, 15),
+('Ahmed', 'Ali', 'ahmed.ali@email.com', 'password20', '1983-09-12', 'Cucina egiziana', NULL, 17),
+('Sofia', 'Kowalska', 'sofia.kowalska@email.com', 'password21', '1988-05-18', 'Cucina polacca', NULL, 12),
+('George', 'Papadopoulos', 'george.papadopoulos@email.com', 'password22', '1979-04-09', 'Cucina greca', NULL, 20),
+('Emily', 'Johnson', 'emily.johnson@email.com', 'password23', '1993-10-27', 'Cucina gluten free', NULL, 7),
+('Chen', 'Wei', 'chen.wei@email.com', 'password24', '1986-06-02', 'Cucina cinese', NULL, 14),
+('Amina', 'Benali', 'amina.benali@email.com', 'password25', '1984-08-16', 'Cucina marocchina', NULL, 16),
+('Olga', 'Ivanova', 'olga.ivanova@email.com', 'password26', '1981-02-10', 'Cucina ucraina', NULL, 19),
+('Raj', 'Patel', 'raj.patel@email.com', 'password27', '1980-08-15', 'Cucina indiana', NULL, 20),
+('Marta', 'Lopez', 'marta.lopez@email.com', 'password28', '1987-03-22', 'Cucina spagnola', NULL, 13),
+('Tom', 'Baker', 'tom.baker@email.com', 'password29', '1975-12-01', 'Cucina inglese', NULL, 25),
+('Nina', 'Klein', 'nina.klein@email.com', 'password30', '1989-06-18', 'Cucina austriaca', NULL, 11),
+('Ali', 'Yilmaz', 'ali.yilmaz@email.com', 'password31', '1982-11-05', 'Cucina turca', NULL, 18),
+('Sven', 'Larsen', 'sven.larsen@email.com', 'password32', '1978-09-14', 'Cucina scandinava', NULL, 22),
+('Julia', 'Müller', 'julia.mueller@email.com', 'password33', '1986-04-27', 'Cucina tedesca', NULL, 14),
+('Isabella', 'Ricci', 'isabella.ricci@email.com', 'password34', '1992-01-19', 'Cucina vegetariana', NULL, 8),
+('Paul', 'Dubois', 'paul.dubois@email.com', 'password35', '1983-07-23', 'Cucina francese', NULL, 17),
+('Samantha', 'Brown', 'samantha.brown@email.com', 'password36', '1985-10-30', 'Cucina americana', NULL, 15),
+('Hiroshi', 'Sato', 'hiroshi.sato@email.com', 'password37', '1979-05-12', 'Cucina giapponese', NULL, 21),
+('Anna', 'Nowak', 'anna.nowak@email.com', 'password38', '1988-08-08', 'Cucina polacca', NULL, 12),
+('Lucas', 'Silva', 'lucas.silva@email.com', 'password39', '1984-03-17', 'Cucina brasiliana', NULL, 16),
+('Fatou', 'Diop', 'fatou.diop@email.com', 'password40', '1986-12-25', 'Cucina senegalese', NULL, 13),
+('Ming', 'Zhang', 'ming.zhang@email.com', 'password41', '1981-09-09', 'Cucina cinese', NULL, 19),
+('Sofia', 'Garcia', 'sofia.garcia@email.com', 'password42', '1990-02-14', 'Cucina argentina', NULL, 10),
+('Peter', 'Schneider', 'peter.schneider@email.com', 'password43', '1982-06-11', 'Cucina svizzera', NULL, 18),
+('Layla', 'Haddad', 'layla.haddad@email.com', 'password44', '1987-11-29', 'Cucina libanese', NULL, 13),
+('Omar', 'Farouk', 'omar.farouk@email.com', 'password45', '1983-04-03', 'Cucina araba', NULL, 17),
+('Eva', 'Horvath', 'eva.horvath@email.com', 'password46', '1985-07-21', 'Cucina ungherese', NULL, 15),
+('Marek', 'Novak', 'marek.novak@email.com', 'password47', '1980-10-16', 'Cucina ceca', NULL, 20),
+('Helena', 'Jensen', 'helena.jensen@email.com', 'password48', '1989-12-13', 'Cucina danese', NULL, 11),
+('Lars', 'Eriksson', 'lars.eriksson@email.com', 'password49', '1977-08-28', 'Cucina svedese', NULL, 23),
+('Chloe', 'Martin', 'chloe.martin@email.com', 'password50', '1991-05-06', 'Cucina francese moderna', NULL, 9);
+ 
+INSERT INTO Corso (Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, Propic, MaxPersone, Prezzo, IdChef) VALUES
+('Corso di Pasta', 'Impara a fare la pasta fresca', '2025-09-02', '2025-09-25', 'Martedì e Giovedì', NULL, 10, 120.00, 1),
+('Dolci Italiani', 'Pasticceria tradizionale', '2025-09-02', '2025-09-25', 'Martedì e Giovedì', NULL, 12, 150.00, 2),
+('Cucina Vegana', 'Ricette vegane creative', '2025-09-02', '2025-09-25', 'Martedì e Giovedì', NULL, 8, 110.00, 3),
+('Fusion Experience', 'Sapori dal mondo', '2025-09-02', '2025-09-25', 'Martedì e Giovedì', NULL, 15, 130.00, 4),
+('Tradizione Italiana', 'Piatti tipici regionali', '2025-09-02', '2025-09-25', 'Martedì e Giovedì', NULL, 10, 140.00, 5),
+('Mediterraneo', 'Cucina sana e gustosa', '2025-09-02', '2025-09-25', 'Martedì e Giovedì', NULL, 10, 125.00, 6),
+('Asian Taste', 'Sapori d''Oriente', '2025-09-02', '2025-09-25', 'Martedì e Giovedì', NULL, 10, 135.00, 7),
+('Healthy Cooking', 'Cucina salutare', '2025-09-02', '2025-09-25', 'Martedì e Giovedì', NULL, 10, 115.00, 8),
+('Gourmet Lab', 'Tecniche gourmet', '2025-09-02', '2025-09-25', 'Martedì e Giovedì', NULL, 10, 160.00, 9),
+('Sapori Regionali', 'Viaggio tra le regioni', '2025-09-02', '2025-09-25', 'Martedì e Giovedì', NULL, 10, 145.00, 10),
+('Sushi Masterclass', 'Tecniche avanzate di sushi', '2025-10-06', '2025-10-20', 'Lunedì e Mercoledì', NULL, 8, 180.00, 11),
+('Cuisine Française', 'Classici francesi', '2025-10-07', '2025-10-21', 'Martedì e Venerdì', NULL, 10, 170.00, 12),
+('Fiesta Española', 'Tapas e paella', '2025-10-08', '2025-10-22', 'Mercoledì e Sabato', NULL, 12, 150.00, 13),
+('Sapori di Baviera', 'Piatti tipici tedeschi', '2025-10-09', '2025-10-23', 'Giovedì e Domenica', NULL, 9, 140.00, 14),
+('Middle East Flavours', 'Cucina mediorientale', '2025-10-10', '2025-10-24', 'Venerdì e Sabato', NULL, 11, 160.00, 15),
+('Sapori di Mosca', 'Piatti tipici russi', '2025-11-03', '2025-11-17', 'Lunedì e Giovedì', NULL, 10, 150.00, 16),
+('Pho & Banh Mi', 'Street food vietnamita', '2025-11-04', '2025-11-18', 'Martedì e Sabato', NULL, 12, 120.00, 17),
+('American BBQ', 'Grigliate e affumicature', '2025-11-05', '2025-11-19', 'Mercoledì e Domenica', NULL, 15, 180.00, 18),
+('Brasil Sabor', 'Cucina brasiliana', '2025-11-06', '2025-11-20', 'Giovedì e Venerdì', NULL, 11, 140.00, 19),
+('Sapori del Nilo', 'Cucina egiziana', '2025-11-07', '2025-11-21', 'Venerdì e Sabato', NULL, 9, 130.00, 20),
+('Polonia in Tavola', 'Piatti tradizionali polacchi', '2025-11-08', '2025-11-22', 'Sabato e Lunedì', NULL, 10, 125.00, 21),
+('Grecia Gourmet', 'Cucina greca autentica', '2025-11-09', '2025-11-23', 'Domenica e Mercoledì', NULL, 13, 135.00, 22),
+('Gluten Free Lab', 'Cucina senza glutine', '2025-11-10', '2025-11-24', 'Lunedì e Martedì', NULL, 8, 110.00, 23),
+('China Taste', 'Sapori della Cina', '2025-11-11', '2025-11-25', 'Martedì e Venerdì', NULL, 14, 160.00, 24),
+('Moroccan Magic', 'Cucina marocchina', '2025-11-12', '2025-11-26', 'Mercoledì e Sabato', NULL, 12, 145.00, 25),
+('Sapori di Kiev', 'Cucina ucraina tradizionale', '2025-12-01', '2025-12-15', 'Lunedì e Giovedì', NULL, 10, 130.00, 26),
+('India Spice', 'Spezie e curry indiani', '2025-12-02', '2025-12-16', 'Martedì e Venerdì', NULL, 12, 140.00, 27),
+('Tapas y Paella', 'Specialità spagnole', '2025-12-03', '2025-12-17', 'Mercoledì e Sabato', NULL, 14, 135.00, 28),
+('British Classics', 'Piatti inglesi iconici', '2025-12-04', '2025-12-18', 'Giovedì e Domenica', NULL, 11, 120.00, 29),
+('Austria Gourmet', 'Sapori austriaci', '2025-12-05', '2025-12-19', 'Venerdì e Lunedì', NULL, 9, 125.00, 30),
+('Istanbul Street Food', 'Cibo di strada turco', '2025-12-06', '2025-12-20', 'Sabato e Martedì', NULL, 13, 115.00, 31),
+('Nordic Cuisine', 'Cucina scandinava moderna', '2025-12-07', '2025-12-21', 'Domenica e Mercoledì', NULL, 10, 150.00, 32),
+('Bavarian Flavours', 'Piatti tipici tedeschi', '2025-12-08', '2025-12-22', 'Lunedì e Giovedì', NULL, 12, 140.00, 33),
+('Veggie World', 'Cucina vegetariana creativa', '2025-12-09', '2025-12-23', 'Martedì e Venerdì', NULL, 8, 110.00, 34),
+('Paris Bistro', 'Cucina francese bistrot', '2025-12-10', '2025-12-24', 'Mercoledì e Sabato', NULL, 14, 160.00, 35),
+('American Diner', 'Classici USA', '2025-12-11', '2025-12-25', 'Giovedì e Domenica', NULL, 10, 120.00, 36),
+('Tokyo Nights', 'Cucina giapponese moderna', '2025-12-12', '2025-12-26', 'Venerdì e Lunedì', NULL, 11, 170.00, 37),
+('Polish Table', 'Sapori della Polonia', '2025-12-13', '2025-12-27', 'Sabato e Martedì', NULL, 9, 115.00, 38),
+('Brasil Fusion', 'Fusion brasiliana', '2025-12-14', '2025-12-28', 'Domenica e Mercoledì', NULL, 13, 145.00, 39),
+('Senegal Taste', 'Cucina senegalese', '2025-12-15', '2025-12-29', 'Lunedì e Giovedì', NULL, 10, 130.00, 40),
+('China Street', 'Street food cinese', '2025-12-16', '2025-12-30', 'Martedì e Venerdì', NULL, 12, 140.00, 41),
+('Buenos Aires Grill', 'Grigliate argentine', '2025-12-17', '2025-12-31', 'Mercoledì e Sabato', NULL, 14, 135.00, 42),
+('Swiss Alps', 'Cucina svizzera', '2025-12-18', '2026-01-01', 'Giovedì e Domenica', NULL, 11, 120.00, 43),
+('Beirut Flavours', 'Sapori libanesi', '2025-12-19', '2026-01-02', 'Venerdì e Lunedì', NULL, 9, 125.00, 44),
+('Arabian Nights', 'Cucina araba', '2025-12-20', '2026-01-03', 'Sabato e Martedì', NULL, 13, 115.00, 45),
+('Hungarian Soul', 'Cucina ungherese', '2025-12-21', '2026-01-04', 'Domenica e Mercoledì', NULL, 10, 150.00, 46),
+('Czech Delights', 'Piatti cechi tradizionali', '2025-12-22', '2026-01-05', 'Lunedì e Giovedì', NULL, 12, 140.00, 47),
+('Danish Hygge', 'Cucina danese', '2025-12-23', '2026-01-06', 'Martedì e Venerdì', NULL, 8, 110.00, 48),
+('Swedish Smorgasbord', 'Buffet svedese', '2025-12-24', '2026-01-07', 'Mercoledì e Sabato', NULL, 14, 160.00, 49),
+('French Modern', 'Cucina francese contemporanea', '2025-12-25', '2026-01-08', 'Giovedì e Domenica', NULL, 10, 120.00, 50);
+
+INSERT INTO Ricetta (Nome) VALUES
+('Tagliatelle al Ragù'),('Tiramisù'),('Burger di Ceci'),('Sushi Roll'),('Lasagna'),('Insalata Greca'),('Pad Thai'),('Zuppa Detox'),('Filetto al Pepe'),('Caponata'),
+('Gnocchi di Patate'),('Cannoli Siciliani'),('Tofu Saltato'),('Curry Verde'),('Risotto alla Milanese'),('Pasta alla Norma'),('Ramen'),('Smoothie Verde'),('Tartare di Tonno'),('Polenta e Funghi'),
+('Fettuccine Alfredo'),('Panna Cotta'),('Falafel'),('Baozi'),('Orecchiette alle Cime di Rapa'),('Cous Cous'),('Tempura'),('Insalata di Quinoa'),('Vitello Tonnato'),('Arancini'),
+('Nigiri'),('Maki Roll'),('Quiche Lorraine'),('Boeuf Bourguignon'),('Paella Valenciana'),('Tortilla Española'),('Bratwurst'),('Sauerkraut'),('Hummus'),('Falafel'),
+('Borscht'),('Pelmeni'),('Pho'),('Banh Mi'),('Pulled Pork'),('Cornbread'),('Feijoada'),('Pão de Queijo'),('Koshari'),('Molokhia'),('Pierogi'),('Bigos'),('Moussaka'),('Souvlaki'),('Pancakes Gluten Free'),('Baozi'),('Jiaozi'),('Couscous Marocchino'),('Tajine'),('Baklava');
+
+INSERT INTO Ingrediente (Nome, UnitaDiMisura) VALUES
+('Farina', 'Grammi'),('Caffè', 'Centilitro'),('Ceci', 'Grammi'),('Riso', 'Grammi'),('Pasta', 'Grammi'),('Feta', 'Grammi'),('Noodles', 'Grammi'),('Spinaci', 'Grammi'),('Manzo', 'Grammi'),('Melanzane', 'Grammi'),
+('Patate', 'Grammi'),('Ricotta', 'Grammi'),('Tofu', 'Grammi'),('Latte di Cocco', 'Centilitro'),('Riso Arborio', 'Grammi'),('Pomodoro', 'Grammi'),('Brodo', 'Litro'),('Mela', 'Grammi'),('Tonno', 'Grammi'),('Funghi', 'Grammi'),
+('Burro', 'Grammi'),('Panna', 'Centilitro'),('Fave', 'Grammi'),('Maiale', 'Grammi'),('Cime di Rapa', 'Grammi'),('Semola', 'Grammi'),('Gamberi', 'Grammi'),('Quinoa', 'Grammi'),('Vitello', 'Grammi'),('Riso', 'Grammi'),
+('Riso per Sushi', 'Grammi'),('Salmone', 'Grammi'),('Pasta Brisée', 'Grammi'),('Manzo', 'Grammi'),('Riso', 'Grammi'),('Uova', 'Unità'),('Salsiccia', 'Grammi'),('Cavolo', 'Grammi'),('Ceci', 'Grammi'),('Prezzemolo', 'Grammi'),
+('Barbabietola', 'Grammi'),('Carne di Manzo', 'Grammi'),('Noodles di Riso', 'Grammi'),('Pane', 'Grammi'),('Maiale', 'Grammi'),('Farina di Mais', 'Grammi'),('Fagioli Neri', 'Grammi'),('Formaggio', 'Grammi'),('Riso', 'Grammi'),
+('Lattuga', 'Grammi'),('Patate', 'Grammi'),('Crauti', 'Grammi'),('Melanzane', 'Grammi'),('Carne di Maiale', 'Grammi'),('Farina di Riso', 'Grammi'),('Cavolo Cinese', 'Grammi'),('Agnello', 'Grammi'),('Ceci', 'Grammi'),
+('Pollo', 'Grammi'),('Pasta Fillo', 'Grammi');
+
+INSERT INTO PreparazioneIngrediente (IdRicetta, IdIngrediente, QuanititaUnitaria) VALUES
+(1,1,100),(2,2,50),(3,3,120),(4,4,80),(5,5,150),(6,6,60),(7,7,90),(8,8,70),(9,9,110),(10,10,100),
+(11,11,130),(12,12,40),(13,13,100),(14,14,60),(15,15,120),(16,16,80),(17,17,200),(18,18,50),(19,19,90),(20,20,100),
+(21,21,110),(22,22,60),(23,23,100),(24,24,80),(25,25,120),(26,26,80),(27,27,90),(28,28,70),(29,29,110),(30,30,100),
+(31,31,120),(32,32,80),(33,33,100),(34,34,150),(35,35,200),(36,36,2),(37,37,110),(38,38,90),(39,39,130),(40,40,20),
+(41,41,120),(42,42,100),(43,43,150),(44,44,80),(45,45,200),(46,46,90),(47,47,180),(48,48,60),(49,49,130),(50,50,50),
+(51,51,110),(52,52,70),(53,53,140),(54,54,100),(55,55,90),(56,56,80),(57,57,160),(58,58,120),(59,59,110),(60,60,60);
+ 
+ 
+INSERT INTO Sessione_Presenza (Giorno, Data, Orario, Durata, Citta, Via, Cap, Descrizione, IdCorso, IdChef) VALUES
+ 
+('Martedì', '2025-09-02', '18:00', '02:00', 'Napoli', 'Via Roma 1', '80100', 'Pasta fresca', 1, 1),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Napoli', 'Via Roma 1', '80100', 'Pasta fresca', 1, 1),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Napoli', 'Via Roma 1', '80100', 'Pasta fresca', 1, 1),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Napoli', 'Via Roma 1', '80100', 'Pasta fresca', 1, 1),
+ 
+('Martedì', '2025-09-02', '18:00', '02:00', 'Milano', 'Via Milano 2', '20100', 'Dolci', 2, 2),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Milano', 'Via Milano 2', '20100', 'Dolci', 2, 2),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Milano', 'Via Milano 2', '20100', 'Dolci', 2, 2),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Milano', 'Via Milano 2', '20100', 'Dolci', 2, 2),
+ 
+('Martedì', '2025-09-02', '18:00', '02:00', 'Roma', 'Via Roma 3', '00100', 'Vegano', 3, 3),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Roma', 'Via Roma 3', '00100', 'Vegano', 3, 3),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Roma', 'Via Roma 3', '00100', 'Vegano', 3, 3),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Roma', 'Via Roma 3', '00100', 'Vegano', 3, 3),
+ 
+('Martedì', '2025-09-02', '18:00', '02:00', 'Torino', 'Via Torino 4', '10100', 'Fusion', 4, 4),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Torino', 'Via Torino 4', '10100', 'Fusion', 4, 4),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Torino', 'Via Torino 4', '10100', 'Fusion', 4, 4),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Torino', 'Via Torino 4', '10100', 'Fusion', 4, 4),
+ 
+('Martedì', '2025-09-02', '18:00', '02:00', 'Bologna', 'Via Bologna 5', '40100', 'Tradizione', 5, 5),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Bologna', 'Via Bologna 5', '40100', 'Tradizione', 5, 5),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Bologna', 'Via Bologna 5', '40100', 'Tradizione', 5, 5),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Bologna', 'Via Bologna 5', '40100', 'Tradizione', 5, 5),
+ 
+('Martedì', '2025-09-02', '18:00', '02:00', 'Firenze', 'Via Firenze 6', '50100', 'Mediterraneo', 6, 6),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Firenze', 'Via Firenze 6', '50100', 'Mediterraneo', 6, 6),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Firenze', 'Via Firenze 6', '50100', 'Mediterraneo', 6, 6),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Firenze', 'Via Firenze 6', '50100', 'Mediterraneo', 6, 6),
+ 
+('Martedì', '2025-09-02', '18:00', '02:00', 'Venezia', 'Via Venezia 7', '30100', 'Asia', 7, 7),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Venezia', 'Via Venezia 7', '30100', 'Asia', 7, 7),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Venezia', 'Via Venezia 7', '30100', 'Asia', 7, 7),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Venezia', 'Via Venezia 7', '30100', 'Asia', 7, 7),
+ 
+('Martedì', '2025-09-02', '18:00', '02:00', 'Genova', 'Via Genova 8', '16100', 'Salute', 8, 8),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Genova', 'Via Genova 8', '16100', 'Salute', 8, 8),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Genova', 'Via Genova 8', '16100', 'Salute', 8, 8),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Genova', 'Via Genova 8', '16100', 'Salute', 8, 8),
+ 
+('Martedì', '2025-09-02', '18:00', '02:00', 'Parma', 'Via Parma 9', '43100', 'Gourmet', 9, 9),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Parma', 'Via Parma 9', '43100', 'Gourmet', 9, 9),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Parma', 'Via Parma 9', '43100', 'Gourmet', 9, 9),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Parma', 'Via Parma 9', '43100', 'Gourmet', 9, 9),
+ 
+('Martedì', '2025-09-02', '18:00', '02:00', 'Palermo', 'Via Palermo 10', '90100', 'Regionale', 10, 10),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Palermo', 'Via Palermo 10', '90100', 'Regionale', 10, 10),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Palermo', 'Via Palermo 10', '90100', 'Regionale', 10, 10),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Palermo', 'Via Palermo 10', '90100', 'Regionale', 10, 10),
+('Lunedì', '2025-11-03', '18:00', '02:00', 'Mosca', 'Red Square 1', '10100', 'Borscht', 16, 16),
+('Giovedì', '2025-11-06', '18:00', '02:00', 'Mosca', 'Red Square 1', '10100', 'Pelmeni', 16, 16),
+('Martedì', '2025-11-04', '19:00', '02:00', 'Hanoi', 'Pho St 2', '10000', 'Pho', 17, 17),
+('Sabato', '2025-11-08', '19:00', '02:00', 'Hanoi', 'Pho St 2', '10000', 'Banh Mi', 17, 17),
+('Mercoledì', '2025-11-05', '20:00', '02:00', 'Dallas', 'BBQ Ave 3', '75201', 'Pulled Pork', 18, 18),
+('Domenica', '2025-11-09', '20:00', '02:00', 'Dallas', 'BBQ Ave 3', '75201', 'Cornbread', 18, 18),
+('Giovedì', '2025-11-06', '18:30', '02:00', 'Rio', 'Rua Brasil 4', '20000', 'Feijoada', 19, 19),
+('Venerdì', '2025-11-13', '18:30', '02:00', 'Rio', 'Rua Brasil 4', '20000', 'Pão de Queijo', 19, 19),
+('Venerdì', '2025-11-07', '19:00', '02:00', 'Il Cairo', 'Nilo St 5', '11511', 'Koshari', 20, 20),
+('Sabato', '2025-11-14', '19:00', '02:00', 'Il Cairo', 'Nilo St 5', '11511', 'Molokhia', 20, 20),
+('Sabato', '2025-11-08', '18:00', '02:00', 'Varsavia', 'Polska 6', '00001', 'Pierogi', 21, 21),
+('Lunedì', '2025-11-10', '18:00', '02:00', 'Varsavia', 'Polska 6', '00001', 'Bigos', 21, 21),
+('Domenica', '2025-11-09', '19:30', '02:00', 'Atene', 'Odos 7', '10558', 'Moussaka', 22, 22),
+('Mercoledì', '2025-11-12', '19:30', '02:00', 'Atene', 'Odos 7', '10558', 'Souvlaki', 22, 22),
+('Lunedì', '2025-11-10', '17:00', '02:00', 'Londra', 'GF St 8', 'EC1A', 'Pancakes GF', 23, 23),
+('Martedì', '2025-11-11', '17:00', '02:00', 'Londra', 'GF St 8', 'EC1A', 'Baozi', 23, 23),
+('Martedì', '2025-11-11', '18:30', '02:00', 'Pechino', 'China Rd 9', '10000', 'Jiaozi', 24, 24),
+('Venerdì', '2025-11-14', '18:30', '02:00', 'Pechino', 'China Rd 9', '10000', 'Couscous', 24, 24),
+('Mercoledì', '2025-11-12', '19:00', '02:00', 'Marrakech', 'Souk 10', '40000', 'Tajine', 25, 25),
+('Sabato', '2025-11-15', '19:00', '02:00', 'Marrakech', 'Souk 10', '40000', 'Baklava', 25, 25);
+
+INSERT INTO Sessione_Telematica (Giorno, Data, Orario, Durata, Applicazione, CodiceChiamata, Descrizione, IdCorso, IdChef) VALUES
+('Martedì', '2025-09-02', '18:00', '02:00', 'Zoom', 'https://zoom.us/1', 'Pasta fresca online', 1, 1),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Teams', 'https://teams.microsoft.com/6', 'Dolci online', 2, 2),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Meet', 'https://meet.google.com/11', 'Vegano online', 3, 3),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Webex', 'https://webex.com/16', 'Fusion online', 4, 4),
+('Martedì', '2025-09-02', '18:00', '02:00', 'Zoom', 'https://zoom.us/21', 'Tradizione online', 5, 5),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Teams', 'https://teams.microsoft.com/26', 'Mediterraneo online', 6, 6),
+('Martedì', '2025-09-09', '18:00', '02:00', 'Meet', 'https://meet.google.com/41', 'Salute online', 8, 8),
+('Giovedì', '2025-09-11', '18:00', '02:00', 'Webex', 'https://webex.com/46', 'Gourmet online', 9, 9),
+('Martedì', '2025-09-02', '18:00', '02:00', 'Zoom', 'https://zoom.us/51', 'Regionale online', 10, 10),
+('Giovedì', '2025-09-04', '18:00', '02:00', 'Teams', 'https://teams.microsoft.com/56', 'Borscht online', 16, 16);
+
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) VALUES
+(2,2),(3,3),(4,4),(5,5),
+(7,7),(8,8),(9,9),(10,10),
+(12,12),(13,13),(14,14),(15,15),
+(17,17),(18,18),(19,19),(20,20),
+(22,22),(23,23),(24,24),(25,25),
+(27,27),(28,28),(29,29),(30,30),
+(32,42),(33,43),(34,44),(35,45),
+(37,47),(38,48),(39,49),(40,50),
+(42,52),(43,53),(44,54),(45,55),
+(47,57),(48,58),(49,59),(50,60),
+(52,62),(53,63),(54,64),(55,65),(56,66),(57,67),(58,68),(59,69),(60,70);
+
+
+INSERT INTO Ricetta (Nome) VALUES
+('Varenyky'),('Chicken Tikka'),('Gazpacho'),('Fish and Chips'),('Sachertorte'),('Kebab Turco'),('Gravlax'),('Kartoffelsalat'),('Ratatouille'),('Apple Pie'),
+('Okonomiyaki'),('Bigos Polacco'),('Moqueca'),('Yassa'),('Mapo Tofu'),('Empanadas'),('Rösti'),('Tabbouleh'),('Shakshuka'),('Gulasch'),
+('Knedlíky'),('Smørrebrød'),('Köttbullar'),('Soufflé'),('Tartiflette');
+
+INSERT INTO TipoDiCucina (Nome) VALUES
+('Italiana'),('Pasticceria'),('Vegana'),('Fusion'),('Tradizionale'),('Mediterranea'),('Asiatica'),('Salutare'),('Gourmet'),('Regionale'),
+('Francese'),('Spagnola'),('Tedesca'),('Mediorientale'),('Russa'),('Vietnamita'),('Americana'),('Brasiliana'),('Egiziana'),('Polacca'),
+('Greca'),('Gluten Free'),('Cinese'),('Marocchina'),('Ucraina'),('Indiana'),('Inglese'),('Austriaca'),('Turca'),('Scandinava'),
+('Vegetariana'),('Giappone'),('Senegalese'),('Argentina'),('Svizzera'),('Libanese'),('Araba'),('Ungherese'),('Ceca'),('Danese'),
+('Svedese'),('Francese Moderna'),('Francese Bistrot'),('Francese Contemporanea'),('Giapponese Moderna'),('Fusion Brasiliana'),('Greca Gourmet'),('Austria Gourmet'),('Cucina Tradizionale Ucraina'),('Cucina Senza Glutine'),('Cucina Vegetariana Creativa'),('Cucina Francese Contemporanea'),('Cucina Francese Moderna'),('Cucina Francese Bistrot'),('Cucina Giapponese Moderna'),('Cucina Greca Gourmet'),('Cucina Austria Gourmet'),('Cucina Ucraina Tradizionale'),('Cucina Americana'),('Cucina Polacca'),('Cucina Brasiliana'),('Cucina Indiana'),('Cucina Inglese'),('Cucina Turca'),('Cucina Scandinava'),('Cucina Danese'),('Cucina Svedese'),('Cucina Libanese'),('Cucina Araba'),('Cucina Ungherese'),('Cucina Ceca'),('Cucina Svizzera');
+
+INSERT INTO TipoDiCucina_Corso (IDTipoCucina, IDCorso) VALUES
+(1,1),   
+(2,2),  
+(3,3),   
+(4,4),   
+(5,5),  
+(6,6),   
+(7,7),   
+(8,8), 
+(9,9),  
+(10,10),
+(11,11),
+(12,12),
+(13,13),
+(14,14), 
+(15,15), 
+(16,16), 
+(17,17),
+(18,18),
+(19,19), 
+(20,20),
+(21,21), 
+(22,22), 
+(23,23),
+(24,24), 
+(25,25),
+(26,26),
+(27,27), 
+(28,28), 
+(29,29), 
+(30,30),
+(31,31),
+(32,32), 
+(33,33),
+(34,34), 
+(35,35), 
+(36,36), 
+(37,37), 
+(38,38), 
+(39,39), 
+(40,40), 
+(41,41), 
+(42,42), 
+(43,43), 
+(44,44), 
+(45,45), 
+(46,46),
+(47,47),
+(48,48), 
+(49,49), 
+(50,50); 
+
+INSERT INTO Ingrediente (Nome, UnitaDiMisura) VALUES
+('Patate Dolci', 'Grammi'),('Pollo', 'Grammi'),('Pomodori', 'Grammi'),('Merluzzo', 'Grammi'),('Cioccolato', 'Grammi'),('Agnello', 'Grammi'),('Salmone', 'Grammi'),('Cetrioli', 'Grammi'),('Zucchine', 'Grammi'),('Mele', 'Grammi'),
+('Cavolo', 'Grammi'),('Crauti', 'Grammi'),('Pesce', 'Grammi'),('Limone', 'Grammi'),('Tofu', 'Grammi'),('Carne Macinata', 'Grammi'),('Formaggio Svizzero', 'Grammi'),('Prezzemolo', 'Grammi'),('Uova', 'Unità'),('Paprika', 'Grammi'),
+('Pane', 'Grammi'),('Aringa', 'Grammi'),('Panna', 'Centilitro'),('Latte', 'Centilitro'),('Bacon', 'Grammi');
+
+INSERT INTO PreparazioneIngrediente (IdRicetta, IdIngrediente, QuanititaUnitaria) VALUES
+(61,61,120),(62,62,150),(63,63,100),(64,64,200),(65,65,80),(66,66,110),(67,67,90),(68,68,70),(69,69,130),(70,70,100),
+(71,71,140),(72,72,120),(73,73,160),(74,74,110),(75,75,100),(76,76,130),(77,77,90),(78,78,80),(79,79,60),(80,80,150),
+(81,81,120),(82,82,110),(83,83,100),(84,84,90),(85,85,130);
+
+INSERT INTO Sessione_Presenza (Giorno, Data, Orario, Durata, Citta, Via, Cap, Descrizione, IdCorso, IdChef) VALUES
+('Martedì', '2026-01-13', '18:00', '02:00', 'Kiev', 'Via Ucraina 26', '01001', 'Varenyky', 26, 26),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Kiev', 'Via Ucraina 26', '01001', 'Varenyky', 26, 26),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Delhi', 'Via India 27', '11000', 'Chicken Tikka', 27, 27),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Delhi', 'Via India 27', '11000', 'Chicken Tikka', 27, 27),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Madrid', 'Via Spagna 28', '28001', 'Gazpacho', 28, 28),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Madrid', 'Via Spagna 28', '28001', 'Gazpacho', 28, 28),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Londra', 'Via UK 29', 'SW1A ', 'Fish and Chips', 29, 29),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Londra', 'Via UK 29', 'SW1A ', 'Fish and Chips', 29, 29),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Vienna', 'Via Austria 30', '10100', 'Sachertorte', 30, 30),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Vienna', 'Via Austria 30', '10100', 'Sachertorte', 30, 30),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Istanbul', 'Via Turchia 31', '34000', 'Kebab Turco', 31, 31),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Istanbul', 'Via Turchia 31', '34000', 'Kebab Turco', 31, 31),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Stoccolma', 'Via Svezia 32', '11120', 'Gravlax', 32, 32),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Stoccolma', 'Via Svezia 32', '11120', 'Gravlax', 32, 32),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Monaco', 'Via Germania 33', '80331', 'Kartoffelsalat', 33, 33),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Monaco', 'Via Germania 33', '80331', 'Kartoffelsalat', 33, 33),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Parigi', 'Via Francia 34', '75001', 'Ratatouille', 34, 34),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Parigi', 'Via Francia 34', '75001', 'Ratatouille', 34, 34),
+('Martedì', '2026-01-13', '18:00', '02:00', 'New York', 'Via USA 35', '10001', 'Apple Pie', 35, 35),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'New York', 'Via USA 35', '10001', 'Apple Pie', 35, 35),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Osaka', 'Via Giappone 36', '53000', 'Okonomiyaki', 36, 36),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Osaka', 'Via Giappone 36', '53000', 'Okonomiyaki', 36, 36),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Varsavia', 'Via Polonia 37', '00001', 'Bigos Polacco', 37, 37),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Varsavia', 'Via Polonia 37', '00001', 'Bigos Polacco', 37, 37),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Salvador', 'Via Brasile 38', '40000', 'Moqueca', 38, 38),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Salvador', 'Via Brasile 38', '40000', 'Moqueca', 38, 38),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Dakar', 'Via Senegal 39', '10000', 'Yassa', 39, 39),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Dakar', 'Via Senegal 39', '10000', 'Yassa', 39, 39),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Chengdu', 'Via Cina 40', '61000', 'Mapo Tofu', 40, 40),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Chengdu', 'Via Cina 40', '61000', 'Mapo Tofu', 40, 40),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Buenos Aires', 'Via Argentina 41', 'C100 ', 'Empanadas', 41, 41),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Buenos Aires', 'Via Argentina 41', 'C100 ', 'Empanadas', 41, 41),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Zurigo', 'Via Svizzera 42', '80001', 'Rösti', 42, 42),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Zurigo', 'Via Svizzera 42', '80001', 'Rösti', 42, 42),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Beirut', 'Via Libano 43', '01100', 'Tabbouleh', 43, 43),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Beirut', 'Via Libano 43', '01100', 'Tabbouleh', 43, 43),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Gerusalemme', 'Via Israele 44', '91000', 'Shakshuka', 44, 44),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Gerusalemme', 'Via Israele 44', '91000', 'Shakshuka', 44, 44),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Budapest', 'Via Ungheria 45', '10510', 'Gulasch', 45, 45),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Budapest', 'Via Ungheria 45', '10510', 'Gulasch', 45, 45),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Praga', 'Via Cechia 46', '11000', 'Knedlíky', 46, 46),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Praga', 'Via Cechia 46', '11000', 'Knedlíky', 46, 46),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Copenaghen', 'Via Danimarca 47', '01000', 'Smørrebrød', 47, 47),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Copenaghen', 'Via Danimarca 47', '01000', 'Smørrebrød', 47, 47),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Stoccolma', 'Via Svezia 48', '11120', 'Köttbullar', 48, 48),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Stoccolma', 'Via Svezia 48', '11120', 'Köttbullar', 48, 48),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Parigi', 'Via Francia 49', '75001', 'Soufflé', 49, 49),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Parigi', 'Via Francia 49', '75001', 'Soufflé', 49, 49),
+('Martedì', '2026-01-13', '18:00', '02:00', 'Annecy', 'Via Francia 50', '74000', 'Tartiflette', 50, 50),
+('Venerdì', '2026-01-16', '18:00', '02:00', 'Annecy', 'Via Francia 50', '74000', 'Tartiflette', 50, 50);
+
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) VALUES
+(61,71),(61,72),(62,73),(62,74),(63,75),(63,76),(64,77),(64,78),(65,79),(65,80),
+(66,81),(66,82),(67,83),(67,84),(68,85),(68,86),(69,87),(69,88),(70,89),(70,90),
+(71,91),(71,92),(72,93),(72,94),(73,95),(73,96),(74,97),(74,98),(75,99),(75,100),
+(76,101),(76,102),(77,103),(77,104),(78,105),(78,106),(79,107),(79,108),(80,109),(80,110),
+
+
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 1 FROM Ricetta WHERE Nome = 'Varenyky';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 6 FROM Ricetta WHERE Nome = 'Gazpacho';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 11 FROM Ricetta WHERE Nome = 'Kebab Turco';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 16 FROM Ricetta WHERE Nome = 'Kartoffelsalat';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 21 FROM Ricetta WHERE Nome = 'Okonomiyaki';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 26 FROM Ricetta WHERE Nome = 'Moqueca';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 31 FROM Ricetta WHERE Nome = 'Empanadas';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 32 FROM Ricetta WHERE Nome = 'Empanadas';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 33 FROM Ricetta WHERE Nome = 'Rösti';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 34 FROM Ricetta WHERE Nome = 'Rösti';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 35 FROM Ricetta WHERE Nome = 'Tabbouleh';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 36 FROM Ricetta WHERE Nome = 'Tabbouleh';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 37 FROM Ricetta WHERE Nome = 'Shakshuka';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 38 FROM Ricetta WHERE Nome = 'Shakshuka';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 39 FROM Ricetta WHERE Nome = 'Gulasch';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 40 FROM Ricetta WHERE Nome = 'Gulasch';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 41 FROM Ricetta WHERE Nome = 'Knedlíky';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 46 FROM Ricetta WHERE Nome = 'Köttbullar';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 51 FROM Ricetta WHERE Nome = 'Pasta fresca';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 56 FROM Ricetta WHERE Nome = 'Dolci';
+INSERT INTO Sessione_Presenza_Ricetta (IdRicetta, IdSessionePresenza) SELECT IdRicetta, 61 FROM Ricetta WHERE Nome = 'Vegano';
+
+
+
+INSERT INTO Partecipante (Nome, Cognome, Email, Password, DataDiNascita, Propic) VALUES
+('Alberto', 'Ferrari', 'alberto.ferrari@email.com', 'pass1', '1990-01-15', NULL),
+('Beatrice', 'Russo', 'beatrice.russo@email.com', 'pass2', '1992-02-20', NULL),
+('Carlo', 'Bianchi', 'carlo.bianchi@email.com', 'pass3', '1988-03-10', NULL),
+('Diana', 'Verdi', 'diana.verdi@email.com', 'pass4', '1995-04-25', NULL),
+('Edoardo', 'Gallo', 'edoardo.gallo@email.com', 'pass5', '1987-05-30', NULL),
+('Francesca', 'Conti', 'francesca.conti@email.com', 'pass6', '1991-06-12', NULL),
+('Giorgio', 'Leone', 'giorgio.leone@email.com', 'pass7', '1989-07-08', NULL),
+('Helena', 'Greco', 'helena.greco@email.com', 'pass8', '1993-08-19', NULL),
+('Irene', 'Fontana', 'irene.fontana@email.com', 'pass9', '1994-09-22', NULL),
+('Jacopo', 'Rizzo', 'jacopo.rizzo@email.com', 'pass10', '1996-10-11', NULL),
+('Katia', 'Marino', 'katia.marino@email.com', 'pass11', '1990-11-05', NULL),
+('Lorenzo', 'De Luca', 'lorenzo.deluca@email.com', 'pass12', '1986-12-17', NULL),
+('Martina', 'Serra', 'martina.serra@email.com', 'pass13', '1992-01-23', NULL),
+('Nicola', 'Vitale', 'nicola.vitale@email.com', 'pass14', '1988-02-14', NULL),
+('Olga', 'Ferraro', 'olga.ferraro@email.com', 'pass15', '1995-03-29', NULL),
+('Paolo', 'Sanna', 'paolo.sanna@email.com', 'pass16', '1991-04-07', NULL),
+('Quirino', 'Costa', 'quirino.costa@email.com', 'pass17', '1987-05-18', NULL),
+('Rita', 'Mancini', 'rita.mancini@email.com', 'pass18', '1993-06-21', NULL),
+('Stefano', 'Barone', 'stefano.barone@email.com', 'pass19', '1994-07-15', NULL),
+('Teresa', 'Longo', 'teresa.longo@email.com', 'pass20', '1996-08-28', NULL),
+('Ugo', 'Rinaldi', 'ugo.rinaldi@email.com', 'pass21', '1990-09-09', NULL),
+('Valeria', 'Fabbri', 'valeria.fabbri@email.com', 'pass22', '1986-10-13', NULL),
+('Walter', 'Testa', 'walter.testa@email.com', 'pass23', '1992-11-27', NULL),
+('Xenia', 'Pagano', 'xenia.pagano@email.com', 'pass24', '1988-12-03', NULL),
+('Yuri', 'Coppola', 'yuri.coppola@email.com', 'pass25', '1995-01-16', NULL),
+('Zara', 'Fiore', 'zara.fiore@email.com', 'pass26', '1991-02-22', NULL),
+('Alessia', 'Riva', 'alessia.riva@email.com', 'pass27', '1987-03-14', NULL),
+('Bruno', 'Sereni', 'bruno.sereni@email.com', 'pass28', '1993-04-19', NULL),
+('Clara', 'Monti', 'clara.monti@email.com', 'pass29', '1994-05-23', NULL),
+('Dario', 'Sarti', 'dario.sarti@email.com', 'pass30', '1996-06-30', NULL),
+('Elisa', 'Basso', 'elisa.basso@email.com', 'pass31', '1990-07-12', NULL),
+('Fabio', 'Gatti', 'fabio.gatti@email.com', 'pass32', '1986-08-25', NULL),
+('Giada', 'Rossi', 'giada.rossi@email.com', 'pass33', '1992-09-17', NULL),
+('Hugo', 'Mazza', 'hugo.mazza@email.com', 'pass34', '1988-10-29', NULL),
+('Isabella', 'Pace', 'isabella.pace@email.com', 'pass35', '1995-11-11', NULL),
+('Luca', 'Sole', 'luca.sole@email.com', 'pass36', '1991-12-24', NULL),
+('Marta', 'Valli', 'marta.valli@email.com', 'pass37', '1987-01-08', NULL),
+('Nadia', 'Fiori', 'nadia.fiori@email.com', 'pass38', '1993-02-15', NULL),
+('Oscar', 'Belli', 'oscar.belli@email.com', 'pass39', '1994-03-27', NULL),
+('Pietro', 'Rossi', 'pietro.rossi@email.com', 'pass40', '1996-04-09', NULL),
+('Quinta', 'Lodi', 'quinta.lodi@email.com', 'pass41', '1990-05-21', NULL),
+('Rocco', 'Moro', 'rocco.moro@email.com', 'pass42', '1986-06-13', NULL),
+('Sonia', 'Bassi', 'sonia.bassi@email.com', 'pass43', '1992-07-25', NULL),
+('Tiziano', 'Gallo', 'tiziano.gallo@email.com', 'pass44', '1988-08-07', NULL),
+('Ursula', 'Serra', 'ursula.serra@email.com', 'pass45', '1995-09-19', NULL),
+('Vittorio', 'Neri', 'vittorio.neri@email.com', 'pass46', '1991-10-31', NULL),
+('Wanda', 'Costa', 'wanda.costa@email.com', 'pass47', '1987-11-23', NULL),
+('Xavier', 'Pagani', 'xavier.pagani@email.com', 'pass48', '1993-12-05', NULL),
+('Ylenia', 'Coppola', 'ylenia.coppola@email.com', 'pass49', '1994-01-17', NULL),
+('Zeno', 'Fiore', 'zeno.fiore@email.com', 'pass50', '1996-02-28', NULL);
+
+INSERT INTO Carta (Intestatario, DataScadenza, UltimeQuattroCifre, Circuito) VALUES
+('Alberto Ferrari', '2028-01-31', '1111', 'Visa'),
+('Beatrice Russo', '2027-12-31', '2222', 'Mastercard'),
+('Carlo Bianchi', '2029-06-30', '3333', 'Visa'),
+('Diana Verdi', '2028-11-30', '4444', 'Mastercard'),
+('Edoardo Gallo', '2027-09-30', '5555', 'Visa'),
+('Francesca Conti', '2028-05-31', '6666', 'Mastercard'),
+('Giorgio Leone', '2029-03-31', '7777', 'Visa'),
+('Helena Greco', '2027-07-31', '8888', 'Mastercard'),
+('Irene Fontana', '2028-08-31', '9999', 'Visa'),
+('Jacopo Rizzo', '2029-01-31', '0001', 'Mastercard');
+
+
+INSERT INTO Possiede (IdPartecipante, IdCarta) VALUES
+(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(10,10);
+
+INSERT INTO RichiestaPagamento (DataRichiesta, StatoPagamento, ImportoPagato, IdCorso, IdPartecipante) VALUES
+('2025-08-01', 'Pagato', 120, 1, 1),
+('2025-08-01', 'Pagato', 150, 2, 2),
+('2025-08-01', 'Pagato', 110, 3, 3),
+('2025-08-01', 'Pagato', 130, 4, 4),
+('2025-08-01', 'Pagato', 140, 5, 5),
+('2025-08-01', 'Pagato', 125, 6, 6),
+('2025-08-01', 'Pagato', 135, 7, 7),
+('2025-08-01', 'Pagato', 115, 8, 8),
+('2025-08-01', 'Pagato', 160, 9, 9),
+('2025-08-01', 'Pagato', 145, 10, 10),
+('2025-08-01', 'Pagato', 180, 11, 11),
+('2025-08-01', 'Pagato', 170, 12, 12),
+('2025-08-01', 'Pagato', 150, 13, 13),
+('2025-08-01', 'Pagato', 140, 14, 14),
+('2025-08-01', 'Pagato', 160, 15, 15),
+('2025-08-01', 'Pagato', 150, 16, 16),
+('2025-08-01', 'Pagato', 120, 17, 17),
+('2025-08-01', 'Pagato', 180, 18, 18),
+('2025-08-01', 'Pagato', 140, 19, 19),
+('2025-08-01', 'Pagato', 130, 20, 20);
+
+INSERT INTO Adesione_SessionePresenza (Conferma, IdSessionePresenza, IdPartecipante) VALUES
+(TRUE, 5, 2), (TRUE, 9, 3), (TRUE, 13, 4), (TRUE, 17, 5),
+(TRUE, 21, 6), (TRUE, 25, 7), (TRUE, 29, 8), (TRUE, 33, 9), (TRUE, 37, 10);
+
+
+

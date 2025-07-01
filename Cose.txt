@@ -222,7 +222,6 @@ CREATE TABLE Ingrediente (
 CREATE TABLE PreparazioneIngrediente (
     IdRicetta INT,
     IdIngrediente INT,
-    QuantitaTotale DECIMAL(10,2) CHECK (QuantitaTotale >= 0),
     QuanititaUnitaria DECIMAL(10,2) NOT NULL CHECK (QuanititaUnitaria >= 0),
     PRIMARY KEY (IdRicetta, IdIngrediente),
     FOREIGN KEY (IdRicetta) REFERENCES Ricetta(IdRicetta),
@@ -749,6 +748,42 @@ BEFORE INSERT ON ADESIONE_SESSIONEPRESENZA
 FOR EACH ROW
 EXECUTE FUNCTION check_partecipazione_corso();
 
+-trigger orario Durata
+CREATE OR REPLACE FUNCTION check_orario_e_durata()
+RETURNS TRIGGER AS $$
+DECLARE
+    orario_ora INTEGER;
+    orario_minuti INTEGER;
+    durata_frazionaria NUMERIC;
+    fine_lezione NUMERIC;
+BEGIN
+    IF NEW.Durata <= 1 OR NEW.Durata >= 8 THEN
+        RAISE EXCEPTION 'Durata deve essere maggiore di 1 e minore di 8';
+    END IF;
+
+    orario_ora := FLOOR(NEW.Orario);
+    orario_minuti := ROUND((NEW.Orario - orario_ora) * 100);
+
+    IF orario_ora >= 23 THEN
+        RAISE EXCEPTION 'La parte intera dell''orario deve essere minore di 23';
+    ELSIF orario_minuti >= 60 THEN
+        RAISE EXCEPTION 'La parte decimale dell''orario deve essere minore di 60';
+    END IF;
+
+    durata_frazionaria := NEW.Durata;
+    fine_lezione := NEW.Orario + durata_frazionaria;
+
+    IF fine_lezione > 23 THEN
+        RAISE EXCEPTION 'L''orario di fine lezione non può superare le 23';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_check_sessione_presenza
+BEFORE INSERT OR UPDATE ON SESSIONE_PRESENZA
+FOR EACH ROW EXECUTE FUNCTION check_orario_e_durata();
 //da fare in futuro
 db check percorso propic
 

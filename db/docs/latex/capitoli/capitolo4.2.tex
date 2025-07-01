@@ -394,6 +394,59 @@ EXECUTE FUNCTION verifica_superamento_max_partecipanti_corso();
     \item In caso di inserimento o aggiornamento che porterebbe il totale dei paganti oltre il limite, viene sollevata un'eccezione e l'operazione viene bloccata.
     \item In questo modo si garantisce il rispetto della capienza massima prevista per ciascun corso.
 \end{itemize}
+\subsubsection{Trigger: Controllo Orario e Durata Sessione Presenza}
+
+Questo trigger garantisce che l'orario di inizio e la durata di una sessione in presenza siano coerenti e rispettino i vincoli applicativi: la durata deve essere compresa tra 1 e 8 ore, l'orario deve essere valido (ore < 23, minuti < 60) e la fine della lezione non può superare le 23.
+
+\noindent\rule{\textwidth}{0.4pt}
+\begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
+CREATE OR REPLACE FUNCTION check_orario_e_durata()
+RETURNS TRIGGER AS $$
+DECLARE
+    orario_ora INTEGER;
+    orario_minuti INTEGER;
+    durata_frazionaria NUMERIC;
+    fine_lezione NUMERIC;
+BEGIN
+    IF NEW.Durata <= 1 OR NEW.Durata >= 8 THEN
+        RAISE EXCEPTION 'Durata deve essere maggiore di 1 e minore di 8';
+    END IF;
+
+    orario_ora := FLOOR(NEW.Orario);
+    orario_minuti := ROUND((NEW.Orario - orario_ora) * 100);
+
+    IF orario_ora >= 23 THEN
+        RAISE EXCEPTION 'La parte intera dell''orario deve essere minore di 23';
+    ELSIF orario_minuti >= 60 THEN
+        RAISE EXCEPTION 'La parte decimale dell''orario deve essere minore di 60';
+    END IF;
+
+    durata_frazionaria := NEW.Durata;
+    fine_lezione := NEW.Orario + durata_frazionaria;
+
+    IF fine_lezione > 23 THEN
+        RAISE EXCEPTION 'L''orario di fine lezione non può superare le 23';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_check_sessione_presenza
+BEFORE INSERT OR UPDATE ON SESSIONE_PRESENZA
+FOR EACH ROW EXECUTE FUNCTION check_orario_e_durata();
+\end{lstlisting}
+\noindent\rule{\textwidth}{0.4pt}
+
+\textbf{Spiegazione:}
+\begin{itemize}
+    \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulla tabella \texttt{SESSIONE\_PRESENZA}.
+    \item Controlla che la durata sia maggiore di 1 e minore di 8 ore.
+    \item Verifica che la parte intera dell'orario (ore) sia minore di 23 e la parte decimale (minuti) sia minore di 60.
+    \item Calcola l'orario di fine lezione e verifica che non superi le 23.
+    \item Se uno di questi vincoli non è rispettato, viene sollevata un'eccezione e l'operazione viene bloccata.
+    \item In questo modo si garantisce la correttezza e la coerenza degli orari delle sessioni in presenza.
+\end{itemize}
 
 \subsubsection{Trigger: Impedire Eliminazione di Corsi con Iscritti Paganti}
 
@@ -573,14 +626,32 @@ CREATE OR REPLACE VIEW vista_statistiche_mensili_chef AS
         ch.IdChef,
         ch.Nome,
         ch.Cognome,
+
         COUNT(spr.IdRicetta) AS totale_ricette_mese,
+
         COALESCE(MAX(spr_count.ricette_per_sessione), 0) AS max_ricette_in_sessione,
         COALESCE(MIN(spr_count.ricette_per_sessione), 0) AS min_ricette_in_sessione,
-        COALESCE(AVG(spr_count.ricette_per_sessione), 0) AS media_ricette_per_sessione,
+        COALESCE(AVG(spr_count.ricette_per_sessione), 0) AS media_ricette_in_sessione,
+
         COUNT(DISTINCT c.IdCorso) AS numero_corsi,
         COUNT(DISTINCT sp.IdSessionePresenza) AS numero_sessioni_presenza,
         COUNT(DISTINCT st.IdSessioneTelematica) AS numero_sessioni_telematiche,
-        COALESCE(SUM(rp.ImportoPagato), 0) AS guadagno_totale
+        COALESCE(SUM(rp.ImportoPagato), 0) AS guadagno_totale,
+        -- Usa la data più significativa disponibile per ogni riga
+        EXTRACT(MONTH FROM COALESCE(
+            sp.Data,
+            st.Data,
+            rp.DataRichiesta,
+            c.DataInizio,   -- fallback: data inizio corso
+            c.DataFine      -- fallback: data fine corso
+        )) AS mese,
+        EXTRACT(YEAR FROM COALESCE(
+            sp.Data,
+            st.Data,
+            rp.DataRichiesta,
+            c.DataInizio,
+            c.DataFine
+        )) AS anno
     FROM CHEF ch
     LEFT JOIN CORSO c ON ch.IdChef = c.IdChef
     LEFT JOIN SESSIONE_PRESENZA sp ON c.IdCorso = sp.IDcorso AND sp.IDChef = ch.IdChef
@@ -589,33 +660,31 @@ CREATE OR REPLACE VIEW vista_statistiche_mensili_chef AS
         SELECT spr2.IdSessionePresenza, COUNT(*) AS ricette_per_sessione
         FROM SESSIONE_PRESENZA_RICETTA spr2
         JOIN SESSIONE_PRESENZA sp2 ON spr2.IdSessionePresenza = sp2.IdSessionePresenza
-        WHERE DATE_PART('month', sp2.Data) = DATE_PART('month', CURRENT_DATE)
-        AND DATE_PART('year', sp2.Data) = DATE_PART('year', CURRENT_DATE)
         GROUP BY spr2.IdSessionePresenza
     ) spr_count ON spr_count.IdSessionePresenza = sp.IdSessionePresenza
+
     LEFT JOIN SESSIONE_TELEMATICA st ON c.IdCorso = st.IDcorso AND st.IDChef = ch.IdChef
-        AND DATE_PART('month', st.Data) = DATE_PART('month', CURRENT_DATE)
-        AND DATE_PART('year', st.Data) = DATE_PART('year', CURRENT_DATE)
+
     LEFT JOIN RICHIESTAPAGAMENTO rp ON rp.IdCorso = c.IdCorso
-        AND DATE_PART('month', rp.DataRichiesta) = DATE_PART('month', CURRENT_DATE)
-        AND DATE_PART('year', rp.DataRichiesta) = DATE_PART('year', CURRENT_DATE)
-    WHERE
-    (
-    (sp.Data IS NULL OR (
-        DATE_PART('month', sp.Data) = DATE_PART('month', CURRENT_DATE)
-        AND DATE_PART('year', sp.Data) = DATE_PART('year', CURRENT_DATE)
-    ))
-    )
-    GROUP BY ch.IdChef, ch.Nome, ch.Cognome;
+
+    GROUP BY ch.IdChef, ch.Nome, ch.Cognome,
+        EXTRACT(MONTH FROM COALESCE(sp.Data, st.Data, rp.DataRichiesta, c.DataInizio, c.DataFine)),
+        EXTRACT(YEAR FROM COALESCE(sp.Data, st.Data, rp.DataRichiesta, c.DataInizio, c.DataFine));
 \end{lstlisting}
 \noindent\rule{\textwidth}{0.4pt}
 
 \textbf{Spiegazione:}
 \begin{itemize}
-    \item La view aggrega i dati per ogni chef, limitando i risultati al mese e anno correnti tramite la funzione \texttt{DATE\_PART}.
-    \item Calcola il totale delle ricette preparate nel mese, il massimo, minimo e media di ricette per sessione, il numero di corsi, sessioni in presenza e telematiche, e il guadagno totale.
-    \item Utilizza le funzioni di aggregazione SQL come \texttt{COUNT}, \texttt{MAX}, \texttt{MIN}, \texttt{AVG}, \texttt{SUM} e \texttt{COALESCE} per gestire i casi in cui non ci siano dati (restituendo zero).
-    \item Le join collegano chef, corsi, sessioni, ricette e pagamenti per ottenere una panoramica completa delle attività mensili di ciascun chef.
+    \item La view aggrega i dati per ogni chef, suddividendo i risultati per mese e anno tramite le funzioni \texttt{EXTRACT(MONTH...)} e \texttt{EXTRACT(YEAR...)}.
+    \item Per ogni chef vengono calcolati:
+    \begin{itemize}
+        \item Il totale delle ricette preparate nel mese (\texttt{totale\_ricette\_mese}).
+        \item Il massimo, minimo e media di ricette preparate per sessione (\texttt{max\_ricette\_in\_sessione}, \texttt{min\_ricette\_in\_sessione}, \texttt{media\_ricette\_in\_sessione}).
+        \item Il numero di corsi, sessioni in presenza e sessioni telematiche tenute dallo chef.
+        \item Il guadagno totale del mese, calcolato come somma degli importi pagati per i corsi dello chef.
+    \end{itemize}
+    \item Le \texttt{LEFT JOIN} collegano chef, corsi, sessioni, ricette e pagamenti per ottenere una panoramica completa delle attività mensili di ciascun chef.
+    \item La view utilizza \texttt{COALESCE} per gestire i casi in cui non ci siano dati, restituendo zero dove necessario.
     \item Questa view è pensata per essere utilizzata come base dati per la generazione di report e grafici mensili sulle performance degli chef.
 \end{itemize}
 
