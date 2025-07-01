@@ -63,4 +63,29 @@ public ArrayList<String> Categorie() {
     }
     return Categorie;
 }
+public ArrayList<String> GrandezzeDiMisura() {
+    ArrayList<String> UnitaDiMisura = new ArrayList<>();
+    SupportDb dbu = new SupportDb();
+    Connection conn = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    String query = "SELECT unnest(enum_range(NULL::UnitaDiMisura )) AS valore";
+    try {
+        conn = ConnectionJavaDb.getConnection();
+        ps = conn.prepareStatement(query);
+        rs = ps.executeQuery();
+        while (rs.next()) {
+            UnitaDiMisura.add(rs.getString("valore"));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try {
+          dbu.closeAll(conn, ps, rs);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    return UnitaDiMisura;
+}
 }
