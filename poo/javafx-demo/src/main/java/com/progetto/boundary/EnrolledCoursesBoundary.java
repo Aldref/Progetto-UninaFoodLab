@@ -35,20 +35,7 @@ public class EnrolledCoursesBoundary implements Initializable {
     private EnrolledCoursesController controller;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Imposta nome e immagine utente nella navbar
-        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
-        if (utente != null) {
-            userNameLabel.setText(utente.getNome() + " " + utente.getCognome());
-            String propic = utente.getUrl_Propic();
-            if (propic != null && !propic.isEmpty()) {
-                java.io.File imgFile = new java.io.File("src/main/resources/" + propic);
-                if (imgFile.exists()) {
-                    javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 80, 80, true, true);
-                    userProfileImage.setImage(img);
-                    ImageClipUtils.setCircularClip(userProfileImage, 40);
-                }
-            }
-        }
+        setupUserProfile();
         controller = new EnrolledCoursesController(
             userNameLabel, categoryComboBox, frequencyComboBox,
             searchBtn, enrolledCoursesArea, enrolledCoursesScrollPane,
@@ -57,7 +44,8 @@ public class EnrolledCoursesBoundary implements Initializable {
         controller.initialize();
     }
 
-    // Mostra lo spinner di caricamento
+   
+
     public void showLoadingIndicator() {
         if (loadingIndicator != null) {
             loadingIndicator.setVisible(true);
@@ -110,5 +98,21 @@ public class EnrolledCoursesBoundary implements Initializable {
     @FXML
     private void LogoutClick(ActionEvent event) {
         controller.LogoutClick();
+    }
+
+    public void setupUserProfile() {
+        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
+        if (utente != null) {
+            userNameLabel.setText(utente.getNome() + " " + utente.getCognome());
+            String propic = utente.getUrl_Propic();
+            if (propic != null && !propic.isEmpty()) {
+                java.io.File imgFile = new java.io.File("src/main/resources/" + propic);
+                if (imgFile.exists()) {
+                    javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 80, 80, true, true);
+                    userProfileImage.setImage(img);
+                    ImageClipUtils.setCircularClip(userProfileImage, 40);
+                }
+            }
+        }
     }
 }

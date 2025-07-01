@@ -16,9 +16,15 @@ import com.progetto.boundary.LogoutDialogBoundary;
 import com.progetto.utils.SceneSwitcher;
 import javafx.stage.Stage;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import java.io.File;
+import com.progetto.utils.ImageClipUtils;
+
 public class MonthlyReportBoundary {
 
     @FXML private Label chefNameLabel;
+    @FXML private ImageView chefProfileImage;
     @FXML private Button viewMyCoursesBtn;
     @FXML private Button createCourseBtn;
     @FXML private Button monthlyReportBtn;
@@ -54,11 +60,8 @@ public class MonthlyReportBoundary {
 
     @FXML
     public void initialize() {
-        // Recupera o crea l'oggetto Chef corrente (qui esempio statico, da sostituire con quello reale)
-        chef = new Chef();
-        chef.setNome("Mario");
-        // ...eventuali altri settaggi necessari...
-
+        chef = Chef.loggedUser;
+        setupChefProfile();
         controller = new MonthlyReportController(
             monthYearLabel, monthComboBox, yearComboBox,
             totalCoursesLabel, onlineSessionsLabel, practicalSessionsLabel, monthlyEarningsLabel,
@@ -67,7 +70,6 @@ public class MonthlyReportBoundary {
             chef
         );
         controller.initialize();
-        chefNameLabel.setText(chef.getNome());
     }
 
    
@@ -118,5 +120,20 @@ public class MonthlyReportBoundary {
     @FXML
     private void updateReport(ActionEvent event) {
         controller.updateReport();
+    }
+
+    public void setupChefProfile() {
+        if (chef != null) {
+            chefNameLabel.setText(chef.getNome() + " " + chef.getCognome());
+            String propic = chef.getUrl_Propic();
+            if (propic != null && !propic.isEmpty()) {
+                File imgFile = new File("src/main/resources/" + propic);
+                if (imgFile.exists()) {
+                    Image img = new Image(imgFile.toURI().toString(), 80, 80, true, true);
+                    chefProfileImage.setImage(img);
+                    ImageClipUtils.setCircularClip(chefProfileImage, 40);
+                }
+            }
+        }
     }
 }

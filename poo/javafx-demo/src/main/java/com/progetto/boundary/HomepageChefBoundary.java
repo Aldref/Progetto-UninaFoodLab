@@ -1,3 +1,4 @@
+
 package com.progetto.boundary;
 
 import javafx.fxml.FXML;
@@ -5,9 +6,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.FlowPane;
 import javafx.event.ActionEvent;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import java.io.File;
 import com.progetto.controller.HomepageChefController;
 import com.progetto.utils.ImageClipUtils;
-import java.io.File;
+import com.progetto.Entity.EntityDto.Chef;
 
 public class HomepageChefBoundary {
 
@@ -38,23 +42,11 @@ public class HomepageChefBoundary {
             chefNameLabel,
             chefProfileImage
         );
-        // Imposta nome e immagine chef nella navbar
-        com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
-        if (chef != null) {
-            chefNameLabel.setText(chef.getNome() + " " + chef.getCognome());
-            String propic = chef.getUrl_Propic();
-            if (propic != null && !propic.isEmpty()) {
-                File imgFile = new File("src/main/resources/" + propic);
-                if (imgFile.exists()) {
-                    javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
-                    chefProfileImage.setImage(img);
-                    ImageClipUtils.setCircularClip(chefProfileImage, 0); // raggio automatico
-                }
-            }
-        }
+        setupChefProfile();
         controller.loadChefCourses();
         controller.initializeSearchFilters();
     }
+
 
     @FXML
     private void searchCourses(ActionEvent event) {
@@ -89,5 +81,21 @@ public class HomepageChefBoundary {
     @FXML
     private void prevPage(ActionEvent event) {
         controller.prevPage();
+    }
+
+    public void setupChefProfile() {
+        Chef chef = Chef.loggedUser;
+        if (chef != null) {
+            chefNameLabel.setText(chef.getNome() + " " + chef.getCognome());
+            String propic = chef.getUrl_Propic();
+            if (propic != null && !propic.isEmpty()) {
+                File imgFile = new File("src/main/resources/" + propic);
+                if (imgFile.exists()) {
+                    Image img = new Image(imgFile.toURI().toString(), 256, 256, true, true);
+                    chefProfileImage.setImage(img);
+                    ImageClipUtils.setCircularClip(chefProfileImage, 0); // raggio automatico
+                }
+            }
+        }
     }
 }

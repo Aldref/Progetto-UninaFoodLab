@@ -110,9 +110,6 @@ public class MonthlyReportController {
         Integer selectedYear = yearComboBox.getValue();
         int mese = monthComboBox.getSelectionModel().getSelectedIndex() + 1;
         int anno = (selectedYear != null) ? selectedYear : LocalDate.now().getYear();
-        System.out.println("[DEBUG] IdChef selezionato: " + chef.getId_Chef());
-        System.out.println("[DEBUG] Mese selezionato: " + mese + ", Anno selezionato: " + anno);
-
         GraficoChef grafico = new GraficoChef();
         grafico.setNumeroMassimo(graficoChefDao.RicavaMassimo(chef, mese, anno));
         grafico.setNumeroMinimo(graficoChefDao.RicavaMinimo(chef, mese, anno));
@@ -122,8 +119,6 @@ public class MonthlyReportController {
         grafico.setNumerosessionitelematiche(graficoChefDao.RicavaNumeroSesssioniTelematiche(chef, mese, anno));
         double monthlyEarnings = graficoChefDao.ricavaGuadagno(chef, mese, anno);
         int totalRecipes = (int) Math.round((grafico.getNumeroSessioniInPresenza() + grafico.getNumerosessionitelematiche()) * grafico.getMedia());
-
-        System.out.println("[CONTROLLER] DTO: max=" + grafico.getNumeroMassimo() + ", min=" + grafico.getNumeroMinimo() + ", media=" + grafico.getMedia() + ", corsi=" + grafico.getNumeriCorsi() + ", presenze=" + grafico.getNumeroSessioniInPresenza() + ", telematiche=" + grafico.getNumerosessionitelematiche() + ", guadagno=" + monthlyEarnings + ", ricetteTotali=" + totalRecipes);
 
         updateStatistics(grafico, monthlyEarnings, totalRecipes);
         updateChartsData(grafico, monthlyEarnings);

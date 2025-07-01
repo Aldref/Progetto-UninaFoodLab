@@ -26,24 +26,12 @@ public class HomepageUtenteBoundary {
 
     @FXML
     public void initialize() {
-        // Imposta nome e immagine utente nella navbar
-        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
-        if (utente != null) {
-            userNameLabel.setText(utente.getNome() + " " + utente.getCognome());
-            String propic = utente.getUrl_Propic();
-            if (propic != null && !propic.isEmpty()) {
-                File imgFile = new File("src/main/resources/" + propic);
-                if (imgFile.exists()) {
-                    javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 80, 80, true, true);
-                    userProfileImage.setImage(img);
-                    ImageClipUtils.setCircularClip(userProfileImage, 40);
-                }
-            }
-        }
+        setupUserProfile();
         controller = new HomepageUtenteController(mainContentArea, pageLabel, categoryComboBox, frequencyComboBox, userNameLabel, this);
         initializeSearchFiltersFromDb();
         controller.loadCourses();
     }
+
     // Mostra lo spinner di caricamento
     public void showLoadingIndicator() {
         if (loadingIndicator != null) {
@@ -120,5 +108,21 @@ public class HomepageUtenteBoundary {
     public Label getUserNameLabel() { return userNameLabel; }
     public void setLoadingIndicatorVisible(boolean visible) {
         if (loadingIndicator != null) loadingIndicator.setVisible(visible);
+    }
+
+    public void setupUserProfile() {
+        UtenteVisitatore utente = UtenteVisitatore.loggedUser;
+        if (utente != null) {
+            userNameLabel.setText(utente.getNome() + " " + utente.getCognome());
+            String propic = utente.getUrl_Propic();
+            if (propic != null && !propic.isEmpty()) {
+                File imgFile = new File("src/main/resources/" + propic);
+                if (imgFile.exists()) {
+                    javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 80, 80, true, true);
+                    userProfileImage.setImage(img);
+                    ImageClipUtils.setCircularClip(userProfileImage, 40);
+                }
+            }
+        }
     }
 }
