@@ -1,5 +1,6 @@
 package com.progetto.boundary;
 
+import com.progetto.utils.UnifiedRecipeIngredientUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -97,11 +98,87 @@ public class CreateCourseBoundary {
     
     // === DATI PER LA MODALITÀ IBRIDA ===
     private final List<HybridSessionData> hybridSessions = new ArrayList<>();
+
+    // === DATI PER LE SESSIONI TELEMATICA PURE ===
+    public static class OnlineSessionData {
+        public DatePicker datePicker;
+        public Spinner<Integer> hourSpinner;
+        public Spinner<Integer> minuteSpinner;
+        public TextField durationField;
+        public ComboBox<String> applicationCombo;
+        public TextField meetingCodeField;
+
+        public OnlineSessionData(DatePicker datePicker, Spinner<Integer> hourSpinner, Spinner<Integer> minuteSpinner,
+                                 TextField durationField, ComboBox<String> applicationCombo, TextField meetingCodeField) {
+            this.datePicker = datePicker;
+            this.hourSpinner = hourSpinner;
+            this.minuteSpinner = minuteSpinner;
+            this.durationField = durationField;
+            this.applicationCombo = applicationCombo;
+            this.meetingCodeField = meetingCodeField;
+        }
+    }
+    /**
+     * Restituisce la lista delle sessioni telematiche pure per "Telematica" (non ibride)
+     */
+    public List<OnlineSessionData> getSessioniTelematiche() {
+        List<OnlineSessionData> result = new ArrayList<>();
+        // Solo se la tipologia è "Telematica" e i campi sono compilati
+        if ("Telematica".equals(lessonTypeComboBox.getValue())) {
+            // Calcola le date delle sessioni telematiche in base ai giorni selezionati e intervallo date
+            List<String> giorniSelezionati = new ArrayList<>();
+            for (javafx.scene.Node node : onlineDayOfWeekContainer.getChildren()) {
+                if (node instanceof CheckBox && ((CheckBox) node).isSelected()) {
+                    giorniSelezionati.add(((CheckBox) node).getText());
+                }
+            }
+            LocalDate inizio = startDatePicker.getValue();
+            LocalDate fine = endDatePicker.getValue();
+            if (inizio != null && fine != null && !giorniSelezionati.isEmpty()) {
+                // Per ogni giorno selezionato, calcola tutte le date tra inizio e fine
+                for (String giorno : giorniSelezionati) {
+                    java.time.DayOfWeek target = null;
+                    switch (giorno.toLowerCase()) {
+                        case "lunedì": target = java.time.DayOfWeek.MONDAY; break;
+                        case "martedì": target = java.time.DayOfWeek.TUESDAY; break;
+                        case "mercoledì": target = java.time.DayOfWeek.WEDNESDAY; break;
+                        case "giovedì": target = java.time.DayOfWeek.THURSDAY; break;
+                        case "venerdì": target = java.time.DayOfWeek.FRIDAY; break;
+                        case "sabato": target = java.time.DayOfWeek.SATURDAY; break;
+                        case "domenica": target = java.time.DayOfWeek.SUNDAY; break;
+                    }
+                    if (target == null) continue;
+                    LocalDate current = inizio;
+                    // Trova il primo giorno corrispondente
+                    while (current.getDayOfWeek() != target) {
+                        current = current.plusDays(1);
+                        if (current.isAfter(fine)) break;
+                    }
+                    // Aggiungi tutte le date corrispondenti
+                    while (!current.isAfter(fine)) {
+                        // Crea una OnlineSessionData per ogni data
+                        OnlineSessionData data = new OnlineSessionData(
+                            new DatePicker(current),
+                            onlineHourSpinner,
+                            onlineMinuteSpinner,
+                            onlineDurationField,
+                            applicationComboBox,
+                            meetingCodeField
+                        );
+                        result.add(data);
+                        current = current.plusWeeks(1);
+                    }
+                }
+            }
+        }
+        return result;
+    }
     
     // === DATI PER LE SESSIONI IN PRESENZA ===
     private final Map<LocalDate, ObservableList<Ricetta>> sessionePresenzaRicette = new HashMap<>();
     private final ObservableList<Ricetta> genericRecipes = FXCollections.observableArrayList();
-    
+    private List<String> giorniSettimanaEnum = new ArrayList<>();
+    private List<String> unitaDiMisuraEnum = new ArrayList<>();
     // Inner class per memorizzare i dati di una sessione ibrida
     public static class HybridSessionData {
         public ComboBox<String> typeCombo;
@@ -158,6 +235,11 @@ public class CreateCourseBoundary {
 
     @FXML
     public void initialize() {
+        // Aggiorna subito la label con il nome/cognome dello chef loggato
+        com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
+        if (chefNameLabel != null && chef != null) {
+            chefNameLabel.setText(chef.getNome() + " " + chef.getCognome());
+        }
         controller = new CreateCourseController(
             courseNameField, descriptionArea, startDatePicker, endDatePicker,
             frequencyComboBox, lessonTypeComboBox, maxParticipantsSpinner,
@@ -175,6 +257,15 @@ public class CreateCourseBoundary {
         controller.setBoundary(this);
         
         controller.initialize();
+        // Carica enum dal DB (tramite DAO, come fallback se controller non li espone)
+        try {
+            com.progetto.Entity.entityDao.BarraDiRicercaDao dao = new com.progetto.Entity.entityDao.BarraDiRicercaDao();
+            giorniSettimanaEnum = dao.GiorniSettimanaEnum();
+            unitaDiMisuraEnum = dao.GrandezzeDiMisura();
+        } catch (Exception e) {
+            giorniSettimanaEnum = java.util.Arrays.asList("Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica");
+            unitaDiMisuraEnum = java.util.Arrays.asList("g", "kg", "ml", "l", "pz");
+        }
     }
 
     // === METODI PER CREARE UI DINAMICA ===
@@ -202,10 +293,12 @@ public class CreateCourseBoundary {
         }
 
         int numSessioni = getMaxDaysFromFrequency(frequenza);
-        // Crea una riga per ogni giorno richiesto dalla frequenza
         Label titleLabel = new Label("Configura per ogni giorno della settimana:");
         titleLabel.getStyleClass().add("section-title");
         hybridDaysContainer.getChildren().add(titleLabel);
+
+        List<String> giorniSettimana = giorniSettimanaEnum.isEmpty() ? java.util.Arrays.asList("Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica") : giorniSettimanaEnum;
+        List<ComboBox<String>> dayCombos = new ArrayList<>();
 
         for (int i = 0; i < numSessioni; i++) {
             final int sessionIndex = i;
@@ -213,36 +306,183 @@ public class CreateCourseBoundary {
             VBox sessionBox = new VBox(10);
             sessionBox.getStyleClass().add("hybrid-session-container");
 
+            // Selettore giorno della settimana
             HBox dayBox = new HBox(10);
             Label dayLabel = new Label("Giorno " + (sessionIndex + 1) + ":");
+            ComboBox<String> dayCombo = new ComboBox<>();
+            dayCombo.getItems().addAll(giorniSettimana);
+            dayCombo.setPromptText("Seleziona giorno");
+            dayBox.getChildren().addAll(dayLabel, dayCombo);
+            dayCombos.add(dayCombo);
+
+            // Imposta la cell factory custom per disabilitare i giorni già scelti
+            dayCombo.setCellFactory(lv -> new javafx.scene.control.ListCell<String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(item);
+                    if (empty || item == null) {
+                        setDisable(false);
+                    } else {
+                        // Disabilita se il giorno è già selezionato in un altro ComboBox
+                        boolean disable = false;
+                        for (ComboBox<String> otherCombo : dayCombos) {
+                            if (otherCombo != dayCombo && item.equals(otherCombo.getValue())) {
+                                disable = true;
+                                break;
+                            }
+                        }
+                        setDisable(disable);
+                    }
+                }
+            });
+
+            // Listener per impedire la selezione di un giorno già scelto
+            dayCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal != null) {
+                    for (ComboBox<String> otherCombo : dayCombos) {
+                        if (otherCombo != dayCombo && newVal.equals(otherCombo.getValue())) {
+                            // Giorno già scelto altrove: resetta la selezione e mostra feedback
+                            dayCombo.setValue(null);
+                            showHybridErrorMessage("Ogni giorno può essere scelto solo una volta tra tutte le sessioni.");
+                            return;
+                        }
+                    }
+                }
+                // Aggiorna le opzioni disponibili in tutti i ComboBox
+                updateHybridDayCombos(dayCombos);
+            });
+            HBox typeBox = new HBox(10);
+            Label typeLabel = new Label("Tipo sessione:");
             ComboBox<String> typeCombo = new ComboBox<>();
             typeCombo.getItems().addAll("In presenza", "Telematica");
             typeCombo.setPromptText("Tipo lezione");
             sessionData.typeCombo = typeCombo;
-            dayBox.getChildren().addAll(dayLabel, typeCombo);
+            typeBox.getChildren().addAll(typeLabel, typeCombo);
 
             VBox detailsContainer = new VBox(10);
             sessionData.detailsContainer = detailsContainer;
 
-            // Listener per mostrare i dettagli in base al tipo
+            // Listener per mostrare i dettagli in base al tipo e giorno
             typeCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
                 detailsContainer.getChildren().clear();
-                if ("In presenza".equals(newVal)) {
+                if ("In presenza".equals(newVal) && dayCombo.getValue() != null) {
                     detailsContainer.getChildren().add(createPresenceDetails(sessionData));
-                    detailsContainer.getChildren().add(createRecipesSection(sessionIndex, sessionData));
+                    // Calcola tutte le date di quel giorno tra inizio e fine
+                    List<LocalDate> dateSessioni = calcolaDateSessioniPresenzaHybrid(dayCombo.getValue(), inizio, fine);
+                    VBox ricetteBox = new VBox(8);
+                    for (LocalDate data : dateSessioni) {
+                        VBox ricettaSessioneBox = new VBox(5);
+                        Label dataLabel = new Label("Ricette per " + data.toString());
+                        ricettaSessioneBox.getChildren().add(dataLabel);
+                        Ricetta ricettaIniziale = new Ricetta("");
+                        ricettaIniziale.setIngredientiRicetta(new ArrayList<>());
+                        ricettaIniziale.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
+                        sessionData.ricette.add(ricettaIniziale);
+                        VBox recipeBox = createRecipeBoxForHybrid(ricettaIniziale, sessionData, ricettaSessioneBox);
+                        ricettaSessioneBox.getChildren().add(recipeBox);
+                        ricetteBox.getChildren().add(ricettaSessioneBox);
+                    }
+                    detailsContainer.getChildren().add(ricetteBox);
                 } else if ("Telematica".equals(newVal)) {
                     detailsContainer.getChildren().add(createOnlineDetails(sessionData));
                 }
                 notifyControllerOfChange();
             });
 
-            sessionBox.getChildren().addAll(dayBox, detailsContainer);
+            // Aggiorna dettagli se cambia giorno
+            dayCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+                if ("In presenza".equals(typeCombo.getValue())) {
+                    detailsContainer.getChildren().clear();
+                    sessionData.ricette.clear();
+                    detailsContainer.getChildren().add(createPresenceDetails(sessionData));
+                    if (newVal != null) {
+                        List<LocalDate> dateSessioni = calcolaDateSessioniPresenzaHybrid(newVal, inizio, fine);
+                        VBox ricetteBox = new VBox(8);
+                        for (LocalDate data : dateSessioni) {
+                            VBox ricettaSessioneBox = new VBox(5);
+                            Label dataLabel = new Label("Ricette per " + data.toString());
+                            ricettaSessioneBox.getChildren().add(dataLabel);
+                            Ricetta ricettaIniziale = new Ricetta("");
+                            ricettaIniziale.setIngredientiRicetta(new ArrayList<>());
+                            ricettaIniziale.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
+                            sessionData.ricette.add(ricettaIniziale);
+                            VBox recipeBox = createRecipeBoxForHybrid(ricettaIniziale, sessionData, ricettaSessioneBox);
+                            ricettaSessioneBox.getChildren().add(recipeBox);
+                            ricetteBox.getChildren().add(ricettaSessioneBox);
+                        }
+                        detailsContainer.getChildren().add(ricetteBox);
+                    }
+                }
+                // Aggiorna le opzioni disponibili negli altri ComboBox giorno
+                updateHybridDayCombos(dayCombos);
+                notifyControllerOfChange();
+            });
+
+            sessionBox.getChildren().addAll(dayBox, typeBox, detailsContainer);
             hybridDaysContainer.getChildren().add(sessionBox);
             hybridSessions.add(sessionData);
         }
 
+
+        // Listener per aggiornare le opzioni disponibili in tutti i ComboBox giorno (aggiorna cell factory)
+        for (ComboBox<String> combo : dayCombos) {
+            combo.valueProperty().addListener((obs, oldVal, newVal) -> {
+                for (ComboBox<String> c : dayCombos) {
+                    c.setButtonCell(null); // forza refresh
+                    c.setCellFactory(lv -> new javafx.scene.control.ListCell<String>() {
+                        @Override
+                        protected void updateItem(String item, boolean empty) {
+                            super.updateItem(item, empty);
+                            setText(item);
+                            if (empty || item == null) {
+                                setDisable(false);
+                            } else {
+                                boolean disable = false;
+                                for (ComboBox<String> otherCombo : dayCombos) {
+                                    if (otherCombo != c && item.equals(otherCombo.getValue())) {
+                                        disable = true;
+                                        break;
+                                    }
+                                }
+                                setDisable(disable);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
         if (controller != null) {
             controller.onHybridUIUpdated();
+        }
+    }
+
+    /**
+     * Disabilita nei ComboBox dei giorni le opzioni già selezionate nelle altre sessioni
+     */
+    private void updateHybridDayCombos(List<ComboBox<String>> dayCombos) {
+        // Raccogli i giorni già selezionati
+        List<String> selectedDays = new ArrayList<>();
+        for (ComboBox<String> combo : dayCombos) {
+            String val = combo.getValue();
+            if (val != null && !val.isEmpty()) {
+                selectedDays.add(val);
+            }
+        }
+        for (ComboBox<String> combo : dayCombos) {
+            String current = combo.getValue();
+            combo.getItems().forEach(day -> {
+                boolean disable = selectedDays.contains(day) && !day.equals(current);
+                combo.setCellFactory(lv -> new javafx.scene.control.ListCell<String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setText(item);
+                        setDisable(disable && item != null && item.equals(day));
+                    }
+                });
+            });
         }
     }
     
@@ -511,127 +751,48 @@ public class CreateCourseBoundary {
      * Crea il box per una singola ricetta nella modalità ibrida
      */
     private VBox createRecipeBoxForHybrid(Ricetta ricetta, HybridSessionData sessionData, VBox container) {
-        VBox recipeBox = new VBox(10);
-        recipeBox.getStyleClass().add("recipe-box");
-        
-        // Nome ricetta
-        HBox nameBox = new HBox(10);
-        Label nameLabel = new Label("Nome ricetta:");
-        TextField nameField = new TextField(ricetta.getNome());
-        nameField.setPromptText("es. Pasta alla carbonara");
-        nameField.getStyleClass().add("ingredient-name-field");
-        nameField.textProperty().addListener((obs, oldVal, newVal) -> {
-            ricetta.setNome(newVal);
-            notifyControllerOfChange();
-        });
-        Button removeBtn = new Button("Rimuovi");
-        removeBtn.getStyleClass().add("remove-button");
-        removeBtn.setOnAction(e -> {
-            sessionData.ricette.remove(ricetta);
-            container.getChildren().remove(recipeBox);
-            notifyControllerOfChange();
-        });
-        nameBox.getChildren().addAll(nameLabel, nameField, removeBtn);
-        
-        // Container per ingredienti
-        VBox ingredientsContainer = new VBox(5);
-        Label ingredientsLabel = new Label("Ingredienti:");
-        ingredientsLabel.getStyleClass().add("ingredients-title");
-        
-        // Se la ricetta non ha ingredienti, aggiungine uno vuoto
-        if (ricetta.getIngredientiRicetta() == null || ricetta.getIngredientiRicetta().isEmpty()) {
-            ricetta.setIngredientiRicetta(new ArrayList<>());
-            ricetta.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
-        }
-        
-        // Crea la UI per ogni ingrediente
-        for (Ingredienti ingrediente : ricetta.getIngredientiRicetta()) {
-            HBox ingredientBox = createIngredientBoxForHybrid(ingrediente, ricetta, ingredientsContainer);
-            ingredientsContainer.getChildren().add(ingredientBox);
-        }
-        
-        Button addIngredientBtn = new Button("+ Ingrediente");
-        addIngredientBtn.getStyleClass().add("add-ingredient-button");
-        addIngredientBtn.setOnAction(e -> {
-            Ingredienti nuovo = new Ingredienti("", 0, "");
-            ricetta.getIngredientiRicetta().add(nuovo);
-            HBox ingredientBox = createIngredientBoxForHybrid(nuovo, ricetta, ingredientsContainer);
-            ingredientsContainer.getChildren().add(ingredientBox);
-            notifyControllerOfChange();
-        });
-        
-        recipeBox.getChildren().addAll(nameBox, ingredientsLabel, ingredientsContainer, addIngredientBtn);
-        return recipeBox;
+        return UnifiedRecipeIngredientUI.createUnifiedRecipeBox(ricetta, sessionData.ricette, container, true, this::notifyControllerOfChange, unitaDiMisuraEnum);
     }
     
     /**
      * Crea il box per un singolo ingrediente nella modalità ibrida
      */
     private HBox createIngredientBoxForHybrid(Ingredienti ingrediente, Ricetta ricetta, VBox container) {
-        HBox ingredientBox = new HBox(15);
-        ingredientBox.getStyleClass().addAll("ingredient-box", "ingredient-row");
-
-        // Nome ingrediente con stile migliorato
-        TextField nomeField = new TextField(ingrediente.getNome());
-        nomeField.setPromptText("Nome ingrediente");
-        nomeField.getStyleClass().add("ingredient-name-field");
-        nomeField.textProperty().addListener((obs, oldVal, newVal) -> {
-            ingrediente.setNome(newVal);
-            notifyControllerOfChange();
-        });
-
-        // Quantità come TextField che accetta solo numeri
-        TextField quantitaField = new TextField(ingrediente.getQuantita() == 0 ? "" : String.valueOf(ingrediente.getQuantita()));
-        quantitaField.setPromptText("Quantità");
-        quantitaField.getStyleClass().add("ingredient-quantity-field");
-        // Validatore per accettare solo numeri (inclusi decimali)
-        quantitaField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal.matches("\\d*(\\.\\d*)?")) {
-                quantitaField.setText(oldVal);
-            } else {
-                try {
-                    if (!newVal.isEmpty() && !newVal.equals(".")) {
-                        float value = Float.parseFloat(newVal);
-                        if (value >= 0) {
-                            ingrediente.setQuantita(value);
-                            notifyControllerOfChange();
-                        }
-                    } else {
-                        ingrediente.setQuantita(0);
-                    }
-                } catch (NumberFormatException e) {
-                    // Mantieni il valore precedente se non è valido
-                }
-            }
-        });
-
-        // Unità di misura come ComboBox
-        ComboBox<String> unitaCombo = new ComboBox<>();
-        unitaCombo.getItems().addAll("g", "kg", "ml", "l", "cucchiaino", "cucchiaio", "tazza", "pz", "spicchio", "foglia", "rametto");
-        unitaCombo.setValue(ingrediente.getUnitaMisura() != null && !ingrediente.getUnitaMisura().isEmpty() ? ingrediente.getUnitaMisura() : null);
-        unitaCombo.setEditable(true);
-        unitaCombo.setPromptText("Unità");
-        unitaCombo.getStyleClass().add("combo-box");
-        unitaCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                ingrediente.setUnitaMisura(newVal);
-                notifyControllerOfChange();
-            }
-        });
-
-        Button removeBtn = new Button("✕");
-        removeBtn.getStyleClass().add("remove-ingredient-button");
-        removeBtn.setOnAction(e -> {
-            ricetta.getIngredientiRicetta().remove(ingrediente);
-            container.getChildren().remove(ingredientBox);
-            notifyControllerOfChange();
-        });
-
-        ingredientBox.getChildren().addAll(nomeField, quantitaField, unitaCombo, removeBtn);
-        return ingredientBox;
+        return UnifiedRecipeIngredientUI.createUnifiedIngredientBox(ingrediente, ricetta, container, true, this::notifyControllerOfChange, unitaDiMisuraEnum);
     }
     
     // === METODI DI UTILITÀ ===
+
+    /**
+     * Calcola tutte le date comprese tra inizio e fine che corrispondono al giorno della settimana specificato (in italiano)
+     */
+    private List<LocalDate> calcolaDateSessioniPresenzaHybrid(String giornoSettimana, LocalDate inizio, LocalDate fine) {
+        List<LocalDate> date = new ArrayList<>();
+        if (giornoSettimana == null || inizio == null || fine == null) return date;
+        // Mappa giorni italiani a DayOfWeek
+        Map<String, java.time.DayOfWeek> giorni = new HashMap<>();
+        giorni.put("Lunedì", java.time.DayOfWeek.MONDAY);
+        giorni.put("Martedì", java.time.DayOfWeek.TUESDAY);
+        giorni.put("Mercoledì", java.time.DayOfWeek.WEDNESDAY);
+        giorni.put("Giovedì", java.time.DayOfWeek.THURSDAY);
+        giorni.put("Venerdì", java.time.DayOfWeek.FRIDAY);
+        giorni.put("Sabato", java.time.DayOfWeek.SATURDAY);
+        giorni.put("Domenica", java.time.DayOfWeek.SUNDAY);
+        java.time.DayOfWeek target = giorni.get(giornoSettimana);
+        if (target == null) return date;
+        LocalDate current = inizio;
+        // Trova il primo giorno corrispondente
+        while (current.getDayOfWeek() != target) {
+            current = current.plusDays(1);
+            if (current.isAfter(fine)) return date;
+        }
+        // Aggiungi tutte le date corrispondenti
+        while (!current.isAfter(fine)) {
+            date.add(current);
+            current = current.plusWeeks(1);
+        }
+        return date;
+    }
     
     /**
      * Configura il formatter per gli spinner dell'orario
@@ -1015,126 +1176,13 @@ public class CreateCourseBoundary {
      * Crea il box per una singola ricetta
      */
     private VBox createRecipeBox(Ricetta ricetta, ObservableList<Ricetta> recipesList, VBox container) {
-        VBox recipeBox = new VBox(10);
-        recipeBox.getStyleClass().add("recipe-box");
-        // Style moved to CSS
-        
-        // Nome ricetta
-        HBox nameBox = new HBox(10);
-        Label nameLabel = new Label("Nome ricetta:");
-        TextField nameField = new TextField(ricetta.getNome());
-        nameField.setPromptText("es. Pasta alla carbonara");
-        nameField.getStyleClass().add("ingredient-name-field");
-        nameField.textProperty().addListener((obs, oldVal, newVal) -> {
-            ricetta.setNome(newVal);
-            notifyControllerOfChange();
-        });
-
-        Button removeBtn = new Button("Rimuovi");
-        removeBtn.getStyleClass().add("remove-button");
-        removeBtn.setOnAction(e -> {
-            recipesList.remove(ricetta);
-            container.getChildren().remove(recipeBox);
-            notifyControllerOfChange();
-        });
-        nameBox.getChildren().addAll(nameLabel, nameField, removeBtn);
-        
-        // Container per ingredienti
-        VBox ingredientsContainer = new VBox(5);
-        Label ingredientsLabel = new Label("Ingredienti:");
-        ingredientsLabel.getStyleClass().add("ingredients-title");
-        
-        // Se la ricetta non ha ingredienti, aggiungine uno vuoto
-        if (ricetta.getIngredientiRicetta() == null || ricetta.getIngredientiRicetta().isEmpty()) {
-            ricetta.setIngredientiRicetta(new ArrayList<>());
-            ricetta.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
-        }
-        
-        // Crea la UI per ogni ingrediente
-        for (Ingredienti ingrediente : ricetta.getIngredientiRicetta()) {
-            HBox ingredientBox = createIngredientBox(ingrediente, ricetta, ingredientsContainer);
-            ingredientsContainer.getChildren().add(ingredientBox);
-        }
-        
-        Button addIngredientBtn = new Button("+ Ingrediente");
-        addIngredientBtn.getStyleClass().add("add-ingredient-button");
-        addIngredientBtn.setOnAction(e -> {
-            Ingredienti nuovo = new Ingredienti("", 0, "");
-            ricetta.getIngredientiRicetta().add(nuovo);
-            HBox ingredientBox = createIngredientBox(nuovo, ricetta, ingredientsContainer);
-            ingredientsContainer.getChildren().add(ingredientsContainer.getChildren().size() - 1, ingredientBox);
-            notifyControllerOfChange();
-        });
-        ingredientsContainer.getChildren().add(addIngredientBtn);
-        
-        recipeBox.getChildren().addAll(nameBox, ingredientsLabel, ingredientsContainer);
-        return recipeBox;
+        return UnifiedRecipeIngredientUI.createUnifiedRecipeBox(ricetta, recipesList, container, false, this::notifyControllerOfChange, unitaDiMisuraEnum);
     }
     
     /**
      * Crea il box per un singolo ingrediente
      */
     private HBox createIngredientBox(Ingredienti ingrediente, Ricetta ricetta, VBox container) {
-        HBox ingredientBox = new HBox(15);
-        ingredientBox.getStyleClass().addAll("ingredient-box", "ingredient-row");
-
-        // Nome ingrediente con stile migliorato
-        TextField nomeField = new TextField(ingrediente.getNome());
-        nomeField.setPromptText("Nome ingrediente");
-        nomeField.getStyleClass().add("ingredient-name-field");
-        nomeField.textProperty().addListener((obs, oldVal, newVal) -> {
-            ingrediente.setNome(newVal);
-            notifyControllerOfChange();
-        });
-
-        // Quantità come TextField che accetta solo numeri
-        TextField quantitaField = new TextField(ingrediente.getQuantita() == 0 ? "" : String.valueOf(ingrediente.getQuantita()));
-        quantitaField.setPromptText("Quantità");
-        quantitaField.getStyleClass().add("ingredient-quantity-field");
-        // Validatore per accettare solo numeri (inclusi decimali)
-        quantitaField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal.matches("\\d*(\\.\\d*)?")) {
-                quantitaField.setText(oldVal);
-            } else {
-                try {
-                    if (!newVal.isEmpty() && !newVal.equals(".")) {
-                        float value = Float.parseFloat(newVal);
-                        if (value >= 0) {
-                            ingrediente.setQuantita(value);
-                            notifyControllerOfChange();
-                        }
-                    } else {
-                        ingrediente.setQuantita(0);
-                    }
-                } catch (NumberFormatException e) {
-                    // Mantieni il valore precedente se non è valido
-                }
-            }
-        });
-
-        // Unità di misura come ComboBox
-        ComboBox<String> unitaCombo = new ComboBox<>();
-        unitaCombo.getItems().addAll("g", "kg", "ml", "l", "cucchiaino", "cucchiaio", "tazza", "pz", "spicchio", "foglia", "rametto");
-        unitaCombo.setValue(ingrediente.getUnitaMisura() != null && !ingrediente.getUnitaMisura().isEmpty() ? ingrediente.getUnitaMisura() : null);
-        unitaCombo.setEditable(true);
-        unitaCombo.setPromptText("Unità");
-        unitaCombo.getStyleClass().add("combo-box");
-        unitaCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                ingrediente.setUnitaMisura(newVal);
-                notifyControllerOfChange();
-            }
-        });
-
-        Button removeBtn = new Button("✕");
-        removeBtn.getStyleClass().add("remove-ingredient-button");
-        removeBtn.setOnAction(e -> {
-            ricetta.getIngredientiRicetta().remove(ingrediente);
-            container.getChildren().remove(ingredientBox);
-            notifyControllerOfChange();
-        });
-
-        ingredientBox.getChildren().addAll(nomeField, quantitaField, unitaCombo, removeBtn);
-        return ingredientBox;
+        return UnifiedRecipeIngredientUI.createUnifiedIngredientBox(ingrediente, ricetta, container, false, this::notifyControllerOfChange, unitaDiMisuraEnum);
     }
 }

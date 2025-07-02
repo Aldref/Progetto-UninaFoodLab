@@ -42,23 +42,31 @@ public class ricettaDao {
         String query = "Insert into Ricetta (Nome) values (?)";
         Connection conn = null;
         PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
         SupportDb dbu = new SupportDb();
         try {
             conn = ConnectionJavaDb.getConnection();
-            ps = conn.prepareStatement(query);
+            ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setString(1, ricetta.getNome());
             ps.executeUpdate();
+            generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                ricetta.setId_Ricetta(generatedKeys.getInt(1));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
+            if (generatedKeys != null) {
+                try { generatedKeys.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
         }
+    }
     
 
     public void associaIngredientiARicetta(Ricetta ricetta, Ingredienti ingredienti) {
-        String query = "Insert into PREPARAZIONEINGREDIENTE (IdRicetta,IdIngrediente,QuantitaUnitaria) values (?, ?, ?)";
+        String query = "Insert into PREPARAZIONEINGREDIENTE (IdRicetta,IdIngrediente,QuanititaUnitaria) values (?, ?, ?)";
         Connection conn = null;
         PreparedStatement ps = null;
         SupportDb dbu = new SupportDb();
@@ -68,7 +76,7 @@ public class ricettaDao {
             ps.setInt(1, ricetta.getId_Ricetta());
             ps.setInt(2, ingredienti.getId_Ingrediente());
             ps.setFloat(3, ingredienti.getQuantita());
-            ps.executeBatch();
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

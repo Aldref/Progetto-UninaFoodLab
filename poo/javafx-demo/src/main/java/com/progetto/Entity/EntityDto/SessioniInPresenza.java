@@ -4,9 +4,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class SessioniInPresenza extends Sessione {
-   private String citta, via, cap, attrezzatura;
-   private ArrayList<UtenteVisitatore> corsoListPartecipanti;
-   private ArrayList<Ricetta> ricette;
+    private String citta, via, cap, attrezzatura;
+    private String descrizione;
+    private ArrayList<UtenteVisitatore> corsoListPartecipanti;
+    private ArrayList<Ricetta> ricette;
 
   
     public SessioniInPresenza(String giorno, LocalDate data, LocalTime orario, java.time.LocalTime durata, String citta, String via, String cap, String attrezzatura, int id_Sessione) {
@@ -15,9 +16,27 @@ public class SessioniInPresenza extends Sessione {
         this.via = via;
         this.cap = cap;
         this.attrezzatura = attrezzatura;
+        this.descrizione = null;
         this.corsoListPartecipanti = new ArrayList<>();
         this.ricette = new ArrayList<>();
-    
+    }
+
+    public SessioniInPresenza(String giorno, LocalDate data, LocalTime orario, java.time.LocalTime durata, String citta, String via, String cap, String attrezzatura, String descrizione, int id_Sessione) {
+        super(giorno, data, orario, durata, id_Sessione);
+        this.citta = citta;
+        this.via = via;
+        this.cap = cap;
+        this.attrezzatura = attrezzatura;
+        this.descrizione = descrizione;
+        this.corsoListPartecipanti = new ArrayList<>();
+        this.ricette = new ArrayList<>();
+    }
+    public String getDescrizione() {
+        return descrizione;
+    }
+
+    public void setDescrizione(String descrizione) {
+        this.descrizione = descrizione;
     }
 
     public String getCitta() {

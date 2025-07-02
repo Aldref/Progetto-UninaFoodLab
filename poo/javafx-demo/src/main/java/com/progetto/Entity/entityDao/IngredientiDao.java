@@ -11,26 +11,33 @@ import com.progetto.jdbc.SupportDb;
 public class IngredientiDao {
 
 public void memorizzaIngredienti(Ingredienti ingredienti) {
-        String query = "INSERT INTO INGREDIENTI (Nome, UnitaDiMisura) VALUES (?, ?)";
+        String query = "INSERT INTO ingrediente (Nome, UnitaDiMisura) VALUES (?, ?::unitadimisura)";
         Connection conn = null;
         PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
         SupportDb dbu = new SupportDb();
-        
         try {
             conn = ConnectionJavaDb.getConnection();
-            ps = conn.prepareStatement(query);
+            ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setString(1, ingredienti.getNome());
             ps.setString(2, ingredienti.getUnitaMisura());
             ps.executeUpdate();
+            generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                ingredienti.setIdIngrediente(generatedKeys.getInt(1));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
+            if (generatedKeys != null) {
+                try { generatedKeys.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 public void cancellaingrediente(Ingredienti ingredienti) {
-        String query = "DELETE FROM INGREDIENTI WHERE IdIngrediente= ?";
+        String query = "DELETE FROM ingrediente WHERE IdIngrediente= ?";
         Connection conn = null;
         PreparedStatement ps = null;
         SupportDb dbu = new SupportDb();
@@ -49,7 +56,7 @@ public void cancellaingrediente(Ingredienti ingredienti) {
 }
 
         public void modificaIngredienti(Ingredienti ingredienti) {
-        String query = "UPDATE INGREDIENTI SET Nome = ?, UnitaDiMisura = ? WHERE IdIngrediente = ?";
+        String query = "UPDATE ingrediente SET Nome = ?, UnitaDiMisura = ? WHERE IdIngrediente = ?";
         Connection conn = null;
         PreparedStatement ps = null;
         SupportDb dbu = new SupportDb();

@@ -88,4 +88,31 @@ public ArrayList<String> GrandezzeDiMisura() {
     }
     return UnitaDiMisura;
 }
+
+// Metodo per ottenere i valori dell'enum Giorno dal database
+public ArrayList<String> GiorniSettimanaEnum() {
+    ArrayList<String> giorni = new ArrayList<>();
+    SupportDb dbu = new SupportDb();
+    Connection conn = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    String query = "SELECT unnest(enum_range(NULL::Giorno )) AS valore";
+    try {
+        conn = ConnectionJavaDb.getConnection();
+        ps = conn.prepareStatement(query);
+        rs = ps.executeQuery();
+        while (rs.next()) {
+            giorni.add(rs.getString("valore"));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try {
+          dbu.closeAll(conn, ps, rs);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    return giorni;
+}
 }

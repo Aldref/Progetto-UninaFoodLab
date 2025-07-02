@@ -44,7 +44,7 @@ public class CardCorsoBoundary {
                                            chefName, chefExperience,
                                            cuisineTypeLabel1, cuisineTypeLabel2, maxPeople);
         controller.initialize();
-        setCourseImage("/immagini/corsi/esempio.png");
+        setCourseImage("/immagini/corso_default.png");
     }
 
     public void setCuisineTypes(String... types) {
@@ -96,7 +96,7 @@ public class CardCorsoBoundary {
         String cucina2 = tipiCucina.size() > 1 ? tipiCucina.get(1) : "";
         setCuisineTypes(cucina1, cucina2);
         // Immagine
-        String imagePath = corso.getUrl_Propic() != null && !corso.getUrl_Propic().isEmpty() ? corso.getUrl_Propic() : "/immagini/corsi/esempio.png";
+        String imagePath = corso.getUrl_Propic() != null && !corso.getUrl_Propic().isEmpty() ? corso.getUrl_Propic() : "/immagini/corso_default.png";
         setCourseImage(imagePath);
         // Nascondi il box delle frequenze aggiuntive: la frequenza è già mostrata sopra
         // frequencyListBox rimosso: nessun box da gestire

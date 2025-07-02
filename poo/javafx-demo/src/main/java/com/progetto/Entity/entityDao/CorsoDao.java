@@ -17,7 +17,7 @@ public class CorsoDao{
     
 
     public void  memorizzaCorsoERicavaId(Corso corso) {
-    String query = "INSERT INTO Corso (Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, MaxPersone, Prezzo, Propic) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    String query = "INSERT INTO Corso (Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, MaxPersone, Prezzo, Propic) VALUES (?, ?, ?, ?, ?::fds, ?, ?, ?)";
     SupportDb dbu = new SupportDb();
     Connection conn = null;
     PreparedStatement ps = null;
@@ -27,6 +27,16 @@ public class CorsoDao{
         conn = ConnectionJavaDb.getConnection();
         ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
+        System.out.println("[DEBUG] Inserimento corso:");
+        System.out.println("  Nome: " + corso.getNome());
+        System.out.println("  Descrizione: " + corso.getDescrizione());
+        System.out.println("  DataInizio: " + corso.getDataInizio());
+        System.out.println("  DataFine: " + corso.getDataFine());
+        System.out.println("  Frequenza: " + corso.getFrequenzaDelleSessioni());
+        System.out.println("  MaxPersone: " + corso.getMaxPersone());
+        System.out.println("  Prezzo: " + corso.getPrezzo());
+        System.out.println("  Propic: " + corso.getUrl_Propic());
+
         ps.setString(1, corso.getNome());
         ps.setString(2, corso.getDescrizione());
         ps.setDate(3, java.sql.Date.valueOf(corso.getDataInizio()));
@@ -35,14 +45,20 @@ public class CorsoDao{
         ps.setInt(6, corso.getMaxPersone());
         ps.setFloat(7, corso.getPrezzo());
         ps.setString(8, corso.getUrl_Propic());
-        ps.executeUpdate();
+        int rows = ps.executeUpdate();
+        System.out.println("[DEBUG] Righe inserite: " + rows);
 
         generatedKeys = ps.getGeneratedKeys();
         if (generatedKeys.next()) {
-            corso.setId_Corso(generatedKeys.getInt(1));
+            int id = generatedKeys.getInt(1);
+            corso.setId_Corso(id);
+            System.out.println("[DEBUG] Nuovo id corso: " + id);
+        } else {
+            System.out.println("[DEBUG] Nessun id generato!");
         }
         
     } catch (SQLException e) {
+        System.out.println("[DEBUG] Errore SQL inserimento corso: " + e.getMessage());
         e.printStackTrace();
     } finally {
         dbu.closeResultSet(generatedKeys);
@@ -120,7 +136,7 @@ public class CorsoDao{
     }
 
     public void aggiornaCorso(Corso corso) {
-        String query = "UPDATE Corso SET Nome = ?, Descrizione = ?, DataInizio = ?, DataFine = ?, FrequenzaDelleSessioni = ?, MaxPersone = ?, Prezzo = ?, Propic = ? WHERE id_Corso = ?";
+        String query = "UPDATE Corso SET Nome = ?, Descrizione = ?, DataInizio = ?, DataFine = ?, FrequenzaDelleSessioni = ?::fds, MaxPersone = ?, Prezzo = ?, Propic = ? WHERE idcorso = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;

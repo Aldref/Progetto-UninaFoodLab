@@ -24,8 +24,13 @@ abstract public class Sessione {
 
     }
 
+
     public Chef getChef() {
         return chef;
+    }
+
+    public void setChef(Chef chef) {
+        this.chef = chef;
     }
 
     public void setChefList(Chef chefList) {
