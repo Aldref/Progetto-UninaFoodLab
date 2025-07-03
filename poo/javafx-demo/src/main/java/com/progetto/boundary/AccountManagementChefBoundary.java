@@ -1,12 +1,20 @@
 package com.progetto.boundary;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.event.ActionEvent;
+import java.io.File;
+
 import com.progetto.controller.AccountManagementChefController;
 import com.progetto.utils.ImageClipUtils;
-import java.io.File;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 
 public class AccountManagementChefBoundary {
 
@@ -115,9 +123,25 @@ public class AccountManagementChefBoundary {
     
     public void setProfileImages(String propicPath) {
         if (propicPath != null && !propicPath.isEmpty()) {
-            File imgFile = new File(propicPath);
-            if (imgFile.exists()) {
-                javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
+            javafx.scene.image.Image img = null;
+            try {
+                if (propicPath.startsWith("file:")) {
+                    // Path assoluto o URL file
+                    img = new javafx.scene.image.Image(propicPath, 256, 256, true, true);
+                } else if (propicPath.startsWith("http") || propicPath.startsWith("jar:")) {
+                    // URL da risorse o da jar
+                    img = new javafx.scene.image.Image(propicPath, 256, 256, true, true);
+                } else {
+                    // Path relativo: sviluppo locale
+                    File imgFile = new File("src/main/resources/" + propicPath);
+                    if (imgFile.exists()) {
+                        img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
+                    }
+                }
+            } catch (Exception e) {
+                img = null;
+            }
+            if (img != null) {
                 if (userProfileImage != null) {
                     userProfileImage.setImage(img);
                     ImageClipUtils.setCircularClip(userProfileImage, 40);

@@ -1,11 +1,18 @@
 package com.progetto.controller;
 
-import javafx.stage.Window;
 import java.io.IOException;
 import java.time.LocalDate;
+
+import com.progetto.Entity.entityDao.ChefDao;
+import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
 import com.progetto.utils.SceneSwitcher;
 
+import javafx.stage.Window;
+
+
 public class RegisterController {
+    private final ChefDao chefDao = new ChefDao();
+    private final UtenteVisitatoreDao utenteVisitatoreDao = new UtenteVisitatoreDao();
 
     public String validaRegistrazione(
         String nome, String cognome, String email, String password, String confermaPassword,
@@ -78,22 +85,64 @@ public class RegisterController {
         return valid ? null : messaggioErrore.toString();
     }
 
-    public void registraUtente(
+    /**
+     * Registra un utente nel database in base al tipo selezionato.
+     * @return String messaggio di esito (null se tutto ok, altrimenti errore)
+     */
+    public String registraUtente(
         String nome, String cognome, String email, String password, String genere,
         String descrizione, String anniEsperienza, boolean utenteSelezionato,
         boolean chefSelezionato, LocalDate dataNascita
     ) {
-        // Qui puoi salvare l'utente nel database o altro
-        System.out.println("=== REGISTRAZIONE VALIDA ===");
-        System.out.println("Nome: " + nome);
-        System.out.println("Cognome: " + cognome);
-        System.out.println("Email: " + email);
-        System.out.println("Data Nascita: " + dataNascita);
-        System.out.println("Genere: " + genere);
-        System.out.println("Tipo: " + (chefSelezionato ? "Chef" : "Utente"));
+        if (chefSelezionato && utenteSelezionato) {
+            // Caso anomalo: entrambi selezionati
+            return "Seleziona solo un tipo di account.";
+        }
         if (chefSelezionato) {
-            System.out.println("Descrizione: " + descrizione);
-            System.out.println("Anni di esperienza: " + anniEsperienza);
+            // Registrazione Chef
+            try {
+                int anniExp = Integer.parseInt(anniEsperienza);
+                com.progetto.Entity.EntityDto.Chef chef = new com.progetto.Entity.EntityDto.Chef(
+                    nome, cognome, email, password, dataNascita, anniExp
+                );
+                chef.setDescrizione(descrizione);
+                chefDao.RegistrazioneUtente(chef);
+                return null; // Successo
+            } catch (NumberFormatException e) {
+                return "Errore: anni di esperienza non validi.";
+            } catch (Exception e) {
+                String msg = e.getMessage();
+                if (msg != null) {
+                    String msgLower = msg.toLowerCase();
+                    if (msgLower.contains("duplicate")) {
+                        return "Email già registrata come Chef.";
+                    }
+                    if (msgLower.contains("età stimata di inizio esperienza") || msgLower.contains("iniziare (18)")) {
+                        return "Gli anni di esperienza inseriti non sono compatibili con la tua età: puoi iniziare a lavorare come chef solo a partire dai 18 anni.";
+                    }
+                    if (msgLower.contains("esperienza") || msgLower.contains("trigger") || msgLower.contains("check")) {
+                        return "Gli anni di esperienza non possono superare l'età.";
+                    }
+                }
+                return "Errore durante la registrazione dello chef: " + (msg != null ? msg : "Errore sconosciuto");
+            }
+        } else if (utenteSelezionato) {
+            // Registrazione Utente Visitatore
+            try {
+                com.progetto.Entity.EntityDto.UtenteVisitatore utente = new com.progetto.Entity.EntityDto.UtenteVisitatore(
+                    nome, cognome, email, password, dataNascita
+                );
+                utenteVisitatoreDao.RegistrazioneUtente(utente);
+                return null; // Successo
+            } catch (Exception e) {
+                String msg = e.getMessage();
+                if (msg != null && msg.toLowerCase().contains("duplicate")) {
+                    return "Email già registrata come Utente.";
+                }
+                return "Errore durante la registrazione dell'utente: " + (msg != null ? msg : "Errore sconosciuto");
+            }
+        } else {
+            return "Tipo di account non selezionato.";
         }
     }
 

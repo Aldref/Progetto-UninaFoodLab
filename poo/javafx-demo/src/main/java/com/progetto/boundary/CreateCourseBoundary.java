@@ -49,6 +49,8 @@ public class CreateCourseBoundary {
     @FXML
     private ImageView courseImageView;
     @FXML
+    private ImageView chefProfileImage;
+    @FXML
     private Label chefNameLabel;
     @FXML
     private Button createButton;
@@ -240,10 +242,36 @@ public class CreateCourseBoundary {
         if (chefNameLabel != null && chef != null) {
             chefNameLabel.setText(chef.getNome() + " " + chef.getCognome());
         }
+        // Carica e mostra la propic rotonda come in HomepageChefBoundary
+        if (chef != null && chefProfileImage != null && chef.getUrl_Propic() != null && !chef.getUrl_Propic().isEmpty()) {
+            System.out.println("URL propic chef: " + chef.getUrl_Propic());
+            try {
+                java.io.File imgFile = new java.io.File("src/main/resources/" + chef.getUrl_Propic());
+                javafx.scene.image.Image img;
+                if (imgFile.exists()) {
+                    img = new javafx.scene.image.Image(imgFile.toURI().toString(), 80, 80, true, true);
+                } else {
+                    img = new javafx.scene.image.Image(chef.getUrl_Propic(), 80, 80, true, true);
+                }
+                chefProfileImage.setImage(img);
+                // Clip circolare
+                com.progetto.utils.ImageClipUtils.setCircularClip(chefProfileImage, 0);
+                System.out.println("Caricata immagine: " + chef.getUrl_Propic());
+                if (img.isError()) {
+                    System.out.println("Errore caricamento immagine: " + img.getException());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // Imposta dimensioni fisse e stile rotondo
+        chefProfileImage.setFitWidth(80);
+        chefProfileImage.setFitHeight(80);
+        chefProfileImage.setPreserveRatio(true);
         controller = new CreateCourseController(
             courseNameField, descriptionArea, startDatePicker, endDatePicker,
             frequencyComboBox, lessonTypeComboBox, maxParticipantsSpinner,
-            priceField, courseImageView, chefNameLabel, createButton,
+            priceField, courseImageView, chefProfileImage, chefNameLabel, createButton,
             presenceDetailsSection, onlineDetailsSection, dayOfWeekContainer, 
             presenceHourSpinner, presenceMinuteSpinner, durationField, 
             cityField, streetField, capField, recipesContainer, 

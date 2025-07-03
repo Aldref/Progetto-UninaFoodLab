@@ -1,20 +1,20 @@
 package com.progetto.controller;
 
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
-import javafx.scene.image.Image;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 
+import com.progetto.Entity.EntityDto.Chef;
+import com.progetto.Entity.entityDao.ChefDao;
 import com.progetto.boundary.AccountManagementChefBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
-import com.progetto.Entity.EntityDto.Chef;
-import com.progetto.Entity.entityDao.ChefDao;
+
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class AccountManagementChefController {
 
@@ -128,8 +128,15 @@ public class AccountManagementChefController {
             tempSelectedPhoto = selectedFile;
             tempAbsolutePhotoPath = absolutePath;
 
-            // Preview immediata: passa il path assoluto al boundary che si occupa del clip
-            boundary.setProfileImages(selectedFile.getAbsolutePath());
+            // Copia subito la foto nella destinazione finale per l'anteprima
+            try {
+                java.nio.file.Files.copy(selectedFile.toPath(), new File(absolutePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                // Mostra subito l'anteprima come sarà salvata (usando il path relativo)
+                boundary.setProfileImages(relativePath);
+            } catch (Exception e) {
+                boundary.showErrorMessage("Errore nel caricamento dell'immagine: " + e.getMessage());
+                return;
+            }
 
             // Imposta il path relativo su loggedChef (così viene salvato nel DB al salvataggio)
             loggedChef.setUrl_Propic(relativePath);

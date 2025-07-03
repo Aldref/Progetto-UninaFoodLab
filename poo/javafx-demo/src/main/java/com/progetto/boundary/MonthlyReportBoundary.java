@@ -1,25 +1,25 @@
 package com.progetto.boundary;
 
+import java.io.File;
+
+import com.progetto.Entity.EntityDto.Chef;
+import com.progetto.controller.MonthlyReportController;
+import com.progetto.utils.ImageClipUtils;
+import com.progetto.utils.SceneSwitcher;
+
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
-import javafx.event.ActionEvent;
-import com.progetto.controller.MonthlyReportController;
-import com.progetto.Entity.EntityDto.Chef;
-import com.progetto.boundary.LogoutDialogBoundary;
-import com.progetto.utils.SceneSwitcher;
-import javafx.stage.Stage;
-
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import java.io.File;
-import com.progetto.utils.ImageClipUtils;
+import javafx.stage.Stage;
 
 public class MonthlyReportBoundary {
 
@@ -128,8 +128,12 @@ public class MonthlyReportBoundary {
             if (propic != null && !propic.isEmpty()) {
                 File imgFile = new File("src/main/resources/" + propic);
                 if (imgFile.exists()) {
-                    Image img = new Image(imgFile.toURI().toString(), 80, 80, true, true);
+                    // Carica l'immagine alla massima risoluzione disponibile
+                    Image img = new Image(imgFile.toURI().toString(), 0, 0, true, true);
                     chefProfileImage.setImage(img);
+                    // Imposta le dimensioni dell'ImageView se necessario (esempio: 80x80)
+                    chefProfileImage.setFitWidth(80);
+                    chefProfileImage.setFitHeight(80);
                     ImageClipUtils.setCircularClip(chefProfileImage, 40);
                 }
             }

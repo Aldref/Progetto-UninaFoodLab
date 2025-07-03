@@ -1,14 +1,23 @@
 package com.progetto.boundary;
 
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
-import javafx.event.ActionEvent;
-import com.progetto.controller.RegisterController;
-
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import com.progetto.controller.RegisterController;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.VBox;
 
 public class RegisterBoundary implements Initializable {
 
@@ -73,6 +82,11 @@ public class RegisterBoundary implements Initializable {
         boolean chefSelezionato = radioChef.isSelected();
         var dataNascita = datePickerDataNascita.getValue();
 
+    
+        // Reset sempre il messaggio di errore prima di ogni tentativo
+        labelErrore.setText("");
+        labelErrore.setVisible(false);
+
         // Passa i dati al controller
         String errore = controller.validaRegistrazione(
             nome, cognome, email, password, confermaPassword, genere,
@@ -82,14 +96,21 @@ public class RegisterBoundary implements Initializable {
         if (errore != null) {
             labelErrore.setText(errore);
             labelErrore.setVisible(true);
-        } else {
+            return;
+        }
+
+        String esito = controller.registraUtente(
+            nome, cognome, email, password, genere, descrizione, anniEsperienza,
+            utenteSelezionato, chefSelezionato, dataNascita
+        );
+        if (esito == null) {
+            labelErrore.setText("");
             labelErrore.setVisible(false);
-            controller.registraUtente(
-                nome, cognome, email, password, genere, descrizione, anniEsperienza,
-                utenteSelezionato, chefSelezionato, dataNascita
-            );
             showSuccessMessage("Registrazione completata con successo!");
             onIndietroClick(event);
+        } else {
+            labelErrore.setText(esito);
+            labelErrore.setVisible(true);
         }
     }
 

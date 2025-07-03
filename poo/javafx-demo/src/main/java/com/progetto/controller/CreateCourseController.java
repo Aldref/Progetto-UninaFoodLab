@@ -68,6 +68,7 @@ public class CreateCourseController {
     private final ComboBox<String> frequencyComboBox, lessonTypeComboBox;
     private final Spinner<Integer> maxParticipantsSpinner;
     private final ImageView courseImageView;
+    private final ImageView chefProfileImageView;
     private final Label chefNameLabel;
     private final Button createButton;
     
@@ -111,7 +112,7 @@ public class CreateCourseController {
         DatePicker startDatePicker, DatePicker endDatePicker,
         ComboBox<String> frequencyComboBox, ComboBox<String> lessonTypeComboBox,
         Spinner<Integer> maxParticipantsSpinner, TextField priceField,
-        ImageView courseImageView, Label chefNameLabel, Button createButton,
+        ImageView courseImageView, ImageView chefProfileImageView, Label chefNameLabel, Button createButton,
         VBox presenceDetailsSection, VBox onlineDetailsSection,
         FlowPane dayOfWeekContainer, Spinner<Integer> presenceHourSpinner, 
         Spinner<Integer> presenceMinuteSpinner, TextField durationField,
@@ -131,6 +132,7 @@ public class CreateCourseController {
         this.maxParticipantsSpinner = maxParticipantsSpinner;
         this.priceField = priceField;
         this.courseImageView = courseImageView;
+        this.chefProfileImageView = chefProfileImageView;
         this.chefNameLabel = chefNameLabel;
         this.createButton = createButton;
         this.presenceDetailsSection = presenceDetailsSection;
@@ -166,8 +168,20 @@ public class CreateCourseController {
     }
 
     private void initializeData() {
-        // TODO: Sostituire con dati dal database
-        chefNameLabel.setText("Mario Rossi");
+        // Mostra nome e foto dello chef loggato
+        com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
+        if (chef != null && chefNameLabel != null) {
+            chefNameLabel.setText(chef.getNome() + " " + chef.getCognome());
+        }
+        if (chef != null && chefProfileImageView != null && chef.getUrl_Propic() != null && !chef.getUrl_Propic().isEmpty()) {
+            try {
+                javafx.scene.image.Image img = new javafx.scene.image.Image(chef.getUrl_Propic(), true);
+                chefProfileImageView.setImage(img);
+            } catch (Exception e) {
+                // In caso di errore, lascia l'immagine di default
+            }
+        }
+
         // Popola dropdown da database
         loadFrequencyOptions();
         loadLessonTypes();
