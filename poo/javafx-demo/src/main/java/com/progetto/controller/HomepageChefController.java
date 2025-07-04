@@ -150,6 +150,13 @@ public class HomepageChefController {
 
     private void updateCourseCards() {
         mainContentArea.getChildren().clear();
+        if (allCourseCards.isEmpty()) {
+            Label noCoursesLabel = new Label("Comincia creando il tuo primo corso!");
+            noCoursesLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: #888; -fx-font-weight: bold;");
+            mainContentArea.getChildren().add(noCoursesLabel);
+            pageLabel.setText("");
+            return;
+        }
         int start = currentPage * CARDS_PER_PAGE;
         int end = Math.min(start + CARDS_PER_PAGE, allCourseCards.size());
         for (int i = start; i < end; i++) {

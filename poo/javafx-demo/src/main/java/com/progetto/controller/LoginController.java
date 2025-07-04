@@ -49,7 +49,7 @@ public class LoginController {
                 return "Email o password errati.";
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            // TODO: handle exception appropriately (logging or user feedback)
             return "Errore interno. Riprova.";
         }
     }

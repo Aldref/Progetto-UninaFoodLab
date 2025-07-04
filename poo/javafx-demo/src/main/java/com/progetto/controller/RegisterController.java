@@ -3,8 +3,11 @@ package com.progetto.controller;
 import java.io.IOException;
 import java.time.LocalDate;
 
+
 import com.progetto.Entity.entityDao.ChefDao;
 import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
+import com.progetto.Entity.EntityDto.Chef;
+import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.utils.SceneSwitcher;
 
 import javafx.stage.Window;
@@ -77,8 +80,8 @@ public class RegisterController {
         }
 
         if (dataNascita != null &&
-            dataNascita.isAfter(java.time.LocalDate.now().minusYears(13))) {
-            messaggioErrore.append("• Devi avere almeno 13 anni per registrarti\n");
+            dataNascita.isAfter(java.time.LocalDate.now().minusYears(18))) {
+            messaggioErrore.append("• Devi avere almeno 18 anni per registrarti\n");
             valid = false;
         }
 
@@ -102,12 +105,12 @@ public class RegisterController {
             // Registrazione Chef
             try {
                 int anniExp = Integer.parseInt(anniEsperienza);
-                com.progetto.Entity.EntityDto.Chef chef = new com.progetto.Entity.EntityDto.Chef(
+                Chef chef = new Chef(
                     nome, cognome, email, password, dataNascita, anniExp
                 );
                 chef.setDescrizione(descrizione);
                 chefDao.RegistrazioneUtente(chef);
-                return null; // Successo
+                return null; 
             } catch (NumberFormatException e) {
                 return "Errore: anni di esperienza non validi.";
             } catch (Exception e) {
@@ -129,7 +132,7 @@ public class RegisterController {
         } else if (utenteSelezionato) {
             // Registrazione Utente Visitatore
             try {
-                com.progetto.Entity.EntityDto.UtenteVisitatore utente = new com.progetto.Entity.EntityDto.UtenteVisitatore(
+                UtenteVisitatore utente = new UtenteVisitatore(
                     nome, cognome, email, password, dataNascita
                 );
                 utenteVisitatoreDao.RegistrazioneUtente(utente);
@@ -150,7 +153,7 @@ public class RegisterController {
         try {
             SceneSwitcher.switchScene((javafx.stage.Stage) window, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
         } catch (IOException e) {
-            e.printStackTrace();
+            // TODO: handle exception appropriately (logging or user feedback)
         }
     }
 }

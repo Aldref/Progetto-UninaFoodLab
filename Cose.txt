@@ -296,7 +296,7 @@ EXECUTE FUNCTION verifica_unicita_email();
                 FROM Carta
                 WHERE UltimeQuattroCifre = NEW.UltimeQuattroCifre
                   AND DataScadenza = NEW.DataScadenza
-                  AND Circuito = NEW.Circuito::VARCHAR(50)
+                  AND Circuito = NEW.Circuito::Circuito
                   AND Intestatario = NEW.Intestatario
                   AND IdCarta != NEW.IdCarta
             ) THEN
@@ -305,7 +305,7 @@ EXECUTE FUNCTION verifica_unicita_email();
         END IF;
         RETURN NEW;
     END;
-    $$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_impedisci_dettagli_carta_duplicati
 BEFORE INSERT OR UPDATE ON Carta
@@ -751,15 +751,15 @@ RETURNS TRIGGER AS $$
 DECLARE
     orario_ora INTEGER;
     orario_minuti INTEGER;
-    durata_frazionaria NUMERIC;
-    fine_lezione NUMERIC;
+    durata_ore NUMERIC;
+    fine_lezione TIME;
 BEGIN
-    IF NEW.Durata <= 1 OR NEW.Durata >= 8 THEN
+    IF (EXTRACT(EPOCH FROM NEW.Durata)/3600) < 1 OR (EXTRACT(EPOCH FROM NEW.Durata)/3600) > 8 THEN
         RAISE EXCEPTION 'Durata deve essere maggiore di 1 e minore di 8';
     END IF;
 
-    orario_ora := FLOOR(NEW.Orario);
-    orario_minuti := ROUND((NEW.Orario - orario_ora) * 100);
+    orario_ora := EXTRACT(HOUR FROM NEW.Orario);
+    orario_minuti := EXTRACT(MINUTE FROM NEW.Orario);
 
     IF orario_ora >= 23 THEN
         RAISE EXCEPTION 'La parte intera dell''orario deve essere minore di 23';
@@ -767,11 +767,10 @@ BEGIN
         RAISE EXCEPTION 'La parte decimale dell''orario deve essere minore di 60';
     END IF;
 
-    durata_frazionaria := NEW.Durata;
-    fine_lezione := NEW.Orario + durata_frazionaria;
+    fine_lezione := NEW.Orario + NEW.Durata;
 
-    IF fine_lezione > 23 THEN
-        RAISE EXCEPTION 'L''orario di fine lezione non può superare le 23';
+    IF fine_lezione > TIME '23:59:59' THEN
+        RAISE EXCEPTION 'L''orario di fine lezione non può superare le 23:59';
     END IF;
 
     RETURN NEW;

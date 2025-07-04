@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class CreateCourseBoundary {
+    // Track controls for each hybrid session for robust validation
+    private final List<Map<String, Control>> hybridSessionControlsList = new ArrayList<>();
 
     @FXML
     private TextField courseNameField;
@@ -99,35 +101,16 @@ public class CreateCourseBoundary {
     private CreateCourseController controller;
     
     // === DATI PER LA MODALITÀ IBRIDA ===
-    private final List<HybridSessionData> hybridSessions = new ArrayList<>();
+    // Ora contiene SessioniInPresenza o SessioneOnline
+    private final List<com.progetto.Entity.EntityDto.Sessione> hybridSessions = new ArrayList<>();
 
     // === DATI PER LE SESSIONI TELEMATICA PURE ===
-    public static class OnlineSessionData {
-        public DatePicker datePicker;
-        public Spinner<Integer> hourSpinner;
-        public Spinner<Integer> minuteSpinner;
-        public TextField durationField;
-        public ComboBox<String> applicationCombo;
-        public TextField meetingCodeField;
-
-        public OnlineSessionData(DatePicker datePicker, Spinner<Integer> hourSpinner, Spinner<Integer> minuteSpinner,
-                                 TextField durationField, ComboBox<String> applicationCombo, TextField meetingCodeField) {
-            this.datePicker = datePicker;
-            this.hourSpinner = hourSpinner;
-            this.minuteSpinner = minuteSpinner;
-            this.durationField = durationField;
-            this.applicationCombo = applicationCombo;
-            this.meetingCodeField = meetingCodeField;
-        }
-    }
     /**
-     * Restituisce la lista delle sessioni telematiche pure per "Telematica" (non ibride)
+     * Restituisce la lista delle sessioni telematiche pure per "Telematica" (non ibride) come DTO SessioneOnline
      */
-    public List<OnlineSessionData> getSessioniTelematiche() {
-        List<OnlineSessionData> result = new ArrayList<>();
-        // Solo se la tipologia è "Telematica" e i campi sono compilati
+    public List<com.progetto.Entity.EntityDto.SessioneOnline> getSessioniTelematiche() {
+        List<com.progetto.Entity.EntityDto.SessioneOnline> result = new ArrayList<>();
         if ("Telematica".equals(lessonTypeComboBox.getValue())) {
-            // Calcola le date delle sessioni telematiche in base ai giorni selezionati e intervallo date
             List<String> giorniSelezionati = new ArrayList<>();
             for (javafx.scene.Node node : onlineDayOfWeekContainer.getChildren()) {
                 if (node instanceof CheckBox && ((CheckBox) node).isSelected()) {
@@ -137,7 +120,6 @@ public class CreateCourseBoundary {
             LocalDate inizio = startDatePicker.getValue();
             LocalDate fine = endDatePicker.getValue();
             if (inizio != null && fine != null && !giorniSelezionati.isEmpty()) {
-                // Per ogni giorno selezionato, calcola tutte le date tra inizio e fine
                 for (String giorno : giorniSelezionati) {
                     java.time.DayOfWeek target = null;
                     switch (giorno.toLowerCase()) {
@@ -151,23 +133,23 @@ public class CreateCourseBoundary {
                     }
                     if (target == null) continue;
                     LocalDate current = inizio;
-                    // Trova il primo giorno corrispondente
                     while (current.getDayOfWeek() != target) {
                         current = current.plusDays(1);
                         if (current.isAfter(fine)) break;
                     }
-                    // Aggiungi tutte le date corrispondenti
                     while (!current.isAfter(fine)) {
-                        // Crea una OnlineSessionData per ogni data
-                        OnlineSessionData data = new OnlineSessionData(
-                            new DatePicker(current),
-                            onlineHourSpinner,
-                            onlineMinuteSpinner,
-                            onlineDurationField,
-                            applicationComboBox,
-                            meetingCodeField
+                        // Crea una SessioneOnline per ogni data
+                        com.progetto.Entity.EntityDto.SessioneOnline sessione = new com.progetto.Entity.EntityDto.SessioneOnline(
+                            giorno,
+                            current,
+                            java.time.LocalTime.of(onlineHourSpinner.getValue(), onlineMinuteSpinner.getValue()),
+                            java.time.LocalTime.of(Integer.parseInt(onlineDurationField.getText().isEmpty() ? "1" : onlineDurationField.getText()), 0),
+                            applicationComboBox.getValue() != null ? applicationComboBox.getValue() : "",
+                            meetingCodeField.getText() != null ? meetingCodeField.getText() : "",
+                            "",
+                            -1
                         );
-                        result.add(data);
+                        result.add(sessione);
                         current = current.plusWeeks(1);
                     }
                 }
@@ -181,59 +163,7 @@ public class CreateCourseBoundary {
     private final ObservableList<Ricetta> genericRecipes = FXCollections.observableArrayList();
     private List<String> giorniSettimanaEnum = new ArrayList<>();
     private List<String> unitaDiMisuraEnum = new ArrayList<>();
-    // Inner class per memorizzare i dati di una sessione ibrida
-    public static class HybridSessionData {
-        public ComboBox<String> typeCombo;
-        public DatePicker datePicker;
-        public Spinner<Integer> hourSpinner;
-        public Spinner<Integer> minuteSpinner;
-        public TextField durationField;
-        public VBox detailsContainer;
-        
-        // Campi specifici per sessioni in presenza
-        public TextField cityField;
-        public TextField streetField;
-        public TextField capField;
-        public List<Ricetta> ricette = new ArrayList<>();
-        
-        // Campi specifici per sessioni online
-        public ComboBox<String> applicationCombo;
-        public TextField meetingCodeField;
-        
-        public HybridSessionData() {}
-        
-        public boolean isValid() {
-            return typeCombo.getValue() != null && 
-                   datePicker.getValue() != null &&
-                   durationField.getText() != null && !durationField.getText().trim().isEmpty() &&
-                   durationField.getText().matches("\\d+");
-        }
-        
-        public boolean isPresenceSessionValid() {
-            if (!"In presenza".equals(typeCombo.getValue())) return true;
-            return cityField != null && cityField.getText() != null && !cityField.getText().trim().isEmpty() &&
-                   streetField != null && streetField.getText() != null && !streetField.getText().trim().isEmpty() &&
-                   capField != null && capField.getText() != null && capField.getText().matches("\\d{5}") &&
-                   !ricette.isEmpty() && ricette.stream().anyMatch(this::isRicettaValid);
-        }
-        
-        public boolean isOnlineSessionValid() {
-            if (!"Telematica".equals(typeCombo.getValue())) return true;
-            return applicationCombo != null && applicationCombo.getValue() != null &&
-                   meetingCodeField != null && meetingCodeField.getText() != null && !meetingCodeField.getText().trim().isEmpty();
-        }
-        
-        private boolean isRicettaValid(Ricetta ricetta) {
-            if (ricetta.getNome() == null || ricetta.getNome().trim().isEmpty()) return false;
-            List<Ingredienti> ings = ricetta.getIngredientiRicetta();
-            return ings != null && !ings.isEmpty() && 
-                   ings.stream().allMatch(ing -> 
-                       ing.getNome() != null && !ing.getNome().trim().isEmpty() && 
-                       ing.getQuantita() > 0 && 
-                       ing.getUnitaMisura() != null && !ing.getUnitaMisura().trim().isEmpty()
-                   );
-        }
-    }
+    // RIMOSSA HybridSessionData: ora si usano SessioniInPresenza e SessioneOnline
 
     @FXML
     public void initialize() {
@@ -304,6 +234,7 @@ public class CreateCourseBoundary {
     public void setupHybridUI(String frequenza, LocalDate inizio, LocalDate fine) {
         hybridDaysContainer.getChildren().clear();
         hybridSessions.clear();
+        hybridSessionControlsList.clear();
 
         if (frequenza == null || inizio == null || fine == null) {
             showHybridErrorMessage("Compila prima tutte le informazioni di base.");
@@ -330,9 +261,11 @@ public class CreateCourseBoundary {
 
         for (int i = 0; i < numSessioni; i++) {
             final int sessionIndex = i;
-            HybridSessionData sessionData = new HybridSessionData();
             VBox sessionBox = new VBox(10);
             sessionBox.getStyleClass().add("hybrid-session-container");
+
+            // Map to track controls for this session
+            Map<String, Control> sessionControls = new HashMap<>();
 
             // Selettore giorno della settimana
             HBox dayBox = new HBox(10);
@@ -343,6 +276,8 @@ public class CreateCourseBoundary {
             dayBox.getChildren().addAll(dayLabel, dayCombo);
             dayCombos.add(dayCombo);
 
+            sessionControls.put("dayCombo", dayCombo);
+
             // Imposta la cell factory custom per disabilitare i giorni già scelti
             dayCombo.setCellFactory(lv -> new javafx.scene.control.ListCell<String>() {
                 @Override
@@ -352,7 +287,6 @@ public class CreateCourseBoundary {
                     if (empty || item == null) {
                         setDisable(false);
                     } else {
-                        // Disabilita se il giorno è già selezionato in un altro ComboBox
                         boolean disable = false;
                         for (ComboBox<String> otherCombo : dayCombos) {
                             if (otherCombo != dayCombo && item.equals(otherCombo.getValue())) {
@@ -370,86 +304,130 @@ public class CreateCourseBoundary {
                 if (newVal != null) {
                     for (ComboBox<String> otherCombo : dayCombos) {
                         if (otherCombo != dayCombo && newVal.equals(otherCombo.getValue())) {
-                            // Giorno già scelto altrove: resetta la selezione e mostra feedback
                             dayCombo.setValue(null);
                             showHybridErrorMessage("Ogni giorno può essere scelto solo una volta tra tutte le sessioni.");
                             return;
                         }
                     }
                 }
-                // Aggiorna le opzioni disponibili in tutti i ComboBox
                 updateHybridDayCombos(dayCombos);
             });
+
             HBox typeBox = new HBox(10);
             Label typeLabel = new Label("Tipo sessione:");
             ComboBox<String> typeCombo = new ComboBox<>();
             typeCombo.getItems().addAll("In presenza", "Telematica");
             typeCombo.setPromptText("Tipo lezione");
-            sessionData.typeCombo = typeCombo;
             typeBox.getChildren().addAll(typeLabel, typeCombo);
 
+            sessionControls.put("typeCombo", typeCombo);
+
+            // Orario
+            HBox timeBox = new HBox(10);
+            Label timeLabel = new Label("Orario:");
+            Spinner<Integer> hourSpinner = new Spinner<>(6, 23, 18);
+            setupTimeSpinnerFormatter(hourSpinner, false);
+            Label colonLabel = new Label(":");
+            Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 0, 15);
+            setupTimeSpinnerFormatter(minuteSpinner, true);
+            timeBox.getChildren().addAll(timeLabel, hourSpinner, colonLabel, minuteSpinner);
+
+            sessionControls.put("hourSpinner", hourSpinner);
+            sessionControls.put("minuteSpinner", minuteSpinner);
+
+            // Durata (in ore, 1-8)
+            HBox durationBox = new HBox(10);
+            Label durationLabel = new Label("Durata (ore):");
+            TextField durationField = new TextField();
+            durationField.setPromptText("es. 2");
+            addTextValidator(durationField, "[^\\d]", 1);
+            durationBox.getChildren().addAll(durationLabel, durationField);
+
+            sessionControls.put("durationField", durationField);
+
             VBox detailsContainer = new VBox(10);
-            sessionData.detailsContainer = detailsContainer;
+
+            // --- PATCH: Ricette per ogni sessione ibrida in presenza (tutte le date del giorno selezionato) ---
+            VBox recipesSectionBox = new VBox(10);
+            recipesSectionBox.getStyleClass().add("recipes-section");
+            recipesSectionBox.setVisible(false);
+
+            Runnable updateHybridSessionDetails = () -> {
+                detailsContainer.getChildren().clear();
+                detailsContainer.getChildren().addAll(timeBox, durationBox);
+                recipesSectionBox.getChildren().clear();
+                recipesSectionBox.setVisible(false);
+                if ("In presenza".equals(typeCombo.getValue()) && dayCombo.getValue() != null) {
+                    VBox presenceDetails = createPresenceDetails();
+                    detailsContainer.getChildren().add(presenceDetails);
+                    // Find and store city, street, cap fields
+                    for (javafx.scene.Node hbox : presenceDetails.getChildren()) {
+                        if (hbox instanceof HBox) {
+                            List<javafx.scene.Node> fields = ((HBox) hbox).getChildren();
+                            if (fields.size() == 2 && fields.get(1) instanceof TextField) {
+                                String label = ((Label) fields.get(0)).getText().toLowerCase();
+                                if (label.contains("citt")) sessionControls.put("cityField", (TextField) fields.get(1));
+                                else if (label.contains("via")) sessionControls.put("streetField", (TextField) fields.get(1));
+                                else if (label.contains("cap")) sessionControls.put("capField", (TextField) fields.get(1));
+                            }
+                        }
+                    }
+                    // Calcola tutte le date per il giorno selezionato
+                    String giorno = dayCombo.getValue();
+                    LocalDate inizioCorso = startDatePicker.getValue();
+                    LocalDate fineCorso = endDatePicker.getValue();
+                    List<LocalDate> possibiliDate = calcolaDateSessioniPresenzaHybrid(giorno, inizioCorso, fineCorso);
+                    if (!possibiliDate.isEmpty()) {
+                        for (LocalDate data : possibiliDate) {
+                            if (!sessionePresenzaRicette.containsKey(data)) {
+                                ObservableList<Ricetta> ricette = FXCollections.observableArrayList();
+                                Ricetta ricettaIniziale = new Ricetta("");
+                                ricettaIniziale.setIngredientiRicetta(new ArrayList<>());
+                                ricettaIniziale.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
+                                ricette.add(ricettaIniziale);
+                                sessionePresenzaRicette.put(data, ricette);
+                            }
+                            VBox sessionRecipeBox = createSessionRecipeBox(data);
+                            sessionRecipeBox.setId("recipes-" + data.toString());
+                            recipesSectionBox.getChildren().add(sessionRecipeBox);
+                        }
+                        recipesSectionBox.setVisible(true);
+                    }
+                } else if ("Telematica".equals(typeCombo.getValue())) {
+                    VBox onlineDetails = createOnlineDetails();
+                    detailsContainer.getChildren().add(onlineDetails);
+                    // Find and store applicationComboBox and meetingCodeField
+                    for (javafx.scene.Node hbox : onlineDetails.getChildren()) {
+                        if (hbox instanceof HBox) {
+                            List<javafx.scene.Node> fields = ((HBox) hbox).getChildren();
+                            if (fields.size() == 2) {
+                                if (fields.get(1) instanceof ComboBox) sessionControls.put("applicationComboBox", (ComboBox<?>) fields.get(1));
+                                else if (fields.get(1) instanceof TextField) {
+                                    String label = ((Label) fields.get(0)).getText().toLowerCase();
+                                    if (label.contains("codice")) sessionControls.put("meetingCodeField", (TextField) fields.get(1));
+                                }
+                            }
+                        }
+                    }
+                }
+            };
 
             // Listener per mostrare i dettagli in base al tipo e giorno
             typeCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-                detailsContainer.getChildren().clear();
-                if ("In presenza".equals(newVal) && dayCombo.getValue() != null) {
-                    detailsContainer.getChildren().add(createPresenceDetails(sessionData));
-                    // Calcola tutte le date di quel giorno tra inizio e fine
-                    List<LocalDate> dateSessioni = calcolaDateSessioniPresenzaHybrid(dayCombo.getValue(), inizio, fine);
-                    VBox ricetteBox = new VBox(8);
-                    for (LocalDate data : dateSessioni) {
-                        VBox ricettaSessioneBox = new VBox(5);
-                        Label dataLabel = new Label("Ricette per " + data.toString());
-                        ricettaSessioneBox.getChildren().add(dataLabel);
-                        Ricetta ricettaIniziale = new Ricetta("");
-                        ricettaIniziale.setIngredientiRicetta(new ArrayList<>());
-                        ricettaIniziale.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
-                        sessionData.ricette.add(ricettaIniziale);
-                        VBox recipeBox = createRecipeBoxForHybrid(ricettaIniziale, sessionData, ricettaSessioneBox);
-                        ricettaSessioneBox.getChildren().add(recipeBox);
-                        ricetteBox.getChildren().add(ricettaSessioneBox);
-                    }
-                    detailsContainer.getChildren().add(ricetteBox);
-                } else if ("Telematica".equals(newVal)) {
-                    detailsContainer.getChildren().add(createOnlineDetails(sessionData));
-                }
+                updateHybridSessionDetails.run();
                 notifyControllerOfChange();
             });
 
-            // Aggiorna dettagli se cambia giorno
+            // Listener per mostrare la sezione ricette quando si seleziona il giorno
             dayCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-                if ("In presenza".equals(typeCombo.getValue())) {
-                    detailsContainer.getChildren().clear();
-                    sessionData.ricette.clear();
-                    detailsContainer.getChildren().add(createPresenceDetails(sessionData));
-                    if (newVal != null) {
-                        List<LocalDate> dateSessioni = calcolaDateSessioniPresenzaHybrid(newVal, inizio, fine);
-                        VBox ricetteBox = new VBox(8);
-                        for (LocalDate data : dateSessioni) {
-                            VBox ricettaSessioneBox = new VBox(5);
-                            Label dataLabel = new Label("Ricette per " + data.toString());
-                            ricettaSessioneBox.getChildren().add(dataLabel);
-                            Ricetta ricettaIniziale = new Ricetta("");
-                            ricettaIniziale.setIngredientiRicetta(new ArrayList<>());
-                            ricettaIniziale.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
-                            sessionData.ricette.add(ricettaIniziale);
-                            VBox recipeBox = createRecipeBoxForHybrid(ricettaIniziale, sessionData, ricettaSessioneBox);
-                            ricettaSessioneBox.getChildren().add(recipeBox);
-                            ricetteBox.getChildren().add(ricettaSessioneBox);
-                        }
-                        detailsContainer.getChildren().add(ricetteBox);
-                    }
-                }
-                // Aggiorna le opzioni disponibili negli altri ComboBox giorno
-                updateHybridDayCombos(dayCombos);
-                notifyControllerOfChange();
+                updateHybridSessionDetails.run();
             });
 
-            sessionBox.getChildren().addAll(dayBox, typeBox, detailsContainer);
+            sessionBox.getChildren().addAll(dayBox, typeBox, detailsContainer, recipesSectionBox);
             hybridDaysContainer.getChildren().add(sessionBox);
-            hybridSessions.add(sessionData);
+
+            // Add this session's controls map to the list
+            hybridSessionControlsList.add(sessionControls);
         }
 
 
@@ -545,16 +523,14 @@ public class CreateCourseBoundary {
     public void createHybridUI(int numSessioni) {
         hybridDaysContainer.getChildren().clear();
         hybridSessions.clear();
-        
+
         Label titleLabel = new Label("Configura le " + numSessioni + " sessioni del corso:");
         titleLabel.getStyleClass().add("section-title");
         hybridDaysContainer.getChildren().add(titleLabel);
-        
+
         // Crea un'interfaccia per ogni sessione
         for (int i = 0; i < numSessioni; i++) {
-            HybridSessionData sessionData = new HybridSessionData();
-            VBox sessionBox = createHybridSessionBox(i, sessionData);
-            hybridSessions.add(sessionData);
+            VBox sessionBox = createHybridSessionBox(i);
             hybridDaysContainer.getChildren().add(sessionBox);
         }
     }
@@ -582,29 +558,27 @@ public class CreateCourseBoundary {
     /**
      * Crea il box per configurare una singola sessione ibrida
      */
-    private VBox createHybridSessionBox(int sessionIndex, HybridSessionData sessionData) {
+    private VBox createHybridSessionBox(int sessionIndex) {
         VBox sessionBox = new VBox(15);
         sessionBox.getStyleClass().add("hybrid-session-container");
-        
+
         // Titolo della sessione
         Label sessionTitle = new Label("Sessione " + (sessionIndex + 1));
         sessionTitle.getStyleClass().add("session-title");
-        
+
         // Tipo di sessione (In presenza / Telematica)
         HBox typeBox = new HBox(10);
         Label typeLabel = new Label("Tipo sessione:");
         ComboBox<String> typeCombo = new ComboBox<>();
         typeCombo.getItems().addAll("In presenza", "Telematica");
         typeCombo.setPromptText("Seleziona tipo");
-        sessionData.typeCombo = typeCombo;
         typeBox.getChildren().addAll(typeLabel, typeCombo);
-        
+
         // Data della sessione
         HBox dateBox = new HBox(10);
         Label dateLabel = new Label("Data:");
         DatePicker datePicker = new DatePicker();
         datePicker.setPromptText("Seleziona data");
-        sessionData.datePicker = datePicker;
         // Limita le date al range del corso
         datePicker.setDayCellFactory(picker -> new DateCell() {
             @Override
@@ -617,61 +591,172 @@ public class CreateCourseBoundary {
             }
         });
         dateBox.getChildren().addAll(dateLabel, datePicker);
-        
-        // Orario
-        HBox timeBox = new HBox(10);
-        Label timeLabel = new Label("Orario:");
-        Spinner<Integer> hourSpinner = new Spinner<>(6, 23, 18);
-        setupTimeSpinnerFormatter(hourSpinner, false);
-        Label colonLabel = new Label(":");
-        Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 0, 15);
-        setupTimeSpinnerFormatter(minuteSpinner, true);
-        sessionData.hourSpinner = hourSpinner;
-        sessionData.minuteSpinner = minuteSpinner;
-        timeBox.getChildren().addAll(timeLabel, hourSpinner, colonLabel, minuteSpinner);
-        
-        // Durata
-        HBox durationBox = new HBox(10);
-        Label durationLabel = new Label("Durata (minuti):");
-        TextField durationField = new TextField();
-        durationField.setPromptText("es. 120");
-        addTextValidator(durationField, "[^\\d]", 3);
-        sessionData.durationField = durationField;
-        durationBox.getChildren().addAll(durationLabel, durationField);
-        
+
         // Container per dettagli specifici (presenza o telematica)
         VBox detailsContainer = new VBox(10);
-        sessionData.detailsContainer = detailsContainer;
-        
+
+        // Container per la sezione ricette di questa sessione (solo per "In presenza")
+        VBox recipesSectionBox = new VBox(10);
+        recipesSectionBox.getStyleClass().add("recipes-section");
+
         // Listener per mostrare campi specifici in base al tipo
         typeCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
             detailsContainer.getChildren().clear();
+            recipesSectionBox.getChildren().clear();
+            // Orario
+            HBox timeBox = new HBox(10);
+            Label timeLabel = new Label("Orario:");
+            Spinner<Integer> hourSpinner = new Spinner<>(6, 23, 18);
+            setupTimeSpinnerFormatter(hourSpinner, false);
+            Label colonLabel = new Label(":");
+            Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 0, 15);
+            setupTimeSpinnerFormatter(minuteSpinner, true);
+            timeBox.getChildren().addAll(timeLabel, hourSpinner, colonLabel, minuteSpinner);
+
+            // Durata
+            HBox durationBox = new HBox(10);
+            Label durationLabel = new Label("Durata (minuti):");
+            TextField durationField = new TextField();
+            durationField.setPromptText("es. 120");
+            addTextValidator(durationField, "[^\\d]", 3);
+            durationField.textProperty().addListener((obs2, oldVal2, newVal2) -> notifyControllerOfChange());
+            durationBox.getChildren().addAll(durationLabel, durationField);
+
+            detailsContainer.getChildren().addAll(timeBox, durationBox);
+
             if ("In presenza".equals(newVal)) {
-                VBox presenceDetails = createPresenceDetails(sessionData);
-                VBox recipesSection = createRecipesSection(sessionIndex, sessionData);
-                detailsContainer.getChildren().addAll(presenceDetails, recipesSection);
+                VBox presenceDetails = createPresenceDetails();
+                // Aggiungi listener a tutti i campi dinamici della presenza
+                for (javafx.scene.Node node : presenceDetails.getChildren()) {
+                    if (node instanceof HBox) {
+                        HBox hbox = (HBox) node;
+                        for (javafx.scene.Node fieldNode : hbox.getChildren()) {
+                            if (fieldNode instanceof TextField) {
+                                ((TextField) fieldNode).textProperty().addListener((o, ov, nv) -> notifyControllerOfChange());
+                            }
+                        }
+                    }
+                }
+                detailsContainer.getChildren().addAll(presenceDetails);
+
+                // Listener per la data: mostra la sezione ricette per questa sessione
+                datePicker.valueProperty().addListener((o, oldDate, newDate) -> {
+                    if (oldDate != null) {
+                        // Rimuovi la sezione ricette per la vecchia data
+                        recipesContainer.getChildren().removeIf(node2 -> node2.getId() != null && node2.getId().equals("recipes-" + oldDate.toString()));
+                        sessionePresenzaRicette.remove(oldDate);
+                    }
+                    if (newDate != null) {
+                        // Se non esiste già una lista di ricette per questa data, creala
+                        if (!sessionePresenzaRicette.containsKey(newDate)) {
+                            ObservableList<Ricetta> ricette = FXCollections.observableArrayList();
+                            Ricetta ricettaIniziale = new Ricetta("");
+                            ricettaIniziale.setIngredientiRicetta(new ArrayList<>());
+                            ricettaIniziale.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
+                            ricette.add(ricettaIniziale);
+                            sessionePresenzaRicette.put(newDate, ricette);
+                        }
+                        // Crea o aggiorna la sezione ricette per questa data
+                        VBox sessionRecipeBox = createSessionRecipeBox(newDate);
+                        sessionRecipeBox.setId("recipes-" + newDate.toString());
+                        // Rimuovi eventuale sezione già presente per questa data
+                        recipesContainer.getChildren().removeIf(node2 -> node2.getId() != null && node2.getId().equals("recipes-" + newDate.toString()));
+                        recipesContainer.getChildren().add(sessionRecipeBox);
+                    }
+                });
             } else if ("Telematica".equals(newVal)) {
-                VBox onlineDetails = createOnlineDetails(sessionData);
+                VBox onlineDetails = createOnlineDetails();
+                // Aggiungi listener a tutti i campi dinamici della telematica
+                for (javafx.scene.Node node : onlineDetails.getChildren()) {
+                    if (node instanceof HBox) {
+                        HBox hbox = (HBox) node;
+                        for (javafx.scene.Node fieldNode : hbox.getChildren()) {
+                            if (fieldNode instanceof TextField) {
+                                ((TextField) fieldNode).textProperty().addListener((o, ov, nv) -> notifyControllerOfChange());
+                            } else if (fieldNode instanceof ComboBox) {
+                                ((ComboBox<?>) fieldNode).valueProperty().addListener((o, ov, nv) -> notifyControllerOfChange());
+                            }
+                        }
+                    }
+                }
                 detailsContainer.getChildren().add(onlineDetails);
+                // Se si cambia da "In presenza" a "Telematica", rimuovi la sezione ricette se presente
+                datePicker.valueProperty().addListener((o, oldDate, newDate) -> {
+                    if (oldDate != null) {
+                        recipesContainer.getChildren().removeIf(node -> node.getId() != null && node.getId().equals("recipes-" + oldDate.toString()));
+                        sessionePresenzaRicette.remove(oldDate);
+                    }
+                    if (newDate != null) {
+                        recipesContainer.getChildren().removeIf(node -> node.getId() != null && node.getId().equals("recipes-" + newDate.toString()));
+                        sessionePresenzaRicette.remove(newDate);
+                    }
+                });
+            }
+            notifyControllerOfChange();
+
+            detailsContainer.getChildren().addAll(timeBox, durationBox);
+
+            if ("In presenza".equals(newVal)) {
+                VBox presenceDetails = createPresenceDetails();
+                detailsContainer.getChildren().addAll(presenceDetails);
+
+                // Listener per la data: mostra la sezione ricette per questa sessione
+                datePicker.valueProperty().addListener((o, oldDate, newDate) -> {
+                    if (oldDate != null) {
+                        // Rimuovi la sezione ricette per la vecchia data
+                        recipesContainer.getChildren().removeIf(node -> node.getId() != null && node.getId().equals("recipes-" + oldDate.toString()));
+                        sessionePresenzaRicette.remove(oldDate);
+                    }
+                    if (newDate != null) {
+                        // Se non esiste già una lista di ricette per questa data, creala
+                        if (!sessionePresenzaRicette.containsKey(newDate)) {
+                            ObservableList<Ricetta> ricette = FXCollections.observableArrayList();
+                            Ricetta ricettaIniziale = new Ricetta("");
+                            ricettaIniziale.setIngredientiRicetta(new ArrayList<>());
+                            ricettaIniziale.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
+                            ricette.add(ricettaIniziale);
+                            sessionePresenzaRicette.put(newDate, ricette);
+                        }
+                        // Crea o aggiorna la sezione ricette per questa data
+                        VBox sessionRecipeBox = createSessionRecipeBox(newDate);
+                        sessionRecipeBox.setId("recipes-" + newDate.toString());
+                        // Rimuovi eventuale sezione già presente per questa data
+                        recipesContainer.getChildren().removeIf(node -> node.getId() != null && node.getId().equals("recipes-" + newDate.toString()));
+                        recipesContainer.getChildren().add(sessionRecipeBox);
+                    }
+                });
+            } else if ("Telematica".equals(newVal)) {
+                VBox onlineDetails = createOnlineDetails();
+                detailsContainer.getChildren().add(onlineDetails);
+                // Se si cambia da "In presenza" a "Telematica", rimuovi la sezione ricette se presente
+                datePicker.valueProperty().addListener((o, oldDate, newDate) -> {
+                    if (oldDate != null) {
+                        recipesContainer.getChildren().removeIf(node -> node.getId() != null && node.getId().equals("recipes-" + oldDate.toString()));
+                        sessionePresenzaRicette.remove(oldDate);
+                    }
+                    if (newDate != null) {
+                        recipesContainer.getChildren().removeIf(node -> node.getId() != null && node.getId().equals("recipes-" + newDate.toString()));
+                        sessionePresenzaRicette.remove(newDate);
+                    }
+                });
             }
             notifyControllerOfChange();
         });
-        
+
         // Listener per aggiornare i dati della sessione e notificare il controller
         datePicker.valueProperty().addListener((obs, oldVal, newVal) -> notifyControllerOfChange());
-        hourSpinner.valueProperty().addListener((obs, oldVal, newVal) -> notifyControllerOfChange());
-        minuteSpinner.valueProperty().addListener((obs, oldVal, newVal) -> notifyControllerOfChange());
-        sessionBox.getChildren().addAll(sessionTitle, typeBox, dateBox, timeBox, durationBox, detailsContainer);
+
+        sessionBox.getChildren().addAll(sessionTitle, typeBox, dateBox, detailsContainer);
         return sessionBox;
     }
     
     /**
      * Crea i dettagli specifici per sessioni in presenza
      */
-    private VBox createPresenceDetails(HybridSessionData sessionData) {
+    private VBox createPresenceDetails() {
         VBox presenceBox = new VBox(10);
         presenceBox.getStyleClass().add("presence-details");
-        
+
         // Città
         HBox cityBox = new HBox(10);
         Label cityLabel = new Label("Città:");
@@ -682,18 +767,16 @@ public class CreateCourseBoundary {
             if (!filtered.equals(newVal)) cityField.setText(filtered);
             notifyControllerOfChange();
         });
-        sessionData.cityField = cityField;
         cityBox.getChildren().addAll(cityLabel, cityField);
-        
+
         // Via
         HBox streetBox = new HBox(10);
         Label streetLabel = new Label("Via:");
         TextField streetField = new TextField();
         streetField.setPromptText("es. Via Roma 123");
         streetField.textProperty().addListener((obs, oldVal, newVal) -> notifyControllerOfChange());
-        sessionData.streetField = streetField;
         streetBox.getChildren().addAll(streetLabel, streetField);
-        
+
         // CAP
         HBox capBox = new HBox(10);
         Label capLabel = new Label("CAP:");
@@ -701,9 +784,8 @@ public class CreateCourseBoundary {
         capField.setPromptText("es. 80100");
         addTextValidator(capField, "[^\\d]", 5);
         capField.textProperty().addListener((obs, oldVal, newVal) -> notifyControllerOfChange());
-        sessionData.capField = capField;
         capBox.getChildren().addAll(capLabel, capField);
-        
+
         presenceBox.getChildren().addAll(cityBox, streetBox, capBox);
         return presenceBox;
     }
@@ -711,10 +793,10 @@ public class CreateCourseBoundary {
     /**
      * Crea i dettagli specifici per sessioni online
      */
-    private VBox createOnlineDetails(HybridSessionData sessionData) {
+    private VBox createOnlineDetails() {
         VBox onlineBox = new VBox(10);
         onlineBox.getStyleClass().add("online-details");
-        
+
         // Applicazione
         HBox appBox = new HBox(10);
         Label appLabel = new Label("Applicazione:");
@@ -722,18 +804,16 @@ public class CreateCourseBoundary {
         appCombo.getItems().addAll("Zoom", "Microsoft Teams", "Google Meet");
         appCombo.setPromptText("Seleziona applicazione");
         appCombo.valueProperty().addListener((obs, oldVal, newVal) -> notifyControllerOfChange());
-        sessionData.applicationCombo = appCombo;
         appBox.getChildren().addAll(appLabel, appCombo);
-        
+
         // Codice riunione
         HBox codeBox = new HBox(10);
         Label codeLabel = new Label("Codice riunione:");
         TextField codeField = new TextField();
         codeField.setPromptText("es. 123-456-789");
         codeField.textProperty().addListener((obs, oldVal, newVal) -> notifyControllerOfChange());
-        sessionData.meetingCodeField = codeField;
         codeBox.getChildren().addAll(codeLabel, codeField);
-        
+
         onlineBox.getChildren().addAll(appBox, codeBox);
         return onlineBox;
     }
@@ -741,45 +821,22 @@ public class CreateCourseBoundary {
     /**
      * Crea la sezione ricette per una sessione ibrida
      */
-    private VBox createRecipesSection(int sessionIndex, HybridSessionData sessionData) {
+    private VBox createRecipesSection(int sessionIndex, java.util.List<Ricetta> ricette) {
+        // Hybrid session recipes UI logic removed: sessionData is no longer used.
         VBox recipesBox = new VBox(10);
         recipesBox.getStyleClass().add("recipes-section");
-        
         Label recipesLabel = new Label("Ricette per questa sessione:");
         recipesLabel.getStyleClass().add("subsection-title");
-        
-        VBox ricetteContainer = new VBox(8);
-        
-        // Aggiungi una ricetta iniziale vuota
-        if (sessionData.ricette.isEmpty()) {
-            sessionData.ricette.add(new Ricetta(""));
-        }
-        
-        // Crea la UI per ogni ricetta esistente
-        for (Ricetta ricetta : sessionData.ricette) {
-            VBox recipeBox = createRecipeBoxForHybrid(ricetta, sessionData, ricetteContainer);
-            ricetteContainer.getChildren().add(recipeBox);
-        }
-        
-        Button addRecipeBtn = new Button("+ Aggiungi ricetta");
-        addRecipeBtn.getStyleClass().add("add-recipe-button");
-        addRecipeBtn.setOnAction(e -> {
-            Ricetta nuova = new Ricetta("");
-            sessionData.ricette.add(nuova);
-            VBox recipeBox = createRecipeBoxForHybrid(nuova, sessionData, ricetteContainer);
-            ricetteContainer.getChildren().add(recipeBox);
-            notifyControllerOfChange();
-        });
-        
-        recipesBox.getChildren().addAll(recipesLabel, ricetteContainer, addRecipeBtn);
+        recipesBox.getChildren().add(recipesLabel);
+        // Add your DTO-based recipe UI logic here if needed
         return recipesBox;
     }
     
     /**
      * Crea il box per una singola ricetta nella modalità ibrida
      */
-    private VBox createRecipeBoxForHybrid(Ricetta ricetta, HybridSessionData sessionData, VBox container) {
-        return UnifiedRecipeIngredientUI.createUnifiedRecipeBox(ricetta, sessionData.ricette, container, true, this::notifyControllerOfChange, unitaDiMisuraEnum);
+    private VBox createRecipeBoxForHybrid(Ricetta ricetta, java.util.List<Ricetta> ricette, VBox container) {
+        return UnifiedRecipeIngredientUI.createUnifiedRecipeBox(ricetta, ricette, container, true, this::notifyControllerOfChange, unitaDiMisuraEnum);
     }
     
     /**
@@ -869,7 +926,66 @@ public class CreateCourseBoundary {
      */
     private void notifyControllerOfChange() {
         if (controller != null) {
+            // Aggiorna la lista hybridSessions con i dati attuali della UI
+            updateHybridSessionsFromUI();
             controller.onHybridUIUpdated();
+        }
+        // RIMOSSO: Non forzare manualmente lo stato del pulsante se è già bound in FXML o altrove
+    }
+
+    /**
+     * Aggiorna la lista hybridSessions leggendo i dati attuali dalla UI ibrida
+     */
+    public void updateHybridSessionsFromUI() {
+        hybridSessions.clear();
+        // Usa hybridSessionControlsList per leggere i dati reali dei controlli UI
+        for (Map<String, Control> controls : hybridSessionControlsList) {
+            ComboBox<String> typeCombo = (ComboBox<String>) controls.get("typeCombo");
+            ComboBox<String> dayCombo = (ComboBox<String>) controls.get("dayCombo");
+            Spinner<Integer> hourSpinner = (Spinner<Integer>) controls.get("hourSpinner");
+            Spinner<Integer> minuteSpinner = (Spinner<Integer>) controls.get("minuteSpinner");
+            TextField durationField = (TextField) controls.get("durationField");
+            // Base validation
+            if (typeCombo == null || typeCombo.getValue() == null || dayCombo == null || dayCombo.getValue() == null ||
+                hourSpinner == null || minuteSpinner == null || durationField == null || durationField.getText().isEmpty()) {
+                continue;
+            }
+            String tipo = typeCombo.getValue();
+            String giorno = dayCombo.getValue();
+            LocalDate inizio = startDatePicker.getValue();
+            LocalDate fine = endDatePicker.getValue();
+            List<LocalDate> dateSessioni = calcolaDateSessioniPresenzaHybrid(giorno, inizio, fine);
+            for (LocalDate data : dateSessioni) {
+                java.time.LocalTime orario = java.time.LocalTime.of(hourSpinner.getValue(), minuteSpinner.getValue());
+                java.time.LocalTime durata;
+                try {
+                    int dur = Integer.parseInt(durationField.getText());
+                    durata = java.time.LocalTime.of(dur, 0);
+                } catch (Exception e) { durata = java.time.LocalTime.of(1, 0); }
+                if ("In presenza".equals(tipo)) {
+                    TextField cityField = (TextField) controls.get("cityField");
+                    TextField streetField = (TextField) controls.get("streetField");
+                    TextField capField = (TextField) controls.get("capField");
+                    String citta = cityField != null ? cityField.getText() : "";
+                    String via = streetField != null ? streetField.getText() : "";
+                    String cap = capField != null ? capField.getText() : "";
+                    if (citta.isEmpty() || via.isEmpty() || cap.isEmpty()) continue;
+                    com.progetto.Entity.EntityDto.SessioniInPresenza s = new com.progetto.Entity.EntityDto.SessioniInPresenza(
+                        giorno, data, orario, durata, citta, via, cap, null, 0
+                    );
+                    hybridSessions.add(s);
+                } else if ("Telematica".equals(tipo)) {
+                    ComboBox<String> applicationComboBox = (ComboBox<String>) controls.get("applicationComboBox");
+                    TextField meetingCodeField = (TextField) controls.get("meetingCodeField");
+                    String applicazione = applicationComboBox != null && applicationComboBox.getValue() != null ? applicationComboBox.getValue() : "";
+                    String codice = meetingCodeField != null && meetingCodeField.getText() != null ? meetingCodeField.getText() : "";
+                    if (applicazione.isEmpty() || codice.isEmpty()) continue;
+                    com.progetto.Entity.EntityDto.SessioneOnline s = new com.progetto.Entity.EntityDto.SessioneOnline(
+                        giorno, data, orario, durata, applicazione, codice, "", 0
+                    );
+                    hybridSessions.add(s);
+                }
+            }
         }
     }
     
@@ -878,17 +994,134 @@ public class CreateCourseBoundary {
     /**
      * Restituisce i dati delle sessioni ibride per la validazione
      */
-    public List<HybridSessionData> getHybridSessions() {
+    // Restituisce le sessioni ibride come lista di Sessione (SessioniInPresenza o SessioneOnline)
+    public List<com.progetto.Entity.EntityDto.Sessione> getHybridSessions() {
         return new ArrayList<>(hybridSessions);
+    }
+    
+    /**
+     * Restituisce la mappa delle ricette per le sessioni ibride di tipo presenza (solo quelle effettivamente configurate)
+     */
+    public Map<LocalDate, ObservableList<Ricetta>> getHybridSessionRecipes() {
+        Map<LocalDate, ObservableList<Ricetta>> result = new HashMap<>();
+        // Prendi solo le date delle sessioni ibride di tipo presenza
+        for (com.progetto.Entity.EntityDto.Sessione session : hybridSessions) {
+            if (session instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
+                LocalDate data = ((com.progetto.Entity.EntityDto.SessioniInPresenza) session).getData();
+                if (data != null && sessionePresenzaRicette.containsKey(data)) {
+                    result.put(data, sessionePresenzaRicette.get(data));
+                }
+            }
+        }
+        return result;
     }
     
     /**
      * Verifica se tutte le sessioni ibride sono valide
      */
     public boolean areAllHybridSessionsValid() {
-        return hybridSessions.stream().allMatch(session -> 
-            session.isValid() && session.isPresenceSessionValid() && session.isOnlineSessionValid()
-        );
+        boolean atLeastOneSession = false;
+        StringBuilder errorBuilder = new StringBuilder();
+        int sessionIdx = 0;
+        for (Map<String, Control> controls : hybridSessionControlsList) {
+            ComboBox<String> typeCombo = (ComboBox<String>) controls.get("typeCombo");
+            ComboBox<String> dayCombo = (ComboBox<String>) controls.get("dayCombo");
+            Spinner<Integer> hourSpinner = (Spinner<Integer>) controls.get("hourSpinner");
+            Spinner<Integer> minuteSpinner = (Spinner<Integer>) controls.get("minuteSpinner");
+            TextField durationField = (TextField) controls.get("durationField");
+            DatePicker datePicker = null; // Not used in current UI, but can be added if needed
+
+            boolean anyFieldFilled = false;
+            if ((typeCombo != null && typeCombo.getValue() != null) ||
+                (dayCombo != null && dayCombo.getValue() != null) ||
+                (hourSpinner != null) ||
+                (minuteSpinner != null) ||
+                (durationField != null && !durationField.getText().isEmpty())) {
+                anyFieldFilled = true;
+            }
+            if (!anyFieldFilled) {
+                sessionIdx++;
+                continue;
+            }
+            atLeastOneSession = true;
+            boolean valid = true;
+            StringBuilder sessionError = new StringBuilder();
+            if (typeCombo == null || typeCombo.getValue() == null) {
+                valid = false;
+                sessionError.append("- Seleziona il tipo di sessione.\n");
+            }
+            if (dayCombo == null || dayCombo.getValue() == null) {
+                valid = false;
+                sessionError.append("- Seleziona il giorno della settimana.\n");
+            }
+            if (hourSpinner == null || minuteSpinner == null) {
+                valid = false;
+                sessionError.append("- Inserisci l'orario della sessione.\n");
+            }
+            if (durationField == null || durationField.getText().isEmpty()) {
+                valid = false;
+                sessionError.append("- Inserisci la durata della sessione.\n");
+            }
+            String tipo = (typeCombo != null) ? typeCombo.getValue() : null;
+            if ("In presenza".equals(tipo)) {
+                TextField cityField = (TextField) controls.get("cityField");
+                TextField streetField = (TextField) controls.get("streetField");
+                TextField capField = (TextField) controls.get("capField");
+                if (cityField == null || cityField.getText().isEmpty()) {
+                    valid = false;
+                    sessionError.append("- Inserisci la città.\n");
+                }
+                if (streetField == null || streetField.getText().isEmpty()) {
+                    valid = false;
+                    sessionError.append("- Inserisci la via.\n");
+                }
+                if (capField == null || capField.getText().isEmpty() || !capField.getText().matches("\\d{5}")) {
+                    valid = false;
+                    sessionError.append("- Inserisci un CAP valido (5 cifre).\n");
+                }
+            } else if ("Telematica".equals(tipo)) {
+                ComboBox<?> applicationComboBox = (ComboBox<?>) controls.get("applicationComboBox");
+                TextField meetingCodeField = (TextField) controls.get("meetingCodeField");
+                if (applicationComboBox == null || applicationComboBox.getValue() == null || applicationComboBox.getValue().toString().isEmpty()) {
+                    valid = false;
+                    sessionError.append("- Seleziona l'applicazione.\n");
+                }
+                if (meetingCodeField == null || meetingCodeField.getText().isEmpty()) {
+                    valid = false;
+                    sessionError.append("- Inserisci il codice riunione.\n");
+                }
+            }
+            if (!valid) {
+                errorBuilder.append("Sessione ").append(sessionIdx + 1).append(":\n");
+                errorBuilder.append(sessionError);
+            }
+            sessionIdx++;
+        }
+        if (!atLeastOneSession) {
+            if (hybridErrorLabel != null) hybridErrorLabel.setText("Compila almeno una sessione ibrida.");
+            return false;
+        }
+        if (errorBuilder.length() > 0) {
+            if (hybridErrorLabel != null) hybridErrorLabel.setText(errorBuilder.toString());
+            return false;
+        } else {
+            if (hybridErrorLabel != null) hybridErrorLabel.setText("");
+        }
+        return true;
+    }
+
+    /**
+     * Ritorna tutti i discendenti (ricorsivo) di un nodo JavaFX
+     */
+    private java.util.List<javafx.scene.Node> getAllDescendants(javafx.scene.Parent parent) {
+        java.util.List<javafx.scene.Node> descendants = new java.util.ArrayList<>();
+        for (javafx.scene.Node child : parent.getChildrenUnmodifiable()) {
+            descendants.add(child);
+            if (child instanceof javafx.scene.Parent) {
+                descendants.addAll(getAllDescendants((javafx.scene.Parent) child));
+            }
+        }
+        return descendants;
     }
     
     /**
@@ -949,22 +1182,20 @@ public class CreateCourseBoundary {
         if (ricette == null || ricette.isEmpty()) {
             return false;
         }
-        
         for (Ricetta ricetta : ricette) {
             if (ricetta.getNome() == null || ricetta.getNome().trim().isEmpty()) {
                 return false;
             }
-            
             List<Ingredienti> ingredienti = ricetta.getIngredientiRicetta();
             if (ingredienti == null || ingredienti.isEmpty()) {
                 return false;
             }
-            
             for (Ingredienti ing : ingredienti) {
                 if (ing.getNome() == null || ing.getNome().trim().isEmpty()) {
                     return false;
                 }
-                if (ing.getQuantita() <= 0) {
+                // Validazione quantità: >0 e compatibile con NUMERIC(10,2)
+                if (ing.getQuantita() <= 0 || !isValidNumericField(Double.toString(ing.getQuantita()))) {
                     return false;
                 }
                 if (ing.getUnitaMisura() == null || ing.getUnitaMisura().trim().isEmpty()) {
@@ -972,7 +1203,6 @@ public class CreateCourseBoundary {
                 }
             }
         }
-        
         return true;
     }
     
@@ -1002,8 +1232,31 @@ public class CreateCourseBoundary {
         }
     }
 
+    /**
+     * Valida che un valore numerico (es. prezzo, quantità) sia compatibile con NUMERIC(10,2) PostgreSQL
+     * (max 99999999.99, max 2 decimali)
+     */
+    private boolean isValidNumericField(String value) {
+        if (value == null || value.isEmpty()) return false;
+        try {
+            double d = Double.parseDouble(value.replace(",", "."));
+            if (Math.abs(d) >= 1e8) return false;
+            String[] parts = value.replace(",", ".").split("\\.");
+            if (parts.length == 2 && parts[1].length() > 2) return false;
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     @FXML
     private void createCourse(ActionEvent event) {
+        // Validazione campo prezzo
+        if (!isValidNumericField(priceField.getText())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Il prezzo deve essere un numero valido (max 99999999.99, max 2 decimali)", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
         if (controller != null) {
             controller.createCourse();
         }

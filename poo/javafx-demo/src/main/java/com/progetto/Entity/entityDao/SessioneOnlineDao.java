@@ -4,6 +4,7 @@ package com.progetto.Entity.entityDao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import org.postgresql.util.PGInterval;
 
 import com.progetto.Entity.EntityDto.Sessione;
@@ -16,7 +17,7 @@ public class SessioneOnlineDao extends SessioniDao {
   
     @Override
   public void MemorizzaSessione(Sessione sessione) {
-        String query = "INSERT INTO SESSIONE_TELEMATICA (Applicazione, CodiceChiamata, Data, Orario, Durata, Giorno, Descrizione, IdCorso, IdChef) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO SESSIONE_TELEMATICA (Applicazione, CodiceChiamata, Data, Orario, Durata, Giorno, Descrizione, IdCorso, IdChef) VALUES (?, ?, ?, ?, ?, ?::giorno, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement ps = null;
         SupportDb dbu = new SupportDb();
@@ -28,17 +29,18 @@ public class SessioneOnlineDao extends SessioniDao {
             ps.setDate(3, java.sql.Date.valueOf(sessione.getData()));
             ps.setTime(4, java.sql.Time.valueOf(sessione.getOrario()));
             // Calcola la durata in ore intere (1-8) e passa come interval
-            java.time.LocalTime durata = sessione.getDurata();
+            LocalTime durata = sessione.getDurata();
             int durataOre = Math.max(1, Math.min(8, durata.getHour()));
-            org.postgresql.util.PGInterval interval = new org.postgresql.util.PGInterval(0, 0, 0, durataOre, 0, 0);
+            PGInterval interval = new PGInterval(0, 0, 0, durataOre, 0, 0);
             ps.setObject(5, interval);
             ps.setString(6, sessione.getGiorno());
-            ps.setString(7, ((SessioneOnline) sessione).getDescrizione());
+            String descrizione = ((SessioneOnline) sessione).getDescrizione();
+            ps.setString(7, descrizione != null ? descrizione : "");
             ps.setInt(8, ((SessioneOnline) sessione).getId_Corso());
             ps.setInt(9, sessione.getChef().getId_Chef());
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            // Log error if needed (no debug print)
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);

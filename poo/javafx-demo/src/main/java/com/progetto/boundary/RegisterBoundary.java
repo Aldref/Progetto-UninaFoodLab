@@ -120,10 +120,8 @@ public class RegisterBoundary implements Initializable {
     }
 
     private void showSuccessMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Successo");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        // Usa la dialog custom al posto dell'Alert
+        javafx.stage.Stage parentStage = (javafx.stage.Stage) textFieldNome.getScene().getWindow();
+        com.progetto.utils.SuccessDialogUtils.showGenericSuccessDialog(parentStage, "Registrazione completata!", message);
     }
 }

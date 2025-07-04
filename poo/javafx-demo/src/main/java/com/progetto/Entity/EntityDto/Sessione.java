@@ -21,7 +21,7 @@ abstract public class Sessione {
         this.durata = durata;
         this.chef = new Chef();
         this.id_Sessione = id_Sessione;
-
+        // No debug prints
     }
 
 

@@ -1,10 +1,12 @@
 package com.progetto.Entity.entityDao;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
+import java.time.LocalTime;
+import org.postgresql.util.PGInterval;
 
 import com.progetto.Entity.EntityDto.Ricetta;
 import com.progetto.Entity.EntityDto.Sessione;
@@ -12,14 +14,13 @@ import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
-import org.postgresql.util.PGInterval;
 
 
 public class SessioneInPresenzaDao extends SessioniDao {
 
 
-  @Override
-  public void MemorizzaSessione(Sessione sessione) {
+    @Override
+    public void MemorizzaSessione(Sessione sessione) {
         String query = "INSERT INTO SESSIONE_PRESENZA (giorno, Data, Orario, Durata, citta, via, cap, Descrizione, IDcorso, IdChef) VALUES (?::giorno, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -27,15 +28,22 @@ public class SessioneInPresenzaDao extends SessioniDao {
         SupportDb dbu = new SupportDb();
         try {
             conn = ConnectionJavaDb.getConnection();
+            // Controllo id_Corso e id_Chef
+            int idCorso = ((SessioniInPresenza) sessione).getId_Corso();
+            int idChef = ((SessioniInPresenza) sessione).getChef() != null ? ((SessioniInPresenza) sessione).getChef().getId_Chef() : 0;
+            if (idCorso <= 0 || idChef <= 0) {
+                System.err.println("[ERRORE] id_Corso o id_Chef non valorizzati: idCorso=" + idCorso + ", idChef=" + idChef);
+                return;
+            }
             ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setString(1, sessione.getGiorno());
             ps.setDate(2, java.sql.Date.valueOf(sessione.getData()));
             ps.setTime(3, java.sql.Time.valueOf(sessione.getOrario()));
             // Calcola la durata in ore intere (1-8) e passa come interval
-            java.time.LocalTime durata = sessione.getDurata();
+            LocalTime durata = sessione.getDurata();
             int durataOre = Math.max(1, Math.min(8, durata.getHour()));
             // Usa PGInterval per PostgreSQL
-            org.postgresql.util.PGInterval interval = new org.postgresql.util.PGInterval(0, 0, 0, durataOre, 0, 0);
+            PGInterval interval = new PGInterval(0, 0, 0, durataOre, 0, 0);
             ps.setObject(4, interval);
             ps.setString(5, ((SessioniInPresenza) sessione).getCitta());
             ps.setString(6, ((SessioniInPresenza) sessione).getVia());
@@ -43,21 +51,20 @@ public class SessioneInPresenzaDao extends SessioniDao {
             // Descrizione: se null, passa stringa vuota
             String descrizione = ((SessioniInPresenza) sessione).getDescrizione();
             ps.setString(8, descrizione != null ? descrizione : "");
-            ps.setInt(9, ((SessioniInPresenza) sessione).getId_Corso());
-            // Usa l'id_Chef dalla superclasse Sessione (tramite getChef())
-            ps.setInt(10, ((SessioniInPresenza) sessione).getChef() != null ? ((SessioniInPresenza) sessione).getChef().getId_Chef() : 0);
+            ps.setInt(9, idCorso);
+            ps.setInt(10, idChef);
             ps.executeUpdate();
             generatedKeys = ps.getGeneratedKeys();
             if (generatedKeys.next()) {
                 ((SessioniInPresenza) sessione).setId_Sessione(generatedKeys.getInt(1));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("[ERRORE] Errore SQL in MemorizzaSessione: " + e.getMessage());
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
             if (generatedKeys != null) {
-                try { generatedKeys.close(); } catch (SQLException e) { e.printStackTrace(); }
+                try { generatedKeys.close(); } catch (SQLException e) { /* no debug print */ }
             }
         }
     }
@@ -87,7 +94,7 @@ public class SessioneInPresenzaDao extends SessioniDao {
                 partecipanti.add(utente);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // Log error if needed (no debug print)
 
     }
         finally {
@@ -117,7 +124,7 @@ public class SessioneInPresenzaDao extends SessioniDao {
                 ricette.add(ricetta);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // Log error if needed (no debug print)
         } finally {
             dbu.closeAll(conn, ps, rs);
         }

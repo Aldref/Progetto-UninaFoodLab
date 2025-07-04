@@ -18,7 +18,7 @@ public class ChefDao extends UtenteDao  {
    
     @Override
     public void RegistrazioneUtente(Utente chef1) {
-        String query = "INSERT INTO Chef (Nome, Cognome, Email, Password,DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Chef (Nome, Cognome, Email, Password, DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -34,8 +34,8 @@ public class ChefDao extends UtenteDao  {
             ps.setString(2, chef1.getCognome());
             ps.setString(3, chef1.getEmail());
             ps.setString(4, chef1.getPassword());
-            ps.setDate(6, sqlData);
-            ps.setInt(7, ((Chef)chef1).getAnniDiEsperienza());
+            ps.setDate(5, sqlData);
+            ps.setInt(6, ((Chef)chef1).getAnniDiEsperienza());
             ps.execute(); 
             generatedKeys = ps.getGeneratedKeys();
             if (generatedKeys.next()) {

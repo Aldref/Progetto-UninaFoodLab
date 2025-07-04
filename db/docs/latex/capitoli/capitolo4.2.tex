@@ -129,25 +129,25 @@ Questo trigger impedisce l'inserimento o l'aggiornamento di una carta di pagamen
 \noindent\rule{\textwidth}{0.4pt}
 \begin{lstlisting}[language=SQL, style=sqlstyle, literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1]
 CREATE OR REPLACE FUNCTION impedisci_carta_duplicata_per_partecipante()
-RETURNS TRIGGER AS $$
-DECLARE
-    existing_card_id INT;
-BEGIN
-    IF TG_TABLE_NAME = 'carta' THEN
-        IF EXISTS (
-            SELECT 1
-            FROM Carta
-            WHERE UltimeQuattroCifre = NEW.UltimeQuattroCifre
-                AND DataScadenza = NEW.DataScadenza
-                AND Circuito = NEW.Circuito::VARCHAR(50)
-                AND Intestatario = NEW.Intestatario
-                AND IdCarta != NEW.IdCarta
-        ) THEN
-            RAISE EXCEPTION 'Errore: Una carta con queste ultime 4 cifre, data di scadenza, circuito e intestatario esiste già nel sistema.';
+    RETURNS TRIGGER AS $$
+    DECLARE
+        existing_card_id INT;
+    BEGIN
+        IF TG_TABLE_NAME = 'carta' THEN
+            IF EXISTS (
+                SELECT 1
+                FROM Carta
+                WHERE UltimeQuattroCifre = NEW.UltimeQuattroCifre
+                    AND DataScadenza = NEW.DataScadenza
+                    AND Circuito = NEW.Circuito::Circuito
+                    AND Intestatario = NEW.Intestatario
+                    AND IdCarta != NEW.IdCarta
+            ) THEN
+                RAISE EXCEPTION 'Errore: Una carta con queste ultime 4 cifre, data di scadenza, circuito e intestatario esiste già nel sistema.';
+            END IF;
         END IF;
-    END IF;
-    RETURN NEW;
-END;
+        RETURN NEW;
+    END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_impedisci_dettagli_carta_duplicati
@@ -408,29 +408,27 @@ RETURNS TRIGGER AS $$
 DECLARE
     orario_ora INTEGER;
     orario_minuti INTEGER;
-    durata_frazionaria NUMERIC;
-    fine_lezione NUMERIC;
+    durata_ore NUMERIC;
+    fine_lezione TIME;
 BEGIN
-    IF NEW.Durata <= 1 OR NEW.Durata >= 8 THEN
+    IF (EXTRACT(EPOCH FROM NEW.Durata)/3600) < 1 OR (EXTRACT(EPOCH FROM NEW.Durata)/3600) > 8 THEN
         RAISE EXCEPTION 'Durata deve essere maggiore di 1 e minore di 8';
     END IF;
 
-    orario_ora := FLOOR(NEW.Orario);
-    orario_minuti := ROUND((NEW.Orario - orario_ora) * 100);
+    orario_ora := EXTRACT(HOUR FROM NEW.Orario);
+    orario_minuti := EXTRACT(MINUTE FROM NEW.Orario);
 
     IF orario_ora >= 23 THEN
-        RAISE EXCEPTION 'La parte intera dell\'orario deve essere minore di 23';
+        RAISE EXCEPTION 'La parte intera dell''orario deve essere minore di 23';
     ELSIF orario_minuti >= 60 THEN
-        RAISE EXCEPTION 'La parte decimale dell\'orario deve essere minore di 60';
+        RAISE EXCEPTION 'La parte decimale dell''orario deve essere minore di 60';
     END IF;
 
-    durata_frazionaria := NEW.Durata;
-    fine_lezione := NEW.Orario + durata_frazionaria;
+    fine_lezione := NEW.Orario + NEW.Durata;
 
-    IF fine_lezione > 23 THEN
-        RAISE EXCEPTION 'L\'orario di fine lezione non puo\' superare le 23';
+    IF fine_lezione > TIME '23:59:59' THEN
+        RAISE EXCEPTION 'L''orario di fine lezione non può superare le 23:59';
     END IF;
-
 
     RETURN NEW;
 END;
@@ -443,13 +441,15 @@ FOR EACH ROW EXECUTE FUNCTION check_orario_e_durata();
 \noindent\rule{\textwidth}{0.4pt}
 
 \textbf{Spiegazione:}
-\begin{itemize}
-    \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulla tabella \texttt{SESSIONE\_PRESENZA}.
-    \item Controlla che la durata sia maggiore di 1 e minore di 8 ore.
-    \item Verifica che la parte intera dell'orario (ore) sia minore di 23 e la parte decimale (minuti) sia minore di 60.
-    \item Calcola l'orario di fine lezione e verifica che non superi le 23.
-    \item Se uno di questi vincoli non e' rispettato, viene sollevata un'eccezione e l'operazione viene bloccata.
+\begin{itemize} 
+    \item Il trigger si attiva prima di ogni inserimento o aggiornamento sulla tabella \texttt{SESSIONE\_PRESENZA}. 
+    \item Controlla che la durata sia maggiore di 1 e minore di 8 ore. 
+    \item Verifica che la parte intera dell'orario (ore) sia minore di 23 e la parte decimale (minuti) sia minore di 60. 
+    \item Calcola l'orario di fine lezione e verifica che non superi le 23. 
+    \item Se uno di questi vincoli non è rispettato, viene sollevata un'eccezione e l'operazione viene bloccata. 
     \item In questo modo si garantisce la correttezza e la coerenza degli orari delle sessioni in presenza.
+    \item \textbf{EXTRACT}: è una funzione SQL che estrae una parte specifica (ad esempio HOUR o MINUTE) da un valore di tipo data o orario. Nel trigger viene usata per ottenere le ore e i minuti dall'orario di inizio. \item \textbf{TIME}: è un tipo di dato SQL che rappresenta un orario (senza data). Nel trigger viene usato per confrontare l'orario di fine lezione con il limite massimo consentito (\texttt{TIME '23:59:59'}). 
+    \item L'operatore \texttt{+} tra un valore di tipo \texttt{TIME} e uno di tipo intervallo (\texttt{Durata}) permette di calcolare l'orario di fine lezione sommando la durata all'orario di inizio. 
 \end{itemize}
 
 \subsubsection{Trigger: Validazione Range Data Sessione rispetto al Corso}

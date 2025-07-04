@@ -10,7 +10,6 @@ import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.Sessione;
 import com.progetto.Entity.EntityDto.SessioneOnline;
 import com.progetto.Entity.EntityDto.SessioniInPresenza;
-import com.progetto.boundary.CreateCourseBoundary.HybridSessionData;
 import com.progetto.boundary.LogoutDialogBoundary;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
@@ -197,7 +196,7 @@ public class CreateCourseController {
             // onlineDayOfWeekComboBox.setItems(giorniEnum);
             // Oppure aggiorna la UI dinamica dove serve
         } catch (Exception e) {
-            e.printStackTrace();
+            // debug print rimosso
         }
 
         // Popola unità di misura da enum DB
@@ -209,7 +208,7 @@ public class CreateCourseController {
             // ingredientUnitComboBox.setItems(unitaEnum);
             // Oppure aggiorna la UI dinamica dove serve
         } catch (Exception e) {
-            e.printStackTrace();
+            // debug print rimosso
         }
     }
 
@@ -237,7 +236,7 @@ public class CreateCourseController {
             cuisineTypeComboBox2.setValue(null);
             cuisineTypeErrorLabel.setVisible(false);
         } catch (Exception e) {
-            e.printStackTrace();
+            // debug print rimosso
         }
 
         // Limita durata presenza a 8 ore intere
@@ -274,7 +273,7 @@ public class CreateCourseController {
             frequencyComboBox.getItems().clear();
             frequencyComboBox.getItems().addAll(frequenze);
         } catch (Exception e) {
-            e.printStackTrace();
+            // debug print rimosso
         }
     }
     
@@ -598,7 +597,7 @@ public class CreateCourseController {
         // Gestione speciale per frequenza mensile: una ricetta per ogni mese
         if (frequenza != null && frequenza.toLowerCase().contains("mensile")) {
             List<LocalDate> dateSessioni = new ArrayList<>();
-            if (inizio != null && fine != null && !fine.isBefore(inizio)) {
+            if (inizio != null && fine != null && !fine.isAfter(inizio)) {
                 LocalDate data = inizio.withDayOfMonth(1);
                 while (!data.isAfter(fine)) {
                     dateSessioni.add(data);
@@ -730,10 +729,10 @@ public class CreateCourseController {
         addCheckboxValidationListeners(detailsValidBinding);
         // DEBUG: aggiungi listener per capire quale validazione fallisce
         basicValid.addListener((obs, oldVal, newVal) -> {
-            System.out.println("[DEBUG] basicValid changed: " + newVal);
+            // debug print rimosso
         });
         detailsValidBinding.addListener((obs, oldVal, newVal) -> {
-            System.out.println("[DEBUG] detailsValidBinding changed: " + newVal);
+            // debug print rimosso
         });
         createButton.disableProperty().bind(basicValid.not().or(detailsValidBinding.not()));
     }
@@ -749,16 +748,7 @@ public class CreateCourseController {
                 isValidPrice(priceField.getText()) &&
                 isValidParticipants(maxParticipantsSpinner.getValue());
             if (!valid) {
-                System.out.println("[DEBUG] basicValid: " +
-                    "courseName=" + isValidText(courseNameField.getText()) +
-                    ", descr=" + isValidDescription(descriptionArea.getText()) +
-                    ", startDate=" + (startDatePicker.getValue() != null) +
-                    ", endDate=" + (endDatePicker.getValue() != null) +
-                    ", freq=" + (frequencyComboBox.getValue() != null) +
-                    ", lessonType=" + (lessonTypeComboBox.getValue() != null) +
-                    ", price=" + isValidPrice(priceField.getText()) +
-                    ", maxPart=" + isValidParticipants(maxParticipantsSpinner.getValue())
-                );
+                // debug print rimosso
             }
             return valid;
         },
@@ -784,11 +774,12 @@ public class CreateCourseController {
             if ("In presenza".equals(lessonType)) {
                 result = validatePresenceDetails();
             } else if ("Telematica".equals(lessonType)) {
+                // Per la telematica NON validare le ricette
                 result = validateOnlineDetails();
             } else if ("Entrambi".equals(lessonType)) {
+                // Per l'ibrido: almeno una ricetta per ogni sessione in presenza, nessun obbligo per le telematiche
                 result = validateHybridSessions();
             }
-            System.out.println("[DEBUG] detailsValidBinding: lessonType=" + lessonType + ", result=" + result);
             return result;
         }, properties);
     }
@@ -799,22 +790,21 @@ public class CreateCourseController {
         boolean city = isValidText(cityField.getText());
         boolean street = isValidText(streetField.getText());
         boolean cap = isValidCAP(capField.getText());
-        boolean ricette = false;
+        boolean ricette = true;
+        // L'obbligo delle ricette solo per "In presenza" e non per telematica
         if (boundary != null) {
             ricette = boundary.areAllPresenceRecipesValid();
         }
+        // Se la boundary non è impostata, non bloccare la validazione sulle ricette
         boolean result = days && duration && city && street && cap && ricette;
-        if (!result) {
-            System.out.println("[DEBUG] validatePresenceDetails: days=" + days + ", duration=" + duration + ", city=" + city + ", street=" + street + ", cap=" + cap + ", ricette=" + ricette);
-        }
         return result;
     }
     
     private boolean validateOnlineDetails() {
         return applicationComboBox.getValue() != null &&
-               isValidText(meetingCodeField.getText()) &&
-               hasCorrectNumberOfDays(onlineDayCheckBoxes) &&
-               isValidDurationRange(onlineDurationField.getText());
+                isValidText(meetingCodeField.getText()) &&
+                hasCorrectNumberOfDays(onlineDayCheckBoxes) &&
+                isValidDurationRange(onlineDurationField.getText());
     }
     
 
@@ -1123,13 +1113,64 @@ public class CreateCourseController {
      */
     private boolean validateHybridSessions() {
         if (boundary != null) {
-            return boundary.areAllHybridSessionsValid();
+            // Ricette obbligatorie: per ogni sessione ibrida in presenza deve esserci almeno una ricetta valida
+            java.util.List<com.progetto.Entity.EntityDto.Sessione> hybridSessions = boundary.getHybridSessions();
+            java.util.Map<java.time.LocalDate, javafx.collections.ObservableList<com.progetto.Entity.EntityDto.Ricetta>> hybridSessionRecipes = boundary.getHybridSessionRecipes();
+            boolean ricetteOk = true;
+            if (hybridSessions != null && !hybridSessions.isEmpty()) {
+                for (com.progetto.Entity.EntityDto.Sessione sessione : hybridSessions) {
+                    if (sessione instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
+                        java.time.LocalDate data = sessione.getData();
+                        javafx.collections.ObservableList<com.progetto.Entity.EntityDto.Ricetta> ricetteGiorno = hybridSessionRecipes.get(data);
+                        if (ricetteGiorno == null || ricetteGiorno.isEmpty()) {
+                            ricetteOk = false;
+                            break;
+                        }
+                        for (com.progetto.Entity.EntityDto.Ricetta ricetta : ricetteGiorno) {
+                            if (ricetta == null || ricetta.getNome() == null || ricetta.getNome().trim().isEmpty()) {
+                                ricetteOk = false;
+                                break;
+                            }
+                        }
+                        if (!ricetteOk) break;
+                    }
+                }
+            }
+            return boundary.areAllHybridSessionsValid() && ricetteOk;
         }
         return false;
     }
     // === PUBLIC API FOR BOUNDARY ===
+    // Variabili per gestire l'immagine selezionata
+    private File selectedCourseImageFile = null;
+    private String selectedCourseImageExtension = null;
+    private boolean isDefaultCourseImage = true;
+
     public void selectImage() {
-        // TODO: implementa selezione immagine
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleziona immagine corso");
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
+        File file = fileChooser.showOpenDialog(courseImageView.getScene().getWindow());
+        if (file != null) {
+            String ext = "";
+            int i = file.getName().lastIndexOf('.');
+            if (i > 0) ext = file.getName().substring(i);
+            selectedCourseImageFile = file;
+            selectedCourseImageExtension = ext;
+            isDefaultCourseImage = false;
+            try {
+                javafx.scene.image.Image img = new javafx.scene.image.Image(file.toURI().toString(), 180, 180, true, true);
+                courseImageView.setImage(img);
+            } catch (Exception e) {
+                // fallback: non cambiare immagine
+            }
+        } else {
+            selectedCourseImageFile = null;
+            selectedCourseImageExtension = null;
+            isDefaultCourseImage = true;
+        }
     }
     // Variabile di istanza per tenere traccia dell'ID del corso appena creato
     private int lastCreatedCourseId = -1;
@@ -1189,54 +1230,51 @@ public class CreateCourseController {
         }
 
         // --- GESTIONE IMMAGINE CORSO ---
-        String urlPropic = null;
-        String ext = ".png";
+        String urlPropic;
         int idCorso = corso.getId_Corso();
         String resourcesDir = "src/main/resources/immagini/PropicCorso/";
         new File(resourcesDir).mkdirs();
-        String fileName = idCorso + ext;
-        String absolutePath = resourcesDir + fileName;
-        String relativePath = "immagini/PropicCorso/" + fileName;
-        boolean immagineCaricata = false;
-        if (courseImageView.getImage() != null && courseImageView.getImage().getUrl() != null) {
+        if (!isDefaultCourseImage && selectedCourseImageFile != null && selectedCourseImageExtension != null) {
+            String fileName = idCorso + selectedCourseImageExtension;
+            String absolutePath = resourcesDir + fileName;
+            String relativePath = "immagini/PropicCorso/" + fileName;
             try {
-                javafx.scene.image.Image img = courseImageView.getImage();
-                java.io.InputStream is = new java.net.URL(img.getUrl()).openStream();
-                java.nio.file.Files.copy(is, new File(absolutePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                urlPropic = relativePath;
-                immagineCaricata = true;
-            } catch (Exception e) {
-                urlPropic = null;
-            }
-        }
-        if (!immagineCaricata) {
-            // Usa immagine di default
-            try {
-                java.nio.file.Files.copy(new File("src/main/resources/immagini/corso_default.png").toPath(), new File(absolutePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                java.nio.file.Files.copy(selectedCourseImageFile.toPath(), new File(absolutePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 urlPropic = relativePath;
             } catch (Exception e) {
                 urlPropic = "immagini/corso_default.png";
             }
+        } else {
+            urlPropic = "immagini/corso_default.png";
         }
         corso.setUrl_Propic(urlPropic);
         corsoDao.aggiornaCorso(corso);
 
-        // --- SALVA SESSIONI IN BASE AL TIPO DI LEZIONE ---
+        // --- AGGIORNA LA BOUNDARY PRIMA DI SALVARE LE SESSIONI ---
         String lessonType = lessonTypeComboBox.getValue();
+        if (boundary != null) {
+            if ("In presenza".equals(lessonType)) {
+                updateSessioniPresenzaUI(); // Assicura che la boundary sia aggiornata
+            } else if ("Telematica".equals(lessonType)) {
+                // Se hai un metodo simile per telematica, chiamalo qui (es: updateSessioniTelematica())
+            } else if ("Entrambi".equals(lessonType)) {
+                boundary.updateHybridSessionsFromUI();
+            }
+        }
+        // --- SALVA SESSIONI IN BASE AL TIPO DI LEZIONE ---
         if ("In presenza".equals(lessonType)) {
             salvaSessioniPresenza();
         } else if ("Telematica".equals(lessonType)) {
             salvaSessioniTelematica();
         } else if ("Entrambi".equals(lessonType)) {
-            // Per "Entrambi" salva solo le sessioni ibride
-            salvaSessioniIbride(new ricettaDao(), new IngredientiDao());
+            salvaSessioniHybridSmistate(new ricettaDao(), new IngredientiDao());
         }
 
         // --- ASSOCIA TIPO CUCINA ---
         ArrayList<String> tipiCucina = new ArrayList<>();
         if (cucina1 != null && !cucina1.trim().isEmpty()) tipiCucina.add(cucina1);
         if (cucina2 != null && !cucina2.trim().isEmpty() && !cucina2.equals(cucina1)) tipiCucina.add(cucina2);
-        // Salva tipi cucina nel db (tabella TIPODICUCINA_CORSO)
+        // Salva tipi cucina nel db (tabella TIPODICICINA_CORSO)
         try {
             Connection conn = com.progetto.jdbc.ConnectionJavaDb.getConnection();
             for (String tipo : tipiCucina) {
@@ -1258,7 +1296,7 @@ public class CreateCourseController {
             }
             conn.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            // Log error if needed (no debug print)
         }
 
         // --- SALVA RICETTE E INGREDIENTI ---
@@ -1272,23 +1310,23 @@ public class CreateCourseController {
         // --- FEEDBACK E NAVIGAZIONE ---
         Stage stage = (Stage) courseNameField.getScene().getWindow();
         SuccessDialogUtils.showGenericSuccessDialog(stage, "Corso creato con successo!", "Il corso è stato creato correttamente.");
-        goToHomepage();
+        // Aggiorna la homepage e forza il reload delle immagini dei corsi
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/homepagechef.fxml"));
+            javafx.scene.Parent root = loader.load();
+            stage.getScene().setRoot(root);
+        } catch (Exception e) {
+            e.printStackTrace();
+            goToHomepage();
+        }
     }
     // --- SALVATAGGIO SESSIONI IN PRESENZA ---
     private void salvaSessioniPresenza() {
         if (boundary == null) {
-            System.out.println("[DEBUG] salvaSessioniPresenza: boundary is null, aborting.");
             return;
         }
         Map<LocalDate, ObservableList<com.progetto.Entity.EntityDto.Ricetta>> sessioniPresenza = boundary.getSessionePresenzaRicette();
-        // Debug: stampa i dati raccolti
-        System.out.println("[DEBUG] salvaSessioniPresenza: frequency=" + frequencyComboBox.getValue());
-        System.out.println("[DEBUG] salvaSessioniPresenza: giorni selezionati=" + getSelectedDays(presenceDayCheckBoxes));
-        System.out.println("[DEBUG] salvaSessioniPresenza: data inizio=" + startDatePicker.getValue() + ", data fine=" + endDatePicker.getValue());
-        System.out.println("[DEBUG] salvaSessioniPresenza: sessioniPresenza.size=" + (sessioniPresenza != null ? sessioniPresenza.size() : -1));
         if (sessioniPresenza == null || sessioniPresenza.isEmpty()) {
-            System.out.println("[DEBUG] salvaSessioniPresenza: sessioniPresenza is null or empty, FORZATURA DEBUG: creo una sessione dummy per test.");
-            // Fallback: crea una sessione dummy per test
             LocalDate today = LocalDate.now();
             ObservableList<com.progetto.Entity.EntityDto.Ricetta> ricette = FXCollections.observableArrayList();
             com.progetto.Entity.EntityDto.Ricetta ricetta = new com.progetto.Entity.EntityDto.Ricetta("Ricetta Test");
@@ -1315,7 +1353,6 @@ public class CreateCourseController {
                     int minutes = durataMinuti % 60;
                     durata = java.time.LocalTime.of(hours, minutes);
                 } catch (Exception e) {
-                    System.out.println("[DEBUG] salvaSessioniPresenza: errore parsing durata: " + e);
                     durata = java.time.LocalTime.of(2, 0);
                 }
                 citta = cityField != null ? cityField.getText() : null;
@@ -1336,25 +1373,39 @@ public class CreateCourseController {
             sessione.setId_Corso(this.lastCreatedCourseId);
             sessione.setChef(chef);
             sessione.setRicette(new ArrayList<>(ricette));
-            System.out.println("[DEBUG] salvaSessioniPresenza: provo a salvare sessione: " + sessione);
             try {
                 presenzaDao.MemorizzaSessione(sessione);
-                System.out.println("[DEBUG] salvaSessioniPresenza: sessione salvata con successo. ID dopo insert: " + sessione.getId_Sessione());
+                // --- COLLEGA OGNI RICETTA ALLA SESSIONE IN SESSIONE_PRESENZA_RICETTA ---
+                for (com.progetto.Entity.EntityDto.Ricetta ricetta : ricette) {
+                    collegaRicettaASessionePresenza(sessione.getId_Sessione(), ricetta.getId_Ricetta());
+                }
             } catch (Exception ex) {
-                System.out.println("[DEBUG] salvaSessioniPresenza: errore durante salvataggio sessione: " + ex);
-                ex.printStackTrace();
+                // Log error if necessario
             }
+        }
+    }
+
+    // --- COLLEGA UNA RICETTA A UNA SESSIONE IN PRESENZA ---
+    private void collegaRicettaASessionePresenza(int idSessione, int idRicetta) {
+        String query = "INSERT INTO sessione_presenza_ricetta (IdSessionePresenza, IdRicetta) VALUES (?, ?)";
+        try (java.sql.Connection conn = com.progetto.jdbc.ConnectionJavaDb.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, idSessione);
+            ps.setInt(2, idRicetta);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            // Log error if necessario
         }
     }
 
     // --- SALVATAGGIO SESSIONI TELEMATICA/IBRIDE ---
     private void salvaSessioniTelematica() {
         if (boundary == null) {
-            System.out.println("[DEBUG] salvaSessioniTelematica: boundary is null, aborting.");
+            // debug print rimosso
             return;
         }
         // Se il corso è solo telematico, usa la lista delle sessioni telematiche pure
-        List<com.progetto.boundary.CreateCourseBoundary.OnlineSessionData> telematicSessions = null;
+        List<com.progetto.Entity.EntityDto.SessioneOnline> telematicSessions = boundary.getSessioniTelematiche();
         try {
             telematicSessions = boundary.getSessioniTelematiche();
         } catch (Exception e) {
@@ -1366,27 +1417,16 @@ public class CreateCourseController {
         }
         com.progetto.Entity.entityDao.SessioneOnlineDao onlineDao = new com.progetto.Entity.entityDao.SessioneOnlineDao();
         com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
-        for (com.progetto.boundary.CreateCourseBoundary.OnlineSessionData session : telematicSessions) {
+        for (com.progetto.Entity.EntityDto.SessioneOnline session : telematicSessions) {
             System.out.println("[DEBUG] salvaSessioniTelematica: session=" + session);
-            java.time.LocalTime durata = null;
-            try {
-                if (session.durationField != null && session.durationField.getText() != null && !session.durationField.getText().isEmpty()) {
-                    int durataMinuti = Integer.parseInt(session.durationField.getText());
-                    int hours = durataMinuti / 60;
-                    int minutes = durataMinuti % 60;
-                    durata = java.time.LocalTime.of(hours, minutes);
-                }
-            } catch (Exception e) {
-                System.out.println("[DEBUG] salvaSessioniTelematica: errore parsing durata: " + e);
-                durata = null;
-            }
+            // Usa direttamente i dati dal DTO
             com.progetto.Entity.EntityDto.SessioneOnline online = new com.progetto.Entity.EntityDto.SessioneOnline(
-                session.datePicker != null && session.datePicker.getValue() != null ? getItalianDayName(session.datePicker.getValue()) : null,
-                session.datePicker != null ? session.datePicker.getValue() : null,
-                (session.hourSpinner != null && session.minuteSpinner != null) ? java.time.LocalTime.of(session.hourSpinner.getValue(), session.minuteSpinner.getValue()) : null,
-                durata,
-                session.applicationCombo != null ? session.applicationCombo.getValue() : null,
-                session.meetingCodeField != null ? session.meetingCodeField.getText() : null,
+                session.getGiorno(),
+                session.getData(),
+                session.getOrario(),
+                session.getDurata(),
+                session.getApplicazione(),
+                session.getCodicechiamata(),
                 null, // descrizione
                 0 // id_Sessione (autoincrement)
             );
@@ -1394,9 +1434,7 @@ public class CreateCourseController {
             online.setChef(chef);
             try {
                 onlineDao.MemorizzaSessione(online);
-                System.out.println("[DEBUG] salvaSessioniTelematica: sessione telematica salvata con successo. ID dopo insert: " + online.getId_Sessione());
             } catch (Exception ex) {
-                System.out.println("[DEBUG] salvaSessioniTelematica: errore durante salvataggio sessione telematica: " + ex);
                 ex.printStackTrace();
             }
         }
@@ -1422,11 +1460,17 @@ public class CreateCourseController {
         ricetta.setId_Ricetta(0);
         ricettaDao.memorizzaRicetta(ricetta);
         if (ricetta.getId_Ricetta() <= 0) {
-            System.err.println("[ERRORE] Impossibile associare ingredienti: id_Ricetta non valido dopo insert (" + ricetta.getNome() + ")");
             return;
         }
+        // Save each ingredient and update its ID before association
         for (Ingredienti ingrediente : ricetta.getIngredientiRicetta()) {
-            ingredientiDao.memorizzaIngredienti(ingrediente);
+            if (ingrediente.getId_Ingrediente() == 0) {
+                ingrediente.setIdIngrediente(0); // Ensure DB generates a new ID
+                ingredientiDao.memorizzaIngredienti(ingrediente);
+            }
+        }
+        // Now associate all ingredients (with correct IDs) to the recipe
+        for (Ingredienti ingrediente : ricetta.getIngredientiRicetta()) {
             ricettaDao.associaIngredientiARicetta(ricetta, ingrediente);
         }
     }
@@ -1445,96 +1489,49 @@ public class CreateCourseController {
         }
     }
 
-    private void salvaSessioniIbride(ricettaDao ricettaDao, IngredientiDao ingredientiDao) {
-        if (boundary == null) {
-            System.out.println("[DEBUG] salvaSessioniIbride: boundary is null, aborting.");
-            return;
-        }
-        List<com.progetto.boundary.CreateCourseBoundary.HybridSessionData> hybridSessions = boundary.getHybridSessions();
-        System.out.println("[DEBUG] salvaSessioniIbride: hybridSessions=" + hybridSessions);
-        int idCorso = -1;
+    // --- NUOVA LOGICA: SALVATAGGIO SESSIONI IBRIDE SMISTATE ---
+    private void salvaSessioniHybridSmistate(ricettaDao ricettaDao, IngredientiDao ingredientiDao) {
+        if (boundary == null) return;
+        boundary.updateHybridSessionsFromUI();
+        List<com.progetto.Entity.EntityDto.Sessione> hybridSessions = boundary.getHybridSessions();
+        if (hybridSessions == null || hybridSessions.isEmpty()) return;
+        com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
+        int idCorso = this.lastCreatedCourseId;
+        Map<java.time.LocalDate, javafx.collections.ObservableList<com.progetto.Entity.EntityDto.Ricetta>> hybridSessionRecipes = null;
         try {
-            idCorso = this.lastCreatedCourseId;
+            hybridSessionRecipes = boundary.getHybridSessionRecipes();
         } catch (Exception e) {
-            System.out.println("[DEBUG] salvaSessioniIbride: errore nel recupero idCorso: " + e);
-            idCorso = -1;
+            hybridSessionRecipes = new java.util.HashMap<>();
         }
-        if (idCorso == -1) {
-            System.out.println("[DEBUG] salvaSessioniIbride: idCorso non valido, aborting.");
-            return;
-        }
-
         com.progetto.Entity.entityDao.SessioneInPresenzaDao presenzaDao = new com.progetto.Entity.entityDao.SessioneInPresenzaDao();
         com.progetto.Entity.entityDao.SessioneOnlineDao onlineDao = new com.progetto.Entity.entityDao.SessioneOnlineDao();
-        if (hybridSessions == null || hybridSessions.isEmpty()) {
-            System.out.println("[DEBUG] salvaSessioniIbride: hybridSessions is null or empty, aborting.");
-            return;
-        }
-        for (com.progetto.boundary.CreateCourseBoundary.HybridSessionData session : hybridSessions) {
-            String tipo = session.typeCombo != null ? session.typeCombo.getValue() : null;
-            String giorno = session.datePicker != null && session.datePicker.getValue() != null ? getItalianDayName(session.datePicker.getValue()) : null;
-            java.time.LocalDate data = session.datePicker != null ? session.datePicker.getValue() : null;
-            java.time.LocalTime orario = (session.hourSpinner != null && session.minuteSpinner != null) ? java.time.LocalTime.of(session.hourSpinner.getValue(), session.minuteSpinner.getValue()) : null;
-            java.time.LocalTime durata = null;
-            try {
-                if (session.durationField != null && session.durationField.getText() != null && !session.durationField.getText().isEmpty()) {
-                    int durataMinuti = Integer.parseInt(session.durationField.getText());
-                    int hours = durataMinuti / 60;
-                    int minutes = durataMinuti % 60;
-                    durata = java.time.LocalTime.of(hours, minutes);
-                }
-            } catch (Exception e) {
-                System.out.println("[DEBUG] salvaSessioniIbride: errore parsing durata: " + e);
-                durata = null;
+        // Prima salva tutte le sessioni telematiche
+        for (com.progetto.Entity.EntityDto.Sessione session : hybridSessions) {
+            if (session instanceof com.progetto.Entity.EntityDto.SessioneOnline) {
+                com.progetto.Entity.EntityDto.SessioneOnline s = (com.progetto.Entity.EntityDto.SessioneOnline) session;
+                s.setId_Corso(idCorso);
+                s.setChef(chef);
+                onlineDao.MemorizzaSessione(s);
             }
-            System.out.println("[DEBUG] salvaSessioniIbride: tipo=" + tipo + ", giorno=" + giorno + ", data=" + data + ", orario=" + orario + ", durata=" + durata + ", session=" + session);
-            if ("In presenza".equals(tipo)) {
-            com.progetto.Entity.EntityDto.SessioniInPresenza pres = new com.progetto.Entity.EntityDto.SessioniInPresenza(
-                getItalianDayName(data),
-                data,
-                orario,
-                durata,
-                session.cityField != null ? session.cityField.getText() : null,
-                session.streetField != null ? session.streetField.getText() : null,
-                session.capField != null ? session.capField.getText() : null,
-                null, // attrezzatura
-                0 // id_Sessione (verrà autoincrementato dal DB)
-            );
-                pres.setId_Corso(idCorso);
-                if (session.ricette != null) {
-                    pres.setRicette(new java.util.ArrayList<>(session.ricette));
-                    for (Ricetta ricetta : session.ricette) {
-                        salvaRicettaCompleta(ricetta, ricettaDao, ingredientiDao);
-                    }
+        }
+        // Poi salva tutte le sessioni in presenza e le relative ricette
+        for (com.progetto.Entity.EntityDto.Sessione session : hybridSessions) {
+            if (session instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
+                com.progetto.Entity.EntityDto.SessioniInPresenza s = (com.progetto.Entity.EntityDto.SessioniInPresenza) session;
+                s.setId_Corso(idCorso);
+                s.setChef(chef);
+                // Salva la sessione in presenza nel DB
+                presenzaDao.MemorizzaSessione(s);
+                // Salva e collega le ricette a questa sessione
+                java.util.List<com.progetto.Entity.EntityDto.Ricetta> ricette = new java.util.ArrayList<>();
+                if (hybridSessionRecipes != null && hybridSessionRecipes.containsKey(s.getData())) {
+                    ricette.addAll(hybridSessionRecipes.get(s.getData()));
                 }
-                try {
-                    presenzaDao.MemorizzaSessione(pres);
-                    System.out.println("[DEBUG] salvaSessioniIbride: sessione in presenza salvata con successo. ID dopo insert: " + pres.getId_Sessione());
-                } catch (Exception ex) {
-                    System.out.println("[DEBUG] salvaSessioniIbride: errore durante salvataggio sessione in presenza: " + ex);
-                    ex.printStackTrace();
+                for (com.progetto.Entity.EntityDto.Ricetta ricetta : ricette) {
+                    // Salva la ricetta e i suoi ingredienti se non già salvati
+                    salvaRicettaCompleta(ricetta, ricettaDao, ingredientiDao);
+                    collegaRicettaASessionePresenza(s.getId_Sessione(), ricetta.getId_Ricetta());
                 }
-            } else if ("Telematica".equals(tipo)) {
-                com.progetto.Entity.EntityDto.SessioneOnline online = new com.progetto.Entity.EntityDto.SessioneOnline(
-                    giorno,
-                    data,
-                    orario,
-                    durata,
-                    session.applicationCombo != null ? session.applicationCombo.getValue() : null,
-                    session.meetingCodeField != null ? session.meetingCodeField.getText() : null,
-                    null, // descrizione
-                    0 // id_Sessione (verrà autoincrementato dal DB)
-                );
-                online.setId_Corso(idCorso);
-                try {
-                    onlineDao.MemorizzaSessione(online);
-                    System.out.println("[DEBUG] salvaSessioniIbride: sessione telematica salvata con successo. ID dopo insert: " + online.getId_Sessione());
-                } catch (Exception ex) {
-                    System.out.println("[DEBUG] salvaSessioniIbride: errore durante salvataggio sessione telematica: " + ex);
-                    ex.printStackTrace();
-                }
-            } else {
-                System.out.println("[DEBUG] salvaSessioniIbride: tipo non riconosciuto o nullo: " + tipo);
             }
         }
     }

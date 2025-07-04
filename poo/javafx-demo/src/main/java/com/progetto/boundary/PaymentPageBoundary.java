@@ -308,7 +308,7 @@ public class PaymentPageBoundary implements Initializable {
      * Imposta il corso selezionato da acquistare.
      */
     public void setSelectedCorso(com.progetto.Entity.EntityDto.Corso corso) {
-        System.out.println("[DEBUG] setSelectedCorso: idCorso=" + (corso != null ? corso.getId_Corso() : "null") + ", nomeCorso=" + (corso != null ? corso.getNome() : "null"));
+        // Debug print removed
         this.selectedCorso = corso;
         if (corso != null) {
             setCourseDetails(corso.getNome(), corso.getDescrizione(), String.format("€%.2f", corso.getPrezzo()));

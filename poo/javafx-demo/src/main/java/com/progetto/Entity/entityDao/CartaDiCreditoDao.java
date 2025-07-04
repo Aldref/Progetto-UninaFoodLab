@@ -58,7 +58,7 @@ public class CartaDiCreditoDao {
         try {
             conn = ConnectionJavaDb.getConnection();
             // 1. Cerca se esiste già una carta identica
-            String selectId = "SELECT IdCarta FROM Carta WHERE Intestatario = ? AND DataScadenza = ? AND UltimeQuattroCifre = ? AND Circuito = ? ORDER BY IdCarta DESC LIMIT 1";
+            String selectId = "SELECT IdCarta FROM Carta WHERE Intestatario = ? AND DataScadenza = ? AND UltimeQuattroCifre = ? AND Circuito = ?::Circuito ORDER BY IdCarta DESC LIMIT 1";
             psSelect = conn.prepareStatement(selectId);
             psSelect.setString(1, carta.getIntestatario());
             psSelect.setDate(2, java.sql.Date.valueOf(carta.getDataScadenza()));
@@ -70,7 +70,7 @@ public class CartaDiCreditoDao {
                 carta.setIdCarta(String.valueOf(rsSelect.getInt("IdCarta")));
             } else {
                 // Non esiste: inserisci la carta
-                String query = "INSERT INTO Carta (Intestatario, DataScadenza, UltimeQuattroCifre, Circuito) VALUES (?, ?, ?, ?)";
+                String query = "INSERT INTO Carta (Intestatario, DataScadenza, UltimeQuattroCifre, Circuito) VALUES (?, ?, ?, ?::Circuito)";
                 psInsert = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
                 psInsert.setString(1, carta.getIntestatario());
                 psInsert.setDate(2, java.sql.Date.valueOf(carta.getDataScadenza()));

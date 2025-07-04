@@ -78,7 +78,7 @@ public class MonthlyReportBoundary {
             Stage stage = (Stage) chefNameLabel.getScene().getWindow();
             SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Dashboard Chef");
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO: handle exception appropriately (logging or user feedback)
         }
     }
 
@@ -88,7 +88,7 @@ public class MonthlyReportBoundary {
             Stage stage = (Stage) chefNameLabel.getScene().getWindow();
             SceneSwitcher.switchScene(stage, "/fxml/createcourse.fxml", "UninaFoodLab - Crea Corso");
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO: handle exception appropriately (logging or user feedback)
         }
     }
 
@@ -98,7 +98,7 @@ public class MonthlyReportBoundary {
             Stage stage = (Stage) chefNameLabel.getScene().getWindow();
             SceneSwitcher.switchScene(stage, "/fxml/accountmanagementchef.fxml", "UninaFoodLab - Gestione Account Chef");
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO: handle exception appropriately (logging or user feedback)
         }
     }
 
@@ -112,7 +112,7 @@ public class MonthlyReportBoundary {
                 SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO: handle exception appropriately (logging or user feedback)
         }
     }
 

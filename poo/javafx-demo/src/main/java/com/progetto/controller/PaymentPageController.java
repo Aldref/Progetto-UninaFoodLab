@@ -133,7 +133,7 @@ public class PaymentPageController {
             // Dopo aver mostrato il dialog di successo, torna alla homepage
             boundary.navigateToSuccess();
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO: handle exception appropriately (logging or user feedback)
             showSuccessAlert(); // Fallback al dialog semplice
             // Anche nel caso di fallback, torna alla homepage
             boundary.navigateToSuccess();

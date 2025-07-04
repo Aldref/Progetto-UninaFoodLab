@@ -208,6 +208,14 @@ public class EnrolledCoursesController {
 
     private void updateCourseCards() {
         mainContentArea.getChildren().clear();
+        if (filteredCourseCards.isEmpty()) {
+            Label noCoursesLabel = new Label("Iscriviti a un corso per iniziare!");
+            noCoursesLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: #888; -fx-font-weight: bold;");
+            mainContentArea.getChildren().add(noCoursesLabel);
+            if (prevButton != null) prevButton.setDisable(true);
+            if (nextButton != null) nextButton.setDisable(true);
+            return;
+        }
         int start = currentPage * CARDS_PER_PAGE;
         int end = Math.min(start + CARDS_PER_PAGE, filteredCourseCards.size());
         if (start < 0) start = 0;

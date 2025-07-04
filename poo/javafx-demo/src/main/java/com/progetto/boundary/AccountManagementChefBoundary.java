@@ -132,10 +132,16 @@ public class AccountManagementChefBoundary {
                     // URL da risorse o da jar
                     img = new javafx.scene.image.Image(propicPath, 256, 256, true, true);
                 } else {
-                    // Path relativo: sviluppo locale
-                    File imgFile = new File("src/main/resources/" + propicPath);
-                    if (imgFile.exists()) {
-                        img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
+                    // Prima prova come path assoluto (caso preview o salvataggio)
+                    File absFile = new File(propicPath);
+                    if (absFile.exists()) {
+                        img = new javafx.scene.image.Image(absFile.toURI().toString(), 256, 256, true, true);
+                    } else {
+                        // Path relativo: sviluppo locale
+                        File imgFile = new File("src/main/resources/" + propicPath);
+                        if (imgFile.exists()) {
+                            img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
+                        }
                     }
                 }
             } catch (Exception e) {

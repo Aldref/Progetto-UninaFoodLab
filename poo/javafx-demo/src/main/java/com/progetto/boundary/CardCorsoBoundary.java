@@ -104,10 +104,25 @@ public class CardCorsoBoundary {
 
     public void setCourseImage(String imagePath) {
         try {
-            Image image = new Image(getClass().getResourceAsStream(imagePath));
+            Image image;
+            if (imagePath != null && (imagePath.startsWith("/immagini/") || imagePath.startsWith("immagini/"))) {
+                // Gestione immagini custom e default
+                String path = imagePath.startsWith("/") ? imagePath : "/" + imagePath;
+                image = new Image(getClass().getResourceAsStream(path));
+            } else if (imagePath != null && (new java.io.File("src/main/resources/" + imagePath)).exists()) {
+                // Percorso assoluto custom (fallback)
+                image = new Image((new java.io.File("src/main/resources/" + imagePath)).toURI().toString());
+            } else {
+                // Fallback su default
+                image = new Image(getClass().getResourceAsStream("/immagini/corso_default.png"));
+            }
             courseImage.setImage(image);
         } catch (Exception e) {
-            // System.out.println("Immagine non trovata: " + imagePath); // Disabilitato log immagini mancanti
+            // Fallback su default
+            try {
+                Image image = new Image(getClass().getResourceAsStream("/immagini/corso_default.png"));
+                courseImage.setImage(image);
+            } catch (Exception ignored) {}
         }
     }
 
