@@ -4,8 +4,10 @@ com\progetto\utils\ImageClipUtils.class
 com\progetto\boundary\LoginBoundary.class
 com\progetto\boundary\UserCardsBoundary.class
 com\progetto\controller\CreateCourseController$1.class
+com\progetto\boundary\EditCourseBoundary$2.class
 com\progetto\boundary\AccountManagementChefBoundary.class
 com\progetto\Entity\EntityDto\GraficoChef.class
+com\progetto\boundary\EditCourseBoundary$5.class
 com\progetto\controller\PaymentPageController.class
 com\progetto\Entity\EntityDto\CartaDiCredito.class
 com\progetto\utils\ErroriEmail.class
@@ -21,9 +23,8 @@ com\progetto\Entity\EntityDto\Utente.class
 com\progetto\controller\RegisterController.class
 com\progetto\controller\HomepageUtenteController$1.class
 com\progetto\controller\EditCourseController$2.class
-com\progetto\controller\EditCourseController$Ingredient.class
 com\progetto\controller\CreateCourseController$3.class
-com\progetto\controller\EditCourseController$Recipe.class
+com\progetto\boundary\EditCourseBoundary$4.class
 com\progetto\boundary\RegisterBoundary.class
 com\progetto\Entity\entityDao\UtenteVisitatoreDao.class
 com\progetto\boundary\CreateCourseBoundary$3.class
@@ -60,6 +61,7 @@ com\progetto\utils\SceneSwitcher.class
 com\progetto\Entity\entityDao\SessioneOnlineDao.class
 com\progetto\utils\CardValidator.class
 com\progetto\controller\CreateCourseController$2.class
+com\progetto\boundary\EditCourseBoundary$3.class
 com\progetto\Entity\entityDao\CorsoDao.class
 com\progetto\jdbc\SupportDb.class
 com\progetto\Entity\entityDao\CartaDiCreditoDao.class
@@ -77,6 +79,6 @@ com\progetto\Entity\EntityDto\UtenteVisitatore.class
 com\progetto\controller\EditCourseController$1.class
 com\progetto\utils\SuccessDialogUtils.class
 com\progetto\boundary\CreateCourseBoundary.class
+com\progetto\boundary\EditCourseBoundary$1.class
 com\progetto\boundary\CreateCourseBoundary$1.class
 com\progetto\boundary\UserCardsBoundary$1.class
-com\progetto\controller\EditCourseController$CourseData.class

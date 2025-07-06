@@ -229,8 +229,19 @@ public class CardCorsoController {
 
     public void handleEdit() {
         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/editcourse.fxml"));
+            Parent root = loader.load();
+            com.progetto.boundary.EditCourseBoundary boundary = loader.getController();
+            if (corso != null) {
+                System.out.println("[DEBUG] CardCorsoController.handleEdit: corso.getId_Corso() = " + corso.getId_Corso());
+                boundary.setCourseId(corso.getId_Corso());
+            } else {
+                System.out.println("[DEBUG] CardCorsoController.handleEdit: corso è null!");
+            }
             Stage stage = (Stage) editButton.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/editcourse.fxml", "UninaFoodLab - Modifica Corso");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.setTitle("UninaFoodLab - Modifica Corso");
+            stage.show();
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Errore", "Impossibile aprire la pagina di modifica del corso.");

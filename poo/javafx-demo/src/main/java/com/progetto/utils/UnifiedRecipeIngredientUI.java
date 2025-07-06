@@ -115,8 +115,13 @@ public class UnifiedRecipeIngredientUI {
         } else {
             unitaCombo.getItems().addAll("g", "kg", "ml", "l", "cucchiaino", "cucchiaio", "tazza", "pz", "spicchio", "foglia", "rametto");
         }
-        unitaCombo.setValue(ingrediente.getUnitaMisura() != null && !ingrediente.getUnitaMisura().isEmpty() ? ingrediente.getUnitaMisura() : null);
-        unitaCombo.setEditable(true);
+        if (ingrediente.getUnitaMisura() != null && !ingrediente.getUnitaMisura().isEmpty()) {
+            unitaCombo.setValue(ingrediente.getUnitaMisura());
+        } else if (!unitaCombo.getItems().isEmpty()) {
+            unitaCombo.setValue(unitaCombo.getItems().get(0));
+            ingrediente.setUnitaMisura(unitaCombo.getItems().get(0));
+        }
+        unitaCombo.setEditable(false);
         unitaCombo.setPromptText("Unità");
         unitaCombo.getStyleClass().add("combo-box");
         unitaCombo.valueProperty().addListener((obs, oldVal, newVal) -> {

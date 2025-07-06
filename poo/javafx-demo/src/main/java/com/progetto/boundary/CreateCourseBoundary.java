@@ -1,4 +1,11 @@
 package com.progetto.boundary;
+import javafx.scene.Node;
+import javafx.scene.control.ListCell;
+import java.time.LocalTime;
+
+import com.progetto.Entity.EntityDto.Sessione;
+import com.progetto.Entity.EntityDto.SessioneOnline;
+import com.progetto.Entity.EntityDto.SessioniInPresenza;
 
 import com.progetto.utils.UnifiedRecipeIngredientUI;
 import javafx.fxml.FXML;
@@ -102,17 +109,17 @@ public class CreateCourseBoundary {
     
     // === DATI PER LA MODALITÀ IBRIDA ===
     // Ora contiene SessioniInPresenza o SessioneOnline
-    private final List<com.progetto.Entity.EntityDto.Sessione> hybridSessions = new ArrayList<>();
+private final List<Sessione> hybridSessions = new ArrayList<>();
 
     // === DATI PER LE SESSIONI TELEMATICA PURE ===
     /**
      * Restituisce la lista delle sessioni telematiche pure per "Telematica" (non ibride) come DTO SessioneOnline
      */
-    public List<com.progetto.Entity.EntityDto.SessioneOnline> getSessioniTelematiche() {
-        List<com.progetto.Entity.EntityDto.SessioneOnline> result = new ArrayList<>();
+    public List<SessioneOnline> getSessioniTelematiche() {
+        List<SessioneOnline> result = new ArrayList<>();
         if ("Telematica".equals(lessonTypeComboBox.getValue())) {
             List<String> giorniSelezionati = new ArrayList<>();
-            for (javafx.scene.Node node : onlineDayOfWeekContainer.getChildren()) {
+            for (Node node : onlineDayOfWeekContainer.getChildren()) {
                 if (node instanceof CheckBox && ((CheckBox) node).isSelected()) {
                     giorniSelezionati.add(((CheckBox) node).getText());
                 }
@@ -139,11 +146,11 @@ public class CreateCourseBoundary {
                     }
                     while (!current.isAfter(fine)) {
                         // Crea una SessioneOnline per ogni data
-                        com.progetto.Entity.EntityDto.SessioneOnline sessione = new com.progetto.Entity.EntityDto.SessioneOnline(
+                        SessioneOnline sessione = new SessioneOnline(
                             giorno,
                             current,
-                            java.time.LocalTime.of(onlineHourSpinner.getValue(), onlineMinuteSpinner.getValue()),
-                            java.time.LocalTime.of(Integer.parseInt(onlineDurationField.getText().isEmpty() ? "1" : onlineDurationField.getText()), 0),
+                            LocalTime.of(onlineHourSpinner.getValue(), onlineMinuteSpinner.getValue()),
+                            LocalTime.of(Integer.parseInt(onlineDurationField.getText().isEmpty() ? "1" : onlineDurationField.getText()), 0),
                             applicationComboBox.getValue() != null ? applicationComboBox.getValue() : "",
                             meetingCodeField.getText() != null ? meetingCodeField.getText() : "",
                             "",
@@ -279,7 +286,7 @@ public class CreateCourseBoundary {
             sessionControls.put("dayCombo", dayCombo);
 
             // Imposta la cell factory custom per disabilitare i giorni già scelti
-            dayCombo.setCellFactory(lv -> new javafx.scene.control.ListCell<String>() {
+            dayCombo.setCellFactory(lv -> new ListCell<String>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
@@ -361,9 +368,9 @@ public class CreateCourseBoundary {
                     VBox presenceDetails = createPresenceDetails();
                     detailsContainer.getChildren().add(presenceDetails);
                     // Find and store city, street, cap fields
-                    for (javafx.scene.Node hbox : presenceDetails.getChildren()) {
+                    for (Node hbox : presenceDetails.getChildren()) {
                         if (hbox instanceof HBox) {
-                            List<javafx.scene.Node> fields = ((HBox) hbox).getChildren();
+                            List<Node> fields = ((HBox) hbox).getChildren();
                             if (fields.size() == 2 && fields.get(1) instanceof TextField) {
                                 String label = ((Label) fields.get(0)).getText().toLowerCase();
                                 if (label.contains("citt")) sessionControls.put("cityField", (TextField) fields.get(1));
@@ -397,9 +404,9 @@ public class CreateCourseBoundary {
                     VBox onlineDetails = createOnlineDetails();
                     detailsContainer.getChildren().add(onlineDetails);
                     // Find and store applicationComboBox and meetingCodeField
-                    for (javafx.scene.Node hbox : onlineDetails.getChildren()) {
+                    for (Node hbox : onlineDetails.getChildren()) {
                         if (hbox instanceof HBox) {
-                            List<javafx.scene.Node> fields = ((HBox) hbox).getChildren();
+                            List<Node> fields = ((HBox) hbox).getChildren();
                             if (fields.size() == 2) {
                                 if (fields.get(1) instanceof ComboBox) sessionControls.put("applicationComboBox", (ComboBox<?>) fields.get(1));
                                 else if (fields.get(1) instanceof TextField) {
@@ -480,7 +487,7 @@ public class CreateCourseBoundary {
             String current = combo.getValue();
             combo.getItems().forEach(day -> {
                 boolean disable = selectedDays.contains(day) && !day.equals(current);
-                combo.setCellFactory(lv -> new javafx.scene.control.ListCell<String>() {
+                combo.setCellFactory(lv -> new ListCell<String>() {
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
@@ -956,12 +963,12 @@ public class CreateCourseBoundary {
             LocalDate fine = endDatePicker.getValue();
             List<LocalDate> dateSessioni = calcolaDateSessioniPresenzaHybrid(giorno, inizio, fine);
             for (LocalDate data : dateSessioni) {
-                java.time.LocalTime orario = java.time.LocalTime.of(hourSpinner.getValue(), minuteSpinner.getValue());
-                java.time.LocalTime durata;
+                LocalTime orario = LocalTime.of(hourSpinner.getValue(), minuteSpinner.getValue());
+                LocalTime durata;
                 try {
                     int dur = Integer.parseInt(durationField.getText());
-                    durata = java.time.LocalTime.of(dur, 0);
-                } catch (Exception e) { durata = java.time.LocalTime.of(1, 0); }
+                    durata = LocalTime.of(dur, 0);
+                } catch (Exception e) { durata = LocalTime.of(1, 0); }
                 if ("In presenza".equals(tipo)) {
                     TextField cityField = (TextField) controls.get("cityField");
                     TextField streetField = (TextField) controls.get("streetField");
@@ -995,7 +1002,7 @@ public class CreateCourseBoundary {
      * Restituisce i dati delle sessioni ibride per la validazione
      */
     // Restituisce le sessioni ibride come lista di Sessione (SessioniInPresenza o SessioneOnline)
-    public List<com.progetto.Entity.EntityDto.Sessione> getHybridSessions() {
+    public List<Sessione> getHybridSessions() {
         return new ArrayList<>(hybridSessions);
     }
     
@@ -1005,9 +1012,9 @@ public class CreateCourseBoundary {
     public Map<LocalDate, ObservableList<Ricetta>> getHybridSessionRecipes() {
         Map<LocalDate, ObservableList<Ricetta>> result = new HashMap<>();
         // Prendi solo le date delle sessioni ibride di tipo presenza
-        for (com.progetto.Entity.EntityDto.Sessione session : hybridSessions) {
-            if (session instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
-                LocalDate data = ((com.progetto.Entity.EntityDto.SessioniInPresenza) session).getData();
+        for (Sessione session : hybridSessions) {
+            if (session instanceof SessioniInPresenza) {
+                LocalDate data = ((SessioniInPresenza) session).getData();
                 if (data != null && sessionePresenzaRicette.containsKey(data)) {
                     result.put(data, sessionePresenzaRicette.get(data));
                 }
@@ -1113,9 +1120,9 @@ public class CreateCourseBoundary {
     /**
      * Ritorna tutti i discendenti (ricorsivo) di un nodo JavaFX
      */
-    private java.util.List<javafx.scene.Node> getAllDescendants(javafx.scene.Parent parent) {
-        java.util.List<javafx.scene.Node> descendants = new java.util.ArrayList<>();
-        for (javafx.scene.Node child : parent.getChildrenUnmodifiable()) {
+    private java.util.List<Node> getAllDescendants(javafx.scene.Parent parent) {
+        java.util.List<Node> descendants = new java.util.ArrayList<>();
+        for (Node child : parent.getChildrenUnmodifiable()) {
             descendants.add(child);
             if (child instanceof javafx.scene.Parent) {
                 descendants.addAll(getAllDescendants((javafx.scene.Parent) child));

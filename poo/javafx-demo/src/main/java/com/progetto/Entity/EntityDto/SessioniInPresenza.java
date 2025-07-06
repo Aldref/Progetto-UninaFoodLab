@@ -4,6 +4,18 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class SessioniInPresenza extends Sessione {
+
+    // No-arg constructor for DAO usage
+    public SessioniInPresenza() {
+        super(null, null, null, null, 0);
+        this.citta = null;
+        this.via = null;
+        this.cap = null;
+        this.attrezzatura = null;
+        this.descrizione = null;
+        this.corsoListPartecipanti = new ArrayList<>();
+        this.ricette = new ArrayList<>();
+    }
     private String citta, via, cap, attrezzatura;
     private String descrizione;
     private ArrayList<UtenteVisitatore> corsoListPartecipanti;

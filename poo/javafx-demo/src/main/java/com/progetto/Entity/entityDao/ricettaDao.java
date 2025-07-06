@@ -10,7 +10,28 @@ import com.progetto.Entity.EntityDto.Ingredienti;
 import com.progetto.Entity.EntityDto.Ricetta;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
+
 public class ricettaDao {
+
+    // Rimuove l'associazione tra una ricetta e un ingrediente (tabella PREPARAZIONEINGREDIENTE)
+    public void rimuoviAssociazioneIngrediente(Ricetta ricetta, Ingredienti ingrediente) {
+        String query = "DELETE FROM PREPARAZIONEINGREDIENTE WHERE IdRicetta = ? AND IdIngrediente = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        SupportDb dbu = new SupportDb();
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, ricetta.getId_Ricetta());
+            ps.setInt(2, ingrediente.getId_Ingrediente());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeStatement(ps);
+            dbu.closeConnection(conn);
+        }
+    }
 
     public ArrayList<Ingredienti> getIngredientiRicetta(Ricetta ricetta) {
         String query = "Select I.Nome, I.UnitaDiMisura, I.IdIngrediente, P.QuanititaUnitaria from INGREDIENTE I Natural join PREPARAZIONEINGREDIENTE P where P.IdRicetta=?";

@@ -69,7 +69,7 @@ public class CorsoDao{
 
 }
     public Corso getCorsoById(int idCorso) {
-        String query = "SELECT * FROM Corso WHERE id_Corso = ?";
+        String query = "SELECT * FROM Corso WHERE idCorso = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -84,7 +84,7 @@ public class CorsoDao{
 
             if (rs.next()) {
                 corso = new Corso(rs.getString("Nome"), rs.getString("Descrizione"), rs.getDate("DataInizio").toLocalDate(), rs.getDate("DataFine").toLocalDate(), rs.getString("FrequenzaDelleSessioni"), rs.getInt("MaxPersone"), rs.getFloat("Prezzo"), rs.getString("Propic"));
-                corso.setId_Corso(rs.getInt("idcorso")); // nome corretto dal DB
+                corso.setId_Corso(rs.getInt("idCorso")); // nome corretto dal DB
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -120,7 +120,7 @@ public class CorsoDao{
                         rs.getFloat("Prezzo"),
                         rs.getString("Propic")
                 );
-                corso.setId_Corso(rs.getInt("idcorso"));
+                corso.setId_Corso(rs.getInt("idCorso"));
                 corso.setChefNome(rs.getString("chef_nome"));
                 corso.setChefCognome(rs.getString("chef_cognome"));
                 corso.setChefEsperienza(rs.getInt("chef_esperienza"));

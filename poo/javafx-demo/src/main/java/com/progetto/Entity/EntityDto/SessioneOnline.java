@@ -3,6 +3,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class SessioneOnline extends Sessione {
+
+    // No-arg constructor for DAO usage
+    public SessioneOnline() {
+        super(null, null, null, null, 0);
+        this.Applicazione = null;
+        this.Codicechiamata = null;
+        this.Descrizione = null;
+    }
     String Applicazione, Codicechiamata, Descrizione;
 
     public SessioneOnline(String giorno, LocalDate data, LocalTime orario, java.time.LocalTime durata, String applicazione, String codicechiamata, String descrizione, int id_Sessione) {

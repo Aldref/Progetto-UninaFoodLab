@@ -10,15 +10,26 @@ import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.Sessione;
 import com.progetto.Entity.EntityDto.SessioneOnline;
 import com.progetto.Entity.EntityDto.SessioniInPresenza;
+import com.progetto.Entity.entityDao.SessioneOnlineDao;
 import com.progetto.boundary.LogoutDialogBoundary;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
+import com.progetto.Entity.EntityDto.Chef;
+import com.progetto.Entity.entityDao.ChefDao;
+import com.progetto.Entity.entityDao.SessioneInPresenzaDao;
+import com.progetto.boundary.CreateCourseBoundary;
+import com.progetto.jdbc.ConnectionJavaDb;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.Observable;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -27,7 +38,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
+import javafx.util.Duration;
+import javafx.util.StringConverter;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -42,6 +54,37 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import com.progetto.boundary.CreateCourseBoundary;
+import com.progetto.jdbc.ConnectionJavaDb;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.util.StringConverter;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class CreateCourseController {
@@ -1114,19 +1157,19 @@ public class CreateCourseController {
     private boolean validateHybridSessions() {
         if (boundary != null) {
             // Ricette obbligatorie: per ogni sessione ibrida in presenza deve esserci almeno una ricetta valida
-            java.util.List<com.progetto.Entity.EntityDto.Sessione> hybridSessions = boundary.getHybridSessions();
-            java.util.Map<java.time.LocalDate, javafx.collections.ObservableList<com.progetto.Entity.EntityDto.Ricetta>> hybridSessionRecipes = boundary.getHybridSessionRecipes();
+            List<Sessione> hybridSessions = boundary.getHybridSessions();
+            Map<LocalDate, ObservableList<Ricetta>> hybridSessionRecipes = boundary.getHybridSessionRecipes();
             boolean ricetteOk = true;
             if (hybridSessions != null && !hybridSessions.isEmpty()) {
-                for (com.progetto.Entity.EntityDto.Sessione sessione : hybridSessions) {
-                    if (sessione instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
-                        java.time.LocalDate data = sessione.getData();
-                        javafx.collections.ObservableList<com.progetto.Entity.EntityDto.Ricetta> ricetteGiorno = hybridSessionRecipes.get(data);
+                for (Sessione sessione : hybridSessions) {
+                    if (sessione instanceof SessioniInPresenza) {
+                        LocalDate data = sessione.getData();
+                        ObservableList<Ricetta> ricetteGiorno = hybridSessionRecipes.get(data);
                         if (ricetteGiorno == null || ricetteGiorno.isEmpty()) {
                             ricetteOk = false;
                             break;
                         }
-                        for (com.progetto.Entity.EntityDto.Ricetta ricetta : ricetteGiorno) {
+                        for (Ricetta ricetta : ricetteGiorno) {
                             if (ricetta == null || ricetta.getNome() == null || ricetta.getNome().trim().isEmpty()) {
                                 ricetteOk = false;
                                 break;
@@ -1325,23 +1368,23 @@ public class CreateCourseController {
         if (boundary == null) {
             return;
         }
-        Map<LocalDate, ObservableList<com.progetto.Entity.EntityDto.Ricetta>> sessioniPresenza = boundary.getSessionePresenzaRicette();
+        Map<LocalDate, ObservableList<Ricetta>> sessioniPresenza = boundary.getSessionePresenzaRicette();
         if (sessioniPresenza == null || sessioniPresenza.isEmpty()) {
             LocalDate today = LocalDate.now();
-            ObservableList<com.progetto.Entity.EntityDto.Ricetta> ricette = FXCollections.observableArrayList();
-            com.progetto.Entity.EntityDto.Ricetta ricetta = new com.progetto.Entity.EntityDto.Ricetta("Ricetta Test");
+            ObservableList<Ricetta> ricette = FXCollections.observableArrayList();
+            Ricetta ricetta = new Ricetta("Ricetta Test");
             ricetta.setIngredientiRicetta(new ArrayList<>());
-            ricetta.getIngredientiRicetta().add(new com.progetto.Entity.EntityDto.Ingredienti("Ingrediente Test", 1, "g"));
+            ricetta.getIngredientiRicetta().add(new Ingredienti("Ingrediente Test", 1, "g"));
             ricette.add(ricetta);
             sessioniPresenza = new HashMap<>();
             sessioniPresenza.put(today, ricette);
         }
-        com.progetto.Entity.entityDao.SessioneInPresenzaDao presenzaDao = new com.progetto.Entity.entityDao.SessioneInPresenzaDao();
-        com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
+        SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
+        Chef chef = Chef.loggedUser;
         String lessonType = lessonTypeComboBox.getValue();
-        for (Map.Entry<LocalDate, ObservableList<com.progetto.Entity.EntityDto.Ricetta>> entry : sessioniPresenza.entrySet()) {
+        for (Map.Entry<LocalDate, ObservableList<Ricetta>> entry : sessioniPresenza.entrySet()) {
             LocalDate data = entry.getKey();
-            ObservableList<com.progetto.Entity.EntityDto.Ricetta> ricette = entry.getValue();
+            ObservableList<Ricetta> ricette = entry.getValue();
             java.time.LocalTime orario = java.time.LocalTime.of(18, 0);
             java.time.LocalTime durata = java.time.LocalTime.of(2, 0); // default 120 min = 2h 0m
             String citta = null, via = null, cap = null;
@@ -1359,7 +1402,7 @@ public class CreateCourseController {
                 via = streetField != null ? streetField.getText() : null;
                 cap = capField != null ? capField.getText() : null;
             }
-            com.progetto.Entity.EntityDto.SessioniInPresenza sessione = new com.progetto.Entity.EntityDto.SessioniInPresenza(
+            SessioniInPresenza sessione = new SessioniInPresenza(
                 getItalianDayName(data),
                 data,
                 orario,
@@ -1376,7 +1419,7 @@ public class CreateCourseController {
             try {
                 presenzaDao.MemorizzaSessione(sessione);
                 // --- COLLEGA OGNI RICETTA ALLA SESSIONE IN SESSIONE_PRESENZA_RICETTA ---
-                for (com.progetto.Entity.EntityDto.Ricetta ricetta : ricette) {
+                for (Ricetta ricetta : ricette) {
                     collegaRicettaASessionePresenza(sessione.getId_Sessione(), ricetta.getId_Ricetta());
                 }
             } catch (Exception ex) {
@@ -1405,7 +1448,7 @@ public class CreateCourseController {
             return;
         }
         // Se il corso è solo telematico, usa la lista delle sessioni telematiche pure
-        List<com.progetto.Entity.EntityDto.SessioneOnline> telematicSessions = boundary.getSessioniTelematiche();
+        List<SessioneOnline> telematicSessions = boundary.getSessioniTelematiche();
         try {
             telematicSessions = boundary.getSessioniTelematiche();
         } catch (Exception e) {
@@ -1417,10 +1460,10 @@ public class CreateCourseController {
         }
         com.progetto.Entity.entityDao.SessioneOnlineDao onlineDao = new com.progetto.Entity.entityDao.SessioneOnlineDao();
         com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
-        for (com.progetto.Entity.EntityDto.SessioneOnline session : telematicSessions) {
+        for (SessioneOnline session : telematicSessions) {
             System.out.println("[DEBUG] salvaSessioniTelematica: session=" + session);
             // Usa direttamente i dati dal DTO
-            com.progetto.Entity.EntityDto.SessioneOnline online = new com.progetto.Entity.EntityDto.SessioneOnline(
+            SessioneOnline online = new SessioneOnline(
                 session.getGiorno(),
                 session.getData(),
                 session.getOrario(),
@@ -1493,41 +1536,41 @@ public class CreateCourseController {
     private void salvaSessioniHybridSmistate(ricettaDao ricettaDao, IngredientiDao ingredientiDao) {
         if (boundary == null) return;
         boundary.updateHybridSessionsFromUI();
-        List<com.progetto.Entity.EntityDto.Sessione> hybridSessions = boundary.getHybridSessions();
+        List<Sessione> hybridSessions = boundary.getHybridSessions();
         if (hybridSessions == null || hybridSessions.isEmpty()) return;
-        com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
+        Chef chef = Chef.loggedUser;
         int idCorso = this.lastCreatedCourseId;
-        Map<java.time.LocalDate, javafx.collections.ObservableList<com.progetto.Entity.EntityDto.Ricetta>> hybridSessionRecipes = null;
+        Map<LocalDate, ObservableList<Ricetta>> hybridSessionRecipes = null;
         try {
             hybridSessionRecipes = boundary.getHybridSessionRecipes();
         } catch (Exception e) {
-            hybridSessionRecipes = new java.util.HashMap<>();
+            hybridSessionRecipes = new HashMap<>();
         }
-        com.progetto.Entity.entityDao.SessioneInPresenzaDao presenzaDao = new com.progetto.Entity.entityDao.SessioneInPresenzaDao();
-        com.progetto.Entity.entityDao.SessioneOnlineDao onlineDao = new com.progetto.Entity.entityDao.SessioneOnlineDao();
+        SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
+        SessioneOnlineDao onlineDao = new SessioneOnlineDao();
         // Prima salva tutte le sessioni telematiche
-        for (com.progetto.Entity.EntityDto.Sessione session : hybridSessions) {
-            if (session instanceof com.progetto.Entity.EntityDto.SessioneOnline) {
-                com.progetto.Entity.EntityDto.SessioneOnline s = (com.progetto.Entity.EntityDto.SessioneOnline) session;
+        for (Sessione session : hybridSessions) {
+            if (session instanceof SessioneOnline) {
+                SessioneOnline s = (SessioneOnline) session;
                 s.setId_Corso(idCorso);
                 s.setChef(chef);
                 onlineDao.MemorizzaSessione(s);
             }
         }
         // Poi salva tutte le sessioni in presenza e le relative ricette
-        for (com.progetto.Entity.EntityDto.Sessione session : hybridSessions) {
-            if (session instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
-                com.progetto.Entity.EntityDto.SessioniInPresenza s = (com.progetto.Entity.EntityDto.SessioniInPresenza) session;
+        for (Sessione session : hybridSessions) {
+            if (session instanceof SessioniInPresenza) {
+                SessioniInPresenza s = (SessioniInPresenza) session;
                 s.setId_Corso(idCorso);
                 s.setChef(chef);
                 // Salva la sessione in presenza nel DB
                 presenzaDao.MemorizzaSessione(s);
                 // Salva e collega le ricette a questa sessione
-                java.util.List<com.progetto.Entity.EntityDto.Ricetta> ricette = new java.util.ArrayList<>();
+                List<Ricetta> ricette = new ArrayList<>();
                 if (hybridSessionRecipes != null && hybridSessionRecipes.containsKey(s.getData())) {
                     ricette.addAll(hybridSessionRecipes.get(s.getData()));
                 }
-                for (com.progetto.Entity.EntityDto.Ricetta ricetta : ricette) {
+                for (Ricetta ricetta : ricette) {
                     // Salva la ricetta e i suoi ingredienti se non già salvati
                     salvaRicettaCompleta(ricetta, ricettaDao, ingredientiDao);
                     collegaRicettaASessionePresenza(s.getId_Sessione(), ricetta.getId_Ricetta());

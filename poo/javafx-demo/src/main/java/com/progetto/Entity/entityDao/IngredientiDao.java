@@ -8,9 +8,40 @@ import com.progetto.Entity.EntityDto.Ingredienti;
 import com.progetto.Entity.EntityDto.Ricetta;
 import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
+
 public class IngredientiDao {
 
-public void memorizzaIngredienti(Ingredienti ingredienti) {
+    // Restituisce true se l'ingrediente è usato in almeno una ricetta (tabella PREPARAZIONEINGREDIENTE)
+    public boolean isIngredienteUsatoAltrove(Ingredienti ingrediente) {
+        String query = "SELECT COUNT(*) as cnt FROM PREPARAZIONEINGREDIENTE WHERE IdIngrediente = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        SupportDb dbu = new SupportDb();
+        boolean usato = false;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, ingrediente.getId_Ingrediente());
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt("cnt");
+                usato = count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return usato;
+    }
+
+    // Alias per cancellaingrediente (eliminaIngrediente)
+    public void eliminaIngrediente(Ingredienti ingrediente) {
+        cancellaingrediente(ingrediente);
+    }
+
+    public void memorizzaIngredienti(Ingredienti ingredienti) {
         String query = "INSERT INTO ingrediente (Nome, UnitaDiMisura) VALUES (?, ?::unitadimisura)";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -36,7 +67,8 @@ public void memorizzaIngredienti(Ingredienti ingredienti) {
             }
         }
     }
-public void cancellaingrediente(Ingredienti ingredienti) {
+
+    public void cancellaingrediente(Ingredienti ingredienti) {
         String query = "DELETE FROM ingrediente WHERE IdIngrediente= ?";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -53,14 +85,13 @@ public void cancellaingrediente(Ingredienti ingredienti) {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
         }
-}
+    }
 
-        public void modificaIngredienti(Ingredienti ingredienti) {
+    public void modificaIngredienti(Ingredienti ingredienti) {
         String query = "UPDATE ingrediente SET Nome = ?, UnitaDiMisura = ? WHERE IdIngrediente = ?";
         Connection conn = null;
         PreparedStatement ps = null;
         SupportDb dbu = new SupportDb();
-        
         try {
             conn = ConnectionJavaDb.getConnection();
             ps = conn.prepareStatement(query);
@@ -73,7 +104,7 @@ public void cancellaingrediente(Ingredienti ingredienti) {
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
-        } 
+        }
     }
 
     public void recuperaQuantitaTotale(Ingredienti ingredienti, Ricetta ricetta) {

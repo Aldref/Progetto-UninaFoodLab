@@ -16,7 +16,7 @@
          <VBox alignment="CENTER" spacing="5.0">
             <children>
               <Label text="Modifica Corso" styleClass="page-title" />
-              <Label fx:id="courseNameLabel" text="Nome del corso da modificare" styleClass="page-subtitle" />
+              <TextField fx:id="courseNameField" promptText="Nome del corso" styleClass="page-subtitle" />
             </children>
          </VBox>
          <Region HBox.hgrow="ALWAYS" />
@@ -87,48 +87,94 @@
                        </VBox>
                      </children>
                   </HBox>
-                  <HBox spacing="20.0">
-                     <children>
-                        <VBox spacing="8.0">
-                           <children>
+                  <VBox spacing="8.0">
+                    <children>
+                      <HBox spacing="20.0" fx:id="singleTimeSection">
+                        <children>
+                          <VBox spacing="8.0">
+                            <children>
                               <Label text="Orario inizio" styleClass="field-label" />
                               <HBox spacing="8.0" alignment="CENTER_LEFT">
-                                 <children>
-                                    <Spinner fx:id="startHourSpinner" styleClass="time-spinner" prefWidth="80.0" maxWidth="80.0" minWidth="80.0" />
-                                    <Label text=":" styleClass="time-separator" />
-                                    <Spinner fx:id="startMinuteSpinner" styleClass="time-spinner" prefWidth="80.0" maxWidth="80.0" minWidth="80.0" />
-                                 </children>
+                                <children>
+                                  <Spinner fx:id="startHourSpinner" styleClass="time-spinner" prefWidth="80.0" maxWidth="80.0" minWidth="80.0" />
+                                  <Label text=":" styleClass="time-separator" />
+                                  <Spinner fx:id="startMinuteSpinner" styleClass="time-spinner" prefWidth="80.0" maxWidth="80.0" minWidth="80.0" />
+                                </children>
                               </HBox>
                               <Label fx:id="startTimeErrorLabel" styleClass="error-label" visible="false" />
-                           </children>
-                        </VBox>
-                        <VBox spacing="8.0">
-                           <children>
+                            </children>
+                          </VBox>
+                          <VBox spacing="8.0">
+                            <children>
                               <Label text="Durata (ore)" styleClass="field-label" />
                               <Spinner fx:id="durationSpinner" styleClass="spinner" prefWidth="120.0" />
                               <Label fx:id="durationErrorLabel" styleClass="error-label" visible="false" />
-                           </children>
-                        </VBox>
-                     </children>
-                  </HBox>
+                            </children>
+                          </VBox>
+                        </children>
+                      </HBox>
+                      <VBox spacing="10.0" fx:id="doubleTimeSection" visible="false" managed="false">
+                        <children>
+                          <Label text="Orari e Durate per modalità Hybrid (Entrambi)" styleClass="field-label" />
+                          <HBox spacing="20.0">
+                            <children>
+                              <VBox spacing="6.0">
+                                <children>
+                                  <Label text="Presenza - Orario inizio" styleClass="field-label" />
+                                  <HBox spacing="8.0" alignment="CENTER_LEFT">
+                                    <children>
+                                      <Spinner fx:id="startHourSpinnerPresenza" styleClass="time-spinner" prefWidth="80.0" />
+                                      <Label text=":" styleClass="time-separator" />
+                                      <Spinner fx:id="startMinuteSpinnerPresenza" styleClass="time-spinner" prefWidth="80.0" />
+                                    </children>
+                                  </HBox>
+                                  <Label text="Presenza - Durata (ore)" styleClass="field-label" />
+                                  <Spinner fx:id="durationSpinnerPresenza" styleClass="spinner" prefWidth="120.0" />
+                                </children>
+                              </VBox>
+                              <VBox spacing="6.0">
+                                <children>
+                                  <Label text="Telematica - Orario inizio" styleClass="field-label" />
+                                  <HBox spacing="8.0" alignment="CENTER_LEFT">
+                                    <children>
+                                      <Spinner fx:id="startHourSpinnerTelematica" styleClass="time-spinner" prefWidth="80.0" />
+                                      <Label text=":" styleClass="time-separator" />
+                                      <Spinner fx:id="startMinuteSpinnerTelematica" styleClass="time-spinner" prefWidth="80.0" />
+                                    </children>
+                                  </HBox>
+                                  <Label text="Telematica - Durata (ore)" styleClass="field-label" />
+                                  <Spinner fx:id="durationSpinnerTelematica" styleClass="spinner" prefWidth="120.0" />
+                                </children>
+                              </VBox>
+                            </children>
+                          </HBox>
+                        </children>
+                      </VBox>
+                    </children>
+                  </VBox>
                   <VBox spacing="8.0">
                      <children>
                        <Label text="Giorni della settimana" styleClass="field-label" />
                        <FlowPane fx:id="dayOfWeekContainer" hgap="10.0" vgap="10.0" styleClass="day-selection-container">
                          <children>
-                           <CheckBox fx:id="mondayCheckBox" text="Lunedì" styleClass="day-checkbox" />
-                           <CheckBox fx:id="tuesdayCheckBox" text="Martedì" styleClass="day-checkbox" />
-                           <CheckBox fx:id="wednesdayCheckBox" text="Mercoledì" styleClass="day-checkbox" />
-                           <CheckBox fx:id="thursdayCheckBox" text="Giovedì" styleClass="day-checkbox" />
-                           <CheckBox fx:id="fridayCheckBox" text="Venerdì" styleClass="day-checkbox" />
-                           <CheckBox fx:id="saturdayCheckBox" text="Sabato" styleClass="day-checkbox" />
-                           <CheckBox fx:id="sundayCheckBox" text="Domenica" styleClass="day-checkbox" />
+                           <CheckBox fx:id="mondayCheckBox" text="Lunedì" styleClass="day-checkbox" disable="true" opacity="0.6" />
+                           <CheckBox fx:id="tuesdayCheckBox" text="Martedì" styleClass="day-checkbox" disable="true" opacity="0.6" />
+                           <CheckBox fx:id="wednesdayCheckBox" text="Mercoledì" styleClass="day-checkbox" disable="true" opacity="0.6" />
+                           <CheckBox fx:id="thursdayCheckBox" text="Giovedì" styleClass="day-checkbox" disable="true" opacity="0.6" />
+                           <CheckBox fx:id="fridayCheckBox" text="Venerdì" styleClass="day-checkbox" disable="true" opacity="0.6" />
+                           <CheckBox fx:id="saturdayCheckBox" text="Sabato" styleClass="day-checkbox" disable="true" opacity="0.6" />
+                           <CheckBox fx:id="sundayCheckBox" text="Domenica" styleClass="day-checkbox" disable="true" opacity="0.6" />
                          </children>
                        </FlowPane>
                        <Label fx:id="dayInfoLabel" text="Seleziona la frequenza prima di scegliere i giorni" styleClass="info-label" />
                        <Label fx:id="daysErrorLabel" styleClass="error-label" visible="false" />
                      </children>
                   </VBox>
+                </children>
+              </VBox>
+              <VBox fx:id="onlineSection" spacing="15.0" styleClass="form-section">
+                <children>
+                  <Label text="Sessioni Online" styleClass="section-title" />
                 </children>
               </VBox>
               <VBox fx:id="locationSection" spacing="15.0" styleClass="form-section">
