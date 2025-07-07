@@ -239,9 +239,9 @@ RICHIESTA\-PAGAMENTO & Relazione molti-a-uno che collega ogni richiesta di pagam
 \hline
 \textbf{Vincoli di Unicità} & Email in UTENTE deve essere univoca nel sistema sia per chef che partecipante e tra loro . \\
 \hline
-\textbf{Vincoli CHECK} & DataInizio $<$ DataFine in CORSO. Prezzo $\geq 0$ in CORSO. MaxPersone $> 0$ in CORSO. Durata $> 0$ nelle sessioni. \\
+\textbf{Vincoli CHECK} & DataInizio $<$ DataFine in CORSO. \\
 \hline
-\textbf{Vincoli via Trigger} & Implementati 16 trigger specifici per vincoli complessi (dettagliati nel Cap. 4.2): unicità email Chef/Partecipante, limite 2 tipi cucina per corso, validazione date/orari sessioni, controllo pagamenti, gestione modifiche corsi non iniziati, controllo adesioni solo per iscritti. \\
+\textbf{Vincoli via Trigger} & Implementati vari trigger specifici per vincoli complessi (dettagliati nel Cap. 4.2): limite 2 tipi cucina per corso, controllo pagamenti, gestione modifiche corsi non iniziati, controllo adesioni solo per iscritti. \\
 \hline
 \end{tabularx}
 \end{tcolorbox}
