@@ -17,12 +17,9 @@ CREATE TYPE StatoPagamento AS ENUM ('In attesa', 'Pagato', 'Fallito');
 
 CREATE TYPE FDS AS ENUM (
   'Giornaliera',
-  'Ogni due giorni',
-  'Ogni tre giorni',
-  'Ogni quattro giorni',
-  'Ogni cinque giorni',
-  'Ogni sei giorni',
   'Settimanale',
+  'Bisettimanale',
+  'Tre volte a settimana',
   'Mensile'
 );
 

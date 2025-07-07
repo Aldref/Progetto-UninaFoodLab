@@ -22,7 +22,7 @@
 \contentsline {subsubsection}{\numberline {2.4.4}Dizionario dei vincoli }{16}{subsubsection.2.4.4}%
 \contentsline {paragraph}{Vincoli di Dominio}{16}{paragraph*.3}%
 \contentsline {paragraph}{Vincoli Intra-relazionali}{17}{paragraph*.4}%
-\contentsline {paragraph}{Vincoli Inter-relazionali}{18}{paragraph*.5}%
+\contentsline {paragraph}{Vincoli Inter-relazionali}{17}{paragraph*.5}%
 \contentsline {paragraph}{Vincoli di Molteplicità (n-plu)}{18}{paragraph*.6}%
 \contentsline {section}{\numberline {3}Progettazione Logica}{19}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Schema Logico}{20}{subsection.3.1}%

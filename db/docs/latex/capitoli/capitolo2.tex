@@ -241,7 +241,7 @@ RICHIESTA\-PAGAMENTO & Relazione molti-a-uno che collega ogni richiesta di pagam
 \hline
 \textbf{Vincoli CHECK} & DataInizio $<$ DataFine in CORSO. Prezzo $\geq 0$ in CORSO. MaxPersone $> 0$ in CORSO. Durata $> 0$ nelle sessioni. \\
 \hline
-\textbf{Vincoli via Trigger} & Implementati 16 trigger specifici per vincoli complessi (dettagliati nel Cap. 4.2): unicità email Chef/Partecipante, validazione formato email, controllo età (18-100 anni), limite 2 tipi cucina per corso, controllo capacità massima, validazione date/orari sessioni, controllo pagamenti, gestione modifiche corsi non iniziati, impedimento conflitti sessioni Chef, controllo adesioni solo per iscritti. \\
+\textbf{Vincoli via Trigger} & Implementati 16 trigger specifici per vincoli complessi (dettagliati nel Cap. 4.2): unicità email Chef/Partecipante, limite 2 tipi cucina per corso, validazione date/orari sessioni, controllo pagamenti, gestione modifiche corsi non iniziati, controllo adesioni solo per iscritti. \\
 \hline
 \end{tabularx}
 \end{tcolorbox}
