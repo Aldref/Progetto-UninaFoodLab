@@ -46,19 +46,15 @@ public class CorsoDao{
         ps.setFloat(7, corso.getPrezzo());
         ps.setString(8, corso.getUrl_Propic());
         int rows = ps.executeUpdate();
-        System.out.println("[DEBUG] Righe inserite: " + rows);
 
         generatedKeys = ps.getGeneratedKeys();
         if (generatedKeys.next()) {
             int id = generatedKeys.getInt(1);
             corso.setId_Corso(id);
-            System.out.println("[DEBUG] Nuovo id corso: " + id);
         } else {
-            System.out.println("[DEBUG] Nessun id generato!");
         }
         
     } catch (SQLException e) {
-        System.out.println("[DEBUG] Errore SQL inserimento corso: " + e.getMessage());
         e.printStackTrace();
     } finally {
         dbu.closeResultSet(generatedKeys);

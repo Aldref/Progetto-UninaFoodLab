@@ -782,7 +782,7 @@ BEFORE INSERT OR UPDATE ON SESSIONE_PRESENZA
 FOR EACH ROW EXECUTE FUNCTION check_orario_e_durata();
 
 -trigger  disiscrizione a un corso
-CREATE OR REPLACE FUNCTION prevent_unsubscribe_if_course_started()
+CREATE OR REPLACE FUNCTION impedisci_disiscrizione_se_corso_iniziato()
 RETURNS TRIGGER AS $$
 BEGIN
   IF EXISTS (
@@ -798,13 +798,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_prevent_unsubscribe_if_course_started
+CREATE TRIGGER trg_impedisci_disiscrizione_se_corso_iniziato
 BEFORE DELETE ON RICHIESTAPAGAMENTO
 FOR EACH ROW
-EXECUTE FUNCTION prevent_unsubscribe_if_course_started();
+EXECUTE FUNCTION impedisci_disiscrizione_se_corso_iniziato();
+
 
 -trigger modifica corso date
-CREATE OR REPLACE FUNCTION prevent_course_modification_if_started()
+CREATE OR REPLACE FUNCTION impedisci_modifica_se_corso_iniziato()
 RETURNS TRIGGER AS $$
 BEGIN
   IF OLD.DataInizio <= CURRENT_DATE THEN
@@ -815,22 +816,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_prevent_course_modification_if_started
+CREATE TRIGGER trg_impedisci_modifica_se_corso_iniziato
 BEFORE UPDATE ON CORSO
 FOR EACH ROW
-EXECUTE FUNCTION prevent_course_modification_if_started();
+EXECUTE FUNCTION impedisci_modifica_se_corso_iniziato();
+
 
 -trigger sessioni range corso
-CREATE OR REPLACE FUNCTION prevent_invalid_session_update()
+CREATE OR REPLACE FUNCTION impedisci_aggiornamento_sessione_non_valida()
 RETURNS TRIGGER AS $$
 DECLARE
-  corso_data_inizio DATE;
-  corso_data_fine DATE;
+  data_inizio_corso DATE;
+  data_fine_corso DATE;
   nuova_data DATE;
 BEGIN
-  SELECT DataInizio, DataFine INTO corso_data_inizio, corso_data_fine
+  SELECT DataInizio, DataFine INTO data_inizio_corso, data_fine_corso
   FROM CORSO
-  WHERE IdCorso = NEW.IDcorso;
+  WHERE IdCorso = NEW.IdCorso;
 
   nuova_data := NEW.Data;
 
@@ -838,23 +840,25 @@ BEGIN
     RAISE EXCEPTION 'Non è possibile modificare una sessione con una data nel passato (%).', nuova_data;
   END IF;
 
-  IF nuova_data < corso_data_inizio OR nuova_data > corso_data_fine THEN
-    RAISE EXCEPTION 'La data della sessione (%) deve essere compresa tra l’inizio e la fine del corso (% - %).', nuova_data, corso_data_inizio, corso_data_fine;
+  IF nuova_data < data_inizio_corso OR nuova_data > data_fine_corso THEN
+    RAISE EXCEPTION 'La data della sessione (%) deve essere compresa tra l’inizio e la fine del corso (% - %).',
+                    nuova_data, data_inizio_corso, data_fine_corso;
   END IF;
 
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_prevent_invalid_update_sessione_presenza
+CREATE TRIGGER trg_impedisci_aggiornamento_sessione_presenza_non_valida
 BEFORE UPDATE ON SESSIONE_PRESENZA
 FOR EACH ROW
-EXECUTE FUNCTION prevent_invalid_session_update();
+EXECUTE FUNCTION impedisci_aggiornamento_sessione_non_valida();
 
-CREATE TRIGGER trg_prevent_invalid_update_sessione_telematica
+CREATE TRIGGER trg_impedisci_aggiornamento_sessione_telematica_non_valida
 BEFORE UPDATE ON SESSIONE_TELEMATICA
 FOR EACH ROW
-EXECUTE FUNCTION prevent_invalid_session_update();
+EXECUTE FUNCTION impedisci_aggiornamento_sessione_non_valida();
+
 
 
 //da fare in futuro
