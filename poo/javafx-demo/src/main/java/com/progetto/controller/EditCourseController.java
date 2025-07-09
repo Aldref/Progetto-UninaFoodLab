@@ -906,38 +906,72 @@ private void loadCourseData() {
         codeField.setPrefWidth(120);
         codeField.setDisable(!editable);
 
-        // Solo se orario/durata sono valorizzati (cioè non siamo in "solo telematica"), mostra i campi
-        if (orario != null && !orario.isEmpty() && durata > 0.0) {
+        String tipoCorso = courseTypeCombo.getValue();
+        if ("Entrambi".equals(tipoCorso)) {
+            // In hybrid: orario e durata sono spinner, NON mostrare la label del giorno/sessione
             Label orarioLabel = new Label("Orario:");
-            TextField orarioField = new TextField(orario);
-            orarioField.setPromptText("HH:MM");
-            orarioField.setPrefWidth(80);
-            orarioField.setDisable(!editable);
-
+            Spinner<Integer> hourSpinner = new Spinner<>(6, 23, 18, 1);
+            hourSpinner.setPrefWidth(90);
+            hourSpinner.setDisable(!editable);
+            Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 0, 15);
+            minuteSpinner.setPrefWidth(60);
+            minuteSpinner.setDisable(!editable);
+            // Se orario è valorizzato, setta i valori
+            if (orario != null && !orario.isEmpty() && orario.contains(":")) {
+                try {
+                    String[] parts = orario.split(":");
+                    int h = Integer.parseInt(parts[0]);
+                    int m = Integer.parseInt(parts[1]);
+                    hourSpinner.getValueFactory().setValue(h);
+                    minuteSpinner.getValueFactory().setValue(m);
+                } catch (Exception ignored) {}
+            }
             Label durataLabel = new Label("Durata (h):");
             Spinner<Double> durataSpinner = new Spinner<>(0.5, 8.0, durata, 0.5);
             durataSpinner.setPrefWidth(80);
             durataSpinner.setDisable(!editable);
+            header.getChildren().addAll(appLabel, appCombo, codeLabel, codeField, orarioLabel, hourSpinner, minuteSpinner, durataLabel, durataSpinner);
 
-            header.getChildren().addAll(appLabel, appCombo, codeLabel, codeField, orarioLabel, orarioField, durataLabel, durataSpinner);
+            // --- SYNC: aggiorna DB in tempo reale su modifica spinner/campi ---
+            if (editable) {
+                hourSpinner.valueProperty().addListener((obs, oldVal, newVal) -> updateTelematicaSessionsFromHybridUI(hourSpinner, minuteSpinner, durataSpinner, appCombo, codeField));
+                minuteSpinner.valueProperty().addListener((obs, oldVal, newVal) -> updateTelematicaSessionsFromHybridUI(hourSpinner, minuteSpinner, durataSpinner, appCombo, codeField));
+                durataSpinner.valueProperty().addListener((obs, oldVal, newVal) -> updateTelematicaSessionsFromHybridUI(hourSpinner, minuteSpinner, durataSpinner, appCombo, codeField));
+                appCombo.valueProperty().addListener((obs, oldVal, newVal) -> updateTelematicaSessionsFromHybridUI(hourSpinner, minuteSpinner, durataSpinner, appCombo, codeField));
+                codeField.textProperty().addListener((obs, oldVal, newVal) -> updateTelematicaSessionsFromHybridUI(hourSpinner, minuteSpinner, durataSpinner, appCombo, codeField));
+            }
+            // NON aggiungere la label del giorno/sessione
         } else {
             header.getChildren().addAll(appLabel, appCombo, codeLabel, codeField);
         }
-
-        // Data sessione label
-        Label sessionDateLabel = new Label("Sessione: " + sessionDate.toString());
-        sessionDateLabel.getStyleClass().add("session-date-label");
-        if (!editable) {
-            sessionDateLabel.setStyle("-fx-text-fill: #888;");
-            Tooltip.install(sessionBox, new Tooltip("Questa sessione è già avvenuta o è oggi e non è più modificabile."));
-        } else {
-            Tooltip.install(sessionBox, new Tooltip("Modificabile: la sessione è futura"));
-        }
-
-        header.getChildren().add(sessionDateLabel);
         sessionBox.getChildren().add(header);
-
         onlineSection.getChildren().add(sessionBox);
+    }
+
+    // Aggiorna tutte le sessioni telematiche future dal pannello hybrid in tempo reale
+    private void updateTelematicaSessionsFromHybridUI(Spinner<Integer> hourSpinner, Spinner<Integer> minuteSpinner, Spinner<Double> durataSpinner, ComboBox<String> appCombo, TextField codeField) {
+        try {
+            SessioneOnlineDao onlineDao = new SessioneOnlineDao();
+            List<SessioneOnline> telematiche = SessioneOnlineDao.getSessioniByCorso(courseId);
+            int hourTele = hourSpinner.getValue();
+            int minTele = minuteSpinner.getValue();
+            double durataTele = durataSpinner.getValue();
+            LocalTime orarioTele = LocalTime.of(hourTele, minTele);
+            LocalTime durataTeleTime = LocalTime.of((int)durataTele, (int)((durataTele - (int)durataTele)*60));
+            String appValue = appCombo.getValue();
+            String codeValue = codeField.getText();
+            for (SessioneOnline sessione : telematiche) {
+                if (!sessione.getData().isAfter(LocalDate.now())) continue;
+                sessione.setOrario(orarioTele);
+                sessione.setDurata(durataTeleTime);
+                if (appValue != null) sessione.setApplicazione(appValue);
+                if (codeValue != null) sessione.setCodicechiamata(codeValue);
+                onlineDao.aggiornaSessione(sessione);
+            }
+        } catch (Exception e) {
+            // Log error, non bloccare la UI
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -1120,26 +1154,73 @@ private void loadCourseData() {
                 if ("Telematica".equals(type) || "Entrambi".equals(type)) {
                     SessioneOnlineDao onlineDao = new SessioneOnlineDao();
                     List<SessioneOnline> telematiche = SessioneOnlineDao.getSessioniByCorso(courseId);
-                    // Determina orario/durata da usare (globale per solo telematica)
-                    int hourTele = (startHourSpinnerTelematica != null && "Entrambi".equals(type)) ? startHourSpinnerTelematica.getValue() : startHourSpinner.getValue();
-                    int minTele = (startMinuteSpinnerTelematica != null && "Entrambi".equals(type)) ? startMinuteSpinnerTelematica.getValue() : startMinuteSpinner.getValue();
-                    double durataTele = (durationSpinnerTelematica != null && "Entrambi".equals(type)) ? durationSpinnerTelematica.getValue() : durationSpinner.getValue();
-                    LocalTime orarioTele = LocalTime.of(hourTele, minTele);
-                    LocalTime durataTeleTime = LocalTime.of((int)durataTele, (int)((durataTele - (int)durataTele)*60));
-                    // Prendi app/codice dalla UI (unica sessione visibile)
+                    int hourTele = 18, minTele = 0;
+                    double durataTele = 2.0;
                     String appValue = null;
                     String codeValue = null;
-                    for (Node node : onlineSection.getChildren()) {
-                        if (node instanceof VBox) {
-                            VBox sessionBox = (VBox) node;
-                            HBox header = (HBox) sessionBox.getChildren().get(0);
-                            for (Node n : header.getChildren()) {
-                                if (n instanceof ComboBox) appValue = ((ComboBox<String>) n).getValue();
-                                else if (n instanceof TextField) codeValue = ((TextField) n).getText().trim();
+                    // In "Entrambi", leggi i valori dagli spinner dinamici nella onlineSection
+                    if ("Entrambi".equals(type)) {
+                        for (Node node : onlineSection.getChildren()) {
+                            if (node instanceof VBox) {
+                                VBox sessionBox = (VBox) node;
+                                HBox header = (HBox) sessionBox.getChildren().get(0);
+                                for (Node n : header.getChildren()) {
+                                    if (n instanceof ComboBox) {
+                                        @SuppressWarnings("unchecked")
+                                        ComboBox<String> appCombo = (ComboBox<String>) n;
+                                        appValue = appCombo.getValue();
+                                    } else if (n instanceof TextField) {
+                                        TextField tf = (TextField) n;
+                                        if (tf.getPromptText() != null && tf.getPromptText().toLowerCase().contains("codice")) {
+                                            codeValue = tf.getText();
+                                        }
+                                    } else if (n instanceof Spinner) {
+                                        Spinner<?> spinner = (Spinner<?>) n;
+                                        // Identifica spinner per tipo tramite larghezza
+                                        double width = spinner.getPrefWidth();
+                                        if (width == 90) { // ora
+                                            hourTele = (Integer) spinner.getValue();
+                                        } else if (width == 60) { // minuti
+                                            minTele = (Integer) spinner.getValue();
+                                        } else if (width == 80) { // durata
+                                            durataTele = (Double) spinner.getValue();
+                                        }
+                                    }
+                                }
+                                break;
                             }
-                            break; // Solo la prima
+                        }
+                    } else {
+                        hourTele = startHourSpinner.getValue();
+                        minTele = startMinuteSpinner.getValue();
+                        durataTele = durationSpinner.getValue();
+                        // Cerca anche app/codice come prima
+                        for (Node node : onlineSection.getChildren()) {
+                            if (node instanceof VBox) {
+                                VBox sessionBox = (VBox) node;
+                                HBox header = (HBox) sessionBox.getChildren().get(0);
+                                for (Node n : header.getChildren()) {
+                                    if (n instanceof ComboBox) {
+                                        @SuppressWarnings("unchecked")
+                                        ComboBox<String> appCombo = (ComboBox<String>) n;
+                                        appValue = appCombo.getValue();
+                                    }
+                                    if (n instanceof TextField) {
+                                        TextField tf = (TextField) n;
+                                        if (tf.getPromptText() != null && tf.getPromptText().toLowerCase().contains("codice")) {
+                                            codeValue = tf.getText();
+                                        }
+                                    }
+                                }
+                                break;
+                            }
                         }
                     }
+                    // Conversione robusta double -> LocalTime (es: 1.5 -> 1:30)
+                    int durataOre = (int) durataTele;
+                    int durataMin = (int) Math.round((durataTele - durataOre) * 60);
+                    LocalTime orarioTele = LocalTime.of(hourTele, minTele);
+                    LocalTime durataTeleTime = LocalTime.of(durataOre, durataMin);
                     for (SessioneOnline sessione : telematiche) {
                         if (!sessione.getData().isAfter(LocalDate.now())) continue;
                         sessione.setOrario(orarioTele);
