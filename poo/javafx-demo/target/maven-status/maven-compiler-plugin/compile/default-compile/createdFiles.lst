@@ -46,6 +46,7 @@ com\progetto\controller\App.class
 com\progetto\controller\CalendarDialogController.class
 com\progetto\boundary\CreateCourseBoundary$5.class
 com\progetto\Entity\EntityDto\SessioneOnline.class
+com\progetto\boundary\EditCourseBoundary$6.class
 com\progetto\Entity\EntityDto\SessioniInPresenza.class
 com\progetto\boundary\AccountManagementBoundary.class
 com\progetto\boundary\HomepageUtenteBoundary.class

@@ -49,6 +49,12 @@ import java.util.stream.Collectors;
 import com.progetto.boundary.EditCourseBoundary;
 
 public class EditCourseController {
+    // Spinner hybrid presenza (assegnati dal boundary)
+    public void setHybridPresenzaSpinners(Spinner<Integer> hour, Spinner<Integer> min, Spinner<Double> durata) {
+        this.startHourSpinnerPresenza = hour;
+        this.startMinuteSpinnerPresenza = min;
+        this.durationSpinnerPresenza = durata;
+    }
     private final EditCourseBoundary boundary;
     // Variabili per dedurre il tipo di corso
     private boolean hasPresenzaSessions = false;
@@ -94,9 +100,10 @@ public class EditCourseController {
     @FXML private HBox singleTimeSection;
     @FXML private VBox doubleTimeSection;
     // Hybrid spinners for FXML (Entrambi)
-    @FXML private Spinner<Integer> startHourSpinnerPresenza;
-    @FXML private Spinner<Integer> startMinuteSpinnerPresenza;
-    @FXML private Spinner<Double> durationSpinnerPresenza;
+    // In hybrid, i spinner presenza sono creati dinamicamente dalla boundary e passati via getter
+    private Spinner<Integer> startHourSpinnerPresenza;
+    private Spinner<Integer> startMinuteSpinnerPresenza;
+    private Spinner<Double> durationSpinnerPresenza;
     @FXML private Spinner<Integer> startHourSpinnerTelematica;
     @FXML private Spinner<Integer> startMinuteSpinnerTelematica;
     @FXML private Spinner<Double> durationSpinnerTelematica;
@@ -171,13 +178,6 @@ public class EditCourseController {
         this.durationSpinner = durationSpinner;
         this.streetField = streetField;
         this.capField = capField;
-        // this.mondayCheckBox = mondayCheckBox;
-        // this.tuesdayCheckBox = tuesdayCheckBox;
-        // this.wednesdayCheckBox = wednesdayCheckBox;
-        // this.thursdayCheckBox = thursdayCheckBox;
-        // this.fridayCheckBox = fridayCheckBox;
-        // this.saturdayCheckBox = saturdayCheckBox;
-        // this.sundayCheckBox = sundayCheckBox;
         this.descriptionErrorLabel = descriptionErrorLabel;
         this.maxPersonsErrorLabel = maxPersonsErrorLabel;
         this.startDateErrorLabel = startDateErrorLabel;
@@ -190,6 +190,10 @@ public class EditCourseController {
         this.frequencyErrorLabel = frequencyErrorLabel;
         this.saveButton = saveButton;
         this.onlineSection = onlineSection;
+        // Spinner hybrid presenza (creati dinamicamente dalla boundary)
+        this.startHourSpinnerPresenza = boundary.getStartHourSpinnerPresenza();
+        this.startMinuteSpinnerPresenza = boundary.getStartMinuteSpinnerPresenza();
+        this.durationSpinnerPresenza = boundary.getDurationSpinnerPresenza();
     }
     
     // === INITIALIZATION ===
@@ -219,12 +223,6 @@ public class EditCourseController {
             ));
         }
     }
-
-    // RIMOSSO: logica di estensione/controllo date e giorni
-
-    // Utility per ottenere il nome del giorno in italiano
-    // RIMOSSO: getDayName e riferimenti ai giorni della settimana
-
     /**
      * Imposta la UI in modalità modifica: disabilita il cambio tipo corso e aggiorna sezioni visibili.
      */
@@ -729,6 +727,21 @@ private void loadCourseData() {
                     if (startHourSpinner != null) startHourSpinner.setDisable(true);
                     if (startMinuteSpinner != null) startMinuteSpinner.setDisable(true);
                     if (durationSpinner != null) durationSpinner.setDisable(true);
+                } else if ("In presenza".equals(tipoCorso)) {
+                    // Valorizza gli spinner standard con i dati della sessione in presenza
+                    if (startHourSpinner != null && firstPresenza.getOrario() != null) {
+                        startHourSpinner.getValueFactory().setValue(firstPresenza.getOrario().getHour());
+                        startHourSpinner.setDisable(false);
+                    }
+                    if (startMinuteSpinner != null && firstPresenza.getOrario() != null) {
+                        startMinuteSpinner.getValueFactory().setValue(firstPresenza.getOrario().getMinute());
+                        startMinuteSpinner.setDisable(false);
+                    }
+                    if (durationSpinner != null && firstPresenza.getDurata() != null) {
+                        double durataPres = firstPresenza.getDurata().getHour() + firstPresenza.getDurata().getMinute() / 60.0;
+                        durationSpinner.getValueFactory().setValue(durataPres);
+                        durationSpinner.setDisable(false);
+                    }
                 }
             } else {
                 streetField.setText("");
@@ -797,6 +810,21 @@ private void loadCourseData() {
                         durationSpinnerTelematica.getValueFactory().setValue(durataTele);
                         durationSpinnerTelematica.setDisable(false);
                     }
+                } else if ("Telematica".equals(tipoCorso)) {
+                    // Valorizza gli spinner standard con i dati della sessione telematica
+                    if (startHourSpinner != null && ref.getOrario() != null) {
+                        startHourSpinner.getValueFactory().setValue(ref.getOrario().getHour());
+                        startHourSpinner.setDisable(false);
+                    }
+                    if (startMinuteSpinner != null && ref.getOrario() != null) {
+                        startMinuteSpinner.getValueFactory().setValue(ref.getOrario().getMinute());
+                        startMinuteSpinner.setDisable(false);
+                    }
+                    if (durationSpinner != null && ref.getDurata() != null) {
+                        double durataTele = ref.getDurata().getHour() + ref.getDurata().getMinute() / 60.0;
+                        durationSpinner.getValueFactory().setValue(durataTele);
+                        durationSpinner.setDisable(false);
+                    }
                 }
                 addOnlineSessionToOnlineSection(ref.getApplicazione(), ref.getCodicechiamata(), orario, durata, ref.getData());
             }
@@ -811,6 +839,8 @@ private void loadCourseData() {
             capField.setText("");
         }
     // end populateUIFromCourseData
+        // Dopo aver popolato la UI, aggiorna il binding del pulsante Salva
+        setupChangeListenersForSave();
     }
     
     /**
@@ -927,7 +957,8 @@ private void loadCourseData() {
                 } catch (Exception ignored) {}
             }
             Label durataLabel = new Label("Durata (h):");
-            Spinner<Double> durataSpinner = new Spinner<>(0.5, 8.0, durata, 0.5);
+            // Solo valori interi da 1 a 8
+            Spinner<Double> durataSpinner = new Spinner<>(1.0, 8.0, Math.max(1.0, Math.round(durata)), 1.0);
             durataSpinner.setPrefWidth(80);
             durataSpinner.setDisable(!editable);
             header.getChildren().addAll(appLabel, appCombo, codeLabel, codeField, orarioLabel, hourSpinner, minuteSpinner, durataLabel, durataSpinner);
@@ -967,6 +998,31 @@ private void loadCourseData() {
                 if (appValue != null) sessione.setApplicazione(appValue);
                 if (codeValue != null) sessione.setCodicechiamata(codeValue);
                 onlineDao.aggiornaSessione(sessione);
+            }
+        } catch (Exception e) {
+            // Log error, non bloccare la UI
+            e.printStackTrace();
+        }
+    }
+
+    // Aggiorna tutte le sessioni in presenza future dal pannello hybrid in tempo reale
+    public void updatePresenzaSessionsFromHybridUI(Spinner<Integer> hourSpinner, Spinner<Integer> minuteSpinner, Spinner<Double> durataSpinner) {
+        try {
+            SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
+            ArrayList<SessioniInPresenza> presenze = SessioneInPresenzaDao.getSessioniByCorso(courseId);
+            int hourPres = hourSpinner.getValue();
+            int minPres = minuteSpinner.getValue();
+            double durataPres = durataSpinner.getValue();
+            java.time.LocalTime orarioPres = java.time.LocalTime.of(hourPres, minPres);
+            java.time.LocalTime durataPresTime = java.time.LocalTime.of((int)durataPres, (int)((durataPres - (int)durataPres)*60));
+            // DEBUG: stampa valori spinner hybrid presenza
+            System.out.println("[DEBUG] PRESENZA HYBRID: hourPres=" + hourPres + ", minPres=" + minPres + ", durataPres=" + durataPres);
+            System.out.println("[DEBUG] PRESENZA HYBRID: orarioPres=" + orarioPres + ", durataPresTime=" + durataPresTime);
+            for (SessioniInPresenza sessione : presenze) {
+                if (!sessione.getData().isAfter(java.time.LocalDate.now())) continue;
+                sessione.setOrario(orarioPres);
+                sessione.setDurata(durataPresTime);
+                presenzaDao.aggiornaSessione(sessione);
             }
         } catch (Exception e) {
             // Log error, non bloccare la UI
@@ -1149,6 +1205,7 @@ private void loadCourseData() {
                 corsoDao.aggiornaCorso(corsoDto);
 
                 String type = courseTypeCombo.getValue();
+                System.out.println("[DEBUG] saveCourse(): type=" + type);
 
                 // --- Aggiorna sessioni telematiche future ---
                 if ("Telematica".equals(type) || "Entrambi".equals(type)) {
@@ -1217,7 +1274,7 @@ private void loadCourseData() {
                         }
                     }
                     // Conversione robusta double -> LocalTime (es: 1.5 -> 1:30)
-                    int durataOre = (int) durataTele;
+                    int durataOre = (int) Math.round(Math.max(1, Math.min(8, durataTele)));
                     int durataMin = (int) Math.round((durataTele - durataOre) * 60);
                     LocalTime orarioTele = LocalTime.of(hourTele, minTele);
                     LocalTime durataTeleTime = LocalTime.of(durataOre, durataMin);
@@ -1235,12 +1292,22 @@ private void loadCourseData() {
                 if ("In presenza".equals(type) || "Entrambi".equals(type)) {
                     SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
                     ArrayList<SessioniInPresenza> presenze = presenzaDao.getSessioniByCorso(courseId);
-                    // Determina orario/durata da usare (solo spinner globali per "In presenza")
-                    int hourPres = ("Entrambi".equals(type) && startHourSpinnerPresenza != null) ? startHourSpinnerPresenza.getValue() : startHourSpinner.getValue();
-                    int minPres = ("Entrambi".equals(type) && startMinuteSpinnerPresenza != null) ? startMinuteSpinnerPresenza.getValue() : startMinuteSpinner.getValue();
-                    double durataPres = ("Entrambi".equals(type) && durationSpinnerPresenza != null) ? durationSpinnerPresenza.getValue() : durationSpinner.getValue();
+                    // Determina orario/durata da usare (solo spinner globali per \"In presenza\", spinner hybrid per \"Entrambi\")
+                    int hourPres, minPres;
+                    double durataPres;
+                    if ("Entrambi".equals(type) && startHourSpinnerPresenza != null && startMinuteSpinnerPresenza != null && durationSpinnerPresenza != null) {
+                        hourPres = startHourSpinnerPresenza.getValue();
+                        minPres = startMinuteSpinnerPresenza.getValue();
+                        durataPres = durationSpinnerPresenza.getValue();
+                    } else {
+                        hourPres = startHourSpinner.getValue();
+                        minPres = startMinuteSpinner.getValue();
+                        durataPres = durationSpinner.getValue();
+                    }
+                    // Arrotonda durata tra 1 e 8 (solo interi, minuti sempre 0)
+                    int durataOre = (int) Math.max(1, Math.min(8, Math.round(durataPres)));
                     LocalTime orarioPres = LocalTime.of(hourPres, minPres);
-                    LocalTime durataPresTime = LocalTime.of((int)durataPres, (int)((durataPres - (int)durataPres)*60));
+                    LocalTime durataPresTime = LocalTime.of(durataOre, 0);
                     // Mappa data -> sessione per aggiornamento ricette/ingredienti
                     Map<LocalDate, SessioniInPresenza> presenzaByDate = new HashMap<>();
                     for (SessioniInPresenza sessione : presenze) {
@@ -1404,5 +1471,4 @@ private void loadCourseData() {
         }
     }
     
-   
-    }
+}

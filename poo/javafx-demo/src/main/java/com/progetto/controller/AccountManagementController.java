@@ -78,9 +78,15 @@ public class AccountManagementController {
             }
             String nome = loggedUser.getNome() != null ? loggedUser.getNome().replaceAll("[^a-zA-Z0-9]", "_") : "utente";
             String cognome = loggedUser.getCognome() != null ? loggedUser.getCognome().replaceAll("[^a-zA-Z0-9]", "_") : "profilo";
+            String id = "";
+            try {
+                id = String.valueOf(loggedUser.getId_UtenteVisitatore());
+            } catch (Exception e) {
+                id = "id";
+            }
             String extension = ext.substring(ext.lastIndexOf('.'));
-            String fileName = nome + "_" + cognome + extension;
-            String userImgDir = "user_data/immagini/PropicUtente/";
+            String fileName = nome + "_" + cognome + "_" + id + extension;
+            String userImgDir = "src/main/resources/immagini/PropicUtente/";
             new File(userImgDir).mkdirs();
             String absolutePath = userImgDir + fileName;
             File destFile = new File(absolutePath);
@@ -93,8 +99,9 @@ public class AccountManagementController {
                 return;
             }
 
-            // Aggiorna il path nell'oggetto utente e nel DB
-            loggedUser.setUrl_Propic(destFile.getAbsolutePath());
+            // Path relativo da salvare nel DB e da usare per la preview
+            String relativePath = "immagini/PropicUtente/" + fileName;
+            loggedUser.setUrl_Propic(relativePath);
             try {
                 utenteDao.ModificaUtente(loggedUser);
             } catch (Exception e) {
@@ -102,9 +109,8 @@ public class AccountManagementController {
                 return;
             }
 
-            // Aggiorna la GUI
-            Image img = new Image(destFile.toURI().toString(), 256, 256, true, true);
-            boundary.setProfileImages(destFile.getAbsolutePath());
+            // Aggiorna la GUI (preview immediata)
+            boundary.setProfileImages(relativePath);
         }
     }
 

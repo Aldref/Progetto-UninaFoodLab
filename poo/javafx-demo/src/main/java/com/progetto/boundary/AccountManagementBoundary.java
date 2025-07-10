@@ -111,6 +111,10 @@ public class AccountManagementBoundary {
     public void setProfileImages(String propicPath) {
         if (propicPath != null && !propicPath.isEmpty()) {
             File imgFile = new File("src/main/resources/" + propicPath);
+            if (!imgFile.exists()) {
+                // Prova anche solo con il path passato (caso assoluto, fallback)
+                imgFile = new File(propicPath);
+            }
             if (imgFile.exists()) {
                 javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
                 if (userProfileImage != null) {

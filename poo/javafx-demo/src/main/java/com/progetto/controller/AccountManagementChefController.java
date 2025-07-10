@@ -29,6 +29,7 @@ public class AccountManagementChefController {
     private LocalDate originalBirthDate;
     private String originalDescription;
     private String originalExperienceYears;
+    private String originalProfilePic;
 
     private File tempSelectedPhoto = null;
     private String tempAbsolutePhotoPath = null;
@@ -61,6 +62,7 @@ public class AccountManagementChefController {
             originalBirthDate = loggedChef.getDataDiNascita();
             originalDescription = loggedChef.getDescrizione();
             originalExperienceYears = Integer.toString(loggedChef.getAnniDiEsperienza());
+            originalProfilePic = loggedChef.getUrl_Propic();
 
             boundary.getNameField().setText(originalName);
             boundary.getSurnameField().setText(originalSurname);
@@ -112,34 +114,46 @@ public class AccountManagementChefController {
             }
 
             if (loggedChef == null) {
-                // Non mostrare nessun alert, semplicemente ritorna
                 return;
             }
             String nome = loggedChef.getNome() != null ? loggedChef.getNome().replaceAll("[^a-zA-Z0-9]", "_") : "chef";
             String cognome = loggedChef.getCognome() != null ? loggedChef.getCognome().replaceAll("[^a-zA-Z0-9]", "_") : "profilo";
+            String idChef = "";
+            try {
+                idChef = String.valueOf(loggedChef.getId_Chef());
+            } catch (Exception e) {
+                idChef = "id";
+            }
             String extension = ext.substring(ext.lastIndexOf('.'));
-            String fileName = nome + "_" + cognome + extension;
+            String fileName = nome + "_" + cognome + "_" + idChef + extension;
             // Path relativo da salvare nel DB e per resources
             String relativePath = "immagini/PropicChef/" + fileName;
             // Path assoluto per copia in resources (dev)
             String resourcesDir = "src/main/resources/immagini/PropicChef/";
             new File(resourcesDir).mkdirs();
             String absolutePath = resourcesDir + fileName;
-            tempSelectedPhoto = selectedFile;
-            tempAbsolutePhotoPath = absolutePath;
+            tempSelectedPhoto = null;
+            tempAbsolutePhotoPath = null;
 
-            // Copia subito la foto nella destinazione finale per l'anteprima
+            // Copia subito la foto nella destinazione finale
             try {
-                java.nio.file.Files.copy(selectedFile.toPath(), new File(absolutePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                // Mostra subito l'anteprima come sarà salvata (usando il path relativo)
-                boundary.setProfileImages(relativePath);
+                Files.copy(selectedFile.toPath(), new File(absolutePath).toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception e) {
-                boundary.showErrorMessage("Errore nel caricamento dell'immagine: " + e.getMessage());
+                boundary.showErrorMessage("Errore nel salvataggio della foto profilo: " + e.getMessage());
                 return;
             }
 
+            // Mostra subito l'anteprima come sarà salvata (usando il path relativo)
+            boundary.setProfileImages(relativePath);
+
             // Imposta il path relativo su loggedChef (così viene salvato nel DB al salvataggio)
             loggedChef.setUrl_Propic(relativePath);
+            try {
+                chefDao.ModificaUtente(loggedChef);
+            } catch (Exception e) {
+                boundary.showErrorMessage("Errore nel salvataggio della foto profilo nel database: " + e.getMessage());
+                return;
+            }
         }
     }
 
@@ -207,6 +221,11 @@ public class AccountManagementChefController {
                 boundary.showErrorMessage("Gli anni di esperienza devono essere un numero valido.");
                 return;
             }
+        }
+        // Se la foto profilo è cambiata rispetto all'originale, considera come modifica
+        String currentProfilePic = loggedChef.getUrl_Propic();
+        if ((originalProfilePic == null && currentProfilePic != null) || (originalProfilePic != null && !originalProfilePic.equals(currentProfilePic))) {
+            changed = true;
         }
 
         // Gestione password

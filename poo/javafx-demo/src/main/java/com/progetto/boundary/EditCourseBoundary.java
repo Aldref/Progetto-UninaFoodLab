@@ -58,6 +58,10 @@ public class EditCourseBoundary implements Initializable {
     
     // Location (per corsi in presenza)
     @FXML private VBox locationSection;
+    // Spinner orario/durata per hybrid (presenza)
+    private Spinner<Integer> startHourSpinnerPresenza;
+    private Spinner<Integer> startMinuteSpinnerPresenza;
+    private Spinner<Double> durationSpinnerPresenza;
     // Online section (per corsi telematici)
     @FXML private VBox onlineSection;
     @FXML private TextField streetField;
@@ -120,12 +124,75 @@ public class EditCourseBoundary implements Initializable {
             // Buttons
             saveButton
         );
+        // Crea spinner hybrid per la sezione presenza (solo in hybrid)
+        createHybridPresenceSpinners();
+        // --- COLLEGA GLI SPINNER HYBRID PRESENZA AL CONTROLLER ---
+        controller.setHybridPresenzaSpinners(startHourSpinnerPresenza, startMinuteSpinnerPresenza, durationSpinnerPresenza);
         // Disabilita il campo nome corso (grigio, non modificabile)
         courseNameField.setDisable(true);
         courseNameField.setStyle("-fx-background-color: #e0e0e0; -fx-text-fill: #888;");
         // NON chiamare più qui controller.initialize();
         // L'inizializzazione avverrà solo dopo che l'id sarà stato passato con setCourseId
     }
+
+    /**
+     * Crea e aggiunge gli spinner di orario/durata per la sezione presenza in hybrid.
+     * Gli spinner sono visibili solo se il tipo corso è "Entrambi".
+     */
+    private void createHybridPresenceSpinners() {
+        // Spinner ora
+        startHourSpinnerPresenza = new Spinner<>(6, 23, 18, 1);
+        startHourSpinnerPresenza.setPrefWidth(90);
+        startHourSpinnerPresenza.setEditable(true);
+        // Spinner minuti
+        startMinuteSpinnerPresenza = new Spinner<>(0, 59, 0, 15);
+        startMinuteSpinnerPresenza.setPrefWidth(60);
+        startMinuteSpinnerPresenza.setEditable(true);
+        // Spinner durata SOLO INTERI da 1 a 8
+        durationSpinnerPresenza = new Spinner<>(1.0, 8.0, 2.0, 1.0);
+        durationSpinnerPresenza.setPrefWidth(80);
+        durationSpinnerPresenza.setEditable(true);
+        durationSpinnerPresenza.getValueFactory().setConverter(new javafx.util.StringConverter<Double>() {
+            @Override
+            public String toString(Double object) {
+                if (object == null) return "";
+                return String.format("%.0f", object);
+            }
+            @Override
+            public Double fromString(String string) {
+                try {
+                    double val = Double.parseDouble(string);
+                    if (val < 1) val = 1;
+                    if (val > 8) val = 8;
+                    return (double) Math.round(val);
+                } catch (NumberFormatException e) {
+                    return 1.0;
+                }
+            }
+        });
+        // Layout: label + spinner
+        HBox timeBox = new HBox(10);
+        timeBox.setStyle("-fx-padding: 0 0 10 0;");
+        timeBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        Label orarioLabel = new Label("Orario inizio:");
+        Label durataLabel = new Label("Durata (h):");
+        timeBox.getChildren().addAll(orarioLabel, startHourSpinnerPresenza, startMinuteSpinnerPresenza, durataLabel, durationSpinnerPresenza);
+        // Inserisci sopra via/cap
+        locationSection.getChildren().add(0, timeBox);
+        // Di default: visibile solo se tipo corso = "Entrambi"
+        timeBox.setVisible(false);
+        timeBox.setManaged(false);
+        // Listener per mostrare/nascondere
+        courseTypeCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            boolean show = "Entrambi".equals(newVal);
+            timeBox.setVisible(show);
+            timeBox.setManaged(show);
+        });
+    }
+    // Getter per controller
+    public Spinner<Integer> getStartHourSpinnerPresenza() { return startHourSpinnerPresenza; }
+    public Spinner<Integer> getStartMinuteSpinnerPresenza() { return startMinuteSpinnerPresenza; }
+    public Spinner<Double> getDurationSpinnerPresenza() { return durationSpinnerPresenza; }
         // --- UI section and field helpers for controller ---
     // RIMOSSO: la gestione dei dayCheckBoxes va fatta solo nel controller
 
@@ -150,17 +217,24 @@ public void setupSpinners() {
     startMinuteSpinner.setPrefWidth(100);
     setupTimeSpinnerFormatter(startMinuteSpinner, true);
     SpinnerValueFactory<Double> durationFactory =
-        new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 8.0, 2.0, 0.5);
+        new SpinnerValueFactory.DoubleSpinnerValueFactory(1.0, 8.0, 2.0, 1.0);
     durationSpinner.setValueFactory(durationFactory);
     durationSpinner.getValueFactory().setConverter(new StringConverter<Double>() {
         @Override
         public String toString(Double object) {
             if (object == null) return "";
-            return String.format("%.1f", object);
+            return String.format("%.0f", object);
         }
         @Override
         public Double fromString(String string) {
-            try { return Double.parseDouble(string); } catch (NumberFormatException e) { return 0.0; }
+            try {
+                double val = Double.parseDouble(string);
+                if (val < 1) val = 1;
+                if (val > 8) val = 8;
+                return (double) Math.round(val);
+            } catch (NumberFormatException e) {
+                return 1.0;
+            }
         }
     });
 }
