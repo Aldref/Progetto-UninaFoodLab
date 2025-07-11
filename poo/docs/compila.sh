@@ -4,8 +4,8 @@
 mkdir -p build
 
 # Compilazione (due volte per sicurezza)
-pdflatex -output-directory=build Documentazione_Programmazione-Object-Oriented.tex
-pdflatex -output-directory=build Documentazione_Programmazione-Object-Oriented.tex
+pdflatex -output-directory=build Documentazione-Programmazione-Object-Oriented-OOBD39.tex
+pdflatex -output-directory=build Documentazione-Programmazione-Object-Oriented-OOBD39.tex
 
 # Copia solo il PDF accanto al .tex
-mv build/Documentazione_Programmazione-Object-Oriented.pdf .
+mv build/Documentazione-Programmazione-Object-Oriented-OOBD39.pdf .

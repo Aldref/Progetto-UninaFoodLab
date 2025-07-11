@@ -1,0 +1,175 @@
+\subsection{Interazione con l'Utente}
+
+L'interazione con l'utente costituisce uno degli aspetti centrali dell'applicazione UninaFoodLab. Attraverso la GUI, l'utente può accedere a tutte le funzionalità offerte dal sistema, come la consultazione dei corsi, la gestione del proprio profilo, la prenotazione e la registrazione, e l'utilizzo delle dashboard dedicate. Ogni azione viene gestita in modo reattivo e intuitivo, grazie all'integrazione tra i file FXML, i controller e le classi Boundary.
+
+La progettazione dell'interazione è stata pensata per garantire semplicità d'uso, immediatezza delle risposte e chiarezza nei feedback, sia in caso di successo che di errore. Nei paragrafi successivi verranno analizzate nel dettaglio le principali funzionalità e i flussi di interazione, con esempi pratici e riferimenti al codice implementato.
+
+\subsubsection{Homepage Utente}
+
+La homepage utente rappresenta il punto di ingresso principale per l’utente visitatore dopo il login. È progettata per offrire una panoramica chiara e immediata delle funzionalità disponibili, come la ricerca e la visualizzazione dei corsi, la gestione del profilo, la consultazione dei corsi a cui si è iscritti e il logout.
+
+La struttura della homepage è definita nel file \texttt{homepageutente.fxml}, che organizza la GUI in una sidebar laterale per la navigazione rapida e una sezione centrale dedicata ai contenuti dinamici. La sidebar permette di accedere velocemente alle principali funzionalità, mentre la sezione centrale mostra i corsi disponibili, i filtri di ricerca e la paginazione.
+
+L’interazione è gestita dalle classi \texttt{HomepageUtenteBoundary.java} e \texttt{HomepageUtenteController.java}, che si occupano rispettivamente della gestione dell’interfaccia e della logica applicativa. Ad esempio, la ricerca dei corsi avviene tramite i filtri di categoria e frequenza, e i risultati vengono visualizzati in modo paginato grazie al controller.
+
+La homepage mostra anche le informazioni dell’utente (nome, cognome, immagine profilo) e offre un’esperienza personalizzata, con feedback immediati sulle azioni compiute (spinner di caricamento, messaggi di errore, aggiornamento dinamico dei contenuti).
+
+
+\subsubsection{Iscrizione ai Corsi}
+
+L'iscrizione ai corsi è una delle funzionalità centrali per l'utente. La scena \texttt{enrolledcourses.fxml} offre una panoramica dei corsi a cui l'utente è già iscritto, con la possibilità di filtrare per categoria e frequenza tramite i rispettivi \texttt{ComboBox}. La paginazione consente di navigare tra i corsi in modo semplice e intuitivo.
+
+L'interazione è gestita dalle classi \texttt{EnrolledCoursesBoundary.java} e \texttt{EnrolledCoursesController.java}. La boundary si occupa di visualizzare i dati e gestire gli eventi della GUI, mentre il controller implementa la logica di caricamento, filtraggio e visualizzazione dei corsi iscritti. Ad esempio, il metodo \texttt{loadEnrolledCourses()} recupera dal database i corsi a cui l'utente è iscritto, applica i filtri selezionati e aggiorna dinamicamente la visualizzazione:
+\begin{verbatim}
+public void loadEnrolledCourses() {
+    if (boundary != null) boundary.showLoadingIndicator();
+    Thread t = new Thread(() -> {
+        try {
+            UtenteVisitatore utente = UtenteVisitatore.loggedUser;
+            // Recupera i corsi dal database
+            utente.getUtenteVisitatoreDao().RecuperaCorsi(utente);
+            List<Corso> corsi = utente.getCorsi();
+            // Applica i filtri e aggiorna la GUI
+            // ...
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    });
+    t.setDaemon(true);
+    t.start();
+}
+\end{verbatim}
+
+La boundary gestisce anche la visualizzazione del numero totale di corsi iscritti, lo spinner di caricamento e la navigazione tra le pagine. L'utente può tornare alla homepage, accedere alla gestione account o effettuare il logout tramite i pulsanti laterali.
+
+Questa organizzazione garantisce un'esperienza utente fluida, con feedback immediati e una gestione efficiente anche in presenza di molti corsi iscritti.
+
+Inoltre, la modularità delle componenti come \texttt{CardCorsoBoundary} permette di riutilizzare la stessa logica di visualizzazione dei corsi in diverse parti dell'applicazione, mantenendo coerenza e riducendo la duplicazione del codice. La sicurezza e la coerenza dei dati sono garantite dal caricamento asincrono tramite thread dedicati, che evitano blocchi dell’interfaccia e gestiscono correttamente le eccezioni.
+
+La paginazione e i filtri rendono la navigazione tra i corsi iscritti scalabile anche per utenti con molte iscrizioni, mentre la personalizzazione dell’esperienza (visualizzazione nome, immagine profilo, feedback visivi) contribuisce a rendere l’interazione più efficace e gradevole. Tutte queste caratteristiche sono gestite e coordinate all’interno della scena \texttt{enrolledcourses.fxml} e delle relative classi boundary e controller.
+
+\subsubsection{Visualizzazione Calendario delle Sessioni}
+L'utente può consultare il calendario delle lezioni e sessioni direttamente dalla scena \texttt{calendardialog.fxml}, che offre una vista mensile interattiva e dettagliata. La GUI è composta da una griglia che rappresenta i giorni del mese, una sidebar con i dettagli delle lezioni selezionate e pulsanti per la navigazione tra i mesi. La logica di visualizzazione e interazione è gestita dalle classi \texttt{CalendarDialogBoundary.java} e \texttt{CalendarDialogController.java}, che si occupano di popolare il calendario con le sessioni reali dell'utente, gestire la selezione dei giorni e mostrare i dettagli delle lezioni.
+
+Quando l'utente seleziona un giorno, vengono visualizzate tutte le lezioni previste per quella data, con informazioni su orario, durata, tipo di sessione (online o in presenza) e descrizione. Il controller gestisce la mappa delle lezioni e aggiorna dinamicamente la GUI, garantendo un'esperienza reattiva e personalizzata. Esempio di codice per la selezione di una data e visualizzazione delle lezioni:
+\begin{verbatim}
+private void selectDate(VBox cell, LocalDate date) {
+    if (selectedDayCell != null) { /* ... */ }
+    selectedDayCell = cell;
+    cell.getStyleClass().add("selected");
+    selectedDate = date;
+    showLessonDetails(date);
+}
+\end{verbatim}
+La modularità della scena consente di adattare la visualizzazione sia per utenti che per chef, mostrando le sessioni pertinenti e permettendo la conferma della presenza per le lezioni in presenza.
+
+\subsubsection{Acquisto e Pagamento dei Corsi}
+L'acquisto di un corso avviene tramite la scena \texttt{paymentpage.fxml}, che offre una procedura guidata e sicura per il pagamento online. L'utente può scegliere tra carte di credito salvate o inserire una nuova carta, con validazione automatica dei dati (nome, numero, scadenza, CVC) e feedback immediato sugli errori. La logica di pagamento è gestita dalle classi \texttt{PaymentPageBoundary.java} e \texttt{PaymentPageController.java}, che si occupano di validare i dati, gestire la persistenza delle carte e iscrivere l'utente al corso selezionato.
+
+La validazione dei dati avviene sia tramite pattern regolari che tramite la classe \texttt{CardValidator.java}, che verifica il tipo di carta (Visa/Mastercard) e la validità della scadenza. Esempio di codice per la validazione della scadenza:
+\begin{verbatim}
+public static boolean isValidExpiryDate(String expiry) {
+    try {
+        String[] parts = expiry.split("/");
+        int month = Integer.parseInt(parts[0]);
+        int year = Integer.parseInt(parts[1]);
+        // ...conversione anno e controllo validità...
+        LocalDate expiryDate = LocalDate.of(year, month, 1).plusMonths(1).minusDays(1);
+        LocalDate today = LocalDate.now();
+        return expiryDate.isAfter(today) || expiryDate.isEqual(today);
+    } catch (Exception e) {
+        return false;
+    }
+}
+\end{verbatim}
+Al termine della procedura, l'utente riceve un feedback di successo tramite dialog dedicato e il corso viene aggiunto ai corsi iscritti. La modularità della boundary consente di gestire sia carte nuove che salvate, con possibilità di persistenza nel database e visualizzazione delle carte disponibili.
+
+\subsubsection{Gestione Account Utente}
+
+La gestione dell'account utente è una funzionalità centrale che consente all'utente di visualizzare e modificare i propri dati personali, aggiornare la password, cambiare la foto profilo e accedere alle proprie carte di pagamento. Tutte queste operazioni sono gestite tramite la scena \texttt{accountmanagement.fxml}, che offre una GUI intuitiva e suddivisa in sezioni tematiche: informazioni personali, sicurezza, foto profilo e azioni aggiuntive.
+
+La logica applicativa è implementata nelle classi \texttt{AccountManagementBoundary.java} e \texttt{AccountManagementController.java}. La boundary si occupa di gestire gli eventi della GUI e di delegare le operazioni al controller, che interagisce con il database per il recupero e la modifica dei dati utente. Ad esempio, all'inizializzazione vengono caricati i dati reali dell'utente loggato e visualizzati nei rispettivi campi:
+\begin{verbatim}
+private void loadUserData() {
+    if (loggedUser != null) {
+        utenteDao.recuperaDatiUtente(loggedUser);
+        originalName = loggedUser.getNome();
+        originalSurname = loggedUser.getCognome();
+        originalEmail = loggedUser.getEmail();
+        originalBirthDate = loggedUser.getDataDiNascita();
+        boundary.getNameField().setText(originalName);
+        boundary.getSurnameField().setText(originalSurname);
+        boundary.getEmailField().setText(originalEmail);
+        boundary.getBirthDatePicker().setValue(originalBirthDate);
+        boundary.getUserNameLabel().setText(originalName + " " + originalSurname);
+        boundary.setProfileImages(propic);
+    }
+}
+\end{verbatim}
+
+L'utente può modificare i dati personali (nome, cognome, email, data di nascita) e salvare le modifiche, che vengono validate (ad esempio, controllo email valida e età minima) e poi aggiornate nel database. È possibile anche cambiare la password, con verifica della password attuale e conferma della nuova password. In caso di errore, vengono mostrati messaggi di feedback chiari e immediati.
+
+La gestione della foto profilo avviene tramite un file chooser che consente di selezionare un'immagine dal proprio dispositivo. Il controller si occupa di validare il formato, salvare l'immagine nella directory dedicata e aggiornare il percorso nel database, mostrando la preview aggiornata nella GUI:
+\begin{verbatim}
+public void changePhoto() {
+    FileChooser fileChooser = new FileChooser();
+    // ...configurazione fileChooser...
+    File selectedFile = fileChooser.showOpenDialog(stage);
+    if (selectedFile != null) {
+        // ...validazione e copia file...
+        loggedUser.setUrl_Propic(relativePath);
+        utenteDao.ModificaUtente(loggedUser);
+        boundary.setProfileImages(relativePath);
+    }
+}
+\end{verbatim}
+
+La scena offre anche la possibilità di accedere alla pagina delle carte utente, tornare alla homepage o ai corsi iscritti, e di effettuare il logout tramite pulsanti dedicati. Tutte le operazioni sono accompagnate da dialog di conferma o successo, garantendo un'esperienza utente sicura e trasparente.
+
+La modularità tra boundary e controller, insieme all'uso di metodi getter/setter e all'integrazione con il database, consente una gestione efficiente e scalabile dell'account utente, con possibilità di estensione per future funzionalità.
+
+\subsubsection{Gestione Carte Utente}
+La gestione delle carte di pagamento è accessibile tramite la scena \texttt{usercards.fxml}, che consente all'utente di visualizzare, aggiungere ed eliminare le proprie carte salvate. L'interfaccia è suddivisa in due sezioni principali: il form per l'aggiunta di una nuova carta e la lista delle carte già memorizzate.
+
+La logica applicativa è gestita dalle classi \texttt{UserCardsBoundary.java} e \texttt{UserCardsController.java}. All'apertura della pagina, vengono caricate dal database tutte le carte associate all'utente e visualizzate nella lista. Ogni carta mostra il nome del titolare, le ultime quattro cifre, la data di scadenza e il circuito (Visa/Mastercard), con una grafica chiara e badge identificativo.
+
+Per aggiungere una nuova carta, l'utente deve compilare il form con nome, numero, scadenza e CVV. La validazione dei dati avviene sia tramite pattern regolari che tramite la classe \texttt{CardValidator.java}, che verifica il tipo di carta e la validità della scadenza. Esempio di validazione:
+\begin{verbatim}
+if (!CardValidator.isValidCardType(number)) {
+    boundary.showFieldError("cardNumber", "Tipo di carta non supportato. Accettiamo solo Visa e Mastercard");
+    return;
+}
+if (!CardValidator.isValidExpiryDate(expiry)) {
+    boundary.showFieldError("expiry", "La carta è scaduta o la data non è valida");
+    return;
+}
+\end{verbatim}
+Se la carta è valida, viene salvata nel database e associata all'utente tramite le DAO dedicate. Un dialog di successo conferma l'operazione e la lista viene aggiornata in tempo reale.
+
+L'utente può eliminare una carta selezionata dalla lista, con conferma e aggiornamento immediato della visualizzazione. Tutti i campi del form sono dotati di feedback visivi per errori e formattazione automatica (ad esempio, spaziatura del numero carta e formato scadenza MM/AA).
+
+La modularità tra boundary e controller garantisce una gestione sicura e intuitiva dei metodi di pagamento, con possibilità di estensione per future integrazioni (es. impostazione carta predefinita, supporto ad altri circuiti). L'integrazione con il database assicura la persistenza e la coerenza dei dati tra le varie scene dell'applicazione.
+
+\paragraph{Criteri di validazione delle carte}
+La procedura di aggiunta e salvataggio di una carta di credito prevede una serie di controlli formali e logici per garantire la correttezza e la sicurezza dei dati inseriti. I principali criteri di validazione sono:
+\begin{itemize}
+    \item \textbf{Nome del titolare}: deve essere composto da almeno nome e cognome, solo lettere e spazi, lunghezza compresa tra 2 e 50 caratteri.
+    \item \textbf{Numero carta}: deve essere composto da 16 cifre, senza caratteri speciali o lettere. La formattazione automatica inserisce uno spazio ogni 4 cifre per facilitare la lettura.
+    \item \textbf{Tipo di carta}: sono accettate solo carte Visa (iniziano con 4) e Mastercard (iniziano con 5 o con prefisso tra 2221 e 2720). Il controllo avviene tramite la funzione \texttt{isValidCardType()}:
+\begin{verbatim}
+public static boolean isValidCardType(String cardNumber) {
+    if (cardNumber == null) return false;
+    if (cardNumber.startsWith("4")) return true;
+    if (cardNumber.startsWith("5")) return true;
+    if (cardNumber.length() >= 4) {
+        String prefix = cardNumber.substring(0, 4);
+        int prefixNum = Integer.parseInt(prefix);
+        if (prefixNum >= 2221 && prefixNum <= 2720) return true;
+    }
+    return false;
+}
+\end{verbatim}
+    \item \textbf{Data di scadenza}: deve essere nel formato MM/AA, con mese tra 01 e 12 e anno non scaduto. La funzione \texttt{isValidExpiryDate()} verifica che la data sia valida e non precedente a quella attuale.
+    \item \textbf{CVC}: deve essere composto da 3 o 4 cifre numeriche.
+\end{itemize}
+In caso di errore, la GUI mostra un messaggio specifico accanto al campo errato, impedendo il salvataggio della carta fino alla correzione. Questi criteri garantiscono che solo carte valide e utilizzabili vengano memorizzate e associate all'utente.

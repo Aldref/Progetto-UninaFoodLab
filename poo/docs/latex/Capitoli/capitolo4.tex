@@ -1,0 +1,175 @@
+\section{Gestione della GUI}
+
+La gestione della Graphical User Interface (GUI) nel progetto UninaFoodLab è stata affidata a JavaFX, una tecnologia che permette di realizzare applicazioni desktop moderne, interattive e dal design professionale. L'utilizzo di JavaFX, insieme ai file FXML e CSS, ha consentito di separare in modo netto la logica di presentazione dalla logica applicativa, favorendo la manutenibilità e l'estendibilità del software.
+
+Ogni sezione dell'applicazione è rappresentata da una scena dedicata, come la schermata di login, la homepage utente, la homepage chef, la gestione dei corsi e la visualizzazione delle ricette. Queste scene sono definite tramite file FXML, che descrivono la struttura e il layout degli elementi grafici, e sono arricchite da fogli di stile CSS che garantiscono coerenza visiva e personalizzazione dell'interfaccia.
+
+La scelta di organizzare la GUI in scene distinte permette di gestire in modo ordinato le diverse funzionalità offerte agli utenti, facilitando sia l'esperienza d'uso che lo sviluppo incrementale del progetto. Inoltre, la presenza di controller dedicati per ciascuna scena assicura una gestione efficace degli eventi e delle interazioni, mantenendo il codice pulito e facilmente testabile.
+
+\subsection{Struttura della GUI}
+
+La struttura della GUI di UninaFoodLab si basa su una suddivisione modulare in scene, ciascuna dedicata a una funzionalità specifica dell’applicazione. Ogni scena è definita da un file FXML, che descrive in modo dichiarativo la disposizione degli elementi grafici (bottoni, tabelle, form, ecc.) e ne facilita la modifica senza dover intervenire direttamente sul codice Java.
+
+I principali file FXML includono, ad esempio:
+\begin{itemize}
+    \item \texttt{accountmanagement.fxml}
+    \item \texttt{accountmanagementchef.fxml}
+    \item \texttt{calendardialog.fxml}
+    \item \texttt{cardcorso.fxml}
+    \item \texttt{createcourse.fxml}
+    \item \texttt{editcourse.fxml}
+    \item \texttt{enrolledcourses.fxml}
+    \item \texttt{homepagechef.fxml}
+    \item \texttt{homepageutente.fxml}
+    \item \texttt{loginpage.fxml}
+    \item \texttt{logoutdialog.fxml}
+    \item \texttt{monthlyreport.fxml}
+    \item \texttt{paymentpage.fxml}
+    \item \texttt{registerpage.fxml}
+    \item \texttt{successdialog.fxml}
+    \item \texttt{usercards.fxml}
+\end{itemize}
+
+Ogni file FXML è associato a una classe Boundary e a un Controller dedicato, che si occupano rispettivamente della gestione dell’interfaccia e della logica degli eventi. Questa organizzazione consente di mantenere il codice pulito e facilmente estendibile, favorendo la collaborazione tra sviluppatori e la suddivisione dei compiti.
+
+La personalizzazione grafica è affidata ai fogli di stile CSS, che permettono di differenziare l’aspetto delle varie scene e di adattare l’interfaccia alle esigenze dei diversi ruoli (utente e chef). Ad esempio, la dashboard dello chef presenta strumenti e colori distintivi rispetto a quella dell’utente, rendendo immediata la comprensione delle funzionalità disponibili.
+
+\subsection{Personalizzazione grafica con CSS}
+La personalizzazione dell’interfaccia grafica è stata realizzata tramite fogli di stile CSS dedicati, che permettono di controllare l’aspetto di ogni elemento della GUI in modo flessibile e centralizzato. Ogni scena principale dispone di un proprio file CSS, come \texttt{loginpage.css}, \texttt{navbar.css}, \texttt{chef.css}, \texttt{courses.css}, che definiscono colori, font, spaziature e comportamenti visivi.
+
+Questa scelta consente di mantenere una coerenza stilistica tra le diverse schermate e di differenziare l’esperienza utente in base al ruolo. Ad esempio, le dashboard di chef e utente presentano palette di colori e layout specifici, facilitando la navigazione e la comprensione delle funzionalità disponibili. Inoltre, l’utilizzo dei CSS semplifica eventuali modifiche grafiche future, rendendo il progetto facilmente adattabile a nuove esigenze o preferenze estetiche.
+
+\subsection{Accesso e Registrazione}
+Le funzionalità di accesso e registrazione sono fondamentali per la sicurezza e la personalizzazione dell’esperienza utente. Queste operazioni sono gestite tramite scene dedicate e controller specializzati, che garantiscono la validazione dei dati, la gestione degli errori e la corretta distinzione tra i ruoli di chef e utente visitatore.
+
+\subsubsection{Login}
+Il processo di autenticazione avviene tramite la schermata definita in \texttt{loginpage.fxml}, gestita da \texttt{LoginBoundary.java} e \texttt{LoginController.java}. L'utente inserisce le proprie credenziali e, al clic sul pulsante di login, il controller verifica i dati e mostra eventuali messaggi di errore o accede alla dashboard appropriata. Un esempio di metodo di gestione dell'evento potrebbe essere:
+
+Il flusso di login è gestito in modo strutturato e sicuro. Di seguito viene mostrato un estratto reale del codice utilizzato:
+\begin{verbatim}
+// LoginBoundary.java
+@FXML
+private void LoginClick(ActionEvent event) {
+    String email = emailField.getText();
+    String password = passwordField.getText();
+    String errorMsg = controller.handleLogin(event, email, password);
+    if (errorMsg != null) {
+        errorLabel.setText(errorMsg);
+        errorLabel.setVisible(true);
+    } else {
+        errorLabel.setText("");
+        errorLabel.setVisible(false);
+    }
+}
+
+// LoginController.java
+public String handleLogin(ActionEvent event, String email, String password) {
+    try {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        UtenteVisitatoreDao utenteDao = new UtenteVisitatoreDao();
+        String tipo = utenteDao.TipoDiAccount(email, password);
+        if (tipo == null) {
+            return "Tipo di account non riconosciuto.";
+        }
+        if ("c".equals(tipo)) {
+            ChefDao chefDao = new ChefDao();
+            Chef chef = new Chef();
+            chef.setEmail(email);
+            chef.setPassword(password);
+            chefDao.recuperaDatiUtente(chef);
+            Chef.loggedUser = chef;
+            SceneSwitcher.switchToMainApp(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Homepage");
+            return null;
+        } else if ("v".equals(tipo)) {
+            UtenteVisitatore utente = new UtenteVisitatore();
+            utente.setEmail(email);
+            utente.setPassword(password);
+            utenteDao.recuperaDatiUtente(utente);
+            UtenteVisitatore.loggedUser = utente;
+            SceneSwitcher.switchToMainApp(stage, "/fxml/homepageutente.fxml", "UninaFoodLab - Homepage");
+            return null;
+        } else {
+            return "Email o password errati.";
+        }
+    } catch (IOException e) {
+        return "Errore interno. Riprova.";
+    }
+}
+\end{verbatim}
+
+In questo modo, il sistema distingue tra chef e utente visitatore, mostrando la dashboard corretta in base al ruolo. Gli eventuali errori vengono gestiti e comunicati all’utente in modo chiaro e immediato.
+
+\subsubsection{Registrazione}
+La registrazione di un nuovo account avviene tramite la schermata \texttt{registerpage.fxml}, gestita da \texttt{RegisterBoundary.java} e \texttt{RegisterController.java}. L’utente può scegliere se registrarsi come Chef o come Utente Visitatore, compilando i campi richiesti e selezionando il tipo di account.
+
+Il controller si occupa di validare i dati inseriti, mostrando messaggi di errore dettagliati in caso di campi mancanti, password non coincidenti, email non valida o dati incoerenti. Se la registrazione va a buon fine, l’utente viene inserito nel database e visualizza una dialog di conferma.
+
+Ecco un estratto del codice reale che gestisce la validazione e la registrazione:
+\begin{verbatim}
+// RegisterBoundary.java
+@FXML
+private void onRegistratiClick(ActionEvent event) {
+    // Estrai i dati dalla GUI
+    String nome = textFieldNome.getText().trim();
+    String cognome = textFieldCognome.getText().trim();
+    String email = textFieldEmail.getText().trim();
+    String password = textFieldPassword.getText();
+    String confermaPassword = textFieldConfermaPassword.getText();
+    String genere = comboBoxGenere.getValue();
+    String descrizione = textFieldDescrizione.getText().trim();
+    String anniEsperienza = textFieldAnniEsperienza.getText().trim();
+    boolean utenteSelezionato = radioUtente.isSelected();
+    boolean chefSelezionato = radioChef.isSelected();
+    var dataNascita = datePickerDataNascita.getValue();
+
+    // Passa i dati al controller
+    String errore = controller.validaRegistrazione(
+        nome, cognome, email, password, confermaPassword, genere,
+        descrizione, anniEsperienza, utenteSelezionato, chefSelezionato, dataNascita
+    );
+
+    if (errore != null) {
+        labelErrore.setText(errore);
+        labelErrore.setVisible(true);
+        return;
+    }
+
+    String esito = controller.registraUtente(
+        nome, cognome, email, password, genere, descrizione, anniEsperienza,
+        utenteSelezionato, chefSelezionato, dataNascita
+    );
+    if (esito == null) {
+        labelErrore.setText("");
+        labelErrore.setVisible(false);
+        showSuccessMessage("Registrazione completata con successo!");
+        onIndietroClick(event);
+    } else {
+        labelErrore.setText(esito);
+        labelErrore.setVisible(true);
+    }
+}
+
+// RegisterController.java
+public String validaRegistrazione(
+    String nome, String cognome, String email, String password, String confermaPassword,
+    String genere, String descrizione, String anniEsperienza,
+    boolean utenteSelezionato, boolean chefSelezionato, LocalDate dataNascita
+) {
+    // ...validazione campi obbligatori, password, email, tipo account, ecc...
+    return valid ? null : messaggioErrore.toString();
+}
+
+public String registraUtente(
+    String nome, String cognome, String email, String password, String genere,
+    String descrizione, String anniEsperienza, boolean utenteSelezionato,
+    boolean chefSelezionato, LocalDate dataNascita
+) {
+    // ...inserimento nel database e gestione errori...
+    return null; // oppure messaggio di errore
+}
+\end{verbatim}
+
+Questa logica garantisce che solo dati corretti e coerenti vengano accettati, migliorando la sicurezza e la qualità dell’esperienza utente. In caso di successo, l’utente viene reindirizzato alla schermata di login per accedere con le nuove credenziali.
+
+\subsection{Ruoli e funzionalità: Utente e Chef}
+Nei paragrafi successivi verranno analizzate nel dettaglio le funzionalità e le interazioni specifiche per ciascun ruolo, evidenziando le differenze tra utente visitatore e chef sia dal punto di vista della GUI che della logica applicativa.

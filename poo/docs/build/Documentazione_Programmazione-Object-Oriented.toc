@@ -1,0 +1,6 @@
+\contentsline {section}{\numberline {1}Introduzione}{2}{}%
+\contentsline {subsection}{\numberline {1.1}Obiettivi del Progetto}{2}{}%
+\contentsline {section}{\numberline {2}Tool utilizzati}{2}{}%
+\contentsline {subsection}{\numberline {2.1}Maven}{2}{}%
+\contentsline {subsection}{\numberline {2.2}JavaFX}{2}{}%
+\contentsline {subsection}{\numberline {2.3}PostgreSQL}{3}{}%

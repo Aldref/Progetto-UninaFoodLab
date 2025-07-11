@@ -10,7 +10,7 @@ più ricette, ciascuna delle quali richiede una specifica lista di ingredienti. 
 per pianificare correttamente la quantità di ingredienti necessari, evitando così sprechi alimentari. Si
 utilizzino le proprie conoscenze del dominio per definire eventuali dettagli non specificati nella traccia.
 
-Ecco un esempio di elenco puntato in Markdown:
+Specifiche:
 
 - DBMS usato: PostgreSQL
 - Nome del DataBae: Uninafoodlab

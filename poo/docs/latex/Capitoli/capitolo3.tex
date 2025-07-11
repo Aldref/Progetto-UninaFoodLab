@@ -1,0 +1,23 @@
+\section{Architettura del Progetto}
+
+L'architettura del progetto UninaFoodLab è stata progettata per garantire una chiara separazione dei compiti e una facile manutenibilità. La struttura delle directory riflette i principali livelli logici dell'applicazione, secondo il pattern MVC e le best practice di progettazione.
+
+Le principali suddivisioni sono:
+\begin{itemize}
+    \item \textbf{Boundary}: contiene le classi responsabili dell'interfaccia grafica e dell'interazione con l'utente, realizzate tramite JavaFX e FXML.
+    \item \textbf{Controller}: gestisce la logica applicativa e il flusso degli eventi tra la GUI e i dati.
+    \item \textbf{Entity}: suddivisa ulteriormente in \textit{DAO} (Data Access Object) e \textit{DTO} (Data Transfer Object). I DAO si occupano della persistenza e dell'accesso ai dati, mentre i DTO rappresentano le strutture dati scambiate tra i vari livelli.
+    \item \textbf{JDBC}: contiene le classi e le utility per la connessione e la gestione del database PostgreSQL.
+    \item \textbf{Utils}: raccoglie le classi di supporto e gli strumenti riutilizzabili all'interno del progetto.
+\end{itemize}
+Questa organizzazione favorisce la modularità e la scalabilità del sistema, permettendo di isolare le responsabilità e facilitare l'estensione futura. Ogni componente interagisce con gli altri tramite interfacce ben definite, riducendo le dipendenze e migliorando la qualità del codice.
+
+La scelta di suddividere le entity in DAO e DTO consente di gestire in modo efficiente sia la persistenza che il trasferimento dei dati, mentre la presenza di una directory dedicata alle utility semplifica la gestione delle funzionalità trasversali.
+
+\subsection{Struttura delle Directory}
+La struttura delle directory del progetto è organizzata come segue:
+\begin{itemize}
+    \item \textbf{src/main/java}: contiene il codice sorgente dell'applicazione.
+    \item \textbf{src/main/resources}: contiene le risorse dell'applicazione, come file FXML e immagini.
+    \item \textbf{src/test/java}: contiene i test automatizzati.
+\end{itemize}
