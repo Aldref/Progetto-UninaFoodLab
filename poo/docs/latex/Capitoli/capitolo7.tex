@@ -1,0 +1,41 @@
+\subsection{JDBC}
+La piattaforma UninaFoodLab utilizza JDBC (Java Database Connectivity) per gestire la connessione e le operazioni con il database PostgreSQL. JDBC è uno standard Java che permette di interagire con database relazionali tramite driver specifici, garantendo portabilità e flessibilità.
+
+\subsubsection{Connessione al database}
+La connessione al database è gestita tramite la classe \texttt{ConnectionJavaDb}, che centralizza la logica di accesso e configurazione. I parametri di connessione (URL, utente, password) sono letti dal file di configurazione \texttt{db.properties}, che permette di gestire profili multipli e di cambiare facilmente ambiente senza modificare il codice sorgente.
+
+\subsubsection{Gestione delle risorse}
+La classe \texttt{SupportDb} fornisce metodi di utilità per la chiusura sicura di oggetti JDBC come \texttt{Connection}, \texttt{Statement} e \texttt{ResultSet}, riducendo il rischio di memory leak e semplificando la gestione delle risorse.
+
+\subsubsection{Dipendenze e configurazione Maven}
+Il file \texttt{pom.xml} include la dipendenza per il driver JDBC PostgreSQL (\texttt{org.postgresql:postgresql}), necessaria per la comunicazione tra l'applicazione Java e il database. Inoltre, sono configurate le versioni di Java e i plugin Maven per la compilazione e l'esecuzione del progetto.
+
+\subsubsection{Descrizione dei file principali}
+\begin{itemize}
+    \item \texttt{ConnectionJavaDb.java}: gestisce la lettura dei parametri di connessione dal file \texttt{db.properties}, carica il driver PostgreSQL e fornisce il metodo statico \texttt{getConnection()} per ottenere una connessione attiva al database. Supporta la selezione di profili multipli tramite la proprietà \texttt{db.profile}.
+    \item \texttt{SupportDb.java}: fornisce metodi per la chiusura sicura di \texttt{Connection}, \texttt{Statement} e \texttt{ResultSet}, semplificando la gestione delle risorse JDBC e riducendo il rischio di errori.
+    \item \texttt{pom.xml}: include la dipendenza per il driver JDBC PostgreSQL e configura la compilazione del progetto. La presenza della dipendenza \texttt{org.postgresql:postgresql} è fondamentale per la connessione al database.
+\end{itemize}
+
+\paragraph{Esempio di utilizzo}
+\begin{verbatim}
+// Ottenere una connessione al database
+Connection conn = ConnectionJavaDb.getConnection();
+// Eseguire una query
+PreparedStatement ps = conn.prepareStatement("SELECT * FROM tabella");
+ResultSet rs = ps.executeQuery();
+// ...
+// Chiusura delle risorse
+new SupportDb().closeAll(conn, ps, rs);
+\end{verbatim}
+
+Questa architettura garantisce una connessione sicura, configurabile e facilmente estendibile tra l'applicazione Java e il database PostgreSQL.
+\subsubsection{Best practice e vantaggi}
+Questa architettura garantisce una connessione sicura, configurabile e facilmente estendibile tra l'applicazione Java e il database PostgreSQL. I vantaggi principali sono:
+\begin{itemize}
+    \item Centralizzazione della logica di accesso ai dati e gestione delle risorse.
+    \item Facilità di manutenzione e aggiornamento delle dipendenze.
+    \item Robustezza contro errori di connessione e memory leak.
+    \item Portabilità e flessibilità grazie all'uso di JDBC e Maven.
+    \item Codice più pulito e conforme alle best practice Java.
+\end{itemize}

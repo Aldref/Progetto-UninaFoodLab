@@ -1,0 +1,194 @@
+\subsection{DTO}
+\subsubsection{Utente}
+Il DTO \texttt{Utente} rappresenta il modello base per tutti gli utenti dell'applicazione UninaFoodLab. Definisce gli attributi comuni come nome, cognome, email, password, data di nascita, URL della propic e la lista dei corsi associati. Essendo una classe astratta, non viene mai istanziata direttamente, ma fornisce la struttura e i metodi fondamentali per la gestione dei dati utente, garantendo coerenza e riusabilità tra le diverse tipologie di utenti.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{nome}, \texttt{cognome}, \texttt{email}, \texttt{password}, \texttt{dataDiNascita}: dati anagrafici e di accesso.
+    \item \texttt{Url\_Propic}: URL dell'immagine profilo.
+    \item \texttt{corsi}: lista dei corsi associati all'utente.
+\end{itemize}
+
+\paragraph{Ruolo}
+La classe \texttt{Utente} funge da base per la gerarchia dei DTO utente, permettendo di estendere facilmente le funzionalità per utenti specifici come visitatori e chef.
+
+\subsubsection{UtenteVisitatore}
+Il DTO \texttt{UtenteVisitatore} estende \texttt{Utente} e rappresenta l'utente generico che può iscriversi ai corsi, gestire le proprie carte di credito e interagire con la piattaforma. Oltre agli attributi ereditati, include una lista di carte di credito, l'identificativo utente e il riferimento al proprio DAO per le operazioni di persistenza. La presenza della variabile statica \texttt{loggedUser} permette di gestire la sessione utente corrente.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{carte}: lista delle carte di credito associate.
+    \item \texttt{id\_UtenteVisitatore}: identificativo univoco dell'utente.
+    \item \texttt{utenteVisitatoreDao}: riferimento al DAO per operazioni su database.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{UtenteVisitatore} è il DTO utilizzato per la maggior parte delle operazioni utente, come iscrizione ai corsi, gestione pagamenti e aggiornamento profilo. Eredita tutti i metodi e attributi di \texttt{Utente}, aggiungendo funzionalità specifiche per la gestione delle carte e della persistenza.
+
+\subsubsection{Chef}
+Il DTO \texttt{Chef} estende \texttt{Utente} e rappresenta l'utente chef, ovvero colui che può creare e gestire corsi, visualizzare statistiche e modificare la propria descrizione. Oltre agli attributi comuni, include anni di esperienza, descrizione, identificativo chef, riferimento al proprio DAO e al grafico delle statistiche. Anche qui è presente la variabile statica \texttt{loggedUser} per la sessione chef corrente.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{anniDiEsperienza}: esperienza professionale dello chef.
+    \item \texttt{id\_Chef}: identificativo univoco dello chef.
+    \item \texttt{Descrizione}: descrizione personale e professionale.
+    \item \texttt{chefDao}: riferimento al DAO per operazioni su database.
+    \item \texttt{grafico1}: dati statistici e grafici associati allo chef.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{Chef} è il DTO dedicato agli utenti che gestiscono corsi e ricette sulla piattaforma. Eredita la struttura di \texttt{Utente}, aggiungendo attributi e metodi specifici per la gestione avanzata dei dati chef e delle statistiche.
+
+\paragraph{Relazione tra i DTO}
+Le classi \texttt{Utente}, \texttt{UtenteVisitatore} e \texttt{Chef} sono strettamente collegate: \texttt{Utente} fornisce la base comune, mentre \texttt{UtenteVisitatore} e \texttt{Chef} la estendono per coprire le esigenze delle due principali tipologie di utenti della piattaforma. Questa struttura favorisce la modularità, la riusabilità e la coerenza nella gestione dei dati utente, semplificando l'integrazione con i DAO e la logica applicativa.
+
+\subsubsection{Corso}
+Il DTO \texttt{Corso} rappresenta il modello dati per i corsi offerti sulla piattaforma UninaFoodLab. Questa classe incapsula tutte le informazioni fondamentali relative a un corso, come nome, descrizione, periodo di svolgimento, frequenza delle sessioni, numero massimo di partecipanti, prezzo, immagine di copertina, identificativo e dati del chef associato. Inoltre, gestisce la lista delle sessioni del corso e le tipologie di cucina trattate.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{nome}, \texttt{descrizione}: informazioni generali sul corso.
+    \item \texttt{dataInizio}, \texttt{dataFine}: periodo di svolgimento.
+    \item \texttt{FrequenzaDelleSessioni}: frequenza con cui si tengono le lezioni (es. settimanale, mensile).
+    \item \texttt{MaxPersone}: numero massimo di partecipanti.
+    \item \texttt{Prezzo}: costo di iscrizione al corso.
+    \item \texttt{Url\_Propic}: URL dell'immagine di copertina del corso.
+    \item \texttt{id\_Corso}: identificativo univoco del corso.
+    \item \texttt{sessioni}: lista delle sessioni che compongono il corso.
+    \item \texttt{TipiDiCucina}: lista delle tipologie di cucina trattate.
+    \item \texttt{chefNome}, \texttt{chefCognome}, \texttt{chefEsperienza}: dati sintetici del chef associato.
+\end{itemize}
+
+\paragraph{Ruolo}
+Il DTO \texttt{Corso} è centrale per la gestione e visualizzazione dei corsi all'interno della piattaforma. Viene utilizzato per trasferire i dati tra DAO, controller e boundary, garantendo che tutte le informazioni rilevanti siano disponibili per la presentazione, la modifica e la persistenza.
+
+\paragraph{Relazione con altri DTO}
+La classe \texttt{Corso} è strettamente collegata ai DTO \texttt{Sessione} (per la gestione delle lezioni), \texttt{Chef} (per i dati del docente) e \texttt{UtenteVisitatore} (per la gestione delle iscrizioni). Questa struttura favorisce la modularità e la coerenza nella gestione dei dati, permettendo di integrare facilmente nuove funzionalità come filtri, statistiche e personalizzazioni.
+
+\paragraph{Esempio di utilizzo}
+\begin{verbatim}
+Corso corso = new Corso("Corso Sushi", "Impara l'arte del sushi", LocalDate.of(2025, 9, 1), LocalDate.of(2025, 10, 1), "Settimanale", 20, 99.99f, "url_immagine.jpg");
+corso.setChefNome("Mario");
+corso.setChefCognome("Rossi");
+corso.setChefEsperienza(10);
+corso.addTipoDiCucina("Giapponese");
+corso.setSessioni(listaSessioni);
+\end{verbatim}
+
+Questa organizzazione consente di gestire in modo strutturato e flessibile tutte le informazioni relative ai corsi, facilitando l'integrazione con la logica applicativa e la presentazione grafica.
+
+\subsubsection{Sessione}
+Il DTO \texttt{Sessione} rappresenta il modello astratto per una singola sessione di corso, sia essa online che in presenza. Definisce gli attributi comuni come data, orario, durata, giorno, identificativi e il riferimento al chef responsabile. Essendo una classe astratta, non viene mai istanziata direttamente, ma fornisce la struttura di base per le sessioni specializzate.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{giorno}, \texttt{data}, \texttt{orario}, \texttt{durata}: informazioni temporali della sessione.
+    \item \texttt{id\_Sessione}, \texttt{id\_Corso}: identificativi della sessione e del corso associato.
+    \item \texttt{chef}: riferimento al docente della sessione.
+\end{itemize}
+
+\paragraph{Ruolo}
+La classe \texttt{Sessione} funge da base per la gerarchia delle sessioni, permettendo di estendere facilmente le funzionalità per sessioni online e in presenza, garantendo coerenza e riusabilità.
+
+\subsubsection{SessioneOnline}
+Il DTO \texttt{SessioneOnline} estende \texttt{Sessione} e rappresenta una sessione di corso svolta tramite piattaforme digitali. Oltre agli attributi ereditati, include informazioni specifiche come l'applicazione utilizzata (es. Zoom, Teams), il codice chiamata e una descrizione della sessione. Questo consente di gestire in modo strutturato le lezioni a distanza, facilitando la comunicazione e la partecipazione degli utenti.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{Applicazione}: piattaforma digitale utilizzata.
+    \item \texttt{Codicechiamata}: codice per accedere alla sessione online.
+    \item \texttt{Descrizione}: dettagli aggiuntivi sulla sessione.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{SessioneOnline} è utilizzata per tutte le lezioni che si svolgono da remoto, integrando le funzionalità di \texttt{Sessione} con attributi specifici per la didattica online.
+
+\subsubsection{SessioniInPresenza}
+Il DTO \texttt{SessioniInPresenza} estende \texttt{Sessione} e rappresenta una sessione di corso svolta fisicamente in aula o laboratorio. Oltre agli attributi comuni, include informazioni sulla sede (città, via, cap), attrezzatura necessaria, descrizione, lista dei partecipanti e ricette trattate. Questo consente di gestire in modo dettagliato le lezioni in presenza, facilitando l'organizzazione logistica e la personalizzazione dell'esperienza.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{citta}, \texttt{via}, \texttt{cap}: dati sulla sede della sessione.
+    \item \texttt{attrezzatura}: strumenti necessari per la lezione.
+    \item \texttt{descrizione}: dettagli aggiuntivi sulla sessione.
+    \item \texttt{corsoListPartecipanti}: lista dei partecipanti alla sessione.
+    \item \texttt{ricette}: ricette trattate durante la sessione.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{SessioniInPresenza} è utilizzata per tutte le lezioni che si svolgono fisicamente, integrando le funzionalità di \texttt{Sessione} con attributi specifici per la didattica in aula e la gestione dei partecipanti.
+
+\paragraph{Relazione tra i DTO}
+Le classi \texttt{Sessione}, \texttt{SessioneOnline} e \texttt{SessioniInPresenza} sono strettamente collegate: \texttt{Sessione} fornisce la base comune, mentre le altre la estendono per coprire le esigenze delle due principali modalità di svolgimento dei corsi. Questa struttura favorisce la modularità, la riusabilità e la coerenza nella gestione delle lezioni, semplificando l'integrazione con i DTO \texttt{Corso}, \texttt{Chef} e \texttt{UtenteVisitatore}.
+
+\subsubsection{Ricetta}
+Il DTO \texttt{Ricetta} rappresenta il modello dati per una ricetta culinaria all'interno della piattaforma UninaFoodLab. Questa classe incapsula il nome della ricetta, la lista degli ingredienti che la compongono e l'identificativo univoco. Permette di gestire in modo strutturato la creazione, modifica e visualizzazione delle ricette associate ai corsi e alle sessioni.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{nome}: nome della ricetta.
+    \item \texttt{ingredientiRicetta}: lista degli ingredienti che compongono la ricetta.
+    \item \texttt{id\_Ricetta}: identificativo univoco della ricetta.
+\end{itemize}
+
+\paragraph{Ruolo}
+Il DTO \texttt{Ricetta} è centrale per la gestione delle ricette nei corsi e nelle sessioni, consentendo di aggiungere, modificare o rimuovere ingredienti in modo dinamico. Facilita l'integrazione con la logica applicativa e la presentazione grafica, permettendo di visualizzare le ricette complete e dettagliate.
+
+\paragraph{Relazione con altri DTO}
+La classe \texttt{Ricetta} è strettamente collegata al DTO \texttt{Ingredienti}, che rappresenta i singoli ingredienti della ricetta. Questa struttura favorisce la modularità e la coerenza nella gestione dei dati culinari.
+
+\subsubsection{Ingredienti}
+Il DTO \texttt{Ingredienti} rappresenta il modello dati per un singolo ingrediente utilizzato nelle ricette della piattaforma. Definisce il nome, la quantità, l'unità di misura, la quantità totale e l'identificativo dell'ingrediente. Permette di gestire in modo dettagliato le informazioni nutrizionali e operative degli ingredienti, facilitando la creazione e la modifica delle ricette.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{nome}: nome dell'ingrediente.
+    \item \texttt{quantita}: quantità utilizzata nella ricetta.
+    \item \texttt{unitaMisura}: unità di misura della quantità.
+    \item \texttt{quantitaTotale}: quantità totale disponibile o richiesta.
+    \item \texttt{id\_Ingrediente}: identificativo univoco dell'ingrediente.
+\end{itemize}
+
+\paragraph{Ruolo}
+Il DTO \texttt{Ingredienti} è utilizzato per rappresentare in modo preciso e flessibile i componenti delle ricette, consentendo di gestire le quantità, le unità di misura e le informazioni aggiuntive. Facilita la personalizzazione delle ricette e la gestione delle scorte.
+
+\paragraph{Relazione con altri DTO}
+La classe \texttt{Ingredienti} è strettamente collegata al DTO \texttt{Ricetta}, di cui rappresenta i singoli componenti. Questa organizzazione favorisce la modularità e la coerenza nella gestione dei dati culinari e delle operazioni di cucina.
+
+\subsubsection{GraficoChef}
+Il DTO \texttt{GraficoChef} rappresenta il modello dati per le statistiche e i grafici associati all'attività di uno chef sulla piattaforma UninaFoodLab. Questa classe incapsula informazioni come il numero massimo e minimo di partecipanti ai corsi, la media, il numero totale di corsi, il numero di sessioni in presenza e il numero di sessioni telematiche. Permette di visualizzare e analizzare le performance dello chef in modo strutturato e dettagliato.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{numeroMassimo}: massimo numero di partecipanti ai corsi.
+    \item \texttt{NumeroMinimo}: minimo numero di partecipanti ai corsi.
+    \item \texttt{Media}: media dei partecipanti o delle valutazioni.
+    \item \texttt{NumeriCorsi}: numero totale di corsi gestiti dallo chef.
+    \item \texttt{numeroSessioniInPresenza}: numero di sessioni svolte in presenza.
+    \item \texttt{numerosessionitelematiche}: numero di sessioni svolte online.
+\end{itemize}
+
+\paragraph{Ruolo}
+Il DTO \texttt{GraficoChef} è utilizzato per raccogliere e presentare dati statistici relativi all'attività dello chef, facilitando la visualizzazione delle performance e l'analisi dei risultati. È integrato con il DTO \texttt{Chef} per offrire una panoramica completa delle attività svolte.
+
+\paragraph{Relazione con altri DTO}
+La classe \texttt{GraficoChef} è strettamente collegata al DTO \texttt{Chef}, di cui rappresenta le statistiche e i dati aggregati. Questa organizzazione favorisce la modularità e la coerenza nella gestione delle informazioni di performance.
+
+\subsubsection{CartaDiCredito}
+Il DTO \texttt{CartaDiCredito} rappresenta il modello dati per una carta di credito associata agli utenti della piattaforma. Definisce l'intestatario, la data di scadenza, le ultime quattro cifre, il circuito e l'identificativo della carta. Permette di gestire in modo sicuro e strutturato le informazioni di pagamento, facilitando le operazioni di acquisto e iscrizione ai corsi.
+
+\paragraph{Principali attributi}
+\begin{itemize}
+    \item \texttt{Intestatario}: nome del titolare della carta.
+    \item \texttt{DataScadenza}: data di scadenza della carta.
+    \item \texttt{UltimeQuattroCifre}: ultime quattro cifre della carta.
+    \item \texttt{Circuito}: circuito di pagamento (es. Visa, Mastercard).
+    \item \texttt{IdCarta}: identificativo univoco della carta.
+\end{itemize}
+
+\paragraph{Ruolo}
+Il DTO \texttt{CartaDiCredito} è utilizzato per gestire le informazioni di pagamento degli utenti, garantendo sicurezza e flessibilità nelle transazioni. È integrato con il DTO \texttt{UtenteVisitatore} per la gestione delle carte associate a ciascun utente.
+
+\paragraph{Relazione con altri DTO}
+La classe \texttt{CartaDiCredito} è strettamente collegata al DTO \texttt{UtenteVisitatore}, di cui rappresenta i metodi di pagamento. Questa organizzazione favorisce la modularità e la coerenza nella gestione delle informazioni finanziarie.

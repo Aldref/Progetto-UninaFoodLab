@@ -1,0 +1,666 @@
+\subsection{DAO}
+
+\subsubsection{UtenteDao}
+La classe \texttt{UtenteDao} è una classe astratta che definisce le operazioni fondamentali per la gestione degli utenti sulla piattaforma UninaFoodLab. Fornisce metodi per il login, la determinazione del tipo di account, il recupero dei corsi filtrati per categoria e frequenza, e le operazioni di base su profilo e corsi. Le query SQL utilizzate permettono di verificare l'esistenza dell'utente, distinguere tra chef e partecipante, e recuperare i dati dei corsi con join tra le tabelle correlate.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{LoginUtente}: verifica l'esistenza dell'utente tramite una query che controlla sia la tabella Partecipante che Chef.
+    \item \texttt{TipoDiAccount}: determina se l'utente è chef (\texttt{c}), partecipante (\texttt{v}) o non esistente (\texttt{n}) tramite query dedicate.
+    \item \texttt{recuperaCorsi}: recupera i corsi filtrati per categoria e frequenza, utilizzando join tra Corso, Chef, TipoDiCucina e altre tabelle correlate.
+    \item Metodi astratti: \texttt{caricaPropic}, \texttt{AssegnaCorso}, \texttt{recuperaDatiUtente}, \texttt{RegistrazioneUtente}, \texttt{ModificaUtente}, \texttt{RecuperaCorsi}.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{UtenteDao} funge da base per i DAO specializzati (\texttt{UtenteVisitatoreDao}, \texttt{ChefDao}), garantendo coerenza e riusabilità nella gestione delle operazioni comuni sugli utenti.
+
+\paragraph{Esempi UtenteDao}
+\begin{verbatim}
+// Metodo LoginUtente
+public boolean LoginUtente(Utente utente) {
+    String query = "SELECT EXISTS (SELECT 1 FROM Partecipante WHERE Email = ? AND Password = ?) OR EXISTS (SELECT 1 FROM Chef WHERE Email = ? AND Password = ?) AS Esistenza";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setString(1, utente.getEmail());
+    ps.setString(2, utente.getPassword());
+    ps.setString(3, utente.getEmail());
+    ps.setString(4, utente.getPassword());
+    rs = ps.executeQuery();
+    if (rs.next()) {
+        boolean esiste = rs.getBoolean("Esistenza");
+        return esiste;
+    }
+    // ...
+    return false;
+}
+
+// Metodo TipoDiAccount
+public String TipoDiAccount(Utente utente) {
+    String queryChef = "SELECT 1 FROM Chef WHERE Email = ? AND Password = ?";
+    String queryPartecipante = "SELECT 1 FROM Partecipante WHERE Email = ? AND Password = ?";
+    // ...
+    ps = conn.prepareStatement(queryChef);
+    ps.setString(1, utente.getEmail());
+    ps.setString(2, utente.getPassword());
+    rs = ps.executeQuery();
+    if (rs.next()) {
+        return "c";
+    }
+    // ...
+    ps = conn.prepareStatement(queryPartecipante);
+    ps.setString(1, utente.getEmail());
+    ps.setString(2, utente.getPassword());
+    rs = ps.executeQuery();
+    if (rs.next()) {
+        return "v";
+    }
+    // ...
+    return "n";
+}
+\end{verbatim}
+
+\subsubsection{UtenteVisitatoreDao}
+La classe \texttt{UtenteVisitatoreDao} estende \texttt{UtenteDao} e implementa le operazioni specifiche per la gestione degli utenti partecipanti. Permette la registrazione, il recupero e la modifica dei dati utente, l'assegnazione dei corsi, la gestione delle carte di credito e la partecipazione alle sessioni in presenza. Le query SQL sono ottimizzate per garantire la coerenza dei dati e la sicurezza delle operazioni.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{RegistrazioneUtente}: inserisce un nuovo partecipante nella tabella Partecipante.
+    \item \texttt{recuperaDatiUtente}: recupera i dati utente tramite una query sulla tabella Partecipante.
+    \item \texttt{AssegnaCorso}: registra il pagamento e l'iscrizione al corso tramite la tabella RICHIESTAPAGAMENTO.
+    \item \texttt{haGiaConfermatoPresenza}: verifica la conferma di presenza tramite la tabella ADESIONE\_SESSIONEPRESENZA.
+    \item \texttt{partecipaAllaSessioneDalVivo}: registra la partecipazione a una sessione in presenza.
+    \item \texttt{isUtenteIscrittoAlCorso}: verifica l'iscrizione tramite la tabella RICHIESTAPAGAMENTO.
+    \item \texttt{ModificaUtente}: aggiorna i dati utente tramite una query di update su Partecipante.
+    \item \texttt{RecuperaCorsiNonIscritto}: recupera i corsi disponibili tramite join e subquery.
+    \item \texttt{RecuperaCorsi}: recupera i corsi a cui l'utente è iscritto tramite join tra RICHIESTAPAGAMENTO e CORSO.
+    \item \texttt{EliminaCarta}, \texttt{aggiungiCartaAPossiede}: gestione delle carte di credito associate all'utente.
+    \item \texttt{caricaPropic}: recupera l'immagine profilo dalla tabella Partecipante.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{UtenteVisitatoreDao} gestisce tutte le operazioni di persistenza e aggiornamento per gli utenti partecipanti, integrando la logica di business con la sicurezza e la coerenza dei dati.
+
+\paragraph{Esempi UtenteVisitatoreDao}
+\begin{verbatim}
+// Metodo RegistrazioneUtente
+public void RegistrazioneUtente(Utente utenteVisitatore) {
+    String query = "INSERT INTO Partecipante (Nome, Cognome, Email, Password,  DataDiNascita) VALUES (?, ?, ?, ?, ?)";
+    // ...
+    ps = conn.prepareStatement(query);
+    java.sql.Date sqlData = java.sql.Date.valueOf(utenteVisitatore.getDataDiNascita());
+    ps.setString(1, ((UtenteVisitatore) utenteVisitatore).getNome());
+    ps.setString(2, ((UtenteVisitatore) utenteVisitatore).getCognome());
+    ps.setString(3, ((UtenteVisitatore) utenteVisitatore).getEmail());
+    ps.setString(4, ((UtenteVisitatore) utenteVisitatore).getPassword());
+    ps.setDate(5, sqlData);
+    ps.execute();
+    // ...
+}
+
+// Metodo AssegnaCorso
+public void AssegnaCorso(Corso corso, Utente utente1) {
+    String query = "INSERT INTO RICHIESTAPAGAMENTO (idPartecipante, idCorso, DataRichiesta, ImportoPagato, StatoPagamento) VALUES (?, ?, ?, ?, 'Pagato')";
+    LocalDate DataRichiesta = LocalDate.now();
+    // ...
+    ps = conn.prepareStatement(query);
+    java.sql.Date sqlData = java.sql.Date.valueOf(DataRichiesta);
+    int idUtente = ((UtenteVisitatore) utente1).getId\_UtenteVisitatore();
+    int idCorso = corso.getId\_Corso();
+    ps.setInt(1, idUtente);
+    ps.setInt(2, idCorso);
+    ps.setDate(3, sqlData);
+    ps.setDouble(4, corso.getPrezzo());
+    ps.execute();
+    // ...
+}
+\end{verbatim}
+
+\subsubsection{ChefDao}
+La classe \texttt{ChefDao} estende \texttt{UtenteDao} e implementa le operazioni specifiche per la gestione degli utenti chef. Permette la registrazione, il recupero e la modifica dei dati chef, l'assegnazione e l'eliminazione dei corsi, e il recupero dei corsi gestiti. Le query SQL sono ottimizzate per gestire le relazioni tra chef e corsi, e per garantire la corretta associazione dei dati.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{RegistrazioneUtente}: inserisce un nuovo chef nella tabella Chef.
+    \item \texttt{recuperaDatiUtente}: recupera i dati chef tramite una query sulla tabella Chef.
+    \item \texttt{AssegnaCorso}: assegna un corso allo chef tramite update sulla tabella Corso.
+    \item \texttt{RecuperaCorsi}: recupera i corsi gestiti dallo chef tramite join tra Corso e Chef.
+    \item \texttt{eliminaCorso}: elimina un corso associato allo chef tramite query di delete.
+    \item \texttt{ModificaUtente}: aggiorna i dati chef tramite una query di update su Chef.
+    \item \texttt{caricaPropic}: recupera l'immagine profilo dalla tabella Chef.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{ChefDao} gestisce tutte le operazioni di persistenza e aggiornamento per gli utenti chef, integrando la logica di business con la sicurezza e la coerenza dei dati, e facilitando la gestione avanzata dei corsi e delle statistiche.
+
+\paragraph{Esempi ChefDao}
+\begin{verbatim}
+// Metodo RegistrazioneUtente
+public void RegistrazioneUtente(Utente chef1) {
+    String query = "INSERT INTO Chef (Nome, Cognome, Email, Password, DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?)";
+    // ...
+    ps = conn.prepareStatement(query);
+    java.sql.Date sqlData = java.sql.Date.valueOf(chef1.getDataDiNascita());
+    ps.setString(1, chef1.getNome());
+    ps.setString(2, chef1.getCognome());
+    ps.setString(3, chef1.getEmail());
+    ps.setString(4, chef1.getPassword());
+    ps.setDate(5, sqlData);
+    ps.setInt(6, ((Chef)chef1).getAnniDiEsperienza());
+    ps.execute();
+    // ...
+}
+
+// Metodo AssegnaCorso
+public void AssegnaCorso(Corso corso, Utente chef1) {
+    String query = "UPDATE Corso SET IdChef = ? WHERE IdCorso = ?";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setInt(1, ((Chef) chef1).getId\_Chef());
+    ps.setInt(2, corso.getId\_Corso());
+    ps.executeUpdate();
+    // ...
+}
+\end{verbatim}
+
+\subsubsection{CorsoDao}
+La classe \texttt{CorsoDao} gestisce tutte le operazioni di persistenza relative ai corsi della piattaforma UninaFoodLab. Permette la creazione, il recupero, l'aggiornamento e la gestione delle relazioni tra corsi, chef, tipologie di cucina e sessioni (sia in presenza che online). Le query SQL sono ottimizzate per gestire le relazioni tra le varie entità e per garantire la coerenza dei dati.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{memorizzaCorsoERicavaId}: inserisce un nuovo corso nella tabella Corso e ne recupera l'id generato.
+    \item \texttt{getCorsoById}: recupera i dati di un corso tramite una query sulla tabella Corso.
+    \item \texttt{recuperaCorsi}: recupera tutti i corsi, includendo i dati dello chef associato tramite join tra Corso e Chef.
+    \item \texttt{aggiornaCorso}: aggiorna i dati di un corso tramite una query di update.
+    \item \texttt{recuperaTipoCucinaCorsi}: recupera le tipologie di cucina associate a un corso tramite join tra TIPODICUCINA e TIPODICUCINA\_CORSO.
+    \item \texttt{recuperoSessioniPerCorso}: recupera tutte le sessioni (in presenza e online) associate a un corso.
+    \item \texttt{recuperoSessioniCorsoOnline}: recupera le sessioni online associate a un corso.
+    \item \texttt{recuperoSessionCorso}: recupera le sessioni in presenza associate a un corso.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{CorsoDao} centralizza la logica di accesso e manipolazione dei dati relativi ai corsi, facilitando la gestione delle relazioni con chef, sessioni e tipologie di cucina. Garantisce la coerenza e l'integrità dei dati, integrando la logica di business con le operazioni di persistenza.
+
+\paragraph{Esempi CorsoDao}
+\begin{verbatim}
+// Metodo memorizzaCorsoERicavaId
+public void memorizzaCorsoERicavaId(Corso corso) {
+    String query = "INSERT INTO Corso (Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, MaxPersone, Prezzo, Propic) VALUES (?, ?, ?, ?, ?::fds, ?, ?, ?)";
+    // ...
+    ps = conn.prepareStatement(query, PreparedStatement.RETURN\_GENERATED\_KEYS);
+    ps.setString(1, corso.getNome());
+    ps.setString(2, corso.getDescrizione());
+    ps.setDate(3, java.sql.Date.valueOf(corso.getDataInizio()));
+    ps.setDate(4, java.sql.Date.valueOf(corso.getDataFine()));
+    ps.setString(5, corso.getFrequenzaDelleSessioni());
+    ps.setInt(6, corso.getMaxPersone());
+    ps.setFloat(7, corso.getPrezzo());
+    ps.setString(8, corso.getUrl\_Propic());
+    ps.executeUpdate();
+    // ...
+    ResultSet generatedKeys = ps.getGeneratedKeys();
+    if (generatedKeys.next()) {
+        int id = generatedKeys.getInt(1);
+        corso.setId\_Corso(id);
+    }
+    // ...
+}
+
+// Metodo recuperaCorsi
+public ArrayList<Corso> recuperaCorsi() {
+    String query = "SELECT c.*, ch.Nome AS chef\_nome, ch.Cognome AS chef\_cognome, ch.AnniDiEsperienza AS chef\_esperienza FROM corso c LEFT JOIN chef ch ON c.idchef = ch.idchef";
+    // ...
+    ps = conn.prepareStatement(query);
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        Corso corso = new Corso(
+            rs.getString("Nome"),
+            rs.getString("Descrizione"),
+            rs.getDate("DataInizio").toLocalDate(),
+            rs.getDate("DataFine").toLocalDate(),
+            rs.getString("FrequenzaDelleSessioni"),
+            rs.getInt("MaxPersone"),
+            rs.getFloat("Prezzo"),
+            rs.getString("Propic")
+        );
+        corso.setId\_Corso(rs.getInt("idCorso"));
+        corso.setChefNome(rs.getString("chef\_nome"));
+        corso.setChefCognome(rs.getString("chef\_cognome"));
+        corso.setChefEsperienza(rs.getInt("chef\_esperienza"));
+        // ...
+    }
+    // ...
+}
+
+// Metodo recuperaTipoCucinaCorsi
+public void recuperaTipoCucinaCorsi(Corso corso) {
+    String query = "SELECT T.Nome FROM TIPODICUCINA\_CORSO TC NATURAL JOIN TIPODICUCINA T WHERE TC.idcorso = ?";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setInt(1, corso.getId\_Corso());
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        corso.addTipoDiCucina(rs.getString("Nome"));
+    }
+    // ...
+}
+
+// Metodo recuperoSessioniCorsoOnline
+public ArrayList<SessioneOnline> recuperoSessioniCorsoOnline(Corso corso) {
+    String query = "SELECT * FROM SESSIONE\_TELEMATICA WHERE idcorso = ?";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setInt(1, corso.getId\_Corso());
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        SessioneOnline sessione = new SessioneOnline(
+            rs.getString("giorno"),
+            rs.getDate("data").toLocalDate(),
+            rs.getTime("orario").toLocalTime(),
+            rs.getTime("durata").toLocalTime(),
+            rs.getString("Applicazione"),
+            rs.getString("Codicechiamata"),
+            rs.getString("Descrizione"),
+            rs.getInt("idsessionetelematica")
+        );
+        // ...
+    }
+    // ...
+}
+\end{verbatim}
+
+\subsubsection{SessioniDao}
+La classe astratta \texttt{SessioniDao} definisce le operazioni comuni per la gestione delle sessioni (sia in presenza che online) sulla piattaforma UninaFoodLab. Fornisce metodi per il controllo delle sovrapposizioni di sessioni per uno chef e dichiara il metodo astratto per la memorizzazione di una sessione. Viene estesa dalle classi specializzate \texttt{SessioneOnlineDao} e \texttt{SessioneInPresenzaDao}.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{ControllosSessioniAttiveLoStessoPeriodo}: verifica se uno chef ha già una sessione attiva nello stesso periodo tramite una query sulle tabelle SESSIONE\_PRESENZA\_CHEF e SESSIONE.
+    \item \texttt{MemorizzaSessione}: metodo astratto per la memorizzazione di una sessione, implementato dalle sottoclassi.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{SessioniDao} centralizza la logica di controllo e gestione delle sessioni, garantendo coerenza e riusabilità per le operazioni comuni tra sessioni in presenza e online.
+
+\paragraph{Esempi SessioniDao}
+\begin{verbatim}
+// Metodo ControllosSessioniAttiveLoStessoPeriodo
+public boolean ControllosSessioniAttiveLoStessoPeriodo(Sessione sessione, Chef chef) {
+    String query = "Select count(*) as NumSessioni from SESSIONE\_PRESENZA\_CHEF natural join SESSIONE where id\_Chef = ? and Giorno = ? and Data = ? and Orario = ? and Durata = ?";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setInt(1, chef.getId\_Chef());
+    ps.setString(2, sessione.getGiorno());
+    ps.setDate(3, java.sql.Date.valueOf(sessione.getData()));
+    ps.setTime(4, java.sql.Time.valueOf(sessione.getOrario()));
+    ps.setTime(5, java.sql.Time.valueOf(sessione.getDurata()));
+    rs = ps.executeQuery();
+    return rs.next();
+    // ...
+}
+\end{verbatim}
+
+\subsubsection{SessioneOnlineDao}
+La classe \texttt{SessioneOnlineDao} estende \texttt{SessioniDao} e implementa le operazioni specifiche per la gestione delle sessioni telematiche (online). Permette la creazione, l'aggiornamento e il recupero delle sessioni online associate ai corsi, gestendo i dati relativi all'applicazione, codice chiamata, orario, durata, giorno e descrizione.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{MemorizzaSessione}: inserisce una nuova sessione telematica nella tabella SESSIONE\_TELEMATICA.
+    \item \texttt{aggiornaSessione}: aggiorna i dati di una sessione telematica esistente.
+    \item \texttt{getSessioniByCorso}: recupera tutte le sessioni telematiche associate a un corso tramite query sulla tabella SESSIONE\_TELEMATICA.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{SessioneOnlineDao} gestisce tutte le operazioni di persistenza e aggiornamento per le sessioni online, integrando la logica di business con la sicurezza e la coerenza dei dati.
+
+\paragraph{Esempi SessioneOnlineDao}
+\begin{verbatim}
+// Metodo MemorizzaSessione
+public void MemorizzaSessione(Sessione sessione) {
+    String query = "INSERT INTO SESSIONE\_TELEMATICA (Applicazione, CodiceChiamata, Data, Orario, Durata, Giorno, Descrizione, IdCorso, IdChef) VALUES (?, ?, ?, ?, ?, ?::giorno, ?, ?, ?)";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setString(1, ((SessioneOnline) sessione).getApplicazione());
+    ps.setString(2, ((SessioneOnline) sessione).getCodicechiamata());
+    ps.setDate(3, java.sql.Date.valueOf(sessione.getData()));
+    ps.setTime(4, java.sql.Time.valueOf(sessione.getOrario()));
+    // Calcola la durata in ore intere (1-8) e passa come interval
+    LocalTime durata = sessione.getDurata();
+    int durataOre = Math.max(1, Math.min(8, durata.getHour()));
+    PGInterval interval = new PGInterval(0, 0, 0, durataOre, 0, 0);
+    ps.setObject(5, interval);
+    ps.setString(6, sessione.getGiorno());
+    String descrizione = ((SessioneOnline) sessione).getDescrizione();
+    ps.setString(7, descrizione != null ? descrizione : "");
+    ps.setInt(8, ((SessioneOnline) sessione).getId\_Corso());
+    ps.setInt(9, sessione.getChef().getId\_Chef());
+    ps.executeUpdate();
+    // ...
+}
+
+// Metodo getSessioniByCorso
+public static ArrayList<SessioneOnline> getSessioniByCorso(int idCorso) {
+    String query = "SELECT * FROM sessione\_telematica WHERE idcorso = ? ORDER BY data, orario";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setInt(1, idCorso);
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        SessioneOnline sessione = new SessioneOnline();
+        sessione.setId\_Sessione(rs.getInt("idsessionetelematica"));
+        // ...
+    }
+    // ...
+}
+\end{verbatim}
+
+\subsubsection{SessioneInPresenzaDao}
+La classe \texttt{SessioneInPresenzaDao} estende \texttt{SessioniDao} e implementa le operazioni specifiche per la gestione delle sessioni in presenza. Permette la creazione, l'aggiornamento e il recupero delle sessioni in presenza associate ai corsi, gestendo i dati relativi a luogo, orario, durata, ricette associate e partecipanti.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{MemorizzaSessione}: inserisce una nuova sessione in presenza nella tabella SESSIONE\_PRESENZA.
+    \item \texttt{aggiornaSessione}: aggiorna i dati di una sessione in presenza esistente.
+    \item \texttt{getSessioniByCorso}: recupera tutte le sessioni in presenza associate a un corso tramite query sulla tabella SESSIONE\_PRESENZA.
+    \item \texttt{associaRicettaASessione}: associa una ricetta a una sessione in presenza.
+    \item \texttt{recuperaRicetteSessione}: recupera le ricette associate a una sessione in presenza tramite join tra RICETTA e SESSIONE\_PRESENZA\_RICETTA.
+    \item \texttt{recuperaPartecipantiSessione}: recupera i partecipanti di una sessione in presenza tramite join tra PARTECIPANTE e ADESIONE\_SESSIONEPRESENZA.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{SessioneInPresenzaDao} gestisce tutte le operazioni di persistenza e aggiornamento per le sessioni in presenza, integrando la logica di business con la sicurezza e la coerenza dei dati, e facilitando la gestione delle ricette e dei partecipanti associati.
+
+\paragraph{Esempi SessioneInPresenzaDao}
+\begin{verbatim}
+// Metodo MemorizzaSessione
+public void MemorizzaSessione(Sessione sessione) {
+    String query = "INSERT INTO SESSIONE\_PRESENZA (giorno, Data, Orario, Durata, citta, via, cap, Descrizione, IDcorso, IdChef) VALUES (?::giorno, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    // ...
+    ps = conn.prepareStatement(query, PreparedStatement.RETURN\_GENERATED\_KEYS);
+    ps.setString(1, sessione.getGiorno());
+    ps.setDate(2, java.sql.Date.valueOf(sessione.getData()));
+    ps.setTime(3, java.sql.Time.valueOf(sessione.getOrario()));
+    LocalTime durata = sessione.getDurata();
+    int durataOre = Math.max(1, Math.min(8, durata.getHour()));
+    PGInterval interval = new PGInterval(0, 0, 0, durataOre, 0, 0);
+    ps.setObject(4, interval);
+    ps.setString(5, ((SessioniInPresenza) sessione).getCitta());
+    ps.setString(6, ((SessioniInPresenza) sessione).getVia());
+    ps.setString(7, ((SessioniInPresenza) sessione).getCap());
+    String descrizione = ((SessioniInPresenza) sessione).getDescrizione();
+    ps.setString(8, descrizione != null ? descrizione : "");
+    ps.setInt(9, ((SessioniInPresenza) sessione).getId\_Corso());
+    ps.setInt(10, sessione.getChef().getId\_Chef());
+    ps.executeUpdate();
+    // ...
+}
+
+// Metodo associaRicettaASessione
+public void associaRicettaASessione(SessioniInPresenza sessione, Ricetta ricetta) {
+    String query = "INSERT INTO sessione\_presenza\_ricetta (idsessionepresenza, idricetta) VALUES (?, ?) ON CONFLICT DO NOTHING";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setInt(1, sessione.getId\_Sessione());
+    ps.setInt(2, ricetta.getId\_Ricetta());
+    ps.executeUpdate();
+    // ...
+}
+
+// Metodo recuperaPartecipantiSessione
+public ArrayList<UtenteVisitatore> recuperaPartecipantiSessione(SessioniInPresenza sessione) {
+    String query = "SELECT p.* FROM partecipante p JOIN adesione\_sessionepresenza a ON p.idpartecipante = a.idpartecipante WHERE a.idsessionepresenza = ?";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setInt(1, sessione.getId\_Sessione());
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        UtenteVisitatore utente = new UtenteVisitatore(
+            rs.getString("nome"),
+            rs.getString("cognome"),
+            rs.getString("email"),
+            rs.getString("password"),
+            rs.getDate("datadinascita").toLocalDate()
+        );
+        // ...
+    }
+    // ...
+}
+\end{verbatim}
+
+\subsubsection{RicettaDao}
+La classe \texttt{ricettaDao} gestisce tutte le operazioni di persistenza relative alle ricette. Permette la creazione, il recupero, la modifica e la cancellazione delle ricette, nonché la gestione delle associazioni tra ricette e ingredienti. Le query SQL sono ottimizzate per garantire la coerenza tra le tabelle RICETTA, INGREDIENTE e PREPARAZIONEINGREDIENTE.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{memorizzaRicetta}: inserisce una nuova ricetta nella tabella RICETTA e ne recupera l'id generato.
+    \item \texttt{getIngredientiRicetta}: recupera tutti gli ingredienti associati a una ricetta tramite join tra INGREDIENTE e PREPARAZIONEINGREDIENTE.
+    \item \texttt{associaIngredientiARicetta}: associa un ingrediente a una ricetta tramite inserimento nella tabella PREPARAZIONEINGREDIENTE.
+    \item \texttt{rimuoviAssociazioneIngrediente}: rimuove l'associazione tra una ricetta e un ingrediente.
+    \item \texttt{cancellaricetta}: elimina una ricetta dalla tabella RICETTA.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{ricettaDao} centralizza la logica di accesso e manipolazione dei dati relativi alle ricette, facilitando la gestione delle relazioni con gli ingredienti e garantendo la coerenza dei dati.
+
+\paragraph{Esempi ricettaDao}
+\begin{verbatim}
+// Metodo memorizzaRicetta
+public void memorizzaRicetta(Ricetta ricetta) {
+    String query = "Insert into Ricetta (Nome) values (?)";
+    // ...
+    ps = conn.prepareStatement(query, PreparedStatement.RETURN\_GENERATED\_KEYS);
+    ps.setString(1, ricetta.getNome());
+    ps.executeUpdate();
+    generatedKeys = ps.getGeneratedKeys();
+    if (generatedKeys.next()) {
+        ricetta.setId\_Ricetta(generatedKeys.getInt(1));
+    }
+    // ...
+}
+
+// Metodo getIngredientiRicetta
+public ArrayList<Ingredienti> getIngredientiRicetta(Ricetta ricetta) {
+    String query = "Select I.Nome, I.UnitaDiMisura, I.IdIngrediente, P.QuanititaUnitaria from INGREDIENTE I Natural join PREPARAZIONEINGREDIENTE P where P.IdRicetta=?";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setInt(1, ricetta.getId\_Ricetta());
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        Ingredienti ingrediente = new Ingredienti(rs.getString("Nome"), rs.getFloat("QuanititaUnitaria"), rs.getString("UnitaDiMisura"));
+        ingrediente.setIdIngrediente(rs.getInt("IdIngrediente"));
+        // ...
+    }
+    // ...
+}
+\end{verbatim}
+
+\subsubsection{IngredientiDao}
+La classe \texttt{IngredientiDao} gestisce tutte le operazioni di persistenza relative agli ingredienti. Permette la creazione, il recupero, la modifica e la cancellazione degli ingredienti, nonché la verifica dell'utilizzo di un ingrediente in altre ricette. Le query SQL sono ottimizzate per garantire la coerenza tra le tabelle INGREDIENTE e PREPARAZIONEINGREDIENTE.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{memorizzaIngredienti}: inserisce un nuovo ingrediente nella tabella INGREDIENTE e ne recupera l'id generato.
+    \item \texttt{modificaIngredienti}: aggiorna i dati di un ingrediente tramite una query di update.
+    \item \texttt{cancellaingrediente}/\texttt{eliminaIngrediente}: elimina un ingrediente dalla tabella INGREDIENTE.
+    \item \texttt{isIngredienteUsatoAltrove}: verifica se un ingrediente è utilizzato in altre ricette tramite query sulla tabella PREPARAZIONEINGREDIENTE.
+    \item \texttt{recuperaQuantitaTotale}: recupera la quantità totale di un ingrediente per una ricetta tramite la tabella QuantitaPerSessione.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{IngredientiDao} centralizza la logica di accesso e manipolazione dei dati relativi agli ingredienti, facilitando la gestione delle relazioni con le ricette e garantendo la coerenza dei dati.
+
+\paragraph{Esempi IngredientiDao}
+\begin{verbatim}
+// Metodo memorizzaIngredienti
+public void memorizzaIngredienti(Ingredienti ingredienti) {
+    String query = "INSERT INTO ingrediente (Nome, UnitaDiMisura) VALUES (?, ?::unitadimisura)";
+    // ...
+    ps = conn.prepareStatement(query, PreparedStatement.RETURN\_GENERATED\_KEYS);
+    ps.setString(1, ingredienti.getNome());
+    ps.setString(2, ingredienti.getUnitaMisura());
+    ps.executeUpdate();
+    generatedKeys = ps.getGeneratedKeys();
+    if (generatedKeys.next()) {
+        ingredienti.setIdIngrediente(generatedKeys.getInt(1));
+    }
+    // ...
+}
+
+// Metodo isIngredienteUsatoAltrove
+public boolean isIngredienteUsatoAltrove(Ingredienti ingrediente) {
+    String query = "SELECT COUNT(*) as cnt FROM PREPARAZIONEINGREDIENTE WHERE IdIngrediente = ?";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setInt(1, ingrediente.getId\_Ingrediente());
+    rs = ps.executeQuery();
+    if (rs.next()) {
+        int count = rs.getInt("cnt");
+        return count > 0;
+    }
+    // ...
+    return false;
+}
+\end{verbatim}
+
+\subsubsection{GraficoChefDao}
+La classe \texttt{GraficoChefDao} gestisce il recupero delle statistiche mensili relative all'attività di uno chef, utilizzando la vista \texttt{vista\_statistiche\_mensili\_chef}. Permette di ottenere valori aggregati come minimo, massimo, media di ricette per sessione, numero di corsi, sessioni in presenza e telematiche, e guadagno totale. Questi dati sono utilizzati per la generazione di grafici e report statistici.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{RicavaMinimo}, \texttt{RicavaMassimo}, \texttt{RicavaMedia}: recuperano rispettivamente il valore minimo, massimo e medio di ricette per sessione per uno chef in un dato mese e anno.
+    \item \texttt{RicavaNumeroCorsi}: recupera il numero di corsi gestiti dallo chef nel periodo.
+    \item \texttt{RicavaNumeroSessioniInPresenza}, \texttt{RicavaNumeroSesssioniTelematiche}: recuperano il numero di sessioni in presenza e telematiche svolte dallo chef.
+    \item \texttt{ricavaGuadagno}: recupera il guadagno totale dello chef nel periodo.
+    \item \texttt{stampaVistaCompleta}: stampa tutte le colonne della vista per uno chef, mese e anno (debug).
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{GraficoChefDao} centralizza la logica di accesso ai dati statistici aggregati per chef, facilitando la generazione di grafici, report e analisi sull'attività mensile degli chef.
+
+\paragraph{Esempi GraficoChefDao}
+\begin{verbatim}
+// Metodo RicavaMinimo
+public int RicavaMinimo(Chef chef1, int mese, int anno){
+    String quarry="SELECT min\_ricette\_in\_sessione FROM vista\_statistiche\_mensili\_chef WHERE IdChef=? AND mese=? AND anno=?";
+    // ...
+    ps = conn.prepareStatement(quarry);
+    ps.setInt(1, chef1.getId\_Chef());
+    ps.setInt(2, mese);
+    ps.setInt(3, anno);
+    rs = ps.executeQuery();
+    if (rs.next()) {
+        ValoreMinimo = rs.getInt(1);
+    }
+    // ...
+}
+
+// Metodo RicavaMedia
+public float RicavaMedia(Chef chef1, int mese, int anno){
+    String quarry="SELECT media\_ricette\_in\_sessione FROM vista\_statistiche\_mensili\_chef WHERE IdChef=? AND mese=? AND anno=?";
+    // ...
+    ps = conn.prepareStatement(quarry);
+    // ...
+}
+\end{verbatim}
+
+\subsubsection{CartaDiCreditoDao}
+La classe \texttt{CartaDiCreditoDao} gestisce tutte le operazioni di persistenza relative alle carte di credito associate agli utenti. Permette la creazione, il recupero, la cancellazione e la gestione delle relazioni tra utente e carta tramite la tabella \texttt{POSSIEDE}. Le query SQL sono ottimizzate per garantire la coerenza tra le tabelle \texttt{Carta} e \texttt{POSSIEDE}.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{getCarteByUtenteId}: recupera tutte le carte di credito associate a un utente tramite join tra POSSIEDE e CARTA.
+    \item \texttt{memorizzaCarta}: inserisce una nuova carta di credito e la associa all'utente, oppure associa una carta già esistente.
+    \item \texttt{cancellaCarta}: elimina la relazione tra utente e carta, e cancella la carta se non più associata ad altri utenti.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{CartaDiCreditoDao} centralizza la logica di accesso e manipolazione dei dati relativi alle carte di credito, garantendo la sicurezza e la coerenza delle associazioni tra utenti e carte.
+
+\paragraph{Esempi CartaDiCreditoDao}
+\begin{verbatim}
+// Metodo getCarteByUtenteId
+public List<CartaDiCredito> getCarteByUtenteId(int idUtente) {
+    String query = "SELECT c.* FROM POSSIEDE p JOIN Carta c ON p.IdCarta = c.IdCarta WHERE p.IdPartecipante = ?";
+    // ...
+    ps = conn.prepareStatement(query);
+    ps.setInt(1, idUtente);
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        CartaDiCredito carta = new CartaDiCredito();
+        carta.setIdCarta(rs.getString("IdCarta"));
+        // ...
+    }
+    // ...
+}
+
+// Metodo memorizzaCarta
+public void memorizzaCarta(CartaDiCredito carta, int idUtente) {
+    String selectId = "SELECT IdCarta FROM Carta WHERE Intestatario = ? AND DataScadenza = ? AND UltimeQuattroCifre = ? AND Circuito = ?::Circuito ORDER BY IdCarta DESC LIMIT 1";
+    // ...
+    psSelect = conn.prepareStatement(selectId);
+    // ...
+}
+\end{verbatim}
+
+\subsubsection{BarraDiRicercaDao}
+La classe \texttt{BarraDiRicercaDao} gestisce le operazioni di ricerca e recupero dei valori enumerativi e delle categorie dal database, utili per la compilazione dinamica delle barre di ricerca e dei filtri nell'interfaccia utente. Permette di ottenere i valori degli enum definiti nel database (come frequenza delle sessioni, unità di misura, giorni della settimana) e le categorie di cucina disponibili.
+
+\paragraph{Principali metodi e query}
+\begin{itemize}
+    \item \texttt{CeraEnumFrequenza}: recupera i valori dell'enum FrequenzaDelleSessioni (FDS) dal database tramite la funzione \texttt{enum\_range}.
+    \item \texttt{Categorie}: recupera le categorie di cucina disponibili tramite query sulla tabella TIPODICUCINA.
+    \item \texttt{GrandezzeDiMisura}: recupera i valori dell'enum UnitaDiMisura dal database.
+    \item \texttt{GiorniSettimanaEnum}: recupera i valori dell'enum Giorno dal database.
+\end{itemize}
+
+\paragraph{Ruolo}
+\texttt{BarraDiRicercaDao} centralizza la logica di accesso ai valori enumerativi e alle categorie, facilitando la generazione dinamica di filtri e opzioni di ricerca nell'applicazione.
+
+\paragraph{Esempi BarraDiRicercaDao}
+\begin{verbatim}
+// Metodo CeraEnumFrequenza
+public ArrayList<String> CeraEnumFrequenza() {
+    String query = "SELECT unnest(enum\_range(NULL::FDS )) AS valore";
+    // ...
+    ps = conn.prepareStatement(query);
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        Enum.add(rs.getString("valore"));
+    }
+    // ...
+}
+
+// Metodo Categorie
+public ArrayList<String> Categorie() {
+    String query = "SELECT DISTINCT Nome as valore FROM TIPODICUCINA";
+    // ...
+    ps = conn.prepareStatement(query);
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        Categorie.add(rs.getString("valore"));
+    }
+    // ...
+}
+
+// Metodo GrandezzeDiMisura
+public ArrayList<String> GrandezzeDiMisura() {
+    String query = "SELECT unnest(enum\_range(NULL::UnitaDiMisura )) AS valore";
+    // ...
+    ps = conn.prepareStatement(query);
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        UnitaDiMisura.add(rs.getString("valore"));
+    }
+    // ...
+}
+
+// Metodo GiorniSettimanaEnum
+public ArrayList<String> GiorniSettimanaEnum() {
+    String query = "SELECT unnest(enum\_range(NULL::Giorno )) AS valore";
+    // ...
+    ps = conn.prepareStatement(query);
+    rs = ps.executeQuery();
+    while (rs.next()) {
+        giorni.add(rs.getString("valore"));
+    }
+    // ...
+}
+\end{verbatim}

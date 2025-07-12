@@ -1,0 +1,247 @@
+\section{Utils}
+Nel progetto UninaFoodLab, la componente \textbf{utils} raccoglie tutte le classi di utilità e supporto che facilitano la gestione di operazioni comuni, la validazione dei dati, la manipolazione delle immagini, la gestione delle scene e il feedback all'utente. Questi utility sono pensati per essere riutilizzabili, modulari e indipendenti dalla logica di business, contribuendo a mantenere il codice pulito e manutenibile.
+
+\subsection{Principali utility utilizzati}
+Di seguito vengono descritti i principali utility implementati e utilizzati nel progetto:
+\begin{itemize}
+    \item \texttt{CardValidator}: gestisce la validazione delle carte di pagamento, controllando formato, tipo, scadenza e coerenza dei dati inseriti.
+    \item \texttt{ImageClipUtils}: fornisce metodi per la manipolazione delle immagini profilo, come il ritaglio circolare e la gestione delle preview.
+    \item \texttt{SceneSwitcher}: semplifica la navigazione tra le diverse scene JavaFX, gestendo il cambio pagina, il passaggio di parametri e la visualizzazione di dialog.
+    \item \texttt{SuccessDialogUtils}: utility per la visualizzazione di dialog di conferma, successo o errore, con feedback visivo all'utente.
+    \item \texttt{FrequenzaSessioniProvider}: fornisce in modo centralizzato le opzioni di frequenza delle sessioni di corso, recuperandole dal database e gestendo la cache interna.
+    \item \texttt{UnifiedRecipeIngredientUI}: genera dinamicamente la UI per la gestione di ricette e ingredienti, offrendo modularità e notifiche automatiche al controller.
+    \item \texttt{ErrorCaricamentoPropic}: gestisce le eccezioni relative al caricamento delle immagini profilo, fornendo messaggi di errore specifici e facilitando il debug.
+\end{itemize}
+Ognuna di queste classi è stata progettata per essere facilmente estendibile e integrabile nelle varie componenti dell'applicazione, favorendo la separazione delle responsabilità e la riusabilità del codice.
+
+\subsection{Vantaggi dell'utilizzo di utility}
+L'uso di utility nel progetto UninaFoodLab offre diversi vantaggi:
+\begin{itemize}
+    \item \textbf{Modularità}: le utility sono indipendenti dalla logica di business, consentendo di concentrarsi su operazioni specifiche senza appesantire le classi principali.
+    \item \textbf{Riutilizzabilità}: le stesse utility possono essere utilizzate in diverse parti dell'applicazione, riducendo la duplicazione del codice e migliorando la manutenibilità.
+    \item \textbf{Chiarezza del codice}: separando le operazioni comuni in classi dedicate, il codice principale risulta più leggibile e comprensibile, facilitando la collaborazione tra sviluppatori.
+    \item \textbf{Testabilità}: le utility possono essere testate in modo indipendente, garantendo che funzionino correttamente senza dipendere da altre parti del sistema.
+\end{itemize}
+Questa organizzazione contribuisce a creare un'applicazione robusta, scalabile e facile da mantenere, rispettando le best practice di programmazione e design patterns.
+
+\subsection{SceneSwitcher}
+La classe \texttt{SceneSwitcher} è una utility fondamentale per la gestione della navigazione tra le diverse scene dell'applicazione JavaFX. Il suo obiettivo è centralizzare e semplificare il cambio pagina, la gestione delle dimensioni delle finestre, il passaggio di parametri tra controller e la visualizzazione di dialog personalizzati.
+
+\paragraph{Ruolo e vantaggi}
+\begin{itemize}
+    \item Permette di passare da una scena all'altra in modo sicuro e modulare, evitando duplicazione di codice e errori di gestione delle finestre.
+    \item Gestisce automaticamente le dimensioni minime, massime e predefinite delle finestre in base al tipo di scena (login, registrazione, main app, transazioni, dialog).
+    \item Supporta la visualizzazione di dialog modali (es. conferma logout, calendario lezioni) centrando la finestra rispetto al parent.
+    \item Consente il passaggio di parametri e controller tra le scene, facilitando la comunicazione tra le diverse componenti.
+    \item Gestisce le differenze tra sistemi operativi (Windows, Linux, Mac) per massimizzazione e stile delle finestre.
+\end{itemize}
+
+\paragraph{Funzionalità principali}
+\begin{itemize}
+    \item \texttt{switchScene}: metodo generico per cambiare scena in base al tipo di pagina (login, register, main, payment, ecc.).
+    \item \texttt{switchToLogin}, \texttt{switchToRegister}, \texttt{switchToMainApp}, \texttt{switchToTransaction}: metodi specifici per gestire le principali scene dell'applicazione.
+    \item \texttt{showDialogCentered}: visualizza dialog modali centrati rispetto alla finestra principale.
+    \item \texttt{showCalendarDialog}, \texttt{showLogoutDialog}: gestiscono la visualizzazione di dialog specializzati (calendario lezioni, conferma logout) con passaggio di parametri e controller.
+    \item Gestione automatica delle dimensioni e massimizzazione delle finestre in base al contesto e al sistema operativo.
+\end{itemize}
+
+\paragraph{Esempio di utilizzo}
+\begin{verbatim}
+// Cambio scena verso la homepage chef
+SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Homepage Chef");
+
+// Visualizzazione dialog di logout
+LogoutDialogBoundary dialog = SceneSwitcher.showLogoutDialog(stage);
+if (dialog.isConfirmed()) {
+    SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
+}
+\end{verbatim}
+
+\paragraph{Integrazione e modularità}
+SceneSwitcher è utilizzata in tutte le boundary e controller dell'applicazione per garantire una navigazione coerente, sicura e facilmente estendibile. La sua modularità consente di aggiungere nuove scene o dialog senza modificare la logica delle pagine principali, favorendo la manutenibilità e la scalabilità del progetto.
+
+\subsection{SuccessDialogUtils}
+La classe \texttt{SuccessDialogUtils} è una utility dedicata alla visualizzazione di dialog di conferma, successo o annullamento, offrendo feedback visivo e immediato all'utente in seguito a operazioni importanti (salvataggio dati, pagamento, annullamento modifiche, ecc.).
+
+\paragraph{Ruolo e vantaggi}
+\begin{itemize}
+    \item Centralizza la gestione dei dialog di successo, evitando duplicazione di codice e garantendo coerenza grafica e funzionale.
+    \item Permette di mostrare messaggi personalizzati in base al contesto (es. pagamento completato, dati salvati, modifiche annullate).
+    \item Supporta la visualizzazione di informazioni aggiuntive (es. nome corso appena acquistato) e la personalizzazione dei titoli e dei messaggi.
+    \item Gestisce la posizione e lo stile del dialog, centrando la finestra rispetto al parent e utilizzando uno stile grafico dedicato (\texttt{successdialog.fxml}).
+    \item Facilita l'integrazione con boundary e controller, permettendo di mostrare feedback all'utente con una sola chiamata.
+\end{itemize}
+
+\paragraph{Funzionalità principali}
+\begin{itemize}
+    \item \texttt{showPaymentSuccessDialog}: mostra un dialog di conferma pagamento, con nome corso e messaggio personalizzato.
+    \item \texttt{showSaveSuccessDialog}: mostra un dialog di conferma salvataggio dati.
+    \item \texttt{showCancelSuccessDialog}: mostra un dialog di conferma annullamento modifiche.
+    \item \texttt{showGenericSuccessDialog}: permette di mostrare dialog di successo generici, personalizzando titolo e messaggio.
+    \item Gestione automatica della posizione, stile e chiusura del dialog.
+\end{itemize}
+
+\paragraph{Esempio di utilizzo}
+\begin{verbatim}
+// Dopo il salvataggio dei dati account
+SuccessDialogUtils.showSaveSuccessDialog(stage);
+
+// Dopo il pagamento di un corso
+SuccessDialogUtils.showPaymentSuccessDialog(stage, "Corso di Sushi");
+
+// Dopo l'annullamento delle modifiche
+SuccessDialogUtils.showCancelSuccessDialog(stage);
+\end{verbatim}
+
+\paragraph{Integrazione e modularità}
+SuccessDialogUtils è utilizzata in boundary e controller per offrire feedback immediato e coerente all'utente, migliorando l'esperienza d'uso e la chiarezza delle operazioni. La modularità della classe consente di estendere facilmente i dialog per nuovi contesti o messaggi, mantenendo la coerenza grafica e funzionale in tutta l'applicazione.
+
+\subsection{CardValidator}
+La classe \texttt{CardValidator} è una utility dedicata alla validazione delle carte di pagamento inserite dagli utenti. Il suo scopo è garantire che i dati relativi alle carte siano corretti, coerenti e conformi ai criteri di sicurezza richiesti per le transazioni online.
+
+\paragraph{Ruolo e vantaggi}
+\begin{itemize}
+    \item Centralizza la logica di validazione delle carte, evitando duplicazione di codice e possibili errori nei controller.
+    \item Permette di identificare il tipo di carta (Visa, Mastercard) in base al numero inserito, migliorando l'esperienza utente e la sicurezza.
+    \item Verifica la validità del formato e della scadenza della carta, impedendo l'inserimento di dati errati o scaduti.
+    \item Facilita l'integrazione con boundary e controller, permettendo di validare i dati con una sola chiamata.
+\end{itemize}
+
+\paragraph{Funzionalità principali}
+\begin{itemize}
+    \item \texttt{getCardType}: identifica il tipo di carta (Visa, Mastercard, Unknown) in base al prefisso del numero.
+    \item \texttt{isValidCardType}: verifica se il numero inserito corrisponde a un tipo di carta supportato.
+    \item \texttt{isValidExpiryDate}: controlla che la data di scadenza sia nel formato corretto (MM/YY o MM/YYYY) e che la carta non sia scaduta.
+\end{itemize}
+
+\paragraph{Criteri di validazione}
+\begin{itemize}
+    \item \textbf{Tipo carta}: accetta solo Visa (prefisso 4) e Mastercard (prefisso 5 o 2221-2720).
+    \item \textbf{Formato scadenza}: accetta MM/YY o MM/YYYY, verifica che il mese sia tra 1 e 12 e che la data non sia passata.
+    \item \textbf{Sicurezza}: impedisce l'inserimento di carte scadute o con formato non valido.
+\end{itemize}
+
+\paragraph{Esempio di utilizzo}
+\begin{verbatim}
+// Validazione tipo carta
+if (!CardValidator.isValidCardType(cardNumber)) {
+    showError("Tipo di carta non supportato.");
+}
+
+// Validazione scadenza
+if (!CardValidator.isValidExpiryDate(expiry)) {
+    showError("Data di scadenza non valida o carta scaduta.");
+}
+\end{verbatim}
+
+\paragraph{Integrazione e modularità}
+CardValidator è utilizzata in tutte le boundary e controller che gestiscono l'inserimento di carte di pagamento, garantendo coerenza, sicurezza e semplicità di utilizzo. La modularità della classe consente di estendere facilmente i criteri di validazione per supportare nuovi tipi di carte o regole di business.
+
+\subsection{ImageClipUtils}
+La classe \texttt{ImageClipUtils} è una utility dedicata alla manipolazione delle immagini profilo all'interno dell'applicazione. Il suo scopo principale è applicare un ritaglio circolare alle immagini, migliorando l'estetica della UI e garantendo uniformità nella visualizzazione delle foto utente e chef.
+
+\paragraph{Ruolo e vantaggi}
+\begin{itemize}
+    \item Centralizza la logica di ritaglio delle immagini, evitando duplicazione di codice e garantendo coerenza grafica.
+    \item Permette di applicare un clip circolare centrato a qualsiasi \texttt{ImageView}, con raggio personalizzabile o calcolato automaticamente.
+    \item Migliora l'esperienza utente, offrendo una visualizzazione moderna e professionale delle immagini profilo.
+    \item Facilita l'integrazione con boundary e controller, permettendo di applicare il ritaglio con una sola chiamata.
+\end{itemize}
+
+\paragraph{Funzionalità principali}
+\begin{itemize}
+    \item \texttt{setCircularClip}: applica un clip circolare centrato all'\texttt{ImageView} passato, con raggio specificato o calcolato in base alle dimensioni dell'immagine.
+\end{itemize}
+
+\paragraph{Esempio di utilizzo}
+\begin{verbatim}
+// Applica ritaglio circolare all'immagine profilo utente
+ImageClipUtils.setCircularClip(userProfileImage, 40);
+
+// Applica ritaglio automatico (metà lato minore)
+ImageClipUtils.setCircularClip(profileImageLarge, 0);
+\end{verbatim}
+
+\paragraph{Integrazione e modularità}
+ImageClipUtils è utilizzata in tutte le boundary che gestiscono immagini profilo (utente, chef), garantendo coerenza grafica e semplicità di utilizzo. La modularità della classe consente di estendere facilmente le funzionalità per nuovi tipi di ritaglio o effetti grafici.
+
+\subsection{FrequenzaSessioniProvider}
+La classe \texttt{FrequenzaSessioniProvider} è una utility pensata per gestire in modo centralizzato la fornitura delle opzioni di frequenza delle sessioni di corso. Il suo scopo è rendere disponibili, in modo efficiente e riutilizzabile, tutte le possibili frequenze (es. settimanale, bisettimanale, mensile) utilizzate nella creazione e modifica dei corsi.
+
+\paragraph{Ruolo e vantaggi}
+\begin{itemize}
+    \item Centralizza la logica di recupero delle frequenze, evitando duplicazione di codice nei controller e boundary.
+    \item Recupera le opzioni dal database tramite la DAO dedicata (\texttt{BarraDiRicercaDao}), garantendo che siano sempre aggiornate e coerenti con i dati reali.
+    \item Utilizza una cache interna per evitare chiamate ripetute al database e migliorare le performance.
+    \item Facilita l'integrazione con le form di creazione e modifica corso, permettendo di popolare le \texttt{ComboBox} con una sola chiamata.
+\end{itemize}
+
+\paragraph{Funzionalità principali}
+\begin{itemize}
+    \item \texttt{getFrequenze}: metodo statico che restituisce la lista delle frequenze disponibili, recuperandole dal database solo al primo utilizzo.
+\end{itemize}
+
+\paragraph{Esempio di utilizzo}
+\begin{verbatim}
+// Popola la ComboBox delle frequenze nella form di creazione corso
+frequenzaComboBox.getItems().addAll(FrequenzaSessioniProvider.getFrequenze());
+\end{verbatim}
+
+\paragraph{Integrazione e modularità}
+FrequenzaSessioniProvider è utilizzata in tutte le boundary e controller che gestiscono la creazione e modifica dei corsi, garantendo coerenza, efficienza e semplicità di utilizzo. La modularità della classe consente di estendere facilmente la logica per supportare nuove tipologie di frequenza o fonti dati.
+
+\subsection{UnifiedRecipeIngredientUI}
+La classe \texttt{UnifiedRecipeIngredientUI} è una utility avanzata dedicata alla generazione dinamica della UI per la gestione di ricette e ingredienti all'interno delle form di creazione e modifica corso. Il suo scopo è offrire un'interfaccia modulare, riutilizzabile e facilmente estendibile per la visualizzazione, aggiunta, modifica e rimozione di ricette e ingredienti.
+
+\paragraph{Ruolo e vantaggi}
+\begin{itemize}
+    \item Centralizza la logica di costruzione della UI per ricette e ingredienti, garantendo coerenza grafica e funzionale tra le diverse scene.
+    \item Permette di gestire ricette e ingredienti in modo dinamico, con supporto a modalità ibride e personalizzazione delle unità di misura.
+    \item Facilita l'integrazione con boundary e controller, notificando automaticamente le modifiche tramite callback dedicate.
+    \item Migliora l'esperienza utente, offrendo una UI intuitiva, ordinata e facilmente estendibile.
+\end{itemize}
+
+\paragraph{Funzionalità principali}
+\begin{itemize}
+    \item \texttt{createUnifiedRecipeBox}: genera un container grafico (VBox) per una ricetta, con campi per nome, lista ingredienti, pulsanti di aggiunta/rimozione e gestione callback.
+    \item \texttt{createUnifiedIngredientBox}: genera una riga grafica (HBox) per un ingrediente, con campi per nome, quantità, unità di misura e pulsante di rimozione.
+    \item Supporto a unità di misura personalizzabili e modalità ibride (es. corsi con sessioni di tipo diverso).
+    \item Notifica automatica delle modifiche al controller tramite callback (Runnable).
+\end{itemize}
+
+\paragraph{Esempio di utilizzo}
+\begin{verbatim}
+// Genera la UI per una ricetta e la aggiunge al container principale
+VBox recipeBox = UnifiedRecipeIngredientUI.createUnifiedRecipeBox(ricetta, recipesList, container, isHybrid, notifyControllerOfChange, unitaDiMisuraList);
+container.getChildren().add(recipeBox);
+\end{verbatim}
+
+\paragraph{Integrazione e modularità}
+UnifiedRecipeIngredientUI è utilizzata in tutte le boundary che gestiscono la creazione e modifica di corsi, garantendo coerenza, efficienza e semplicità di utilizzo. La modularità della classe consente di estendere facilmente la UI per nuove funzionalità (es. gestione allergeni, filtri avanzati, validazioni aggiuntive) senza modificare la logica principale delle form.
+
+\subsection{ErrorCarimentoPropic}
+La classe \texttt{ErrorCaricamentoPropic} è una utility dedicata alla gestione delle eccezioni durante il caricamento delle immagini profilo (propic) degli utenti e chef. Estende \texttt{RuntimeException} e fornisce un messaggio di errore specifico quando la propic non viene trovata o caricata correttamente.
+
+\paragraph{Ruolo e vantaggi}
+\begin{itemize}
+    \item Centralizza la gestione degli errori relativi al caricamento delle immagini profilo, rendendo il codice più chiaro e facilmente manutenibile.
+    \item Permette di distinguere rapidamente i problemi di caricamento propic da altre eccezioni, facilitando il debug e la gestione dei casi limite.
+    \item Migliora la robustezza dell'applicazione, consentendo di gestire in modo controllato la mancanza di immagini profilo e di fornire feedback appropriato all'utente.
+\end{itemize}
+
+\paragraph{Funzionalità principali}
+\begin{itemize}
+    \item Costruttore senza parametri che imposta il messaggio di errore a \texttt{"Propic non trovata"}.
+    \item Può essere lanciata da boundary, controller o utility che gestiscono il caricamento delle immagini profilo.
+\end{itemize}
+
+\paragraph{Esempio di utilizzo}
+\begin{verbatim}
+// Nel caricamento dell'immagine profilo utente
+if (immaginePropic == null) {
+    throw new ErrorCaricamentoPropic();
+}
+\end{verbatim}
+
+\paragraph{Integrazione e modularità}
+ErrorCaricamentoPropic è utilizzata in tutte le componenti che gestiscono il caricamento delle immagini profilo, in particolare nelle boundary e nelle utility grafiche. La sua modularità consente di estendere facilmente la gestione degli errori per altri tipi di immagini o risorse, mantenendo la coerenza e la chiarezza nella gestione delle eccezioni.

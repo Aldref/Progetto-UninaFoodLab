@@ -10,7 +10,6 @@ com\progetto\Entity\EntityDto\GraficoChef.class
 com\progetto\boundary\EditCourseBoundary$5.class
 com\progetto\controller\PaymentPageController.class
 com\progetto\Entity\EntityDto\CartaDiCredito.class
-com\progetto\utils\ErroriEmail.class
 com\progetto\controller\AccountManagementController.class
 com\progetto\controller\HomepageChefController.class
 com\progetto\controller\HomepageUtenteController.class

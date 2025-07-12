@@ -1,0 +1,58 @@
+\section{DTO e DAO}
+
+I pattern \textbf{DTO} (Data Transfer Object) e \textbf{DAO} (Data Access Object) sono fondamentali per la separazione tra logica applicativa e gestione dei dati all'interno di UninaFoodLab.
+
+\paragraph{DTO}
+Il DTO è una struttura dati semplice, spesso una classe con soli attributi e metodi getter/setter, utilizzata per trasferire informazioni tra i vari layer dell'applicazione (ad esempio tra DAO, controller e boundary). I DTO non contengono logica di business, ma solo dati, facilitando il passaggio di informazioni in modo sicuro.
+
+\paragraph{DAO}
+Il DAO è una classe o interfaccia che incapsula tutte le operazioni di accesso e manipolazione dei dati su una fonte persistente (come un database). Permette di astrarre dati, offrendo metodi chiari per leggere, scrivere, aggiornare ed eliminare dati, senza esporre i dettagli tecnici al resto dell'applicazione. Questo favorisce la manutenibilità, la testabilità e la scalabilità del sistema.
+
+L'utilizzo combinato di DAO e DTO consente di:
+\begin{itemize}
+    \item Separare la logica di accesso ai dati dalla logica di presentazione e business.
+    \item Ridurre la duplicazione del codice e favorire la riusabilità.
+    \item Migliorare la sicurezza e la coerenza nella gestione delle informazioni.
+    \item Facilitare la manutenzione e l'estensione dell'applicazione.
+\end{itemize}
+
+\subsection{Elenco dei DTO e DAO implementati}
+Nel progetto UninaFoodLab sono stati implementati diversi DAO e DTO per gestire le principali entità e operazioni dell'applicazione. Di seguito una breve lista dei più rilevanti:
+
+
+\paragraph{DTO}
+\begin{itemize}
+    \item \texttt{Utente}: rappresentazione dati utente
+    \item \texttt{UtenteVisitatore}: dati utente visitatore
+    \item \texttt{Chef}: rappresentazione dati chef
+    \item \texttt{Corso}: dati corso, sessioni, iscrizioni
+    \item \texttt{Sessioni}: dati delle sessioni di corso
+    \item \texttt{SessioneOnline}: dati sessione online
+    \item \texttt{SessioneInPresenza}: dati sessione in presenza
+    \item \texttt{Pagamento}: dati pagamento e transazione
+    \item \texttt{CartaDiCredito}: dati carta di credito
+    \item \texttt{Ricetta}: dati ricetta
+    \item \texttt{Ingredienti}: dati ingredienti
+    \item \texttt{GraficoChef}: dati statistici chef
+\end{itemize}
+
+\paragraph{DAO}
+\begin{itemize}
+    \item \texttt{UtenteDao}: gestione dati utente (registrazione, login, aggiornamento profilo)
+    \item \texttt{UtenteVisitatoreDao}: operazioni su utenti visitatori
+    \item \texttt{ChefDao}: gestione dati chef e corsi associati
+    \item \texttt{CorsoDao}: operazioni su corsi, iscrizioni, sessioni
+    \item \texttt{SessioniDao}: gestione delle sessioni di corso
+    \item \texttt{SessioneOnlineDao}: gestione delle sessioni online
+    \item \texttt{SessioneInPresenzaDao}: gestione delle sessioni in presenza
+    \item \texttt{PagamentoDao}: gestione pagamenti e transazioni
+    \item \texttt{CartaDiCreditoDao}: gestione delle carte di credito
+    \item \texttt{RicettaDao}: gestione ricette
+    \item \texttt{IngredientiDao}: gestione ingredienti
+    \item \texttt{GraficoChefDao}: gestione dati statistici chef
+    \item \texttt{BarraDiRicercaDao}: ricerca e filtri avanzati su corsi e chef
+\end{itemize}
+
+Questi DAO e DTO sono utilizzati per garantire una gestione strutturata, sicura e modulare dei dati tra i vari layer dell'applicazione.
+
+Nei paragrafi successivi verranno descritti i principali DAO e DTO implementati e utilizzati nel progetto, con esempi pratici e dettagli sulle loro responsabilità.

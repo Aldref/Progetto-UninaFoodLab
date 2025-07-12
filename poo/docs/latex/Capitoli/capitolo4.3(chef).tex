@@ -1,1 +1,568 @@
 \subsection{Interazione con lo Chef}
+l'interazione con lo chef è un aspetto cruciale del progetto UninaFoodLab. Gli chef sono i professionisti che gestiscono i corsi culinari, e la loro interfaccia è progettata per essere intuitiva e funzionale.
+La sezione dedicata agli chef consente loro di:
+\begin{itemize}
+    \item Creare e gestire i propri corsi, inclusa la pianificazione delle lezioni, online o/e in presenza, e la definizione delle ricette
+    \item Visualizzare le prenotazioni dei corsi e gestire le richieste degli utenti
+    \item Aggiornare le informazioni sui corsi e sulle ricette, garantendo che gli utenti abbiano sempre accesso alle informazioni più aggiornate
+\end{itemize}
+Questa interazione è facilitata da un'interfaccia grafica realizzata con JavaFX, che offre un'esperienza utente fluida e reattiva. Gli chef possono accedere alla loro sezione tramite un login sicuro, garantendo che solo gli utenti autorizzati possano gestire i corsi e le informazioni ad essi associate.
+
+\subsubsection{Homepage dello Chef}
+
+L'homepage dello chef rappresenta il punto di ingresso principale per la gestione dei corsi e delle attività didattiche. La scena \texttt{homepagechef.fxml} è progettata per offrire una panoramica chiara e interattiva dei corsi creati dallo chef, con funzionalità di ricerca, filtraggio e paginazione.
+
+La GUI è suddivisa in una sidebar laterale per la navigazione (accesso rapido a creazione corso, report mensile, gestione account e logout) e una sezione centrale che mostra i corsi in formato card. Ogni card visualizza le informazioni principali del corso (titolo, descrizione, date, frequenza, tipologie di cucina, numero massimo di partecipanti, immagine e dati chef).
+
+La logica applicativa è gestita dalle classi \texttt{HomepageChefBoundary.java} e \texttt{HomepageChefController.java}. All'inizializzazione vengono caricati i dati reali dello chef loggato e i corsi associati, con possibilità di filtrare per categoria e frequenza tramite le \texttt{ComboBox} dedicate.
+
+La visualizzazione dei corsi è dinamica e supporta la paginazione, con un massimo di 12 card per pagina. Il controller gestisce il caricamento dei corsi dal database, l'applicazione dei filtri e l'aggiornamento della GUI:
+\begin{verbatim}
+for (Corso corso : corsi) {
+    // Applica i filtri
+    if (!matchCategoria || !matchFrequenza) continue;
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));
+    Node card = loader.load();
+    CardCorsoBoundary boundary = loader.getController();
+    boundary.setChefMode(true);
+    boundary.setCorso(corso);
+    // ...imposta dati corso...
+    allCourseCards.add(card);
+}
+updateCourseCards();
+\end{verbatim}
+
+La paginazione consente di navigare tra le pagine dei corsi tramite i pulsanti "Precedente" e "Successiva", con aggiornamento del numero di pagina visualizzato. In assenza di corsi, viene mostrato un messaggio di invito alla creazione del primo corso.
+
+L'homepage chef offre inoltre accesso diretto alle funzionalità di creazione corso, report mensile e gestione account, garantendo un'esperienza utente fluida e personalizzata. Tutte le operazioni sono accompagnate da feedback visivi e dialog di conferma, con integrazione tra boundary, controller e database.
+
+\subsubsection{Creazione Corso}
+
+La creazione di un nuovo corso rappresenta una delle funzionalità più articolate e centrali per lo chef. La scena \texttt{createcourse.fxml} offre una form completa e guidata, suddivisa in sezioni tematiche che coprono tutti gli aspetti necessari per la definizione di un corso di cucina professionale.
+
+\paragraph{Struttura della GUI}
+La GUI è organizzata in una sidebar per la navigazione e una sezione centrale con la form di creazione. Le sezioni principali sono:
+\begin{itemize}
+    \item \textbf{Immagine del corso}: upload e preview dell'immagine rappresentativa.
+    \item \textbf{Informazioni base}: nome, descrizione, tipologie di cucina (almeno una obbligatoria), prezzo, numero massimo di partecipanti.
+    \item \textbf{Date e programmazione}: selezione intervallo date, frequenza delle sessioni, tipo di lezione (in presenza, telematica, entrambi).
+    \item \textbf{Dettagli lezioni in presenza}: giorni della settimana, orario, durata, luogo (città, via, CAP).
+    \item \textbf{Dettagli lezioni telematiche}: applicazione utilizzata, meeting code, giorni, orario, durata.
+    \item \textbf{Modalità ibrida}: configurazione avanzata per corsi che prevedono sia lezioni in presenza che online, con UI dinamica per la selezione dei giorni e la gestione delle sessioni.
+    \item \textbf{Ricette e ingredienti}: per ogni sessione, possibilità di associare una o più ricette, con ingredienti dettagliati e quantità.
+\end{itemize}
+
+\paragraph{Logica applicativa e flussi}
+La logica di creazione corso è gestita dalle classi \texttt{CreateCourseBoundary.java} e \texttt{CreateCourseController.java}. All'inizializzazione vengono caricati i dati dello chef loggato, le opzioni di frequenza, tipologie di cucina e applicazioni telematiche dal database. La form è reattiva: la selezione della frequenza e del tipo di lezione aggiorna dinamicamente le sezioni visibili e i campi obbligatori.
+
+La validazione dei dati è molto rigorosa e avviene sia lato GUI (formattazione, pattern, limiti di lunghezza) che lato controller. Esempi di validazione:
+
+\begin{verbatim}
+// Controlla che il prezzo sia un numero positivo con max 2 decimali
+private boolean isValidPrice(String priceText) {
+    if (priceText == null || priceText.trim().isEmpty()) return false;
+    return priceText.matches("\\d+(\\.\\d{1,2})?");
+}
+
+// Controlla che il CAP sia composto da 5 cifre
+private boolean isValidCAP(String capText) {
+    return capText != null && capText.matches("\\d{5}");
+}
+
+// Controlla che la durata sia tra 1 e 480 minuti (max 8 ore)
+private boolean isValidDurationRange(String durationText) {
+    try {
+        int durata = Integer.parseInt(durationText);
+        return durata >= 1 && durata <= 480;
+    } catch (NumberFormatException e) {
+        return false;
+    }
+}
+
+// Controlla che la descrizione sia tra 1 e 60 parole
+private boolean isValidDescription(String text) {
+    if (text == null) return false;
+    int wordCount = text.trim().split("\\s+").length;
+    return wordCount >= 1 && wordCount <= 60;
+}
+\end{verbatim}
+Ogni metodo di validazione viene invocato in tempo reale durante la compilazione della form, bloccando la creazione del corso e mostrando un messaggio di errore contestuale se il dato non è valido. Questo garantisce che i dati inseriti siano sempre corretti e coerenti con i vincoli di business.
+
+\paragraph{Calcolo automatico delle date delle sessioni}
+Il calcolo delle date delle sessioni in presenza è fondamentale per la corretta programmazione del corso. Il controller implementa una logica che, dato un intervallo di date e una lista di giorni della settimana selezionati, genera tutte le date corrispondenti:
+\begin{verbatim}
+private List<LocalDate> calcolaDateSessioniPresenza(LocalDate inizio, LocalDate fine, List<String> giorniSettimana) {
+    List<LocalDate> dateSessioni = new ArrayList<>();
+    if (inizio == null || fine == null || giorniSettimana == null || giorniSettimana.isEmpty()) return dateSessioni;
+    LocalDate data = inizio;
+    while (!data.isAfter(fine)) {
+        String giorno = getItalianDayName(data); // es. "Lunedì"
+        if (giorniSettimana.contains(giorno)) {
+            dateSessioni.add(data);
+        }
+        data = data.plusDays(1);
+    }
+    return dateSessioni;
+}
+\end{verbatim}
+Questa funzione viene utilizzata per generare la UI delle ricette e per la persistenza delle sessioni nel database. In modalità ibrida, il calcolo è ancora più avanzato: la UI consente di configurare ogni sessione separatamente, evitando sovrapposizioni e garantendo la coerenza del calendario.
+
+\textbf{Spiegazione:} Il metodo scorre tutte le date tra inizio e fine, controlla se il giorno corrisponde a uno di quelli selezionati (ad esempio, "Lunedì" o "Giovedì") e, in caso positivo, aggiunge la data alla lista delle sessioni. Questo permette di programmare corsi con frequenze e giorni personalizzati, adattandosi alle esigenze dello chef e degli utenti.
+
+\paragraph{Gestione delle sessioni}
+La programmazione delle sessioni è uno degli aspetti più avanzati. In base alla frequenza e ai giorni selezionati, il controller calcola automaticamente tutte le date delle lezioni, sia in presenza che online. Per la modalità ibrida, la UI consente di configurare ogni sessione separatamente, evitando sovrapposizioni e garantendo la coerenza del calendario.
+
+Esempio di calcolo delle date:
+\begin{verbatim}
+private List<LocalDate> calcolaDateSessioniPresenza(LocalDate inizio, LocalDate fine, List<String> giorniSettimana) { /* ... */ }
+\end{verbatim}
+La boundary aggiorna la UI delle ricette per ogni sessione, permettendo di associare ricette e ingredienti specifici.
+
+\paragraph{Gestione ricette e ingredienti}
+Per ogni sessione, lo chef può aggiungere una o più ricette, ciascuna con una lista di ingredienti e quantità. La UI consente di aggiungere, modificare e rimuovere ricette e ingredienti in modo dinamico. La validazione garantisce che ogni ricetta sia completa e corretta prima del salvataggio.
+
+\paragraph{Salvataggio e persistenza}
+Al termine della compilazione, il controller valida nuovamente tutti i dati e salva il corso nel database, insieme alle sessioni, ricette e ingredienti associati. Il salvataggio avviene in modo transazionale, garantendo la coerenza dei dati. In caso di successo, viene mostrato un dialog di conferma e lo chef viene reindirizzato all'homepage.
+
+\paragraph{Esempi di codice e riferimenti}
+\begin{verbatim}
+public void createCourse() {
+    // Validazione campi
+    // Calcolo date sessioni
+    // Salvataggio corso, sessioni, ricette, ingredienti
+    // Feedback e redirect
+}
+\end{verbatim}
+I file principali coinvolti sono: \texttt{createcourse.fxml}, \texttt{CreateCourseBoundary.java}, \texttt{CreateCourseController.java}, le DAO per corso, sessioni, ricette e ingredienti.
+
+\paragraph{Utilizzo delle Mappe nella Creazione del Corso}
+
+Nella logica di creazione corso, le \textbf{mappe} (\texttt{Map}) sono il fulcro della gestione strutturata dei dati tra UI, controller e database. Di seguito una spiegazione dettagliata di come vengono utilizzate e dei vantaggi architetturali che offrono:
+
+\begin{itemize}
+    \item \texttt{Map<LocalDate, ObservableList<Ricetta>>}: questa mappa associa ogni data di sessione (sia in presenza che ibrida) alla lista di ricette da preparare. Quando lo chef seleziona giorni e intervallo date, il controller genera tutte le date possibili e la boundary crea per ciascuna un container UI dedicato. L'utente può aggiungere, modificare o rimuovere ricette per ogni data, e la mappa viene aggiornata in tempo reale. In fase di salvataggio, il controller itera la mappa per persistere ogni sessione e le relative ricette nel database, garantendo che la struttura logica della programmazione sia mantenuta.
+    \item \texttt{Map<String, CheckBox>}: questa mappa collega ogni giorno della settimana a un \texttt{CheckBox} nella UI. Serve per gestire la selezione dinamica dei giorni, validare che il numero di giorni selezionati sia coerente con la frequenza scelta, e aggiornare la UI in modo reattivo. Ad esempio, se la frequenza è "bisettimanale", la logica consente di selezionare solo due giorni e la mappa permette di abilitare/disabilitare i checkbox in modo automatico.
+    \item \texttt{Map<LocalDate, ObservableList<Ricetta>>} per le sessioni ibride: in modalità "Entrambi", la mappa viene usata per gestire separatamente le ricette di ogni sessione, sia online che in presenza. La UI consente di configurare ogni sessione con dettagli specifici (tipo, orario, ricette), e la mappa garantisce che non ci siano sovrapposizioni o errori di associazione. Questo approccio permette una programmazione avanzata e personalizzata, adattabile a corsi complessi.
+\end{itemize}
+
+\textbf{Gestione e interazione con la UI:} Le mappe sono strettamente integrate con la UI JavaFX. Ogni volta che l'utente interagisce con la form (aggiunge una ricetta, seleziona un giorno, modifica una sessione), la mappa viene aggiornata e la UI riflette immediatamente i cambiamenti. Questo garantisce una validazione continua e una coerenza tra i dati visualizzati e quelli che verranno salvati.
+
+\textbf{Validazione e robustezza:} L'utilizzo delle mappe semplifica la validazione dei dati: è possibile verificare rapidamente se tutte le sessioni hanno almeno una ricetta, se i giorni selezionati sono corretti, e se non ci sono duplicati o errori logici. La struttura a mappa consente controlli efficienti e riduce la possibilità di errori utente.
+
+\textbf{Persistenza e flessibilità:} In fase di salvataggio, il controller itera le mappe per creare le query di inserimento nel database, associando ogni sessione alle sue ricette e ingredienti. Questo approccio è facilmente estendibile: se in futuro si volessero aggiungere nuove tipologie di dati (es. allergeni, note, feedback), basterebbe estendere la struttura della mappa senza modificare la logica centrale.
+
+\textbf{Esempio di codice pratico:}
+\begin{verbatim}
+Map<LocalDate, ObservableList<Ricetta>> sessioniPresenza = boundary.getSessionePresenzaRicette();
+for (Map.Entry<LocalDate, ObservableList<Ricetta>> entry : sessioniPresenza.entrySet()) {
+    LocalDate data = entry.getKey();
+    ObservableList<Ricetta> ricette = entry.getValue();
+    // ...salvataggio sessione e ricette...
+}
+\end{verbatim}
+
+\textbf{Approccio ibrido e personalizzazione:} Nella modalità "Entrambi", la mappa consente di gestire sessioni con caratteristiche diverse (online/presenza), orari e ricette specifiche. La UI genera dinamicamente i container per ogni sessione, e la mappa tiene traccia delle configurazioni, permettendo una programmazione avanzata e personalizzata.
+
+\textbf{Vantaggi architetturali:}
+\begin{itemize}
+    \item Separazione tra logica di presentazione (UI) e logica di business (controller/database)
+    \item Facilità di estensione e manutenzione
+    \item Validazione efficiente e centralizzata
+    \item Maggiore robustezza e coerenza dei dati
+    \item Esperienza utente migliorata grazie a feedback immediati e UI dinamica
+\end{itemize}
+
+In sintesi, l'uso delle mappe nella creazione del corso è una scelta architetturale che garantisce flessibilità, robustezza e scalabilità, semplificando la gestione di dati complessi e migliorando l'esperienza utente.
+
+\paragraph{Personalizzazione e modularità}
+La modularità della boundary e del controller consente di estendere facilmente la form per nuove funzionalità (es. nuove tipologie di lezione, filtri avanzati, gestione allergeni). La UI è pensata per essere accessibile e personalizzabile, con feedback visivi, tooltips e messaggi di aiuto contestuali.
+
+\subsubsection{Modifica dei Corsi}
+
+La modifica dei corsi consente allo chef di aggiornare le informazioni di un corso già esistente, mantenendo la coerenza dei dati e la tracciabilità delle modifiche. La scena \texttt{editcourse.fxml} offre una form strutturata e intuitiva, che riprende la logica della creazione ma con vincoli specifici per la modifica.
+
+\paragraph{Struttura della GUI}
+La GUI è composta da una sezione header con il nome del corso (non modificabile), una form centrale suddivisa in sezioni (informazioni generali, date e orari, giorni della settimana, location, sessioni online, ricette), e una sezione di azioni (annulla, salva modifiche).
+
+I campi non modificabili (nome corso, date, tipo corso, frequenza) sono disabilitati per garantire la coerenza storica. I campi modificabili includono descrizione, numero massimo partecipanti, orari, durata, location, ricette e ingredienti.
+
+\paragraph{Logica applicativa e flussi}
+La logica di modifica è gestita dalle classi \texttt{EditCourseBoundary.java} e \texttt{EditCourseController.java}. All'apertura della scena, vengono caricati i dati reali del corso dal database e popolati nei rispettivi campi. La UI si adatta dinamicamente al tipo di corso (in presenza, telematica, entrambi), mostrando solo le sezioni rilevanti.
+
+La validazione dei dati avviene sia lato GUI che controller. Esempi di validazione:
+\begin{verbatim}
+// CAP: deve essere composto da 5 cifre
+private boolean isValidCAP(String capText) {
+    return capText != null && capText.matches("\\d{5}");
+}
+// Descrizione: tra 1 e 60 parole
+private boolean isValidDescription(String text) {
+    if (text == null) return false;
+    int wordCount = text.trim().split("\\s+").length;
+    return wordCount >= 1 && wordCount <= 60;
+}
+\end{verbatim}
+La form consente il salvataggio solo se almeno un campo è stato modificato rispetto ai dati originali, grazie a un binding tra i campi e il tasto "Salva Modifiche".
+\paragraph{Utilizzo delle Mappe nella Modifica dei Corsi}
+Anche nella logica di modifica dei corsi, le \textbf{mappe} (\texttt{Map}) svolgono un ruolo centrale per gestire in modo strutturato l'associazione tra sessioni, ricette e ingredienti. In particolare:
+
+\begin{itemize}
+    \item \texttt{Map<LocalDate, ObservableList<Ricetta>>}: questa mappa viene utilizzata per caricare e gestire le ricette associate a ciascuna sessione in presenza. Quando il controller recupera i dati dal database, costruisce una mappa che collega ogni data di sessione alla lista di ricette corrispondenti. Questo consente di visualizzare, modificare o rimuovere ricette in modo dinamico per ogni sessione futura.
+    \item \texttt{Map<LocalDate, ObservableList<Ricetta>>} per le sessioni ibride: in corsi di tipo "Entrambi", la mappa permette di gestire separatamente le ricette per ogni sessione, sia online che in presenza, garantendo coerenza e flessibilità nella modifica.
+    \item \texttt{Map<String, CheckBox>}: se la UI prevede la selezione dei giorni, la mappa collega i giorni della settimana ai rispettivi checkbox, facilitando la validazione e l'aggiornamento della UI.
+\end{itemize}
+
+\textbf{Gestione dinamica e validazione:} Durante la modifica, la mappa viene aggiornata ogni volta che lo chef aggiunge, modifica o elimina una ricetta o un ingrediente. Questo garantisce che la UI sia sempre sincronizzata con i dati effettivi e che la validazione sia centralizzata ed efficiente.
+
+\textbf{Persistenza e coerenza:} In fase di salvataggio, il controller itera la mappa per aggiornare solo le sessioni e le ricette effettivamente modificate, evitando errori e ridondanze. Questo approccio garantisce la coerenza tra i dati visualizzati e quelli persistiti nel database.
+
+\textbf{Esempio di codice pratico:}
+\begin{verbatim}
+Map<LocalDate, ObservableList<Ricetta>> sessioniPresenza = boundary.getSessioniPresenzaModificabili();
+for (Map.Entry<LocalDate, ObservableList<Ricetta>> entry : sessioniPresenza.entrySet()) {
+    LocalDate data = entry.getKey();
+    ObservableList<Ricetta> ricette = entry.getValue();
+    // ...aggiornamento/modifica sessione e ricette...
+}
+\end{verbatim}
+
+\textbf{Vantaggi:}
+\begin{itemize}
+    \item Gestione strutturata e modulare delle modifiche
+    \item Validazione centralizzata e robusta
+    \item Aggiornamento efficiente solo dei dati modificati
+    \item Maggiore flessibilità per corsi complessi (ibridi, multi-sessione)
+    \item Esperienza utente migliorata grazie a UI dinamica e feedback immediati
+\end{itemize}
+
+In sintesi, l'utilizzo delle mappe nella modifica dei corsi permette di mantenere la coerenza tra UI e database, semplifica la gestione delle modifiche e garantisce robustezza e scalabilità anche in scenari complessi.
+
+\paragraph{Gestione delle sessioni e ricette}
+Le sessioni (in presenza, telematiche, ibride) vengono caricate dal database e visualizzate nella UI. Solo le sessioni future sono editabili, mentre quelle passate sono visualizzate in sola lettura. Per ogni sessione, lo chef può modificare le ricette e gli ingredienti associati, aggiungere nuove ricette o rimuovere quelle non più necessarie.
+
+La boundary gestisce la UI dinamica delle ricette tramite container dedicati, permettendo di aggiungere, modificare e rimuovere ricette e ingredienti in modo intuitivo. Esempio di aggiunta ricetta:
+\begin{verbatim}
+public void addRecipeToContainer(String recipeName, String[] ingredients,
+                                 String[] quantities, String[] units, LocalDate sessionDate) {
+    // Crea box ricetta e aggiungi ingredienti
+}
+\end{verbatim}
+La validazione garantisce che ogni ricetta sia completa e corretta prima del salvataggio.
+
+\paragraph{Salvataggio e persistenza}
+Al salvataggio, il controller confronta i dati modificati con quelli originali, aggiorna solo i campi effettivamente cambiati e salva le modifiche nel database. Il salvataggio avviene in modo transazionale, garantendo la coerenza dei dati. In caso di successo, viene mostrato un dialog di conferma e lo chef viene reindirizzato all'homepage.
+
+\paragraph{Esempi di codice e riferimenti}
+
+Il metodo \texttt{saveCourse()} è il cuore della logica di salvataggio delle modifiche. Di seguito un esempio esteso e commentato:
+\begin{verbatim}
+public void saveCourse() {
+    // 1. Controlla se ci sono modifiche
+    if (!hasAnyFieldChanged()) return;
+
+    // 2. Validazione dei campi modificabili
+    if (!isValidDescription(descriptionArea.getText())) {
+        boundary.showError(descriptionErrorLabel, "La descrizione deve essere tra 1 e 60 parole.");
+        return;
+    }
+    if (!isValidCAP(capField.getText())) {
+        boundary.showError(capErrorLabel, "Il CAP deve essere composto da 5 cifre.");
+        return;
+    }
+    // ...altre validazioni...
+
+    // 3. Aggiorna solo i dati modificati
+    if (!Objects.equals(courseNameField.getText().trim(), currentCourse.getNome())) {
+        currentCourse.setNome(courseNameField.getText().trim());
+    }
+    if (!Objects.equals(descriptionArea.getText().trim(), currentCourse.getDescrizione())) {
+        currentCourse.setDescrizione(descriptionArea.getText().trim());
+    }
+    // ...aggiorna altri campi...
+
+    // 4. Gestione delle sessioni e ricette
+    // Aggiorna solo le sessioni future e le ricette associate
+    for (SessioniInPresenza sessione : currentCourse.getSessioniInPresenza()) {
+        if (sessione.getData().isAfter(LocalDate.now())) {
+            // Aggiorna ricette e ingredienti
+            // ...codice di aggiornamento...
+        }
+    }
+    // ...gestione sessioni telematiche e ibride...
+
+    // 5. Salvataggio nel database tramite DAO
+    try {
+        CorsoDao corsoDao = new CorsoDao();
+        corsoDao.updateCorso(currentCourse);
+        // Aggiorna sessioni e ricette
+        // ...codice di persistenza...
+        boundary.showCourseUpdateSuccessDialog();
+        boundary.goBack(); // Torna all'homepage chef
+    } catch (Exception e) {
+        boundary.showAlert("Errore", "Impossibile salvare le modifiche: " + e.getMessage());
+    }
+}
+\end{verbatim}
+\textbf{Spiegazione:} Il metodo segue questi passaggi:
+\begin{enumerate}
+    \item Verifica che ci siano modifiche effettive rispetto ai dati originali.
+    \item Valida i campi modificabili, mostrando errori contestuali se necessario.
+    \item Aggiorna solo i dati effettivamente cambiati, mantenendo la coerenza storica.
+    \item Gestisce l'aggiornamento delle sessioni e delle ricette, modificando solo quelle future.
+    \item Salva tutte le modifiche nel database tramite le DAO dedicate, mostrando un dialog di successo o errore.
+\end{enumerate}
+Questo approccio garantisce efficienza, sicurezza e tracciabilità delle modifiche, evitando errori e mantenendo la coerenza dei dati tra le varie componenti dell'applicazione.
+
+I file principali coinvolti sono: \texttt{editcourse.fxml}, \texttt{EditCourseBoundary.java}, \texttt{EditCourseController.java}, le DAO per corso, sessioni, ricette e ingredienti.
+
+\paragraph{Personalizzazione e modularità}
+La modularità della boundary e del controller consente di estendere facilmente la form di modifica per nuove funzionalità (es. gestione avanzata delle sessioni, filtri, validazioni aggiuntive). La UI è pensata per essere accessibile e personalizzabile, con feedback visivi, tooltips e messaggi di aiuto contestuali.
+
+\subsubsection{Report Mensile}
+Il Report Mensile è una funzionalità avanzata pensata per offrire allo chef una panoramica dettagliata delle proprie attività, performance e guadagni nel corso di un mese specifico. La scena \texttt{monthlyreport.fxml} presenta una dashboard interattiva e ricca di statistiche, grafici e indicatori chiave, permettendo di monitorare l'andamento dei corsi e delle sessioni svolte.
+
+\paragraph{Struttura della GUI}
+La GUI è suddivisa in:
+\begin{itemize}
+    \item Sidebar di navigazione con profilo chef, logo, e pulsanti per le principali azioni (corsi, creazione corso, report, account, logout).
+    \item Sezione centrale con selettori di mese/anno, pulsante di aggiornamento, e titolo dinamico del report.
+    \item Card statistiche: corsi totali, sessioni online, sessioni pratiche, guadagno mensile.
+    \item Grafici: PieChart per la distribuzione delle sessioni, BarChart per le ricette per sessione.
+    \item Statistiche ricette: media, massimo, minimo, totale ricette realizzate.
+\end{itemize}
+
+\paragraph{Logica applicativa}
+La logica è gestita dalle classi \texttt{MonthlyReportBoundary.java} e \texttt{MonthlyReportController.java}. All'inizializzazione, vengono caricati i dati dello chef loggato e popolati i controlli della scena. Il controller gestisce la selezione di mese/anno, il caricamento dei dati dal database tramite le DAO dedicate (\texttt{GraficoChefDao}), e l'aggiornamento dinamico delle statistiche e dei grafici.
+
+\textbf{Focus sul metodo \texttt{loadReportData}:}
+Questo metodo è il cuore della logica del report mensile. Si occupa di:
+\begin{enumerate}
+    \item Recuperare il mese e l'anno selezionati dalla UI.
+    \item Interrogare la DAO per ottenere tutte le statistiche richieste (numero corsi, sessioni, ricette, guadagni, ecc.).
+    \item Calcolare eventuali metriche derivate (es. totale ricette = (sessioni online + pratiche) $\times$ media ricette).
+    \item Aggiornare le label e i grafici della scena in modo reattivo.
+\end{enumerate}
+
+Esempio esteso e commentato:
+\begin{verbatim}
+private void loadReportData() {
+    // 1. Recupera mese e anno selezionati dalla UI
+    Integer selectedYear = yearComboBox.getValue();
+    int mese = monthComboBox.getSelectionModel().getSelectedIndex() + 1;
+    int anno = (selectedYear != null) ? selectedYear : LocalDate.now().getYear();
+
+    // 2. Interroga la DAO per tutte le statistiche
+    GraficoChef grafico = new GraficoChef();
+    grafico.setNumeroMassimo(graficoChefDao.RicavaMassimo(chef, mese, anno));
+    grafico.setNumeroMinimo(graficoChefDao.RicavaMinimo(chef, mese, anno));
+    grafico.setMedia(graficoChefDao.RicavaMedia(chef, mese, anno));
+    grafico.setNumeriCorsi(graficoChefDao.RicavaNumeroCorsi(chef, mese, anno));
+    grafico.setNumeroSessioniInPresenza(graficoChefDao.RicavaNumeroSessioniInPresenza(chef, mese, anno));
+    grafico.setNumerosessionitelematiche(graficoChefDao.RicavaNumeroSesssioniTelematiche(chef, mese, anno));
+    double monthlyEarnings = graficoChefDao.ricavaGuadagno(chef, mese, anno);
+
+    // 3. Calcola metriche derivate
+    int totalRecipes = (int) Math.round((grafico.getNumeroSessioniInPresenza() + grafico.getNumerosessionitelematiche()) * grafico.getMedia());
+
+    // 4. Aggiorna le label statistiche
+    updateStatistics(grafico, monthlyEarnings, totalRecipes);
+
+    // 5. Aggiorna i grafici (PieChart e BarChart)
+    updateChartsData(grafico, monthlyEarnings);
+}
+\end{verbatim}
+\textbf{Spiegazione:} Il metodo \texttt{loadReportData} garantisce che tutte le informazioni visualizzate siano sempre aggiornate e coerenti con i dati reali del database. Ogni chiamata alle DAO è ottimizzata per restituire solo i dati necessari per il periodo selezionato, evitando calcoli ridondanti e migliorando le performance della UI. L'aggiornamento dei grafici avviene in modo reattivo, senza ricreare gli oggetti, per una migliore esperienza utente.
+
+\paragraph{Dati visualizzati}
+Le statistiche includono:
+\begin{itemize}
+    \item Numero totale di corsi attivi nel mese
+    \item Numero di sessioni online e pratiche
+    \item Guadagno mensile totale
+    \item Media, massimo, minimo e totale ricette realizzate per sessione
+\end{itemize}
+I dati sono estratti tramite metodi come \texttt{RicavaNumeroCorsi}, \texttt{RicavaNumeroSessioniInPresenza}, \texttt{RicavaNumeroSesssioniTelematiche}, \texttt{ricavaGuadagno}, \texttt{RicavaMedia}, \texttt{RicavaMassimo}, \texttt{RicavaMinimo} della classe \texttt{GraficoChefDao}.
+
+\paragraph{Gestione dei grafici}
+I grafici sono aggiornati in modo dinamico:
+\begin{itemize}
+    \item \textbf{PieChart}: mostra la proporzione tra sessioni online e pratiche.
+    \item \textbf{BarChart}: visualizza la media, il massimo e il minimo di ricette per sessione.
+\end{itemize}
+I dati sono aggiornati senza ricreare gli oggetti, garantendo fluidità e reattività della UI.
+
+\paragraph{Flusso di aggiornamento}
+Al cambio di mese/anno o al click su "Aggiorna Report", il controller ricarica i dati e aggiorna tutte le statistiche e i grafici. Il binding tra i controlli e i dati garantisce che la UI sia sempre coerente con le informazioni correnti.
+
+\paragraph{Codice di esempio}
+\begin{verbatim}
+public void updateReport() {
+    updateMonthYearLabel();
+    loadReportData();
+}
+\end{verbatim}
+
+\paragraph{Personalizzazione e modularità}
+La modularità della boundary e del controller consente di estendere facilmente il report per nuove metriche (es. andamento storico, filtri avanzati, esportazione dati). La UI è pensata per essere accessibile, con feedback visivi e messaggi contestuali.
+
+\paragraph{File e metodi principali}
+\begin{itemize}
+    \item \texttt{monthlyreport.fxml}: definizione della scena e dei controlli.
+    \item \texttt{MonthlyReportBoundary.java}: gestione della UI e degli eventi.
+    \item \texttt{MonthlyReportController.java}: logica di caricamento dati, aggiornamento statistiche e grafici.
+    \item \texttt{GraficoChefDao.java}: accesso ai dati statistici e di guadagno dal database.
+\end{itemize}
+
+\textbf{In sintesi}, il Report Mensile offre allo chef uno strumento potente per monitorare le proprie attività, analizzare le performance e ottimizzare la gestione dei corsi, con una UI moderna e dati sempre aggiornati.
+
+
+\subsubsection{Gestione Account Chef}
+La gestione dell'account chef è una funzionalità centrale che consente allo chef di visualizzare e modificare i propri dati personali e professionali in modo sicuro e intuitivo. La scena \texttt{accountmanagementchef.fxml} offre una form strutturata e suddivisa in sezioni, con campi dedicati e controlli di validazione.
+
+\paragraph{Cosa si può modificare}
+Lo chef può aggiornare:
+\begin{itemize}
+    \item \textbf{Foto profilo}: caricamento e anteprima immediata, con salvataggio automatico nel database e nelle risorse.
+    \item \textbf{Nome e cognome}: campi testuali, validati per non essere vuoti.
+    \item \textbf{Email}: campo testuale, validato per formato email corretto.
+    \item \textbf{Data di nascita}: selezione tramite DatePicker, con controllo sull'età minima (18 anni).
+    \item \textbf{Descrizione professionale}: textarea per presentazione e competenze.
+    \item \textbf{Anni di esperienza}: campo numerico, accetta solo valori interi tra 0 e 50.
+    \item \textbf{Password}: cambio password con verifica della password attuale, nuova password e conferma.
+\end{itemize}
+
+\paragraph{Struttura della GUI}
+La GUI è suddivisa in:
+\begin{itemize}
+    \item Sidebar di navigazione (corsi, creazione corso, report, account, logout).
+    \item Sezione centrale con foto profilo, pulsante "Cambia Foto", e form suddivisa in "Informazioni Personali", "Informazioni Professionali" e "Sicurezza".
+    \item Pulsanti "Annulla" e "Salva Modifiche" per gestire i flussi di salvataggio e ripristino.
+\end{itemize}
+
+\paragraph{Logica applicativa e validazione}
+La logica è gestita dalle classi \texttt{AccountManagementChefBoundary.java} e \texttt{AccountManagementChefController.java}. All'inizializzazione, vengono caricati i dati reali dello chef loggato dal database e popolati nei rispettivi campi. La validazione avviene in tempo reale e solo sui campi modificati:
+\begin{itemize}
+    \item Nome, cognome, email, descrizione: non vuoti, email con "@".
+    \item Data di nascita: almeno 18 anni.
+    \item Anni di esperienza: solo numeri, tra 0 e 50.
+    \item Password: verifica password attuale, nuova password e conferma.
+    \item Foto profilo: verifica formato immagine (PNG, JPG, JPEG, GIF), copia automatica in resources.
+\end{itemize}
+Solo se almeno un campo è stato modificato rispetto ai dati originali, il pulsante "Salva Modifiche" consente il salvataggio. In caso di errore di validazione, viene mostrato un messaggio contestuale.
+
+\paragraph{Flusso di salvataggio}
+Al click su "Salva Modifiche":
+\begin{enumerate}
+    \item Vengono confrontati i dati attuali con quelli originali.
+    \item Viene eseguita la validazione sui campi modificati.
+    \item Se la foto profilo è stata cambiata, viene salvata e aggiornata nel database.
+    \item Se la password è stata cambiata, viene verificata e aggiornata.
+    \item Tutte le modifiche vengono salvate tramite la DAO (\texttt{ChefDao.ModificaUtente}).
+    \item Viene mostrato un dialog di conferma o errore.
+\end{enumerate}
+Il pulsante "Annulla" ripristina i dati originali e cancella eventuali modifiche non salvate.
+
+\paragraph{Codice di esempio}
+\textbf{Focus sul metodo \texttt{saveChanges}:}
+Questo metodo è il cuore della logica di salvataggio delle modifiche all'account chef. Si occupa di:
+\begin{enumerate}
+    \item Confrontare i dati attuali con quelli originali per rilevare le modifiche.
+    \item Validare solo i campi effettivamente cambiati (nome, cognome, email, data di nascita, descrizione, anni di esperienza, foto profilo, password).
+    \item Gestire la modifica della foto profilo: verifica formato, copia in resources, aggiornamento path nel database.
+    \item Gestire la modifica della password: verifica password attuale, nuova password e conferma.
+    \item Salvare tutte le modifiche tramite la DAO (\texttt{ChefDao.ModificaUtente}).
+    \item Mostrare un dialog di conferma o errore all'utente.
+\end{enumerate}
+
+Esempio esteso e commentato:
+\begin{verbatim}
+public void saveChanges() {
+    // 1. Confronta i dati attuali con quelli originali
+    boolean changed = false;
+    if (name != null && !name.equals(originalName) && !name.trim().isEmpty()) {
+        loggedChef.setNome(name);
+        changed = true;
+    }
+    // ...ripeti per cognome, email, descrizione, anni di esperienza...
+
+    // 2. Validazione email
+    if (email != null && !email.equals(originalEmail) && !email.trim().isEmpty()) {
+        if (!email.contains("@")) {
+            boundary.showErrorMessage("Inserisci un'email valida.");
+            return;
+        }
+        loggedChef.setEmail(email);
+        changed = true;
+    }
+
+    // 3. Validazione data di nascita
+    if (birthDateValue != null && !birthDateValue.equals(originalBirthDate)) {
+        if (Period.between(birthDateValue, LocalDate.now()).getYears() < 18) {
+            boundary.showErrorMessage("Devi avere almeno 18 anni.");
+            return;
+        }
+        loggedChef.setDataDiNascita(birthDateValue);
+        changed = true;
+    }
+
+    // 4. Validazione anni di esperienza
+    if (experienceYears != null && !experienceYears.equals(originalExperienceYears) && !experienceYears.trim().isEmpty()) {
+        try {
+            int years = Integer.parseInt(experienceYears.trim());
+            if (years < 0 || years > 50) {
+                boundary.showErrorMessage("Gli anni di esperienza devono essere tra 0 e 50.");
+                return;
+            }
+            loggedChef.setAnniDiEsperienza(years);
+            changed = true;
+        } catch (NumberFormatException e) {
+            boundary.showErrorMessage("Gli anni di esperienza devono essere un numero valido.");
+            return;
+        }
+    }
+
+    // 5. Gestione foto profilo
+    if (fotoModificata) {
+        // Verifica formato, copia file, aggiorna path nel database
+        loggedChef.setUrl_Propic(nuovoPath);
+        changed = true;
+    }
+
+    // 6. Gestione password
+    if (voglioCambiarePwd) {
+        if (!loggedChef.getPassword().equals(currentPwd)) {
+            boundary.showErrorMessage("Password attuale errata.");
+            return;
+        }
+        if (!newPwd.equals(confirmPwd)) {
+            boundary.showErrorMessage("Le nuove password non coincidono.");
+            return;
+        }
+        loggedChef.setPassword(newPwd);
+        changed = true;
+    }
+
+    // 7. Salvataggio tramite DAO
+    if (!changed) {
+        boundary.showInfoMessage("Nessuna modifica da salvare.");
+        return;
+    }
+    try {
+        chefDao.ModificaUtente(loggedChef);
+        boundary.showSuccessMessage("Modifiche salvate con successo.");
+    } catch (Exception e) {
+        boundary.showErrorMessage("Errore durante il salvataggio: " + e.getMessage());
+    }
+}
+\end{verbatim}
+\textbf{Spiegazione:} Il metodo \texttt{saveChanges} garantisce che solo i dati effettivamente modificati vengano validati e salvati, riducendo il rischio di errori e ottimizzando la sicurezza. La gestione separata di foto profilo e password assicura che ogni aspetto dell'identità chef sia aggiornato in modo sicuro e controllato. In caso di errori di validazione o salvataggio, l'utente riceve feedback immediato tramite dialog contestuali.
+
+\paragraph{File e metodi principali}
+\begin{itemize}
+    \item \texttt{accountmanagementchef.fxml}: definizione della scena e dei controlli.
+    \item \texttt{AccountManagementChefBoundary.java}: gestione della UI e degli eventi.
+    \item \texttt{AccountManagementChefController.java}: logica di caricamento dati, validazione e salvataggio.
+    \item \texttt{ChefDao.java}: accesso e modifica dei dati chef nel database.
+\end{itemize}
+
+\textbf{In sintesi}, la gestione account chef garantisce sicurezza, flessibilità e personalizzazione, permettendo allo chef di mantenere sempre aggiornati i propri dati e di gestire la propria identità professionale in modo semplice e sicuro.
