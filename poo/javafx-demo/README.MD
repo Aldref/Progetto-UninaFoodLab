@@ -1,41 +1,50 @@
-## comandi per runnare javafx
+## Traccia
 
-## compilare: 
-    mvn clean compile
+Si sviluppi un applicativo Java con interfaccia grafica (Swing o JavaFX) per la gestione dei corsi tematici offerti dalla piattaforma UninaFoodLab. Il sistema dovrà essere collegato a un database relazionale prepopolato contenente informazioni su chef, ricette e ingredienti. Il sistema deve permettere l’autenticazione degli chef tramite credenziali (username e password). Una volta autenticato, lo chef può aggiungere un nuovo corso, specificando le seguenti informazioni: categoria, data di inizio, frequenza delle sessioni, numero di sessioni. Per ciascuna sessione, deve essere indicata la modalità di svolgimento, ovvero se si tratta di una sessione online o in presenza. Lo chef avrà inoltre la possibilità di visualizzare i corsi esistenti, applicando filtri per categoria. Dopo aver selezionato un corso, lo chef può associare a ciascuna sessione pratica una o più ricette da realizzare. Infine, il sistema deve fornire un report mensile, che permette allo chef di visualizzare: il numero di corsi totali tenuti, il numero di sessioni online e pratiche, e di quest’ultime il numero medio, massimo e minimo di ricette realizzate.
 
-## runnare:
-    mvn exec:java
+---
 
-## comando unico:
-    mvn clean compile exec:java
+## Tecnologie e Struttura del Progetto
+
+- **Java & JavaFX**: Applicativo sviluppato in Java con interfaccia grafica JavaFX per una user experience moderna e intuitiva.
+- **Maven**: Gestione delle dipendenze e della compilazione tramite Maven.
+- **Database relazionale**: Collegamento a un database prepopolato.
+- **Pattern MVC**: Separazione tra logica di business, accesso ai dati (DAO/DTO) e interfaccia utente.
+- **Stili CSS**: Personalizzazione dell’interfaccia tramite file CSS dedicati.
+- **Documentazione**: Documentazione tecnica e utente disponibile nella cartella `docs/`.
+
+## Struttura delle Cartelle
+
+- `src/main/java`: Codice sorgente Java (controller, boundary, DAO, DTO, utilità)
+- `src/main/resources`: Risorse (file FXML, CSS, immagini)
+- `docs/`: Documentazione tecnica e utente
+
+## Requisiti
+
+- Java
+- Maven
+
+## Comandi per compilare ed eseguire
+
+- **Compilazione:**
+  ```bash
+  mvn clean compile
+  ```
+- **Esecuzione:**
+  ```bash
+  mvn exec:java
+  ```
+- **Compilazione ed esecuzione:**
+  ```bash
+  mvn clean compile exec:java
+  ```
+
+## Note Utili
+
+- Tutte le operazioni di gestione corsi, chef, ricette e ingredienti sono gestite tramite interfaccia grafica.
+- Il progetto è pensato per essere facilmente estendibile e manutenibile.
+- Per dettagli su installazione, uso e struttura del database consultare la documentazione nella cartella `docs/`.
 
 
 
-# Documentazione Progetto UninaFoodLab
-
-## 1. Introduzione
-Il progetto UninaFoodLab è una applicazione desktop per la gestione di corsi e utenti, sviluppata come esercitazione universitaria. L'obiettivo è fornire una piattaforma intuitiva per la gestione delle attività didattiche e amministrative.
-
-## 2. Scelte tecnologiche
-- **Maven**: utilizzato per la gestione delle dipendenze e la build automatizzata del progetto.
-- **JavaFX**: scelto per la realizzazione della GUI moderna e reattiva.
-
-## 3. Architettura del progetto
-La struttura segue il pattern MVC:
-- **DAO**: classi per la gestione della persistenza dei dati.
-- **DTO**: oggetti per il trasferimento dei dati tra i vari livelli.
-- **Controller**: logica applicativa e gestione degli eventi.
-- **Boundary**: interfaccia grafica e interazione con l’utente.
-
-## 4. Gestione della GUI
-La GUI è realizzata con JavaFX e FXML, separando la logica dall’interfaccia. I file CSS permettono la personalizzazione grafica.
-
-## 5. Gestione della persistenza
-I DAO si occupano della connessione e delle operazioni sul database, configurato tramite il file `db.properties`.
-
-## 6. Testing
-Sono presenti test automatici per le principali funzionalità, utilizzando JUnit.
-
-## 7. Conclusioni
-Il progetto dimostra l’utilizzo di tecnologie moderne e buone pratiche di progettazione software. Possibili sviluppi futuri includono l’integrazione di nuove funzionalità e il miglioramento della user experience.
 
