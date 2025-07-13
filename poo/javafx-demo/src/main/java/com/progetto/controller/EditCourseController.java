@@ -1,7 +1,6 @@
 package com.progetto.controller;
 
-
-
+import java.time.LocalTime;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.Observable;
@@ -42,29 +41,18 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.stream.Collectors;
-
-
-
-
 import com.progetto.boundary.EditCourseBoundary;
 
 public class EditCourseController {
-    // Spinner hybrid presenza (assegnati dal boundary)
     public void setHybridPresenzaSpinners(Spinner<Integer> hour, Spinner<Integer> min, Spinner<Double> durata) {
         this.startHourSpinnerPresenza = hour;
         this.startMinuteSpinnerPresenza = min;
         this.durationSpinnerPresenza = durata;
     }
     private final EditCourseBoundary boundary;
-    // Variabili per dedurre il tipo di corso
     private boolean hasPresenzaSessions = false;
     private boolean hasTelematicheSessions = false;
-    
-    // === CONSTANTS ===
     private static final Pattern CAP_PATTERN = Pattern.compile("\\d{5}");
-    
-    // === UI COMPONENTS ===
-    // Basic fields
     private final TextField courseNameField;
     private final TextArea descriptionArea;
     private final DatePicker startDatePicker, endDatePicker;
@@ -72,43 +60,22 @@ public class EditCourseController {
     private final ComboBox<String> frequencyCombo;
     private final Spinner<Integer> maxPersonsSpinner;
     private final Button saveButton;
-    
-    // Sections
     private final VBox locationSection, recipesSection, recipesContainer, onlineSection;
-    
-    // Time fields
     private final Spinner<Integer> startHourSpinner, startMinuteSpinner;
     private final Spinner<Double> durationSpinner;
-    // --- PATCH: Spinner doppi per hybrid ---
-    // Questi vanno collegati in FXML/UI se non esistono già
-    // (solo @FXML, nessuna dichiarazione duplicata!)
-    
-    // Location fields
     private final TextField streetField, capField;
-    
-    // Day checkboxes (DISABLED: non più usati per l'edit)
-    // private final CheckBox mondayCheckBox, tuesdayCheckBox, wednesdayCheckBox;
-    // private final CheckBox thursdayCheckBox, fridayCheckBox, saturdayCheckBox, sundayCheckBox;
-    
-    // Error labels
     private final Label descriptionErrorLabel, maxPersonsErrorLabel;
     private final Label startDateErrorLabel, endDateErrorLabel, startTimeErrorLabel;
     private final Label durationErrorLabel, daysErrorLabel, streetErrorLabel, capErrorLabel;
     private final Label frequencyErrorLabel;
-
-    // Hybrid time/duration sections for FXML (Entrambi)
     @FXML private HBox singleTimeSection;
     @FXML private VBox doubleTimeSection;
-    // Hybrid spinners for FXML (Entrambi)
-    // In hybrid, i spinner presenza sono creati dinamicamente dalla boundary e passati via getter
     private Spinner<Integer> startHourSpinnerPresenza;
     private Spinner<Integer> startMinuteSpinnerPresenza;
     private Spinner<Double> durationSpinnerPresenza;
     @FXML private Spinner<Integer> startHourSpinnerTelematica;
     @FXML private Spinner<Integer> startMinuteSpinnerTelematica;
     @FXML private Spinner<Double> durationSpinnerTelematica;
-    // --- Setup hybrid spinners for Entrambi ---
-    // Semplifica setup degli spinner hybrid
     private void setupHybridSpinners() {
         if (startHourSpinnerPresenza != null) {
             startHourSpinnerPresenza.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(6, 23, 18));
@@ -141,9 +108,6 @@ public class EditCourseController {
             });
         }
     }
-    // === DATA ===
-    // private final ObservableList<Recipe> recipes = FXCollections.observableArrayList(); // RIMOSSO: usa solo DTO
-    // private final Map<String, CheckBox> dayCheckBoxes = new HashMap<>();
     private com.progetto.Entity.EntityDto.Corso currentCourse;
     
     // === CONSTRUCTOR ===
@@ -154,15 +118,12 @@ public class EditCourseController {
                                Spinner<Integer> maxPersonsSpinner,
                                VBox locationSection, VBox recipesSection, VBox recipesContainer, VBox onlineSection,
                                Spinner<Integer> startHourSpinner, Spinner<Integer> startMinuteSpinner,
-                               Spinner<Double> durationSpinner, TextField streetField, TextField capField,
-                               /*CheckBox mondayCheckBox, CheckBox tuesdayCheckBox, CheckBox wednesdayCheckBox,
-                               CheckBox thursdayCheckBox, CheckBox fridayCheckBox, CheckBox saturdayCheckBox,
-                               CheckBox sundayCheckBox,*/ Label descriptionErrorLabel, Label maxPersonsErrorLabel,
+                               Spinner<Double> durationSpinner, TextField streetField, TextField capField, 
+                               Label descriptionErrorLabel, Label maxPersonsErrorLabel,
                                Label startDateErrorLabel, Label endDateErrorLabel, Label startTimeErrorLabel,
                                Label durationErrorLabel, Label daysErrorLabel, Label streetErrorLabel,
                                Label capErrorLabel, Label frequencyErrorLabel, Button saveButton) {
         this.boundary = boundary;
-        // Initialize all fields
         this.courseNameField = courseNameField;
         this.descriptionArea = descriptionArea;
         this.startDatePicker = startDatePicker;
@@ -190,58 +151,43 @@ public class EditCourseController {
         this.frequencyErrorLabel = frequencyErrorLabel;
         this.saveButton = saveButton;
         this.onlineSection = onlineSection;
-        // Spinner hybrid presenza (creati dinamicamente dalla boundary)
         this.startHourSpinnerPresenza = boundary.getStartHourSpinnerPresenza();
         this.startMinuteSpinnerPresenza = boundary.getStartMinuteSpinnerPresenza();
         this.durationSpinnerPresenza = boundary.getDurationSpinnerPresenza();
     }
     
-    // === INITIALIZATION ===
     public void initialize() {
-        //System.out.println("[DEBUG] EditCourseController.initialize: courseId = " + courseId);
-        // initializeDayCheckBoxesMap();
         setupUI();
         loadCourseData();
         setupModeUI();
         setupChangeListenersForSave();
-        // Disabilita i datepicker delle date (sempre disabilitati in edit)
         startDatePicker.setDisable(true);
         endDatePicker.setDisable(true);
-        // Disabilita il tasto salva modifiche se nessuna modifica
         if (saveButton != null) {
             saveButton.disableProperty().bind(Bindings.createBooleanBinding(() -> !hasAnyFieldChanged(),
                 courseNameField.textProperty(),
                 descriptionArea.textProperty(),
-                // startDatePicker.valueProperty(), // NON più editabile
-                // endDatePicker.valueProperty(),   // NON più editabile
                 courseTypeCombo.valueProperty(),
                 frequencyCombo.valueProperty(),
                 maxPersonsSpinner.valueProperty(),
                 streetField.textProperty(),
                 capField.textProperty()
-                // Aggiungi qui altre proprietà se necessario
             ));
         }
     }
-    /**
-     * Imposta la UI in modalità modifica: disabilita il cambio tipo corso e aggiorna sezioni visibili.
-     */
+
     private void setupModeUI() {
-        // Disabilita la ComboBox del tipo corso e della frequenza (non modificabili in edit mode)
         courseTypeCombo.setDisable(true);
         frequencyCombo.setDisable(true);
 
-        // Mostra/nascondi le sezioni location/ricette in base al tipo corso attuale
         String selectedType = courseTypeCombo.getValue();
         boolean isPresenza = "In presenza".equals(selectedType);
         boolean isEntrambi = "Entrambi".equals(selectedType);
-        // Per "Entrambi" (hybrid) mostra SEMPRE location e ricette
         locationSection.setVisible(isPresenza || isEntrambi);
         locationSection.setManaged(isPresenza || isEntrambi);
         recipesSection.setVisible(isPresenza || isEntrambi);
         recipesSection.setManaged(isPresenza || isEntrambi);
 
-        // Se non "In presenza" e non "Entrambi", svuota i campi location e ricette
         if (!(isPresenza || isEntrambi)) {
             streetField.clear();
             capField.clear();
@@ -249,11 +195,9 @@ public class EditCourseController {
             streetField.setDisable(true);
             capField.setDisable(true);
         } else {
-            // Se torna a presenza/ibrido e non ci sono ricette, carica tutte le sessioni e ricette
             if (recipesContainer.getChildren().isEmpty()) {
                 loadAllSessionsAndRecipes();
             }
-            // Editabilità via/cap: solo se la data di oggi è prima della data di inizio corso
             LocalDate today = LocalDate.now();
             if (currentCourse != null && currentCourse.getDataInizio() != null && currentCourse.getDataInizio().isAfter(today)) {
                 streetField.setDisable(false);
@@ -264,20 +208,14 @@ public class EditCourseController {
             }
         }
 
-        // Le date NON sono mai modificabili in edit mode
         startDatePicker.setDisable(true);
         endDatePicker.setDisable(true);
     }
 
-    /**
-     * Abilita il salvataggio solo se c'è almeno una modifica rispetto ai dati originali.
-     */
     private void setupChangeListenersForSave() {
         List<Observable> observables = new ArrayList<>(Arrays.asList(
             courseNameField.textProperty(),
             descriptionArea.textProperty(),
-            // startDatePicker.valueProperty(), // NON più editabile
-            // endDatePicker.valueProperty(),   // NON più editabile
             frequencyCombo.valueProperty(),
             maxPersonsSpinner.valueProperty(),
             startHourSpinner.valueProperty(),
@@ -286,8 +224,6 @@ public class EditCourseController {
             streetField.textProperty(),
             capField.textProperty()
         ));
-        // dayCheckBoxes.values().forEach(cb -> observables.add(cb.selectedProperty()));
-        // Ricette/ingredienti: aggiungi listeners per ogni TextField/ComboBox nelle ricette
         addRecipeIngredientListeners(observables);
 
         BooleanBinding changed = Bindings.createBooleanBinding(() -> hasAnyFieldChanged(),
@@ -297,7 +233,6 @@ public class EditCourseController {
         saveButton.disableProperty().bind(changed.not());
     }
 
-    // Aggiunge listeners a tutti i campi ricetta/ingrediente per triggerare il binding del tasto Salva
     private void addRecipeIngredientListeners(List<Observable> observables) {
         for (Node node : recipesContainer.getChildren()) {
             if (node instanceof VBox) {
@@ -332,21 +267,14 @@ public class EditCourseController {
         }
     }
 
-    /**
-     * Ritorna true se almeno un campo è stato modificato rispetto ai dati originali.
-     * Ora controlla anche nome corso, ricette, ingredienti, sessioni online.
-     */
     private boolean hasAnyFieldChanged() {
         if (currentCourse == null) return false;
         if (!Objects.equals(courseNameField.getText().trim(), currentCourse.getNome())) return true;
         if (!Objects.equals(descriptionArea.getText().trim(), currentCourse.getDescrizione())) return true;
-        // if (!Objects.equals(startDatePicker.getValue(), currentCourse.getDataInizio())) return true;
-        // if (!Objects.equals(endDatePicker.getValue(), currentCourse.getDataFine())) return true;
         if (!Objects.equals(frequencyCombo.getValue(), currentCourse.getFrequenzaDelleSessioni())) return true;
         if (!Objects.equals(maxPersonsSpinner.getValue(), currentCourse.getMaxPersone())) return true;
 
         String type = courseTypeCombo.getValue();
-        // Orario/durata: solo globali per "In presenza" o "Telematica"
         if ("In presenza".equals(type) || "Telematica".equals(type)) {
             LocalTime globalOrario = LocalTime.of(startHourSpinner.getValue(), startMinuteSpinner.getValue());
             double durataVal = durationSpinner.getValue();
@@ -382,8 +310,6 @@ public class EditCourseController {
                 }
             }
         } else if ("Entrambi".equals(type)) {
-            // --- PATCH: confronto doppio orario/durata per hybrid ---
-            // Presenza
             if (startHourSpinnerPresenza != null && startMinuteSpinnerPresenza != null && durationSpinnerPresenza != null) {
             LocalTime orarioPresenza = LocalTime.of(startHourSpinnerPresenza.getValue(), startMinuteSpinnerPresenza.getValue());
             double durataValPres = durationSpinnerPresenza.getValue();
@@ -397,7 +323,6 @@ public class EditCourseController {
                     }
                 }
             }
-            // Telematica
             if (startHourSpinnerTelematica != null && startMinuteSpinnerTelematica != null && durationSpinnerTelematica != null) {
             LocalTime orarioTele = LocalTime.of(startHourSpinnerTelematica.getValue(), startMinuteSpinnerTelematica.getValue());
             double durataValTele = durationSpinnerTelematica.getValue();
@@ -407,7 +332,6 @@ public class EditCourseController {
                 if (sessione.getData().isAfter(LocalDate.now())) {
                     if (!Objects.equals(sessione.getOrario(), orarioTele)) return true;
                     if (!Objects.equals(sessione.getDurata(), durataTele)) return true;
-                    // App/codice
                     for (Node node : onlineSection.getChildren()) {
                         if (node instanceof VBox) {
                             VBox sessionBox = (VBox) node;
@@ -425,7 +349,6 @@ public class EditCourseController {
         try {
             SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
             ArrayList<SessioniInPresenza> presenze = presenzaDao.getSessioniByCorso(courseId);
-            // Confronta ricette per nome e ingredienti
             List<String> ricetteDB = new ArrayList<>();
             for (SessioniInPresenza sessione : presenze) {
                 for (Ricetta r : sessione.getRicette()) {
@@ -442,7 +365,6 @@ public class EditCourseController {
                 }
             }
             if (!ricetteDB.equals(ricetteUI)) return true;
-            // Ingredienti: solo nomi (puoi estendere a quantità/unità)
             for (Node node : recipesContainer.getChildren()) {
                 if (node instanceof VBox) {
                     VBox recipeBox = (VBox) node;
@@ -456,7 +378,6 @@ public class EditCourseController {
                             ingrUI.add(nameField.getText().trim());
                         }
                     }
-                    // Trova la ricetta corrispondente nel DB
                     String nomeRicetta = ((TextField)((HBox)recipeBox.getChildren().get(0)).getChildren().get(1)).getText().trim();
                     boolean found = false;
                     for (SessioniInPresenza sessione : presenze) {
@@ -476,16 +397,11 @@ public class EditCourseController {
                 }
             }
         } catch (Exception e) {
-            // In caso di errore, non bloccare il salvataggio
+            e.printStackTrace();
         }
         return false;
     }
 
-    /**
-     * Impedisce di selezionare '1 volta a settimana' se il corso è "Entrambi" o "In presenza".
-     */
-
-    // Mostra/nasconde i campi orario/durata in base al tipo corso
     private void updateTimeAndDurationVisibility() {
         String type = courseTypeCombo.getValue();
         boolean isPresenza = "In presenza".equals(type);
@@ -504,11 +420,9 @@ public class EditCourseController {
                 doubleTimeSection.setManaged(false);
             }
         }
-        // Disabilita/abilita spinner base
         startHourSpinner.setDisable(isEntrambi);
         startMinuteSpinner.setDisable(isEntrambi);
         durationSpinner.setDisable(isEntrambi);
-        // Abilita/disabilita spinner hybrid
         if (startHourSpinnerPresenza != null) startHourSpinnerPresenza.setDisable(!isEntrambi);
         if (startMinuteSpinnerPresenza != null) startMinuteSpinnerPresenza.setDisable(!isEntrambi);
         if (durationSpinnerPresenza != null) durationSpinnerPresenza.setDisable(!isEntrambi);
@@ -517,11 +431,8 @@ public class EditCourseController {
         if (durationSpinnerTelematica != null) durationSpinnerTelematica.setDisable(!isEntrambi);
     }
     
-    // === UI SETUP METHODS semplificati ===
     private void setupUI() {
-        // Max persone (1-50)
         maxPersonsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 10));
-        // Ore (6-23)
         startHourSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(6, 23, 18));
         startHourSpinner.setPrefWidth(100);
         startMinuteSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0, 15));
@@ -531,11 +442,9 @@ public class EditCourseController {
             @Override public String toString(Double object) { return object == null ? "" : String.format("%.1f", object); }
             @Override public Double fromString(String string) { try { return Double.parseDouble(string); } catch (NumberFormatException e) { return 0.0; } }
         });
-        // ComboBox tipo corso
         ObservableList<String> courseTypes = FXCollections.observableArrayList("In presenza", "Telematica");
         courseTypeCombo.setItems(courseTypes);
         courseTypeCombo.setValue("In presenza");
-        // Frequenze
         ObservableList<String> frequencies = FXCollections.observableArrayList(
             "1 volta a settimana", "2 volte a settimana", "3 volte a settimana", "Tutti i giorni (Lun-Ven)", "Tutti i giorni (Lun-Dom)");
         frequencyCombo.setItems(frequencies);
@@ -554,27 +463,19 @@ public class EditCourseController {
                 setDisable(empty || (startDate != null && date.isBefore(startDate.plusDays(1))));
             }
         });
-        // CAP validator
         capField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == null) return;
             String filtered = newVal.replaceAll("[^\\d]", "");
             if (filtered.length() > 5) filtered = filtered.substring(0, 5);
             capField.setText(filtered);
         });
-        // Frequenza listener (nessuna logica giorni)
         updateTimeAndDurationVisibility();
     }
     
-    // === DATA LOADING ===
-    // === DAO FIELDS ===
     private int courseId = -1;
 
-    /**
-     * Imposta l'ID del corso da modificare (da chiamare dal boundary dopo la creazione del controller)
-     */
     public void setCourseId(int courseId) {
         this.courseId = courseId;
-        //System.out.println("[DEBUG] EditCourseController.setCourseId: courseId = " + courseId);
     }
 
 private void loadCourseData() {
@@ -583,8 +484,6 @@ private void loadCourseData() {
         return;
     }
     try {
-        // === INTEGRAZIONE DATABASE ===
-        // Carica dati corso
         CorsoDao corsoDao = new CorsoDao();
         Corso corsoDto = corsoDao.getCorsoById(courseId);
         if (corsoDto == null) {
@@ -592,7 +491,6 @@ private void loadCourseData() {
             return;
         }
         currentCourse = corsoDto;
-        // --- Determina il tipo di corso in base alle sessioni ---
         SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
         SessioneOnlineDao onlineDao = new SessioneOnlineDao();
         List<SessioniInPresenza> presenze = presenzaDao.getSessioniByCorso(courseId);
@@ -601,7 +499,6 @@ private void loadCourseData() {
         boolean hasPresenza = presenze != null && !presenze.isEmpty();
         boolean hasTelematica = telematiche != null && !telematiche.isEmpty();
 
-        // Determina il tipo di corso SOLO in base alle sessioni trovate
         String tipoCorso;
         if (hasPresenza && hasTelematica) {
             tipoCorso = "Entrambi";
@@ -610,23 +507,16 @@ private void loadCourseData() {
         } else if (hasTelematica) {
             tipoCorso = "Telematica";
         } else {
-            tipoCorso = "In presenza"; // fallback
+            tipoCorso = "In presenza";
         }
-        // Popola la UI SOLO tramite populateUIFromCourseData (NON chiamare loadAllSessionsAndRecipes qui)
         populateUIFromCourseData(tipoCorso, presenze);
-        // Aggiorna la UI dinamicamente in base al tipo
         updateDynamicSections(hasPresenza, hasTelematica);
     } catch (Exception e) {
-        //e.printStackTrace();
         boundary.showAlert("Errore", "Errore durante il caricamento dei dati del corso: " + e.getMessage());
     }
 }
 
-    /**
-     * Aggiorna la UI dinamicamente in base alla presenza di sessioni in presenza/telematiche.
-     */
     private void updateDynamicSections(boolean hasPresenza, boolean hasTelematica) {
-        // Mostra location/ricette se presenza o se il tipo corso è "Entrambi"
         String tipoCorso = courseTypeCombo.getValue();
         boolean isEntrambi = "Entrambi".equals(tipoCorso);
         boolean showLocation = hasPresenza || isEntrambi;
@@ -640,11 +530,9 @@ private void loadCourseData() {
         onlineSection.setVisible(showOnline);
         onlineSection.setManaged(showOnline);
 
-        // Disabilita i campi location se non editabili
         streetField.setDisable(!showLocation);
         capField.setDisable(!showLocation);
 
-        // Se non location, svuota i campi location/ricette
         if (!showLocation) {
             streetField.clear();
             capField.clear();
@@ -662,9 +550,6 @@ private void loadCourseData() {
         maxPersonsSpinner.getValueFactory().setValue(currentCourse.getMaxPersone());
         startDatePicker.setValue(currentCourse.getDataInizio());
         endDatePicker.setValue(currentCourse.getDataFine());
-
-        // --- GIORNI DELLA SETTIMANA: mostra in grigio, non editabili, caricati dal DB ---
-        // Ottieni i giorni dal corso (assumendo che currentCourse.getGiorniDellaSettimana() restituisca una lista di stringhe tipo ["Lunedì", ...])
         List<String> giorniCorso = new ArrayList<>();
         try {
             java.lang.reflect.Method giorniMethod = currentCourse.getClass().getMethod("getGiorniDellaSettimana");
@@ -673,29 +558,24 @@ private void loadCourseData() {
                 giorniCorso = (List<String>) result;
             }
         } catch (Exception e) {
-            // Se non esiste il metodo, lascia la lista vuota
-        }
-        // Delega la visualizzazione dei giorni alla boundary se possibile
+            e.printStackTrace();
 
-        // --- PATCH: Gestione "In presenza" e "Entrambi" (hybrid) per via/cap, ricette e spinner orario/durata ---
+        }
         if ("In presenza".equals(tipoCorso) || "Entrambi".equals(tipoCorso)) {
             List<SessioniInPresenza> presenzeDB = new ArrayList<>();
             try {
                 SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
                 presenzeDB = presenzaDao.getSessioniByCorso(courseId);
             } catch (Exception e) {
-                // Se errore, lascia la lista vuota
+                e.printStackTrace();
             }
             locationSection.setVisible(true);
             locationSection.setManaged(true);
             recipesSection.setVisible(true);
             recipesSection.setManaged(true);
-            // Forza visibilità e abilitazione dei campi via/cap in hybrid
             streetField.setVisible(true);
             capField.setVisible(true);
-            // --- PATCH: via/cap valorizzati e abilitati in hybrid ---
             if (!presenzeDB.isEmpty()) {
-                // Trova la prima sessione futura o la prima disponibile
                 SessioniInPresenza firstPresenza = null;
                 LocalDate today = LocalDate.now();
                 for (SessioniInPresenza s : presenzeDB) {
@@ -704,11 +584,9 @@ private void loadCourseData() {
                 if (firstPresenza == null) firstPresenza = presenzeDB.get(0);
                 streetField.setText(firstPresenza.getVia() != null ? firstPresenza.getVia() : "");
                 capField.setText(firstPresenza.getCap() != null ? firstPresenza.getCap() : "");
-                // Abilita i campi se il corso è ancora modificabile (data inizio futura)
                 boolean editable = currentCourse != null && currentCourse.getDataInizio() != null && currentCourse.getDataInizio().isAfter(today);
                 streetField.setDisable(!editable);
                 capField.setDisable(!editable);
-                // --- PATCH: spinner orario/durata hybrid (sempre in hybrid) ---
                 if ("Entrambi".equals(tipoCorso)) {
                     if (startHourSpinnerPresenza != null && firstPresenza.getOrario() != null) {
                         startHourSpinnerPresenza.getValueFactory().setValue(firstPresenza.getOrario().getHour());
@@ -723,12 +601,10 @@ private void loadCourseData() {
                         durationSpinnerPresenza.getValueFactory().setValue(durataPres);
                         durationSpinnerPresenza.setDisable(false);
                     }
-                    // Disabilita sempre gli spinner standard in hybrid
                     if (startHourSpinner != null) startHourSpinner.setDisable(true);
                     if (startMinuteSpinner != null) startMinuteSpinner.setDisable(true);
                     if (durationSpinner != null) durationSpinner.setDisable(true);
                 } else if ("In presenza".equals(tipoCorso)) {
-                    // Valorizza gli spinner standard con i dati della sessione in presenza
                     if (startHourSpinner != null && firstPresenza.getOrario() != null) {
                         startHourSpinner.getValueFactory().setValue(firstPresenza.getOrario().getHour());
                         startHourSpinner.setDisable(false);
@@ -773,17 +649,14 @@ private void loadCourseData() {
                 recipesContainer.getChildren().add(noRicette);
             }
         }
-        // --- PATCH: Sezione telematica: mostra UNA SOLA riga riassuntiva in hybrid ---
         if ("Telematica".equals(tipoCorso) || "Entrambi".equals(tipoCorso)) {
             SessioneOnlineDao onlineDao = new SessioneOnlineDao();
             List<SessioneOnline> telematiche = onlineDao.getSessioniByCorso(courseId);
             if (telematiche != null && !telematiche.isEmpty()) {
-                // Titolo sezione telematica
                 Label telematicaTitle = new Label("Sessioni telematiche");
                 telematicaTitle.getStyleClass().add("section-title");
                 onlineSection.getChildren().clear();
                 onlineSection.getChildren().add(telematicaTitle);
-                // Prendi la prima sessione futura (o la prima disponibile)
                 SessioneOnline ref = null;
                 LocalDate today = LocalDate.now();
                 for (SessioneOnline s : telematiche) {
@@ -795,7 +668,6 @@ private void loadCourseData() {
                 if (ref.getDurata() != null) {
                     durata = ref.getDurata().getHour() + ref.getDurata().getMinute() / 60.0;
                 }
-                // --- PATCH: spinner telematica hybrid (solo per Entrambi) ---
                 if ("Entrambi".equals(tipoCorso)) {
                     if (startHourSpinnerTelematica != null && ref.getOrario() != null) {
                         startHourSpinnerTelematica.getValueFactory().setValue(ref.getOrario().getHour());
@@ -811,7 +683,6 @@ private void loadCourseData() {
                         durationSpinnerTelematica.setDisable(false);
                     }
                 } else if ("Telematica".equals(tipoCorso)) {
-                    // Valorizza gli spinner standard con i dati della sessione telematica
                     if (startHourSpinner != null && ref.getOrario() != null) {
                         startHourSpinner.getValueFactory().setValue(ref.getOrario().getHour());
                         startHourSpinner.setDisable(false);
@@ -829,7 +700,6 @@ private void loadCourseData() {
                 addOnlineSessionToOnlineSection(ref.getApplicazione(), ref.getCodicechiamata(), orario, durata, ref.getData());
             }
         }
-        // Se solo telematica, nascondi presenza
         if ("Telematica".equals(tipoCorso)) {
             locationSection.setVisible(false);
             locationSection.setManaged(false);
@@ -838,44 +708,31 @@ private void loadCourseData() {
             streetField.setText("");
             capField.setText("");
         }
-    // end populateUIFromCourseData
-        // Dopo aver popolato la UI, aggiorna il binding del pulsante Salva
         setupChangeListenersForSave();
     }
-    
-    /**
-     * Carica le ricette esistenti per ogni sessione (simulato: ogni ricetta ha una data sessione associata).
-     * Solo le ricette per sessioni future sono editabili.
-     */
-    // Carica tutte le sessioni e ricette (presenza, telematica, hybrid) dal database
     private void loadAllSessionsAndRecipes() {
         recipesContainer.getChildren().clear();
         onlineSection.getChildren().clear();
         hasPresenzaSessions = false;
         hasTelematicheSessions = false;
         try {
-            // --- SEZIONE PRESENZA ---
             SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
             List<SessioniInPresenza> presenze = presenzaDao.getSessioniByCorso(courseId);
             if (presenze != null && !presenze.isEmpty()) {
                 hasPresenzaSessions = true;
-                // Titolo sezione presenza
                 Label presenzaTitle = new Label("Sessioni in presenza");
                 presenzaTitle.getStyleClass().add("section-title");
                 recipesContainer.getChildren().add(presenzaTitle);
                 ricettaDao ricettaDao = new ricettaDao();
                 for (SessioniInPresenza sessione : presenze) {
-                    // Recupera le ricette collegate a questa sessione
                     ArrayList<Ricetta> ricette = presenzaDao.recuperaRicetteSessione(sessione);
                     if (ricette == null || ricette.isEmpty()) {
-                        // Mostra un messaggio se non ci sono ricette
                         Label noRicette = new Label("(Nessuna ricetta associata a questa sessione)");
-                        noRicette.setStyle("-fx-font-style: italic; -fx-text-fill: #888;");
+                        noRicette.getStyleClass().add("info-label");
                         recipesContainer.getChildren().add(noRicette);
                         continue;
                     }
                     for (Ricetta ricetta : ricette) {
-                        // Carica ingredienti per ogni ricetta
                         ArrayList<Ingredienti> ingredienti = ricettaDao.getIngredientiRicetta(ricetta);
                         String[] ingredientNames = ingredienti.stream().map(Ingredienti::getNome).toArray(String[]::new);
                         String[] quantities = ingredienti.stream().map(i -> String.valueOf(i.getQuantita())).toArray(String[]::new);
@@ -884,12 +741,10 @@ private void loadCourseData() {
                     }
                 }
             }
-            // --- SEZIONE TELEMATICA ---
             SessioneOnlineDao onlineDao = new SessioneOnlineDao();
             List<SessioneOnline> telematiche = onlineDao.getSessioniByCorso(courseId);
             if (telematiche != null && !telematiche.isEmpty()) {
                 hasTelematicheSessions = true;
-                // Titolo sezione telematica
                 Label telematicaTitle = new Label("Sessioni telematiche");
                 telematicaTitle.getStyleClass().add("section-title");
                 onlineSection.getChildren().add(telematicaTitle);
@@ -906,18 +761,16 @@ private void loadCourseData() {
             e.printStackTrace();
             boundary.showAlert("Errore", "Errore durante il caricamento delle sessioni/ricette: " + e.getMessage());
         }
-        // Dopo aver caricato le sessioni, aggiorna la UI in base al tipo dedotto
         updateCourseTypeUIFromSessions();
     }
 
-    // Nuovo metodo: aggiunge una sessione online alla onlineSection
     private void addOnlineSessionToOnlineSection(String app, String meetingCode, String orario, double durata, LocalDate sessionDate) {
         VBox sessionBox = new VBox(10);
         sessionBox.getStyleClass().add("online-session-container");
 
         boolean editable = sessionDate.isAfter(LocalDate.now());
         if (!editable) {
-            sessionBox.setStyle("-fx-background-color: #f0f0f0;");
+            sessionBox.getStyleClass().add("session-past");
         }
 
         HBox header = new HBox(15);
@@ -938,7 +791,6 @@ private void loadCourseData() {
 
         String tipoCorso = courseTypeCombo.getValue();
         if ("Entrambi".equals(tipoCorso)) {
-            // In hybrid: orario e durata sono spinner, NON mostrare la label del giorno/sessione
             Label orarioLabel = new Label("Orario:");
             Spinner<Integer> hourSpinner = new Spinner<>(6, 23, 18, 1);
             hourSpinner.setPrefWidth(90);
@@ -946,7 +798,6 @@ private void loadCourseData() {
             Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 0, 15);
             minuteSpinner.setPrefWidth(60);
             minuteSpinner.setDisable(!editable);
-            // Se orario è valorizzato, setta i valori
             if (orario != null && !orario.isEmpty() && orario.contains(":")) {
                 try {
                     String[] parts = orario.split(":");
@@ -957,13 +808,10 @@ private void loadCourseData() {
                 } catch (Exception ignored) {}
             }
             Label durataLabel = new Label("Durata (h):");
-            // Solo valori interi da 1 a 8
             Spinner<Double> durataSpinner = new Spinner<>(1.0, 8.0, Math.max(1.0, Math.round(durata)), 1.0);
             durataSpinner.setPrefWidth(80);
             durataSpinner.setDisable(!editable);
             header.getChildren().addAll(appLabel, appCombo, codeLabel, codeField, orarioLabel, hourSpinner, minuteSpinner, durataLabel, durataSpinner);
-
-            // --- SYNC: aggiorna DB in tempo reale su modifica spinner/campi ---
             if (editable) {
                 hourSpinner.valueProperty().addListener((obs, oldVal, newVal) -> updateTelematicaSessionsFromHybridUI(hourSpinner, minuteSpinner, durataSpinner, appCombo, codeField));
                 minuteSpinner.valueProperty().addListener((obs, oldVal, newVal) -> updateTelematicaSessionsFromHybridUI(hourSpinner, minuteSpinner, durataSpinner, appCombo, codeField));
@@ -971,7 +819,6 @@ private void loadCourseData() {
                 appCombo.valueProperty().addListener((obs, oldVal, newVal) -> updateTelematicaSessionsFromHybridUI(hourSpinner, minuteSpinner, durataSpinner, appCombo, codeField));
                 codeField.textProperty().addListener((obs, oldVal, newVal) -> updateTelematicaSessionsFromHybridUI(hourSpinner, minuteSpinner, durataSpinner, appCombo, codeField));
             }
-            // NON aggiungere la label del giorno/sessione
         } else {
             header.getChildren().addAll(appLabel, appCombo, codeLabel, codeField);
         }
@@ -979,7 +826,6 @@ private void loadCourseData() {
         onlineSection.getChildren().add(sessionBox);
     }
 
-    // Aggiorna tutte le sessioni telematiche future dal pannello hybrid in tempo reale
     private void updateTelematicaSessionsFromHybridUI(Spinner<Integer> hourSpinner, Spinner<Integer> minuteSpinner, Spinner<Double> durataSpinner, ComboBox<String> appCombo, TextField codeField) {
         try {
             SessioneOnlineDao onlineDao = new SessioneOnlineDao();
@@ -1000,12 +846,9 @@ private void loadCourseData() {
                 onlineDao.aggiornaSessione(sessione);
             }
         } catch (Exception e) {
-            // Log error, non bloccare la UI
             e.printStackTrace();
         }
     }
-
-    // Aggiorna tutte le sessioni in presenza future dal pannello hybrid in tempo reale
     public void updatePresenzaSessionsFromHybridUI(Spinner<Integer> hourSpinner, Spinner<Integer> minuteSpinner, Spinner<Double> durataSpinner) {
         try {
             SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
@@ -1013,11 +856,8 @@ private void loadCourseData() {
             int hourPres = hourSpinner.getValue();
             int minPres = minuteSpinner.getValue();
             double durataPres = durataSpinner.getValue();
-            java.time.LocalTime orarioPres = java.time.LocalTime.of(hourPres, minPres);
-            java.time.LocalTime durataPresTime = java.time.LocalTime.of((int)durataPres, (int)((durataPres - (int)durataPres)*60));
-            // DEBUG: stampa valori spinner hybrid presenza
-            System.out.println("[DEBUG] PRESENZA HYBRID: hourPres=" + hourPres + ", minPres=" + minPres + ", durataPres=" + durataPres);
-            System.out.println("[DEBUG] PRESENZA HYBRID: orarioPres=" + orarioPres + ", durataPresTime=" + durataPresTime);
+            LocalTime orarioPres = LocalTime.of(hourPres, minPres);
+            LocalTime durataPresTime = LocalTime.of((int)durataPres, (int)((durataPres - (int)durataPres)*60));
             for (SessioniInPresenza sessione : presenze) {
                 if (!sessione.getData().isAfter(java.time.LocalDate.now())) continue;
                 sessione.setOrario(orarioPres);
@@ -1025,14 +865,10 @@ private void loadCourseData() {
                 presenzaDao.aggiornaSessione(sessione);
             }
         } catch (Exception e) {
-            // Log error, non bloccare la UI
             e.printStackTrace();
         }
     }
 
-    /**
-     * Aggiorna la UI e la combo del tipo corso in base alle sessioni trovate
-     */
     private void updateCourseTypeUIFromSessions() {
         String type;
         if (hasPresenzaSessions && hasTelematicheSessions) {
@@ -1042,30 +878,22 @@ private void loadCourseData() {
         } else if (hasTelematicheSessions) {
             type = "Telematica";
         } else {
-            type = "In presenza"; // fallback
+            type = "In presenza"; 
         }
         courseTypeCombo.setValue(type);
-        // Disabilita la combo
         courseTypeCombo.setDisable(true);
-
-        // Mostra/nascondi le sezioni
         locationSection.setVisible(hasPresenzaSessions);
         locationSection.setManaged(hasPresenzaSessions);
         recipesSection.setVisible(hasPresenzaSessions);
         recipesSection.setManaged(hasPresenzaSessions);
-        // Sezione telematica: le sessioni online sono aggiunte a recipesContainer, quindi nessuna sezione separata
     }
-
-    // (RIMOSSO: ora gestito da loadAllSessionsAndRecipes)
-
-    // Aggiunge una sessione online all'interfaccia, con logica di editabilità per data
     private void addOnlineSessionToContainer(String app, String meetingCode, String orario, double durata, LocalDate sessionDate) {
         VBox sessionBox = new VBox(10);
         sessionBox.getStyleClass().add("online-session-container");
 
         boolean editable = sessionDate.isAfter(LocalDate.now());
         if (!editable) {
-            sessionBox.setStyle("-fx-background-color: #f0f0f0;");
+            sessionBox.getStyleClass().add("session-past");
         }
 
         HBox header = new HBox(15);
@@ -1094,7 +922,6 @@ private void loadCourseData() {
         durataSpinner.setPrefWidth(80);
         durataSpinner.setDisable(!editable);
 
-        // Data sessione label
         Label sessionDateLabel = new Label("Sessione: " + sessionDate.toString());
         sessionDateLabel.getStyleClass().add("session-date-label");
         if (!editable) {
@@ -1107,32 +934,20 @@ private void loadCourseData() {
 
         header.getChildren().addAll(appLabel, appField, codeLabel, codeField, orarioLabel, orarioField, durataLabel, durataSpinner, sessionDateLabel);
         sessionBox.getChildren().add(header);
-
-        // Non aggiungere più la sessione telematica nel contenitore delle ricette
     }
     
-    // === PUBLIC ACTIONS ===
     public void onCourseTypeChanged() {
         String selectedType = courseTypeCombo.getValue();
         boolean isPresenza = "In presenza".equals(selectedType);
         boolean isTelematica = "Telematica".equals(selectedType);
         boolean isEntrambi = "Entrambi".equals(selectedType);
-
-        // Gestisci visibilità sezione location
         locationSection.setVisible(isPresenza || isEntrambi);
         locationSection.setManaged(isPresenza || isEntrambi);
-
-        // Gestisci visibilità sezione ricette (solo per corsi in presenza o entrambi)
         recipesSection.setVisible(isPresenza || isEntrambi);
         recipesSection.setManaged(isPresenza || isEntrambi);
-
-        // Gestisci visibilità sezione online (solo per telematica o entrambi)
         onlineSection.setVisible(isTelematica || isEntrambi);
         onlineSection.setManaged(isTelematica || isEntrambi);
-
-        // Gestisci visibilità orario/durata e hybrid
         updateTimeAndDurationVisibility();
-        // PATCH: spinner hybrid setup
         setupHybridSpinners();
         if ("Entrambi".equals(selectedType)) {
             if (doubleTimeSection != null) {
@@ -1156,7 +971,6 @@ private void loadCourseData() {
             capField.clear();
             recipesContainer.getChildren().clear();
         } else if (isPresenza || isEntrambi) {
-            // Sezione hybrid: assicurati che i controlli siano visibili
             if ("Entrambi".equals(selectedType)) {
                 if (doubleTimeSection != null) {
                     doubleTimeSection.setVisible(true);
@@ -1167,35 +981,28 @@ private void loadCourseData() {
                     singleTimeSection.setManaged(false);
                 }
             }
-            // Se il container è vuoto, ricarica i dati del corso per popolare le ricette
             if (recipesContainer.getChildren().isEmpty()) {
-                // Ricarica i dati del corso e popola la UI
                 loadCourseData();
             }
         }
     }
     
     public void onFrequencyChanged() {
-        // RIMOSSO: nessuna logica giorni/frequenza
     }
     
     public void addNewRecipe() {
-        // Per la creazione di una nuova ricetta, si assume una sessione futura di default
         boundary.addRecipeToContainer("", new String[0], new String[0], new String[0], LocalDate.now().plusDays(1));
     }
     
     public void saveCourse() {
-        // Salva solo se almeno un campo è stato modificato e il form è valido
         if (hasAnyFieldChanged() && boundary.validateFormData()) {
             try {
-                // Aggiorna i dati del corso nel database direttamente dal form/UI
                 CorsoDao corsoDao = new CorsoDao();
                 Corso corsoDto = corsoDao.getCorsoById(courseId);
                 if (corsoDto == null) {
                     boundary.showAlert("Errore", "Corso non trovato nel database.");
                     return;
                 }
-                // Aggiorna i campi modificabili
                 corsoDto.setNome(courseNameField.getText().trim());
                 corsoDto.setDescrizione(descriptionArea.getText().trim());
                 corsoDto.setDataInizio(startDatePicker.getValue());
@@ -1205,9 +1012,7 @@ private void loadCourseData() {
                 corsoDao.aggiornaCorso(corsoDto);
 
                 String type = courseTypeCombo.getValue();
-                System.out.println("[DEBUG] saveCourse(): type=" + type);
 
-                // --- Aggiorna sessioni telematiche future ---
                 if ("Telematica".equals(type) || "Entrambi".equals(type)) {
                     SessioneOnlineDao onlineDao = new SessioneOnlineDao();
                     List<SessioneOnline> telematiche = SessioneOnlineDao.getSessioniByCorso(courseId);
@@ -1215,7 +1020,6 @@ private void loadCourseData() {
                     double durataTele = 2.0;
                     String appValue = null;
                     String codeValue = null;
-                    // In "Entrambi", leggi i valori dagli spinner dinamici nella onlineSection
                     if ("Entrambi".equals(type)) {
                         for (Node node : onlineSection.getChildren()) {
                             if (node instanceof VBox) {
@@ -1233,7 +1037,6 @@ private void loadCourseData() {
                                         }
                                     } else if (n instanceof Spinner) {
                                         Spinner<?> spinner = (Spinner<?>) n;
-                                        // Identifica spinner per tipo tramite larghezza
                                         double width = spinner.getPrefWidth();
                                         if (width == 90) { // ora
                                             hourTele = (Integer) spinner.getValue();
@@ -1251,7 +1054,6 @@ private void loadCourseData() {
                         hourTele = startHourSpinner.getValue();
                         minTele = startMinuteSpinner.getValue();
                         durataTele = durationSpinner.getValue();
-                        // Cerca anche app/codice come prima
                         for (Node node : onlineSection.getChildren()) {
                             if (node instanceof VBox) {
                                 VBox sessionBox = (VBox) node;
@@ -1273,7 +1075,6 @@ private void loadCourseData() {
                             }
                         }
                     }
-                    // Conversione robusta double -> LocalTime (es: 1.5 -> 1:30)
                     int durataOre = (int) Math.round(Math.max(1, Math.min(8, durataTele)));
                     int durataMin = (int) Math.round((durataTele - durataOre) * 60);
                     LocalTime orarioTele = LocalTime.of(hourTele, minTele);
@@ -1287,12 +1088,9 @@ private void loadCourseData() {
                         onlineDao.aggiornaSessione(sessione);
                     }
                 }
-
-                // --- Aggiorna sessioni in presenza future (via/cap/ricette/ingredienti) ---
                 if ("In presenza".equals(type) || "Entrambi".equals(type)) {
                     SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
                     ArrayList<SessioniInPresenza> presenze = presenzaDao.getSessioniByCorso(courseId);
-                    // Determina orario/durata da usare (solo spinner globali per \"In presenza\", spinner hybrid per \"Entrambi\")
                     int hourPres, minPres;
                     double durataPres;
                     if ("Entrambi".equals(type) && startHourSpinnerPresenza != null && startMinuteSpinnerPresenza != null && durationSpinnerPresenza != null) {
@@ -1304,25 +1102,20 @@ private void loadCourseData() {
                         minPres = startMinuteSpinner.getValue();
                         durataPres = durationSpinner.getValue();
                     }
-                    // Arrotonda durata tra 1 e 8 (solo interi, minuti sempre 0)
                     int durataOre = (int) Math.max(1, Math.min(8, Math.round(durataPres)));
                     LocalTime orarioPres = LocalTime.of(hourPres, minPres);
                     LocalTime durataPresTime = LocalTime.of(durataOre, 0);
-                    // Mappa data -> sessione per aggiornamento ricette/ingredienti
                     Map<LocalDate, SessioniInPresenza> presenzaByDate = new HashMap<>();
                     for (SessioniInPresenza sessione : presenze) {
                         presenzaByDate.put(sessione.getData(), sessione);
                         if (!sessione.getData().isAfter(LocalDate.now())) continue;
-                        // Aggiorna SOLO i dati modificabili: via, cap, descrizione, orario, durata
                         sessione.setVia(streetField.getText().trim());
                         sessione.setCap(capField.getText().trim());
                         sessione.setDescrizione(descriptionArea.getText().trim());
                         sessione.setOrario(orarioPres);
                         sessione.setDurata(durataPresTime);
-                        // NON toccare la data o altri dati fissi
                         presenzaDao.aggiornaSessione(sessione);
                     }
-                    // 1. Raccogli tutte le date future delle sessioni in presenza che hanno almeno una ricetta nella UI
                     Set<LocalDate> sessioniConRicettaUI = new HashSet<>();
                     for (Node node : recipesContainer.getChildren()) {
                         if (node instanceof VBox) {
@@ -1338,24 +1131,20 @@ private void loadCourseData() {
                         }
                     }
 
-                    // 2. Per ogni sessione futura con ricetta nella UI, elimina tutte le ricette associate (rimuovi associazione, poi cancella ricetta) e reinserisci solo quelle della UI
+                    
                     ricettaDao ricettaDao = new ricettaDao();
                     for (LocalDate sessionDate : sessioniConRicettaUI) {
                         SessioniInPresenza sessione = presenzaByDate.get(sessionDate);
                         if (sessione == null) continue;
-                        // Recupera tutte le ricette già associate a questa sessione e cancellale
                         ArrayList<Ricetta> ricetteEsistenti = presenzaDao.recuperaRicetteSessione(sessione);
                         if (ricetteEsistenti != null) {
                             for (Ricetta ricettaOld : ricetteEsistenti) {
-                                // Rimuovi tutte le associazioni della ricetta da tutte le sessioni
                                 presenzaDao.rimuoviTutteAssociazioniRicetta(ricettaOld);
-                                // Poi cancella la ricetta
                                 ricettaDao.cancellaricetta(ricettaOld);
                             }
                         }
                     }
 
-                    // 3. Per ogni ricetta nella UI, inserisci la ricetta e i suoi ingredienti per la sessione corrispondente
                     for (Node node : recipesContainer.getChildren()) {
                         if (node instanceof VBox) {
                             VBox recipeBox = (VBox) node;
@@ -1365,13 +1154,11 @@ private void loadCourseData() {
                             String labelText = sessionDateLabel.getText();
                             String dateStr = labelText.replace("Sessione: ", "").split(" ")[0];
                             LocalDate sessionDate = LocalDate.parse(dateStr);
-                            if (!sessionDate.isAfter(LocalDate.now())) continue; // Solo future
+                            if (!sessionDate.isAfter(LocalDate.now())) continue; 
                             String nomeRicetta = recipeNameField.getText().trim();
                             if (nomeRicetta.isEmpty()) continue;
                             SessioniInPresenza sessione = presenzaByDate.get(sessionDate);
                             if (sessione == null) continue;
-                            // --- LOGICA UPDATE/INSERT RICETTA ---
-                            // Cerca se esiste già una ricetta associata a questa sessione (stesso nome)
                             ArrayList<Ricetta> ricetteEsistenti = presenzaDao.recuperaRicetteSessione(sessione);
                             Ricetta ricetta = null;
                             if (ricetteEsistenti != null) {
@@ -1383,20 +1170,16 @@ private void loadCourseData() {
                                 }
                             }
                             if (ricetta != null) {
-                                // Esiste già: aggiorna nome se cambiato (in realtà qui il nome è lo stesso, ma puoi aggiungere altri campi)
                                 ricetta.setNome(nomeRicetta);
-                                ricettaDao.memorizzaRicetta(ricetta); // update se già esiste
-                                presenzaDao.associaRicettaASessione(sessione, ricetta); // Associa comunque dopo reset
+                                ricettaDao.memorizzaRicetta(ricetta); 
+                                presenzaDao.associaRicettaASessione(sessione, ricetta); 
                             } else {
-                                // Non esiste: crea nuova ricetta e associa
                                 ricetta = new Ricetta(nomeRicetta);
                                 ricettaDao.memorizzaRicetta(ricetta);
                                 presenzaDao.associaRicettaASessione(sessione, ricetta);
                             }
-                            // --- GESTIONE INGREDIENTI ---
                             VBox ingredientsBox = (VBox) recipeBox.getChildren().get(1);
                             VBox ingredientsList = (VBox) ingredientsBox.getChildren().get(1);
-                            // Recupera ingredienti già associati
                             List<Ingredienti> ingredientiEsistenti = ricettaDao.getIngredientiRicetta(ricetta);
                             Set<String> ingredientiUI = new HashSet<>();
                             for (Node ingrNode : ingredientsList.getChildren()) {
@@ -1412,7 +1195,6 @@ private void loadCourseData() {
                                     float quant = 0;
                                     try { quant = Float.parseFloat(ingrQuantity); } catch (Exception ex) {}
                                     ingredientiUI.add(ingrName.toLowerCase());
-                                    // Cerca se esiste già
                                     Ingredienti ingrEsistente = null;
                                     if (ingredientiEsistenti != null) {
                                         for (Ingredienti ingrDb : ingredientiEsistenti) {
@@ -1424,25 +1206,20 @@ private void loadCourseData() {
                                     }
                                     IngredientiDao ingrDao = new IngredientiDao();
                                     if (ingrEsistente != null) {
-                                        // Aggiorna quantità/unità se cambiati
                                         ingrEsistente.setQuantita(quant);
                                         ingrEsistente.setUnitaMisura(ingrUnit);
                                         ingrDao.modificaIngredienti(ingrEsistente);
                                     } else {
-                                        // Nuovo ingrediente
                                         Ingredienti nuovo = new Ingredienti(ingrName, quant, ingrUnit);
                                         ingrDao.memorizzaIngredienti(nuovo);
                                         ricettaDao.associaIngredientiARicetta(ricetta, nuovo);
                                     }
                                 }
                             }
-                            // Rimuovi ingredienti che non sono più nella UI
                             if (ingredientiEsistenti != null) {
                                 for (Ingredienti ingrDb : ingredientiEsistenti) {
                                     if (!ingredientiUI.contains(ingrDb.getNome().toLowerCase())) {
-                                        // Rimuovi l'associazione tra ricetta e ingrediente
                                         ricettaDao.rimuoviAssociazioneIngrediente(ricetta, ingrDb);
-                                        // Verifica se l'ingrediente è usato in altre ricette
                                         IngredientiDao ingrDao = new IngredientiDao();
                                         boolean usatoAltrove = ingrDao.isIngredienteUsatoAltrove(ingrDb);
                                         if (!usatoAltrove) {

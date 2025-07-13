@@ -51,7 +51,6 @@ public class ChefDao extends UtenteDao  {
 
     @Override
     public void AssegnaCorso(Corso corso, Utente chef1) {
-        // Ora l'assegnazione del corso allo chef avviene tramite la FK IdChef nella tabella Corso
         String query = "UPDATE Corso SET IdChef = ? WHERE IdCorso = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -95,15 +94,12 @@ public class ChefDao extends UtenteDao  {
                 ((Chef)chef).setUrl_Propic(rs.getString("Propic"));
             }
         } catch (SQLException sqe) {
-            // aggiungi errore
+            sqe.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
 
     }
-
-
-
    
     public void RecuperaCorsi (Utente utente){
       String query = "SELECT C.*, CH.Nome AS chef_nome, CH.Cognome AS chef_cognome, CH.AnniDiEsperienza AS chef_esperienza " +
@@ -137,12 +133,10 @@ public class ChefDao extends UtenteDao  {
 
                 corso.setId_Corso(rs.getInt("IdCorso"));
                 corso.setSessioni(new CorsoDao().recuperoSessioniPerCorso(corso));
-                // Set info chef
                 corso.setChefNome(rs.getString("chef_nome"));
                 corso.setChefCognome(rs.getString("chef_cognome"));
                 corso.setChefEsperienza(rs.getInt("chef_esperienza"));
 
-                // POPOLA I TIPI DI CUCINA (nuova connessione per evitare problemi con ResultSet)
                 ArrayList<String> tipiCucina = new ArrayList<>();
                 String queryTipi = "SELECT T.Nome FROM TIPODICUCINA_CORSO CT JOIN TIPODICUCINA T ON CT.IdTipoCucina = T.IdTipoCucina WHERE CT.IdCorso = ?";
                 try (Connection connTipi = ConnectionJavaDb.getConnection();
@@ -159,7 +153,7 @@ public class ChefDao extends UtenteDao  {
                 Corsi.add(corso);
             }
         } catch (SQLException sqe) {
-            //gestire errore
+            sqe.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
@@ -170,7 +164,6 @@ public class ChefDao extends UtenteDao  {
 
     
     public void eliminaCorso(Corso corso,Chef chef) {
-        // Uniforma i nomi delle colonne con camel case come nel resto del codice
         String query = "DELETE FROM CORSO WHERE IdChef = ? AND DataInizio = ? AND DataFine = ? AND Nome = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -221,13 +214,13 @@ public class ChefDao extends UtenteDao  {
 
             ps.executeUpdate();
         } catch (SQLException e) {
-            // Gestire l'errore
+            e.printStackTrace();
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
         }
     }
-     @Override
+    @Override
     public String caricaPropic(Utente utente) throws ErrorCaricamentoPropic {
     
         String query = "SELECT Propic FROM chef WHERE Idchef = ?";
@@ -249,7 +242,7 @@ public class ChefDao extends UtenteDao  {
                 return(RS.getString("Propic"));
             }
         } catch (SQLException e) {
-           //
+            e.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, RS);
         }

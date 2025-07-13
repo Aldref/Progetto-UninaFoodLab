@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.progetto.controller.RegisterController;
+import javafx.stage.Stage;
+import com.progetto.utils.SuccessDialogUtils;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -69,7 +71,6 @@ public class RegisterBoundary implements Initializable {
 
     @FXML
     private void onRegistratiClick(ActionEvent event) {
-        // Estrai i dati dalla GUI
         String nome = textFieldNome.getText().trim();
         String cognome = textFieldCognome.getText().trim();
         String email = textFieldEmail.getText().trim();
@@ -82,12 +83,9 @@ public class RegisterBoundary implements Initializable {
         boolean chefSelezionato = radioChef.isSelected();
         var dataNascita = datePickerDataNascita.getValue();
 
-    
-        // Reset sempre il messaggio di errore prima di ogni tentativo
         labelErrore.setText("");
         labelErrore.setVisible(false);
 
-        // Passa i dati al controller
         String errore = controller.validaRegistrazione(
             nome, cognome, email, password, confermaPassword, genere,
             descrizione, anniEsperienza, utenteSelezionato, chefSelezionato, dataNascita
@@ -120,8 +118,7 @@ public class RegisterBoundary implements Initializable {
     }
 
     private void showSuccessMessage(String message) {
-        // Usa la dialog custom al posto dell'Alert
-        javafx.stage.Stage parentStage = (javafx.stage.Stage) textFieldNome.getScene().getWindow();
-        com.progetto.utils.SuccessDialogUtils.showGenericSuccessDialog(parentStage, "Registrazione completata!", message);
+        Stage parentStage = (Stage) textFieldNome.getScene().getWindow();
+        SuccessDialogUtils.showGenericSuccessDialog(parentStage, "Registrazione completata!", message);
     }
 }

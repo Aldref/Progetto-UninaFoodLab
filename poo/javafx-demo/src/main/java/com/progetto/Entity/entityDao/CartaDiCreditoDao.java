@@ -1,4 +1,3 @@
-
 package com.progetto.Entity.entityDao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,10 +11,8 @@ import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
 
 public class CartaDiCreditoDao {
-    // Recupera tutte le carte di credito associate a un utente
     public List<CartaDiCredito> getCarteByUtenteId(int idUtente) {
         List<CartaDiCredito> carte = new ArrayList<>();
-        // JOIN tra POSSIEDE e CARTA per recuperare solo le carte effettivamente possedute dall'utente
         String query = "SELECT c.* FROM POSSIEDE p JOIN Carta c ON p.IdCarta = c.IdCarta WHERE p.IdPartecipante = ?";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -30,7 +27,6 @@ public class CartaDiCreditoDao {
                 CartaDiCredito carta = new CartaDiCredito();
                 carta.setIdCarta(rs.getString("IdCarta"));
                 carta.setIntestatario(rs.getString("Intestatario"));
-                // Conversione robusta della data
                 java.sql.Date sqlDate = rs.getDate("DataScadenza");
                 if (sqlDate != null) {
                     carta.setDataScadenza(sqlDate.toLocalDate());
@@ -42,7 +38,7 @@ public class CartaDiCreditoDao {
                 carte.add(carta);
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // LOG per debug
+            e.printStackTrace(); 
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
@@ -57,7 +53,6 @@ public class CartaDiCreditoDao {
         ResultSet generatedKeys = null;
         try {
             conn = ConnectionJavaDb.getConnection();
-            // 1. Cerca se esiste già una carta identica
             String selectId = "SELECT IdCarta FROM Carta WHERE Intestatario = ? AND DataScadenza = ? AND UltimeQuattroCifre = ? AND Circuito = ?::Circuito ORDER BY IdCarta DESC LIMIT 1";
             psSelect = conn.prepareStatement(selectId);
             psSelect.setString(1, carta.getIntestatario());
@@ -66,10 +61,8 @@ public class CartaDiCreditoDao {
             psSelect.setString(4, carta.getCircuito());
             rsSelect = psSelect.executeQuery();
             if (rsSelect.next()) {
-                // Esiste già: usa quell'id
                 carta.setIdCarta(String.valueOf(rsSelect.getInt("IdCarta")));
             } else {
-                // Non esiste: inserisci la carta
                 String query = "INSERT INTO Carta (Intestatario, DataScadenza, UltimeQuattroCifre, Circuito) VALUES (?, ?, ?, ?::Circuito)";
                 psInsert = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
                 psInsert.setString(1, carta.getIntestatario());
@@ -83,7 +76,6 @@ public class CartaDiCreditoDao {
                 }
             }
 
-            // 2. Inserisci la relazione in POSSIEDE se non esiste già
             if (carta.getIdCarta() != null) {
                 String checkPossiede = "SELECT 1 FROM POSSIEDE WHERE IdPartecipante = ? AND IdCarta = ?";
                 try (PreparedStatement psCheckPossiede = conn.prepareStatement(checkPossiede)) {
@@ -102,18 +94,13 @@ public class CartaDiCreditoDao {
                 }
             }
         } catch (SQLException sqe) {
-            sqe.printStackTrace(); // LOGGA L'ECCEZIONE
+            sqe.printStackTrace(); 
         } finally {
             dbu.closeAll(null, psSelect, rsSelect);
             dbu.closeAll(conn, psInsert, generatedKeys);
         }
     }
 
-    /**
-     * Cancella la relazione POSSIEDE per la carta e l'utente, poi elimina la carta solo se non più associata ad altri utenti.
-     * @param carta la carta da eliminare
-     * @param idUtente l'id dell'utente che vuole eliminare la carta
-     */
     public void cancellaCarta(CartaDiCredito carta, int idUtente) {
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -123,14 +110,12 @@ public class CartaDiCreditoDao {
         ResultSet rsCheck = null;
         try {
             conn = ConnectionJavaDb.getConnection();
-            // 1. Elimina la relazione POSSIEDE
             String deletePossiede = "DELETE FROM POSSIEDE WHERE IdCarta = ? AND IdPartecipante = ?";
             psPossiede = conn.prepareStatement(deletePossiede);
             psPossiede.setInt(1, Integer.parseInt(carta.getIdCarta()));
             psPossiede.setInt(2, idUtente);
             psPossiede.executeUpdate();
 
-            // 2. Controlla se la carta è ancora associata ad altri utenti
             String checkQuery = "SELECT COUNT(*) AS cnt FROM POSSIEDE WHERE IdCarta = ?";
             psCheck = conn.prepareStatement(checkQuery);
             psCheck.setInt(1, Integer.parseInt(carta.getIdCarta()));
@@ -143,7 +128,6 @@ public class CartaDiCreditoDao {
                 }
             }
 
-            // 3. Se non è più associata, elimina la carta
             if (deleteCarta) {
                 String deleteCartaQuery = "DELETE FROM Carta WHERE IdCarta = ?";
                 psDeleteCarta = conn.prepareStatement(deleteCartaQuery);

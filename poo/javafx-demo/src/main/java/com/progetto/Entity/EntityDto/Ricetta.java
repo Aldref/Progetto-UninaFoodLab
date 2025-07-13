@@ -9,7 +9,7 @@ public class Ricetta  {
         this.nome = nome;
         this.ingredientiRicetta = new ArrayList<>();
     }
-      public Ricetta(String nome,ArrayList<Ingredienti> ingredientiRicetta) {
+    public Ricetta(String nome,ArrayList<Ingredienti> ingredientiRicetta) {
         this.nome = nome;
         this.ingredientiRicetta = ingredientiRicetta;
     }

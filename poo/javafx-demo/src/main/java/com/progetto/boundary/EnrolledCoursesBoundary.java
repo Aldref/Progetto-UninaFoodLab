@@ -22,7 +22,6 @@ public class EnrolledCoursesBoundary implements Initializable {
     @FXML private javafx.scene.image.ImageView userProfileImage;
     @FXML private ComboBox<String> categoryComboBox;
     @FXML private ComboBox<String> frequencyComboBox;
-    // Rimossa lessonTypeComboBox
     @FXML private Button searchBtn;
     @FXML private FlowPane enrolledCoursesArea;
     @FXML private ScrollPane enrolledCoursesScrollPane;
@@ -44,15 +43,12 @@ public class EnrolledCoursesBoundary implements Initializable {
         controller.initialize();
     }
 
-   
-
     public void showLoadingIndicator() {
         if (loadingIndicator != null) {
             loadingIndicator.setVisible(true);
         }
     }
 
-    // Nasconde lo spinner di caricamento
     public void hideLoadingIndicator() {
         if (loadingIndicator != null) {
             loadingIndicator.setVisible(false);
@@ -79,7 +75,6 @@ public class EnrolledCoursesBoundary implements Initializable {
         controller.viewCoursesClick();
     }
 
-    // AGGIUNGI QUESTO METODO MANCANTE
     @FXML
     private void goToHomepage(ActionEvent event) {
         controller.goToHomepage();

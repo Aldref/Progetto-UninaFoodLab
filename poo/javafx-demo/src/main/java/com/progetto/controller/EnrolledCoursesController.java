@@ -26,7 +26,6 @@ public class EnrolledCoursesController {
     private Label userNameLabel;
     private ComboBox<String> categoryComboBox;
     private ComboBox<String> frequencyComboBox;
-    // Rimossa lessonTypeComboBox
     private Button searchButton;
     private FlowPane mainContentArea;
     private ScrollPane scrollPane;
@@ -35,15 +34,11 @@ public class EnrolledCoursesController {
     private Button nextButton;
     private Label totalCoursesLabel;
     private EnrolledCoursesBoundary boundary;
-
-    // Variabili per la paginazione
-    // Caching delle card: crea tutte le card solo quando cambia la lista corsi, non ad ogni pagina
     private List<Node> filteredCourseCards = new ArrayList<>();
     private List<Corso> cachedCorsi = new ArrayList<>();
     private int currentPage = 0;
     private final int CARDS_PER_PAGE = 12;
 
-    // Thread di caricamento corsi
     private Thread loadCoursesThread;
 
     public EnrolledCoursesController(Label userNameLabel, ComboBox<String> categoryComboBox,
@@ -70,9 +65,6 @@ public class EnrolledCoursesController {
         loadEnrolledCourses();
     }
 
-    /**
-     * Aggiunge un listener alla finestra principale per interrompere il thread di caricamento corsi alla chiusura.
-     */
     private void setupWindowCloseListener() {
         if (mainContentArea != null && mainContentArea.getScene() != null && mainContentArea.getScene().getWindow() != null) {
             Stage stage = (Stage) mainContentArea.getScene().getWindow();
@@ -82,7 +74,6 @@ public class EnrolledCoursesController {
                 }
             });
         } else {
-            // Se la scena non è ancora pronta, aggiungi un listener per quando viene impostata
             mainContentArea.sceneProperty().addListener((obs, oldScene, newScene) -> {
                 if (newScene != null) {
                     newScene.windowProperty().addListener((obsWin, oldWin, newWin) -> {
@@ -100,10 +91,8 @@ public class EnrolledCoursesController {
     }
 
     public void initializeSearchFilters() {
-        // Inizializza i filtri di ricerca prendendo i dati dal DB
         categoryComboBox.getItems().clear();
         frequencyComboBox.getItems().clear();
-        // Prendi le categorie e le frequenze dal DB
         BarraDiRicercaDao barraDao = new BarraDiRicercaDao();
         ArrayList<String> categorie = barraDao.Categorie();
         ArrayList<String> frequenze = barraDao.CeraEnumFrequenza();
@@ -111,14 +100,11 @@ public class EnrolledCoursesController {
         if (categorie != null) categoryComboBox.getItems().addAll(categorie);
         frequencyComboBox.getItems().add("Tutte le frequenze");
         if (frequenze != null) frequencyComboBox.getItems().addAll(frequenze);
-        // Imposta i valori di default
         categoryComboBox.setValue("Tutte le categorie");
         frequencyComboBox.setValue("Tutte le frequenze");
-        // Il nome utente viene impostato dalla boundary
     }
 
     public void handleSearch() {
-        // Quando si effettua una ricerca, si parte sempre dalla prima pagina
         resetPageAndSearch();
     }
 
@@ -128,7 +114,6 @@ public class EnrolledCoursesController {
     }
 
     public void viewCoursesClick() {
-        // Metodo per visualizzare i corsi (se necessario)
         loadEnrolledCourses();
     }
 
@@ -150,7 +135,6 @@ public class EnrolledCoursesController {
                 // Recupera i corsi dal database
                 utente.getUtenteVisitatoreDao().RecuperaCorsi(utente);
                 List<Corso> corsi = utente.getCorsi();
-                // Se la lista corsi non è cambiata, non ricreare le card
                 if (corsi != null && corsi.equals(cachedCorsi)) {
                     javafx.application.Platform.runLater(() -> {
                         updateCourseCards();
@@ -210,7 +194,7 @@ public class EnrolledCoursesController {
         mainContentArea.getChildren().clear();
         if (filteredCourseCards.isEmpty()) {
             Label noCoursesLabel = new Label("Iscriviti a un corso per iniziare!");
-            noCoursesLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: #888; -fx-font-weight: bold;");
+            noCoursesLabel.getStyleClass().add("no-courses-label");
             mainContentArea.getChildren().add(noCoursesLabel);
             if (prevButton != null) prevButton.setDisable(true);
             if (nextButton != null) nextButton.setDisable(true);
@@ -224,9 +208,6 @@ public class EnrolledCoursesController {
             mainContentArea.getChildren().add(filteredCourseCards.get(i));
         }
         int totalPages = (int) Math.ceil((double) filteredCourseCards.size() / CARDS_PER_PAGE);
-        // RIMOSSO IL LABEL DELLA PAGINA COME RICHIESTO
-        // pageLabel.setText("Pagina " + (currentPage + 1) + " di " + Math.max(1, totalPages));
-        // Aggiorna i pulsanti di navigazione
         if (prevButton != null) {
             prevButton.setDisable(currentPage == 0);
         }

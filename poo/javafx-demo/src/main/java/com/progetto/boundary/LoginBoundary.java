@@ -3,6 +3,7 @@ package com.progetto.boundary;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.Label;
 import javafx.event.ActionEvent;
 import com.progetto.controller.LoginController;
 
@@ -15,7 +16,7 @@ public class LoginBoundary {
     private PasswordField passwordField;
 
     @FXML
-    private javafx.scene.control.Label errorLabel;
+    private Label errorLabel;
 
     private final LoginController controller = new LoginController();
 

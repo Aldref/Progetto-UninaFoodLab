@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ComboBox;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
+import javafx.scene.image.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class HomepageChefController {
     private ComboBox<String> categoryComboBox;
     private ComboBox<String> frequencyComboBox;
     private Label chefNameLabel;
-    private javafx.scene.image.ImageView profileImageLarge;
+    private ImageView profileImageLarge;
 
     private List<Node> allCourseCards = new ArrayList<>();
     private int currentPage = 0;
@@ -32,13 +33,12 @@ public class HomepageChefController {
 
     public HomepageChefController(FlowPane mainContentArea, Label pageLabel, 
                                 ComboBox<String> categoryComboBox, ComboBox<String> frequencyComboBox,
-                                /*ComboBox<String> lessonTypeComboBox,*/ Label chefNameLabel,
+                                Label chefNameLabel,
                                 javafx.scene.image.ImageView profileImageLarge) {
         this.mainContentArea = mainContentArea;
         this.pageLabel = pageLabel;
         this.categoryComboBox = categoryComboBox;
         this.frequencyComboBox = frequencyComboBox;
-        // this.lessonTypeComboBox = lessonTypeComboBox; // eliminato
         this.chefNameLabel = chefNameLabel;
         this.profileImageLarge = profileImageLarge;
     }
@@ -48,7 +48,6 @@ public class HomepageChefController {
         categoryComboBox.getItems().clear();
         frequencyComboBox.getItems().clear();
 
-        // Popola le comboBox con i valori dal DB tramite BarraDiRicercaDao
         BarraDiRicercaDao barraDao = new BarraDiRicercaDao();
         List<String> categorie = barraDao.Categorie();
         List<String> frequenze = barraDao.CeraEnumFrequenza();
@@ -57,7 +56,6 @@ public class HomepageChefController {
         frequencyComboBox.getItems().add("Tutte le frequenze");
         if (frequenze != null) frequencyComboBox.getItems().addAll(frequenze);
 
-        // Recupera dati chef loggato dal DB solo se serve
         Chef chef = Chef.loggedUser;
         if (chef != null) {
             if (chef.getNome() == null || chef.getCognome() == null) {
@@ -68,11 +66,8 @@ public class HomepageChefController {
     }
 
     public void searchCourses() {
-        // Implementa la logica di ricerca nei corsi dello chef
         String categoria = categoryComboBox.getValue();
         String frequenza = frequencyComboBox.getValue();
-        // tipoLezione rimosso
-        // Per ora ricarica semplicemente tutti i corsi
         loadChefCourses();
     }
 
@@ -83,18 +78,15 @@ public class HomepageChefController {
             updateCourseCards();
             return;
         }
-        // Recupera i corsi solo se id_Chef valorizzato
         if (chef.getId_Chef() == 0) {
             chef.getChefDao().recuperaDatiUtente(chef);
         }
         chef.getChefDao().RecuperaCorsi(chef);
         List<Corso> corsi = chef.getCorsi();
-        // Ottieni i filtri selezionati
         String categoriaFiltro = categoryComboBox.getValue();
         String frequenzaFiltro = frequencyComboBox.getValue();
         if (corsi != null) {
             for (Corso corso : corsi) {
-                // Applica i filtri come in HomepageUtenteController
                 boolean matchCategoria = true;
                 if (categoriaFiltro != null && !categoriaFiltro.equals("Tutte le categorie")) {
                     List<String> tipiCucina = corso.getTipiDiCucina();
@@ -119,24 +111,21 @@ public class HomepageChefController {
                     Node card = loader.load();
                     CardCorsoBoundary boundary = loader.getController();
                     boundary.setChefMode(true);
-                    boundary.setCorso(corso); // Associa il corso alla card per il calendario
-                    // Imposta i dati reali del corso
+                    boundary.setCorso(corso); 
                     String title = corso.getNome();
                     String description = corso.getDescrizione();
                     String startDate = corso.getDataInizio() != null ? corso.getDataInizio().toString() : "";
                     String endDate = corso.getDataFine() != null ? corso.getDataFine().toString() : "";
                     String frequency = corso.getFrequenzaDelleSessioni();
-                    String price = null; // Per chef non serve il prezzo
+                    String price = null;
                     String chefName = chef.getNome() + " " + chef.getCognome();
                     String experience = String.valueOf(chef.getAnniDiEsperienza());
                     String maxPeople = corso.getMaxPersone() != 0 ? String.valueOf(corso.getMaxPersone()) : "";
                     boundary.setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience, maxPeople);
-                    // Tipi di cucina
                     List<String> tipiCucina = corso.getTipiDiCucina();
                     String cucina1 = tipiCucina != null && tipiCucina.size() > 0 ? tipiCucina.get(0) : "";
                     String cucina2 = tipiCucina != null && tipiCucina.size() > 1 ? tipiCucina.get(1) : "";
                     boundary.setCuisineTypes(cucina1, cucina2);
-                    // Immagine del corso
                     String imagePath = corso.getUrl_Propic() != null ? "/" + corso.getUrl_Propic() : "/immagini/corsi/esempio.png";
                     boundary.setCourseImage(imagePath);
                     allCourseCards.add(card);
@@ -152,7 +141,7 @@ public class HomepageChefController {
         mainContentArea.getChildren().clear();
         if (allCourseCards.isEmpty()) {
             Label noCoursesLabel = new Label("Comincia creando il tuo primo corso!");
-            noCoursesLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: #888; -fx-font-weight: bold;");
+            noCoursesLabel.getStyleClass().add("no-courses-label");
             mainContentArea.getChildren().add(noCoursesLabel);
             pageLabel.setText("");
             return;

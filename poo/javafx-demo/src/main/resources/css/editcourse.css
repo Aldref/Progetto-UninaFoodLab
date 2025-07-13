@@ -1,3 +1,10 @@
+.course-name-disabled {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #888;
+}
+.session-past {
+    -fx-background-color: #f0f0f0;
+}
 .edit-course-container {
     -fx-background-color: #f5f7fa;
 }

@@ -20,8 +20,6 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/immagini/logo.png")));
-        
-        // Usa switchToLogin per avviare con la finestra del login
         SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab Login");
     }
 }

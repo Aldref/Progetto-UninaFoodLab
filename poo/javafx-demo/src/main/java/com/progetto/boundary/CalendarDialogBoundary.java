@@ -51,7 +51,6 @@ public class CalendarDialogBoundary {
         this.isChef = isChef;
     }
 
-    // Metodo per ricevere la lista di sessioni reali dal SceneSwitcher
     public void setSessioni(List<Sessione> sessioni) {
         this.sessioni = sessioni;
         if (controller != null) {

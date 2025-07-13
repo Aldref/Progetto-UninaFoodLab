@@ -23,7 +23,6 @@ import com.progetto.Entity.entityDao.CartaDiCreditoDao;
 import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
 
 public class PaymentPageController {
-    // Carica le carte salvate dell'utente loggato e le passa alla boundary
     public void loadSavedCardsForUser() {
         UtenteVisitatore utente = UtenteVisitatore.loggedUser;
         if (utente != null) {
@@ -32,7 +31,6 @@ public class PaymentPageController {
             boundary.setSavedCards(carte);
         }
     }
-    // Carica le carte salvate dell'utente loggato e le passa alla boundary
     public void loadSavedCardsForUser(int idUtente) {
         CartaDiCreditoDao dao = new CartaDiCreditoDao();
         List<CartaDiCredito> carte = dao.getCarteByUtenteId(idUtente);
@@ -41,7 +39,6 @@ public class PaymentPageController {
     
     private PaymentPageBoundary boundary;
     
-    // Pattern per validazione
     private static final Pattern NOME_PATTERN = Pattern.compile("^[a-zA-ZÀ-ÿ]+(?:\\s+[a-zA-ZÀ-ÿ]+)*$");
     private static final Pattern CARTA_PATTERN = Pattern.compile("^[0-9]{16}$");
     private static final Pattern CVC_PATTERN = Pattern.compile("^[0-9]{3,4}$");
@@ -51,14 +48,12 @@ public class PaymentPageController {
         this.boundary = boundary;
     }
     
-    // Metodo per pagamento con carta salvata (pronto per integrazione DB)
     public void processPaymentWithSavedCard(String cardId) {
         if (cardId == null || cardId.isEmpty()) {
             showErrorAlert("Errore", "Carta non valida");
             return;
         }
         try {
-            // Iscrivi l'utente al corso (simulazione, sostituisci con logica reale)
             iscriviUtenteAlCorso();
             showPaymentSuccessDialog();
         } catch (Exception e) {
@@ -67,7 +62,6 @@ public class PaymentPageController {
     }
     
     public void processPayment() {
-        // Pulisci errori precedenti
         boundary.clearAllErrors();
         
         
@@ -77,17 +71,14 @@ public class PaymentPageController {
             return;
         }
         
-        // Altrimenti valida e processa nuova carta
         if (!validateAllFields()) {
             return;
         }
         
         try {
-            // Se l'utente ha scelto di salvare la carta, salvala nel DB
             if (boundary.isSalvaCarta()) {
                 salvaCartaUtente();
             }
-            // Iscrivi l'utente al corso (simulazione, sostituisci con logica reale)
             iscriviUtenteAlCorso();
             showPaymentSuccessDialog();
         } catch (Exception e) {
@@ -95,9 +86,7 @@ public class PaymentPageController {
         }
     }
 
-    // Metodo per iscrivere l'utente al corso (da personalizzare con la logica reale)
     private void iscriviUtenteAlCorso() {
-        // Logica reale di iscrizione al corso
         UtenteVisitatore utente = UtenteVisitatore.loggedUser;
         Corso corso = boundary.getSelectedCorso();
         if (utente != null && corso != null) {
@@ -105,7 +94,6 @@ public class PaymentPageController {
         }
     }
 
-    // Metodo per salvare la carta nel DB se richiesto
     private void salvaCartaUtente() {
         UtenteVisitatore utente = UtenteVisitatore.loggedUser;
         if (utente != null) {
@@ -114,13 +102,10 @@ public class PaymentPageController {
                 new CartaDiCreditoDao().memorizzaCarta(carta, utente.getId_UtenteVisitatore());
             }
         }
-    // NON chiudere qui la classe! Tutti i metodi successivi devono restare dentro PaymentPageController
     }
     
-    // Nuovo metodo privato per gestire il dialog di successo
     private void showPaymentSuccessDialog() {
         try {
-            // Usa null come parentStage - il dialog si centrerà sullo schermo
             Stage parentStage = null;
             String courseName = "";
             Corso corso = boundary.getSelectedCorso();
@@ -130,12 +115,9 @@ public class PaymentPageController {
                 courseName = "Corso acquistato";
             }
             SuccessDialogUtils.showPaymentSuccessDialog(parentStage, courseName);
-            // Dopo aver mostrato il dialog di successo, torna alla homepage
             boundary.navigateToSuccess();
         } catch (Exception e) {
-            // TODO: handle exception appropriately (logging or user feedback)
-            showSuccessAlert(); // Fallback al dialog semplice
-            // Anche nel caso di fallback, torna alla homepage
+            showSuccessAlert(); 
             boundary.navigateToSuccess();
         }
     }
@@ -144,7 +126,6 @@ public class PaymentPageController {
     private boolean validateAllFields() {
         boolean isValid = true;
         
-        // Validazione nome
         String nome = boundary.getNome();
         if (nome.isEmpty()) {
             boundary.showError("nome", "Il nome è obbligatorio");
@@ -163,7 +144,6 @@ public class PaymentPageController {
             isValid = false;
         }
         
-        // Validazione numero carta
         String numeroCarta = boundary.getNumeroCarta();
         if (numeroCarta.isEmpty()) {
             boundary.showError("numerocarta", "Il numero della carta è obbligatorio");
@@ -176,7 +156,6 @@ public class PaymentPageController {
             isValid = false;
         }
         
-        // Validazione scadenza
         String scadenza = boundary.getScadenza();
         if (scadenza.isEmpty()) {
             boundary.showError("scadenza", "La scadenza è obbligatoria");
@@ -189,7 +168,6 @@ public class PaymentPageController {
             isValid = false;
         }
         
-        // Validazione CVC
         String cvc = boundary.getCvc();
         if (cvc.isEmpty()) {
             boundary.showError("cvc", "Il CVC è obbligatorio");

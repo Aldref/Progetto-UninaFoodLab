@@ -34,7 +34,7 @@ public class CardCorsoBoundary {
     @FXML private Label maxPeople;
 
     private CardCorsoController controller;
-    private Corso corso; // Corso associato a questa card
+    private Corso corso; 
 
     @FXML
     private void initialize() {
@@ -73,10 +73,6 @@ public class CardCorsoBoundary {
         controller.handleShowCalendar();
     }
 
-        /**
-     * Metodo unico per configurare la card a partire da un oggetto Corso.
-     * Chiama tutti i metodi di settaggio dati, immagine, tipi cucina, enrolledMode.
-     */
     public void setupFromCorso(Corso corso, boolean enrolledMode) {
         setCorso(corso);
         setEnrolledMode(enrolledMode);
@@ -90,35 +86,27 @@ public class CardCorsoBoundary {
         String experience = corso.getChefEsperienza() > 0 ? String.valueOf(corso.getChefEsperienza()) : "";
         String maxPeople = String.valueOf(corso.getMaxPersone());
         setCourseData(title, description, startDate, endDate, frequency, price, chefName, experience, maxPeople);
-        // Tipi di cucina
-        java.util.List<String> tipiCucina = corso.getTipiDiCucina();
+        List<String> tipiCucina = corso.getTipiDiCucina();
         String cucina1 = tipiCucina.size() > 0 ? tipiCucina.get(0) : "";
         String cucina2 = tipiCucina.size() > 1 ? tipiCucina.get(1) : "";
         setCuisineTypes(cucina1, cucina2);
-        // Immagine
         String imagePath = corso.getUrl_Propic() != null && !corso.getUrl_Propic().isEmpty() ? corso.getUrl_Propic() : "/immagini/corso_default.png";
         setCourseImage(imagePath);
-        // Nascondi il box delle frequenze aggiuntive: la frequenza è già mostrata sopra
-        // frequencyListBox rimosso: nessun box da gestire
     }
 
     public void setCourseImage(String imagePath) {
         try {
             Image image;
             if (imagePath != null && (imagePath.startsWith("/immagini/") || imagePath.startsWith("immagini/"))) {
-                // Gestione immagini custom e default
                 String path = imagePath.startsWith("/") ? imagePath : "/" + imagePath;
                 image = new Image(getClass().getResourceAsStream(path));
             } else if (imagePath != null && (new java.io.File("src/main/resources/" + imagePath)).exists()) {
-                // Percorso assoluto custom (fallback)
                 image = new Image((new java.io.File("src/main/resources/" + imagePath)).toURI().toString());
             } else {
-                // Fallback su default
                 image = new Image(getClass().getResourceAsStream("/immagini/corso_default.png"));
             }
             courseImage.setImage(image);
         } catch (Exception e) {
-            // Fallback su default
             try {
                 Image image = new Image(getClass().getResourceAsStream("/immagini/corso_default.png"));
                 courseImage.setImage(image);

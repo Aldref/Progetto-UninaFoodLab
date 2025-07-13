@@ -11,183 +11,182 @@ import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
 
 public class GraficoChefDao {
-public int RicavaMinimo(Chef chef1, int mese, int anno){
-    int ValoreMinimo = 0; 
-    String quarry="SELECT min_ricette_in_sessione FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
-    SupportDb dbu= new SupportDb();
-    Connection conn=null;
-    PreparedStatement ps=null;
-    ResultSet rs=null;
-    try {
-        conn = ConnectionJavaDb.getConnection();
-        ps = conn.prepareStatement(quarry);
-        ps.setInt(1, chef1.getId_Chef());
-        ps.setInt(2, mese);
-        ps.setInt(3, anno);
-        rs = ps.executeQuery(); 
-        if (rs.next()) {
-            ValoreMinimo = rs.getInt(1);
+    public int RicavaMinimo(Chef chef1, int mese, int anno){
+        int ValoreMinimo = 0; 
+        String quarry="SELECT min_ricette_in_sessione FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
+        SupportDb dbu= new SupportDb();
+        Connection conn=null;
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(quarry);
+            ps.setInt(1, chef1.getId_Chef());
+            ps.setInt(2, mese);
+            ps.setInt(3, anno);
+            rs = ps.executeQuery(); 
+            if (rs.next()) {
+                ValoreMinimo = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
         }
-    } catch (SQLException e) {
-        // log error
-    } finally {
-        dbu.closeAll(conn, ps, rs);
+        return ValoreMinimo;
     }
-    return ValoreMinimo;
+
+
+    public int RicavaMassimo(Chef chef1, int mese, int anno){
+        int ValoreMassimo = 0; 
+        String quarry="SELECT max_ricette_in_sessione FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
+        SupportDb dbu= new SupportDb();
+        Connection conn=null;
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(quarry);
+            ps.setInt(1, chef1.getId_Chef());
+            ps.setInt(2, mese);
+            ps.setInt(3, anno);
+            rs = ps.executeQuery(); 
+            if (rs.next()) {
+                ValoreMassimo = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return ValoreMassimo;
+    }
+
+    public float RicavaMedia(Chef chef1, int mese, int anno){
+        float media = 0; 
+        String quarry="SELECT media_ricette_in_sessione FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
+        SupportDb dbu= new SupportDb();
+        Connection conn=null;
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(quarry);
+            ps.setInt(1, chef1.getId_Chef());
+            ps.setInt(2, mese);
+            ps.setInt(3, anno);
+            rs = ps.executeQuery(); 
+            if (rs.next()) {
+                media = rs.getFloat(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return media;
+    }
+
+    public int RicavaNumeroCorsi(Chef chef1, int mese, int anno){
+        int NumeroCorsi = 0; 
+        String quarry="SELECT numero_corsi FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
+        SupportDb dbu= new SupportDb();
+        Connection conn=null;
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(quarry);
+            ps.setInt(1, chef1.getId_Chef());
+            ps.setInt(2, mese);
+            ps.setInt(3, anno);
+            rs = ps.executeQuery(); 
+            if (rs.next()) {
+                NumeroCorsi = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return NumeroCorsi;
+    }
+
+    public int RicavaNumeroSessioniInPresenza(Chef chef1, int mese, int anno){
+        int numeroSessioniInPresenza = 0; 
+        String quarry="SELECT numero_sessioni_presenza FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
+        SupportDb dbu= new SupportDb();
+        Connection conn=null;
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(quarry);
+            ps.setInt(1, chef1.getId_Chef());
+            ps.setInt(2, mese);
+            ps.setInt(3, anno);
+            rs = ps.executeQuery(); 
+            if (rs.next()) {
+                numeroSessioniInPresenza = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return numeroSessioniInPresenza;
+    }
+
+    public int RicavaNumeroSesssioniTelematiche(Chef chef1, int mese, int anno){
+        int numeroSessioneTelematiche = 0; 
+        String quarry="SELECT numero_sessioni_telematiche FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
+        SupportDb dbu= new SupportDb();
+        Connection conn=null;
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(quarry);
+            ps.setInt(1, chef1.getId_Chef());
+            ps.setInt(2, mese);
+            ps.setInt(3, anno);
+            rs = ps.executeQuery(); 
+            if (rs.next()) {
+                numeroSessioneTelematiche = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return numeroSessioneTelematiche;
+    }
+
+    public float ricavaGuadagno (Chef chef1, int mese, int anno){
+        float guadagnoTotale = 0; 
+        String quarry="SELECT guadagno_totale FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
+        SupportDb dbu= new SupportDb();
+        Connection conn=null;
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(quarry);
+            ps.setInt(1, chef1.getId_Chef());
+            ps.setInt(2, mese);
+            ps.setInt(3, anno);
+            rs = ps.executeQuery(); 
+            if (rs.next()) {
+                guadagnoTotale = rs.getFloat(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return guadagnoTotale;
 }
 
-
-public int RicavaMassimo(Chef chef1, int mese, int anno){
-    int ValoreMassimo = 0; 
-    String quarry="SELECT max_ricette_in_sessione FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
-    SupportDb dbu= new SupportDb();
-    Connection conn=null;
-    PreparedStatement ps=null;
-    ResultSet rs=null;
-    try {
-        conn = ConnectionJavaDb.getConnection();
-        ps = conn.prepareStatement(quarry);
-        ps.setInt(1, chef1.getId_Chef());
-        ps.setInt(2, mese);
-        ps.setInt(3, anno);
-        rs = ps.executeQuery(); 
-        if (rs.next()) {
-            ValoreMassimo = rs.getInt(1);
-        }
-    } catch (SQLException e) {
-        // log error
-    } finally {
-        dbu.closeAll(conn, ps, rs);
-    }
-    return ValoreMassimo;
-}
-
-public float RicavaMedia(Chef chef1, int mese, int anno){
-    float media = 0; 
-    String quarry="SELECT media_ricette_in_sessione FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
-    SupportDb dbu= new SupportDb();
-    Connection conn=null;
-    PreparedStatement ps=null;
-    ResultSet rs=null;
-    try {
-        conn = ConnectionJavaDb.getConnection();
-        ps = conn.prepareStatement(quarry);
-        ps.setInt(1, chef1.getId_Chef());
-        ps.setInt(2, mese);
-        ps.setInt(3, anno);
-        rs = ps.executeQuery(); 
-        if (rs.next()) {
-            media = rs.getFloat(1);
-        }
-    } catch (SQLException e) {
-        // log error
-    } finally {
-        dbu.closeAll(conn, ps, rs);
-    }
-    return media;
-}
-
-public int RicavaNumeroCorsi(Chef chef1, int mese, int anno){
-    int NumeroCorsi = 0; 
-    String quarry="SELECT numero_corsi FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
-    SupportDb dbu= new SupportDb();
-    Connection conn=null;
-    PreparedStatement ps=null;
-    ResultSet rs=null;
-    try {
-        conn = ConnectionJavaDb.getConnection();
-        ps = conn.prepareStatement(quarry);
-        ps.setInt(1, chef1.getId_Chef());
-        ps.setInt(2, mese);
-        ps.setInt(3, anno);
-        rs = ps.executeQuery(); 
-        if (rs.next()) {
-            NumeroCorsi = rs.getInt(1);
-        }
-    } catch (SQLException e) {
-        // log error
-    } finally {
-        dbu.closeAll(conn, ps, rs);
-    }
-    return NumeroCorsi;
-}
-
-public int RicavaNumeroSessioniInPresenza(Chef chef1, int mese, int anno){
-    int numeroSessioniInPresenza = 0; 
-    String quarry="SELECT numero_sessioni_presenza FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
-    SupportDb dbu= new SupportDb();
-    Connection conn=null;
-    PreparedStatement ps=null;
-    ResultSet rs=null;
-    try {
-        conn = ConnectionJavaDb.getConnection();
-        ps = conn.prepareStatement(quarry);
-        ps.setInt(1, chef1.getId_Chef());
-        ps.setInt(2, mese);
-        ps.setInt(3, anno);
-        rs = ps.executeQuery(); 
-        if (rs.next()) {
-            numeroSessioniInPresenza = rs.getInt(1);
-        }
-    } catch (SQLException e) {
-        // log error
-    } finally {
-        dbu.closeAll(conn, ps, rs);
-    }
-    return numeroSessioniInPresenza;
-}
-
-public int RicavaNumeroSesssioniTelematiche(Chef chef1, int mese, int anno){
-    int numeroSessioneTelematiche = 0; 
-    String quarry="SELECT numero_sessioni_telematiche FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
-    SupportDb dbu= new SupportDb();
-    Connection conn=null;
-    PreparedStatement ps=null;
-    ResultSet rs=null;
-    try {
-        conn = ConnectionJavaDb.getConnection();
-        ps = conn.prepareStatement(quarry);
-        ps.setInt(1, chef1.getId_Chef());
-        ps.setInt(2, mese);
-        ps.setInt(3, anno);
-        rs = ps.executeQuery(); 
-        if (rs.next()) {
-            numeroSessioneTelematiche = rs.getInt(1);
-        }
-    } catch (SQLException e) {
-        // log error
-    } finally {
-        dbu.closeAll(conn, ps, rs);
-    }
-    return numeroSessioneTelematiche;
-}
-
-public float ricavaGuadagno (Chef chef1, int mese, int anno){
-    float guadagnoTotale = 0; 
-    String quarry="SELECT guadagno_totale FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
-    SupportDb dbu= new SupportDb();
-    Connection conn=null;
-    PreparedStatement ps=null;
-    ResultSet rs=null;
-    try {
-        conn = ConnectionJavaDb.getConnection();
-        ps = conn.prepareStatement(quarry);
-        ps.setInt(1, chef1.getId_Chef());
-        ps.setInt(2, mese);
-        ps.setInt(3, anno);
-        rs = ps.executeQuery(); 
-        if (rs.next()) {
-            guadagnoTotale = rs.getFloat(1);
-        }
-    } catch (SQLException e) {
-        // log error
-    } finally {
-        dbu.closeAll(conn, ps, rs);
-    }
-    return guadagnoTotale;
-}
-
-         // Metodo di debug: stampa tutte le colonne della view per uno chef, mese e anno
     public void stampaVistaCompleta(Chef chef1, int mese, int anno) {
         String query = "SELECT * FROM vista_statistiche_mensili_chef WHERE IdChef=? AND mese=? AND anno=?";
         SupportDb dbu = new SupportDb();

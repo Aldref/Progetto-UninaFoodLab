@@ -16,7 +16,6 @@ public class ConnectionJavaDb{
         Properties props = new Properties();
         try {
             props.load(new FileInputStream("db.properties"));
-            // Leggi il profilo attivo, default se non specificato
             String profile = props.getProperty("db.profile", "default").trim();
             if (profile.equals("default")) {
                 URL = props.getProperty("db.url", "jdbc:postgresql://localhost:5432/Uninafoodlab");

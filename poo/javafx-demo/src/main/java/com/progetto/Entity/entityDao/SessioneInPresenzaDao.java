@@ -17,7 +17,6 @@ import com.progetto.jdbc.SupportDb;
 
 public class SessioneInPresenzaDao extends SessioniDao {
 
-    // Aggiorna via/cap/descrizione di una sessione in presenza esistente
     public void aggiornaSessione(SessioniInPresenza sessione) {
         String query = "UPDATE sessione_presenza SET via = ?, cap = ?, descrizione = ?, orario = ?, durata = ? WHERE idsessionepresenza = ?";
         SupportDb dbu = new SupportDb();
@@ -45,10 +44,6 @@ public class SessioneInPresenzaDao extends SessioniDao {
         }
     }
 
-
-    /**
-     * Restituisce tutte le sessioni in presenza associate a un corso.
-     */
     public static ArrayList<SessioniInPresenza> getSessioniByCorso(int idCorso) {
         ArrayList<SessioniInPresenza> sessioni = new ArrayList<>();
         String query = "SELECT * FROM sessione_presenza WHERE idcorso = ? ORDER BY data, orario";
@@ -73,7 +68,6 @@ public class SessioneInPresenzaDao extends SessioniDao {
                 sessione.setCap(rs.getString("cap"));
                 sessione.setDescrizione(rs.getString("descrizione"));
                 sessione.setGiorno(rs.getString("giorno"));
-                // Chef non caricato qui (richiedere join se necessario)
                 sessioni.add(sessione);
             }
         } catch (SQLException e) {
@@ -93,7 +87,6 @@ public class SessioneInPresenzaDao extends SessioniDao {
         SupportDb dbu = new SupportDb();
         try {
             conn = ConnectionJavaDb.getConnection();
-            // Controllo id_Corso e id_Chef
             int idCorso = ((SessioniInPresenza) sessione).getId_Corso();
             int idChef = ((SessioniInPresenza) sessione).getChef() != null ? ((SessioniInPresenza) sessione).getChef().getId_Chef() : 0;
             if (idCorso <= 0 || idChef <= 0) {
@@ -104,16 +97,13 @@ public class SessioneInPresenzaDao extends SessioniDao {
             ps.setString(1, sessione.getGiorno());
             ps.setDate(2, java.sql.Date.valueOf(sessione.getData()));
             ps.setTime(3, java.sql.Time.valueOf(sessione.getOrario()));
-            // Calcola la durata in ore intere (1-8) e passa come interval
             LocalTime durata = sessione.getDurata();
             int durataOre = Math.max(1, Math.min(8, durata.getHour()));
-            // Usa PGInterval per PostgreSQL
             PGInterval interval = new PGInterval(0, 0, 0, durataOre, 0, 0);
             ps.setObject(4, interval);
             ps.setString(5, ((SessioniInPresenza) sessione).getCitta());
             ps.setString(6, ((SessioniInPresenza) sessione).getVia());
             ps.setString(7, ((SessioniInPresenza) sessione).getCap());
-            // Descrizione: se null, passa stringa vuota
             String descrizione = ((SessioniInPresenza) sessione).getDescrizione();
             ps.setString(8, descrizione != null ? descrizione : "");
             ps.setInt(9, idCorso);
@@ -124,7 +114,7 @@ public class SessioneInPresenzaDao extends SessioniDao {
                 ((SessioniInPresenza) sessione).setId_Sessione(generatedKeys.getInt(1));
             }
         } catch (SQLException e) {
-            System.err.println("[ERRORE] Errore SQL in MemorizzaSessione: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
@@ -196,7 +186,7 @@ public class SessioneInPresenzaDao extends SessioniDao {
                 partecipanti.add(utente);
             }
         } catch (SQLException e) {
-            // Log error if needed (no debug print)
+            e.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
@@ -223,14 +213,13 @@ public class SessioneInPresenzaDao extends SessioniDao {
                 ricette.add(ricetta);
             }
         } catch (SQLException e) {
-            // Log error if needed (no debug print)
+            e.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
         return ricette;
     }
 
-    // Associa una ricetta a una sessione in presenza (se non già associata)
     public void associaRicettaASessione(SessioniInPresenza sessione, Ricetta ricetta) {
         String query = "INSERT INTO sessione_presenza_ricetta (idsessionepresenza, idricetta) VALUES (?, ?) ON CONFLICT DO NOTHING";
         Connection conn = null;

@@ -30,24 +30,18 @@ import java.time.LocalDate;
 
 public class EditCourseBoundary implements Initializable {
     
-    // Header
     @FXML private Button backButton;
     @FXML private TextField courseNameField;
     
-    // Informazioni generali
     @FXML private TextArea descriptionArea;
     @FXML private ComboBox<String> courseTypeCombo;
     @FXML private ComboBox<String> frequencyCombo;
     @FXML private Spinner<Integer> maxPersonsSpinner;
-    
-    // Date e orari
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
     @FXML private Spinner<Integer> startHourSpinner;
     @FXML private Spinner<Integer> startMinuteSpinner;
     @FXML private Spinner<Double> durationSpinner;
-    
-    // Giorni della settimana
     @FXML private CheckBox mondayCheckBox;
     @FXML private CheckBox tuesdayCheckBox;
     @FXML private CheckBox wednesdayCheckBox;
@@ -55,24 +49,16 @@ public class EditCourseBoundary implements Initializable {
     @FXML private CheckBox fridayCheckBox;
     @FXML private CheckBox saturdayCheckBox;
     @FXML private CheckBox sundayCheckBox;
-    
-    // Location (per corsi in presenza)
     @FXML private VBox locationSection;
-    // Spinner orario/durata per hybrid (presenza)
     private Spinner<Integer> startHourSpinnerPresenza;
     private Spinner<Integer> startMinuteSpinnerPresenza;
     private Spinner<Double> durationSpinnerPresenza;
-    // Online section (per corsi telematici)
     @FXML private VBox onlineSection;
     @FXML private TextField streetField;
     @FXML private TextField capField;
-    
-    // Ricette (per corsi in presenza)
     @FXML private VBox recipesSection;
     @FXML private VBox recipesContainer;
     @FXML private Button addRecipeButton;
-    
-    // Error labels
     @FXML private Label descriptionErrorLabel;
     @FXML private Label maxPersonsErrorLabel;
     @FXML private Label startDateErrorLabel;
@@ -83,76 +69,49 @@ public class EditCourseBoundary implements Initializable {
     @FXML private Label streetErrorLabel;
     @FXML private Label capErrorLabel;
     @FXML private Label frequencyErrorLabel;
-    
-    // Buttons
     @FXML private Button cancelButton;
     @FXML private Button saveButton;
-    
-    // Controller
     private EditCourseController controller;
     private int courseId = -1;
-
-    /**
-     * Metodo da chiamare PRIMA di mostrare la boundary, per passare l'ID del corso da modificare.
-     */
     public void setCourseId(int courseId) {
         this.courseId = courseId;
         if (controller != null) {
             controller.setCourseId(courseId);
-            controller.initialize(); // Inizializza SOLO dopo aver settato l'id
+            controller.initialize(); 
         }
     }
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Inizializza il controller passando tutti i componenti UI nel giusto ordine
         controller = new EditCourseController(
             this,
-            // Basic fields
             courseNameField, descriptionArea, startDatePicker, endDatePicker,
             courseTypeCombo, frequencyCombo, maxPersonsSpinner,
-            // Sections (tutte VBox)
             locationSection, recipesSection, recipesContainer, onlineSection,
-            // Time fields
             startHourSpinner, startMinuteSpinner, durationSpinner,
-            // Location fields
             streetField, capField,
-            // Error labels
             descriptionErrorLabel, maxPersonsErrorLabel, startDateErrorLabel,
             endDateErrorLabel, startTimeErrorLabel, durationErrorLabel,
             daysErrorLabel, streetErrorLabel, capErrorLabel, frequencyErrorLabel,
-            // Buttons
             saveButton
         );
-        // Crea spinner hybrid per la sezione presenza (solo in hybrid)
         createHybridPresenceSpinners();
-        // --- COLLEGA GLI SPINNER HYBRID PRESENZA AL CONTROLLER ---
         controller.setHybridPresenzaSpinners(startHourSpinnerPresenza, startMinuteSpinnerPresenza, durationSpinnerPresenza);
-        // Disabilita il campo nome corso (grigio, non modificabile)
         courseNameField.setDisable(true);
-        courseNameField.setStyle("-fx-background-color: #e0e0e0; -fx-text-fill: #888;");
-        // NON chiamare più qui controller.initialize();
-        // L'inizializzazione avverrà solo dopo che l'id sarà stato passato con setCourseId
+        courseNameField.getStyleClass().add("course-name-disabled");
     }
 
-    /**
-     * Crea e aggiunge gli spinner di orario/durata per la sezione presenza in hybrid.
-     * Gli spinner sono visibili solo se il tipo corso è "Entrambi".
-     */
     private void createHybridPresenceSpinners() {
-        // Spinner ora
         startHourSpinnerPresenza = new Spinner<>(6, 23, 18, 1);
         startHourSpinnerPresenza.setPrefWidth(90);
         startHourSpinnerPresenza.setEditable(true);
-        // Spinner minuti
         startMinuteSpinnerPresenza = new Spinner<>(0, 59, 0, 15);
         startMinuteSpinnerPresenza.setPrefWidth(60);
         startMinuteSpinnerPresenza.setEditable(true);
-        // Spinner durata SOLO INTERI da 1 a 8
         durationSpinnerPresenza = new Spinner<>(1.0, 8.0, 2.0, 1.0);
         durationSpinnerPresenza.setPrefWidth(80);
         durationSpinnerPresenza.setEditable(true);
-        durationSpinnerPresenza.getValueFactory().setConverter(new javafx.util.StringConverter<Double>() {
+        durationSpinnerPresenza.getValueFactory().setConverter(new StringConverter<Double>() {
             @Override
             public String toString(Double object) {
                 if (object == null) return "";
@@ -170,31 +129,24 @@ public class EditCourseBoundary implements Initializable {
                 }
             }
         });
-        // Layout: label + spinner
         HBox timeBox = new HBox(10);
         timeBox.setStyle("-fx-padding: 0 0 10 0;");
         timeBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         Label orarioLabel = new Label("Orario inizio:");
         Label durataLabel = new Label("Durata (h):");
         timeBox.getChildren().addAll(orarioLabel, startHourSpinnerPresenza, startMinuteSpinnerPresenza, durataLabel, durationSpinnerPresenza);
-        // Inserisci sopra via/cap
         locationSection.getChildren().add(0, timeBox);
-        // Di default: visibile solo se tipo corso = "Entrambi"
         timeBox.setVisible(false);
         timeBox.setManaged(false);
-        // Listener per mostrare/nascondere
         courseTypeCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
             boolean show = "Entrambi".equals(newVal);
             timeBox.setVisible(show);
             timeBox.setManaged(show);
         });
     }
-    // Getter per controller
     public Spinner<Integer> getStartHourSpinnerPresenza() { return startHourSpinnerPresenza; }
     public Spinner<Integer> getStartMinuteSpinnerPresenza() { return startMinuteSpinnerPresenza; }
     public Spinner<Double> getDurationSpinnerPresenza() { return durationSpinnerPresenza; }
-        // --- UI section and field helpers for controller ---
-    // RIMOSSO: la gestione dei dayCheckBoxes va fatta solo nel controller
 
     public void setupUI() {
         setupSpinners();
@@ -356,18 +308,14 @@ public void setupDatePickers() {
     }
 
     public void setupFrequencyListener() {
-        // La logica di aggiornamento dei checkbox dei giorni va gestita dal controller
         frequencyCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-            // gestito dal controller
         });
     }
 
 public void setupChangeListenersForSave(Supplier<Boolean> hasAnyFieldChanged) {
-    // Implement binding logic if needed, or expose for controller
 }
 
     public void setupValidation() {
-        // Implement validation logic if needed, or expose for controller
     }
 
     public void setupFrequencyRestrictionForHybrid() {
@@ -443,7 +391,6 @@ public void addEndDateListener(Callback<LocalDate, Void> listener) {
             label.setVisible(true);
         }
     }
-    // --- UI section and field helpers for controller ---
     public void setCourseTypeDisabled(boolean disabled) { courseTypeCombo.setDisable(disabled); }
     public void setFrequencyDisabled(boolean disabled) { frequencyCombo.setDisable(disabled); }
     public void setLocationSectionVisible(boolean visible) {
@@ -458,7 +405,6 @@ public void addEndDateListener(Callback<LocalDate, Void> listener) {
     public void setCapDisabled(boolean disabled) { capField.setDisable(disabled); }
     public void clearRecipesContainer() { recipesContainer.getChildren().clear(); }
     public boolean isRecipesContainerEmpty() { return recipesContainer.getChildren().isEmpty(); }
-    // === GETTER/SETTER per il controller ===
     public String getDescription() {
         return descriptionArea.getText();
     }
@@ -510,7 +456,9 @@ public void addEndDateListener(Callback<LocalDate, Void> listener) {
     public void setCourseName(String name) {
         courseNameField.setText(name);
         courseNameField.setDisable(true);
-        courseNameField.setStyle("-fx-background-color: #e0e0e0; -fx-text-fill: #888;");
+        if (!courseNameField.getStyleClass().contains("course-name-disabled")) {
+            courseNameField.getStyleClass().add("course-name-disabled");
+        }
     }
 
     public String getStreet() {
@@ -553,7 +501,6 @@ public void addEndDateListener(Callback<LocalDate, Void> listener) {
     private void goBack() {
         controller.goBack();
     }
-    // === UI/validation methods spostati dal controller ===
     public void addRecipeToContainer(String recipeName, String[] ingredients,
                                       String[] quantities, String[] units, LocalDate sessionDate) {
         VBox recipeBox = new VBox(10);
@@ -562,7 +509,6 @@ public void addEndDateListener(Callback<LocalDate, Void> listener) {
         if (!editable) {
             recipeBox.setStyle("-fx-background-color: #f0f0f0;");
         }
-        // Header ricetta
         HBox recipeHeader = new HBox(15);
         recipeHeader.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         Label recipeLabel = new Label("Nome Ricetta:");
@@ -577,7 +523,6 @@ public void addEndDateListener(Callback<LocalDate, Void> listener) {
         removeRecipeBtn.getStyleClass().add("remove-button");
         removeRecipeBtn.setOnAction(e -> removeRecipe(recipeBox));
         removeRecipeBtn.setDisable(!editable);
-        // Data sessione label
         Label sessionDateLabel = new Label("Sessione: " + sessionDate.toString());
         sessionDateLabel.getStyleClass().add("session-date-label");
         if (!editable) {
@@ -588,12 +533,10 @@ public void addEndDateListener(Callback<LocalDate, Void> listener) {
             recipeNameField.setTooltip(new Tooltip("Modificabile: la sessione è futura"));
         }
         recipeHeader.getChildren().addAll(recipeLabel, recipeNameField, removeRecipeBtn, sessionDateLabel);
-        // Container ingredienti
         VBox ingredientsBox = new VBox(5);
         Label ingredientsLabel = new Label("Ingredienti:");
         ingredientsLabel.getStyleClass().add("field-label");
         VBox ingredientsList = new VBox(5);
-        // Aggiungi ingredienti esistenti
         for (int i = 0; i < ingredients.length; i++) {
             addIngredientRow(ingredientsList, ingredients[i], quantities[i], units[i], editable);
         }
@@ -781,7 +724,5 @@ public void addEndDateListener(Callback<LocalDate, Void> listener) {
     }
 
     public void updateSaveButtonState() {
-        // Non fare nulla: il binding del bottone è già gestito da setupChangeListenersForSave e initialize
     }
-    // === FINE metodi spostati ===
 }

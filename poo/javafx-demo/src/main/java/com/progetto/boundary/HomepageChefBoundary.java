@@ -6,8 +6,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.FlowPane;
 import javafx.event.ActionEvent;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import java.io.File;
 import com.progetto.controller.HomepageChefController;
 import com.progetto.utils.ImageClipUtils;
@@ -26,7 +26,7 @@ public class HomepageChefBoundary {
     @FXML
     private ComboBox<String> frequencyComboBox;
     @FXML
-    private javafx.scene.image.ImageView chefProfileImage;
+    private ImageView chefProfileImage;
 
     private HomepageChefController controller;
 
@@ -93,7 +93,7 @@ public class HomepageChefBoundary {
                 if (imgFile.exists()) {
                     Image img = new Image(imgFile.toURI().toString(), 256, 256, true, true);
                     chefProfileImage.setImage(img);
-                    ImageClipUtils.setCircularClip(chefProfileImage, 0); // raggio automatico
+                    ImageClipUtils.setCircularClip(chefProfileImage, 0); 
                 }
             }
         }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.Period;
 
 import com.progetto.Entity.EntityDto.Chef;
 import com.progetto.Entity.entityDao.ChefDao;
@@ -18,7 +19,6 @@ import javafx.stage.Stage;
 
 public class AccountManagementChefController {
 
-    // Chef loggato e DAO dichiarati come attributi di classe
     private static Chef loggedChef = Chef.loggedUser;
     private static ChefDao chefDao = new ChefDao();
 
@@ -44,7 +44,6 @@ public class AccountManagementChefController {
     }
 
     private void setupExperienceYearsValidation() {
-        // Listener per rendere il campo anni esperienza solo numerico
         boundary.getExperienceYearsField().textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 boundary.getExperienceYearsField().setText(newValue.replaceAll("[^\\d]", ""));
@@ -53,7 +52,6 @@ public class AccountManagementChefController {
     }
 
     private void loadChefData() {
-        // Carica i dati reali dello chef loggato dal DB
         if (loggedChef != null) {
             chefDao.recuperaDatiUtente(loggedChef);
             originalName = loggedChef.getNome();
@@ -72,25 +70,22 @@ public class AccountManagementChefController {
             boundary.getExperienceYearsField().setText(originalExperienceYears);
             boundary.getUserNameLabel().setText(originalName + " " + originalSurname);
 
-            // Carica la foto profilo se presente
             String propic = loggedChef.getUrl_Propic();
             if (propic != null && !propic.isEmpty()) {
-                // Prova a caricare come risorsa dal classpath (funziona anche in JAR)
                 String resourcePath = "/" + propic.replace("\\", "/");
                 java.net.URL imgUrl = getClass().getResource(resourcePath);
                 if (imgUrl != null) {
                     boundary.setProfileImages(imgUrl.toExternalForm());
                 } else {
-                    // fallback: prova a caricare da file system in sviluppo
                     File imgFile = new File("src/main/resources/" + propic.replace("/", java.io.File.separator));
                     if (imgFile.exists()) {
                         boundary.setProfileImages(imgFile.getAbsolutePath());
                     } else {
-                        boundary.setProfileImages(null); // o un'immagine di default
+                        boundary.setProfileImages(null); 
                     }
                 }
             } else {
-                boundary.setProfileImages(null); // o un'immagine di default
+                boundary.setProfileImages(null);
             }
         }
     }
@@ -126,16 +121,13 @@ public class AccountManagementChefController {
             }
             String extension = ext.substring(ext.lastIndexOf('.'));
             String fileName = nome + "_" + cognome + "_" + idChef + extension;
-            // Path relativo da salvare nel DB e per resources
             String relativePath = "immagini/PropicChef/" + fileName;
-            // Path assoluto per copia in resources (dev)
             String resourcesDir = "src/main/resources/immagini/PropicChef/";
             new File(resourcesDir).mkdirs();
             String absolutePath = resourcesDir + fileName;
             tempSelectedPhoto = null;
             tempAbsolutePhotoPath = null;
 
-            // Copia subito la foto nella destinazione finale
             try {
                 Files.copy(selectedFile.toPath(), new File(absolutePath).toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception e) {
@@ -143,10 +135,8 @@ public class AccountManagementChefController {
                 return;
             }
 
-            // Mostra subito l'anteprima come sarà salvata (usando il path relativo)
             boundary.setProfileImages(relativePath);
 
-            // Imposta il path relativo su loggedChef (così viene salvato nel DB al salvataggio)
             loggedChef.setUrl_Propic(relativePath);
             try {
                 chefDao.ModificaUtente(loggedChef);
@@ -163,7 +153,6 @@ public class AccountManagementChefController {
             return;
         }
 
-        // Prendi i valori attuali
         String name = boundary.getNameField().getText();
         String surname = boundary.getSurnameField().getText();
         String email = boundary.getEmailField().getText();
@@ -171,7 +160,6 @@ public class AccountManagementChefController {
         String description = boundary.getDescriptionField().getText();
         String experienceYears = boundary.getExperienceYearsField().getText();
 
-        // Validazione solo sui campi modificati e solo se non sono vuoti
         boolean changed = false;
         if (name != null && !name.equals(originalName) && !name.trim().isEmpty()) {
             loggedChef.setNome(name);
@@ -190,8 +178,8 @@ public class AccountManagementChefController {
             changed = true;
         }
         if (birthDateValue != null && !birthDateValue.equals(originalBirthDate)) {
-            java.time.LocalDate today = java.time.LocalDate.now();
-            java.time.Period age = java.time.Period.between(birthDateValue, today);
+            LocalDate today = LocalDate.now();
+            Period age = Period.between(birthDateValue, today);
             if (age.getYears() < 18) {
                 boundary.showErrorMessage("Devi avere almeno 18 anni.");
                 return;
@@ -222,13 +210,11 @@ public class AccountManagementChefController {
                 return;
             }
         }
-        // Se la foto profilo è cambiata rispetto all'originale, considera come modifica
         String currentProfilePic = loggedChef.getUrl_Propic();
         if ((originalProfilePic == null && currentProfilePic != null) || (originalProfilePic != null && !originalProfilePic.equals(currentProfilePic))) {
             changed = true;
         }
 
-        // Gestione password
         String currentPwd = boundary.getCurrentPasswordField().getText();
         String newPwd = boundary.getNewPasswordField().getText();
         String confirmPwd = boundary.getConfirmPasswordField().getText();
@@ -249,13 +235,10 @@ public class AccountManagementChefController {
             loggedChef.setPassword(newPwd);
             changed = true;
         }
-
-        // Se è stata selezionata una nuova foto, copia il file in resources/immagini/PropicChef/ e salva il path relativo
         if (tempSelectedPhoto != null && tempAbsolutePhotoPath != null) {
             File destFile = new File(tempAbsolutePhotoPath);
             try {
                 Files.copy(tempSelectedPhoto.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                // Salva solo il path relativo per il DB
                 String fileName = destFile.getName();
                 String relativePath = "immagini/PropicChef/" + fileName;
                 loggedChef.setUrl_Propic(relativePath);
@@ -281,7 +264,6 @@ public class AccountManagementChefController {
             originalDescription = loggedChef.getDescrizione();
             originalExperienceYears = Integer.toString(loggedChef.getAnniDiEsperienza());
 
-            // Reset variabili temporanee dopo il salvataggio
             tempSelectedPhoto = null;
             tempAbsolutePhotoPath = null;
 
@@ -314,7 +296,6 @@ public class AccountManagementChefController {
         SuccessDialogUtils.showCancelSuccessDialog(stage);
     }
 
-    // Navigazione specifica per chef
     public void goToHomepage() {
         try {
             Stage stage = (Stage) boundary.getNameField().getScene().getWindow();

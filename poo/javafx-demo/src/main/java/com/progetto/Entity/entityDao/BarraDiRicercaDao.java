@@ -90,7 +90,6 @@ public ArrayList<String> GrandezzeDiMisura() {
     return UnitaDiMisura;
 }
 
-// Metodo per ottenere i valori dell'enum Giorno dal database
 public ArrayList<String> GiorniSettimanaEnum() {
     ArrayList<String> giorni = new ArrayList<>();
     SupportDb dbu = new SupportDb();

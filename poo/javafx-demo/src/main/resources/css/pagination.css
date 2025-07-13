@@ -36,3 +36,9 @@
     -fx-font-weight: bold;
     -fx-padding: 0 20 0 20;
 }
+
+.no-courses-label {
+    -fx-font-size: 22px;
+    -fx-text-fill: #888;
+    -fx-font-weight: bold;
+}

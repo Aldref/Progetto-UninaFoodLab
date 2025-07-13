@@ -67,7 +67,7 @@ public abstract class UtenteDao {
                 return "v";
             }
         } catch (SQLException sqe) {
-            // Gestire l'errore
+            sqe.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, rs);
         }

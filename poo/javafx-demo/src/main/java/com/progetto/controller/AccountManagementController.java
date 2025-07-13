@@ -5,9 +5,10 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.Period;
 
 import com.progetto.boundary.AccountManagementBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
@@ -35,7 +36,6 @@ public class AccountManagementController {
     }
 
     private void loadUserData() {
-        // Carica i dati reali dell'utente loggato dal DB
         if (loggedUser != null) {
             utenteDao.recuperaDatiUtente(loggedUser);
             originalName = loggedUser.getNome();
@@ -49,7 +49,6 @@ public class AccountManagementController {
             boundary.getBirthDatePicker().setValue(originalBirthDate);
             boundary.getUserNameLabel().setText(originalName + " " + originalSurname);
 
-            // Carica la foto profilo se presente
             String propic = loggedUser.getUrl_Propic();
             boundary.setProfileImages(propic);
         }
@@ -91,7 +90,6 @@ public class AccountManagementController {
             String absolutePath = userImgDir + fileName;
             File destFile = new File(absolutePath);
 
-            // Copia il file selezionato nella destinazione
             try {
                 Files.copy(selectedFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception e) {
@@ -99,7 +97,6 @@ public class AccountManagementController {
                 return;
             }
 
-            // Path relativo da salvare nel DB e da usare per la preview
             String relativePath = "immagini/PropicUtente/" + fileName;
             loggedUser.setUrl_Propic(relativePath);
             try {
@@ -108,8 +105,6 @@ public class AccountManagementController {
                 boundary.showErrorMessage("Errore nel salvataggio della foto profilo nel database: " + e.getMessage());
                 return;
             }
-
-            // Aggiorna la GUI (preview immediata)
             boundary.setProfileImages(relativePath);
         }
     }
@@ -123,16 +118,14 @@ public class AccountManagementController {
             boundary.showErrorMessage("Compila tutti i campi obbligatori.");
             return;
         }
-        // Validazione email
         String email = boundary.getEmailField().getText().trim();
         if (!email.contains("@")) {
             boundary.showErrorMessage("Inserisci un'email valida.");
             return;
         }
-        // Validazione età >= 18
-        java.time.LocalDate birthDate = boundary.getBirthDatePicker().getValue();
-        java.time.LocalDate today = java.time.LocalDate.now();
-        java.time.Period age = java.time.Period.between(birthDate, today);
+        LocalDate birthDate = boundary.getBirthDatePicker().getValue();
+        LocalDate today = LocalDate.now();
+        Period age = Period.between(birthDate, today);
         if (age.getYears() < 18) {
             boundary.showErrorMessage("Devi avere almeno 18 anni.");
             return;
@@ -150,22 +143,18 @@ public class AccountManagementController {
         boolean wantChangePwd = !currentPwd.isEmpty() || !newPwd.isEmpty() || !confirmPwd.isEmpty();
 
         if (wantChangePwd) {
-            // Tutti i campi devono essere compilati
             if (currentPwd.isEmpty() || newPwd.isEmpty() || confirmPwd.isEmpty()) {
                 boundary.showErrorMessage("Per cambiare password compila tutti i campi password.");
                 return;
             }
-            // Controllo che la password attuale sia corretta
             if (!loggedUser.getPassword().equals(currentPwd)) {
                 boundary.showErrorMessage("La password attuale non è corretta.");
                 return;
             }
-            // Controllo che la nuova password sia confermata
             if (!newPwd.equals(confirmPwd)) {
                 boundary.showErrorMessage("La nuova password e la conferma non coincidono.");
                 return;
             }
-            // Aggiorna la password
             loggedUser.setPassword(newPwd);
         }
 

@@ -33,11 +33,8 @@ public class HomepageUtenteController {
     private List<Node> filteredCourseCards = new ArrayList<>();
     private int currentPage = 0;
     private final int CARDS_PER_PAGE = 12;
-
-    // Thread di caricamento corsi
     private Thread loadCoursesThread;
 
-    // Costruttore corretto: FlowPane, Label, ComboBox, ComboBox, Label, HomepageUtenteBoundary
     public HomepageUtenteController(FlowPane mainContentArea, Label pageLabel, 
                                     ComboBox<String> categoryComboBox, ComboBox<String> frequencyComboBox,
                                     Label userNameLabel, HomepageUtenteBoundary boundary) {
@@ -59,8 +56,6 @@ public class HomepageUtenteController {
     public void initializeSearchFilters() {
         categoryComboBox.getItems().clear();
         frequencyComboBox.getItems().clear();
-        // lessonTypeComboBox rimosso
-        // Il nome utente viene impostato dalla boundary
     }
 
 
@@ -73,7 +68,6 @@ public class HomepageUtenteController {
                 }
             });
         } else {
-            // Se la scena non è ancora pronta, aggiungi un listener per quando viene impostata
             mainContentArea.sceneProperty().addListener((obs, oldScene, newScene) -> {
                 if (newScene != null) {
                     newScene.windowProperty().addListener((obsWin, oldWin, newWin) -> {
@@ -92,7 +86,6 @@ public class HomepageUtenteController {
 
 
     public void searchCourses() {
-        // Quando si effettua una ricerca, si parte sempre dalla prima pagina
         resetPageAndSearch();
     }
 
@@ -112,10 +105,8 @@ public class HomepageUtenteController {
                 try {
                     UtenteVisitatoreDao utenteDao = new UtenteVisitatoreDao();
                     UtenteVisitatore utente = UtenteVisitatore.loggedUser;
-                    // Recupera solo i corsi a cui NON è iscritto e che non sono pieni
                     utenteDao.RecuperaCorsiNonIscritto(utente);
                     List<Corso> corsi = utente.getCorsi();
-                    // Ottieni i filtri selezionati
                     String categoriaFiltro = categoryComboBox.getValue();
                     String frequenzaFiltro = frequencyComboBox.getValue();
                     for (Corso corso : corsi) {
@@ -137,7 +128,6 @@ public class HomepageUtenteController {
                         Node card = loader.load();
                         CardCorsoBoundary boundary = loader.getController();
                         boundary.setupFromCorso(corso, false);
-                        // Aggiorna la lista in modo thread-safe
                         javafx.application.Platform.runLater(() -> filteredCourseCards.add(card));
                     }
                 } catch (Exception e) {

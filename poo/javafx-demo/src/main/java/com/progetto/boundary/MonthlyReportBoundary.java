@@ -71,49 +71,24 @@ public class MonthlyReportBoundary {
         controller.initialize();
     }
 
-   
     @FXML
     private void goToHomepage(ActionEvent event) {
-        try {
-            Stage stage = (Stage) chefNameLabel.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Dashboard Chef");
-        } catch (Exception e) {
-            // TODO: handle exception appropriately (logging or user feedback)
-        }
+        controller.goToHomepage(chefNameLabel);
     }
 
     @FXML
     private void goToCreateCourse(ActionEvent event) {
-        try {
-            Stage stage = (Stage) chefNameLabel.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/createcourse.fxml", "UninaFoodLab - Crea Corso");
-        } catch (Exception e) {
-            // TODO: handle exception appropriately (logging or user feedback)
-        }
+        controller.goToCreateCourse(chefNameLabel);
     }
 
     @FXML
     private void goToAccountManagement(ActionEvent event) {
-        try {
-            Stage stage = (Stage) chefNameLabel.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/accountmanagementchef.fxml", "UninaFoodLab - Gestione Account Chef");
-        } catch (Exception e) {
-            // TODO: handle exception appropriately (logging or user feedback)
-        }
+        controller.goToAccountManagement(chefNameLabel);
     }
 
     @FXML
     private void LogoutClick(ActionEvent event) {
-        try {
-            Stage stage = (Stage) chefNameLabel.getScene().getWindow();
-            LogoutDialogBoundary dialogBoundary = SceneSwitcher.showLogoutDialog(stage);
-
-            if (dialogBoundary.isConfirmed()) {
-                SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
-            }
-        } catch (Exception e) {
-            // TODO: handle exception appropriately (logging or user feedback)
-        }
+        controller.logout(chefNameLabel);
     }
 
     @FXML
@@ -128,10 +103,8 @@ public class MonthlyReportBoundary {
             if (propic != null && !propic.isEmpty()) {
                 File imgFile = new File("src/main/resources/" + propic);
                 if (imgFile.exists()) {
-                    // Carica l'immagine alla massima risoluzione disponibile
                     Image img = new Image(imgFile.toURI().toString(), 0, 0, true, true);
                     chefProfileImage.setImage(img);
-                    // Imposta le dimensioni dell'ImageView se necessario (esempio: 80x80)
                     chefProfileImage.setFitWidth(80);
                     chefProfileImage.setFitHeight(80);
                     ImageClipUtils.setCircularClip(chefProfileImage, 40);

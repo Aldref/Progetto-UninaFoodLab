@@ -30,7 +30,6 @@ public class UserCardsController {
     }
     
     public void loadCardsFromDb() {
-        // Carica le carte dal DB e aggiorna la boundary
         UtenteVisitatore utente = UtenteVisitatore.loggedUser;
         if (utente != null) {
             CartaDiCreditoDao dao = new CartaDiCreditoDao();
@@ -49,7 +48,6 @@ public class UserCardsController {
             String circuito = CardValidator.getCardType(number);
             String ultimeQuattro = number.substring(number.length() - 4);
 
-            // Accetta solo Visa o Mastercard, altrimenti mostra errore
             if (!"Visa".equals(circuito) && !"Mastercard".equals(circuito)) {
                 boundary.showFieldError("cardNumber", "Tipo di carta non supportato. Accettiamo solo Visa e Mastercard");
                 return;
@@ -62,14 +60,13 @@ public class UserCardsController {
             CartaDiCredito carta = new CartaDiCredito();
             carta.setIntestatario(holder);
             carta.setUltimeQuattroCifre(ultimeQuattro);
-            carta.setCircuito(circuito); // Salva esattamente "Visa" o "Mastercard"
+            carta.setCircuito(circuito); 
             carta.setDataScadenza(dataScadenza);
 
             UtenteVisitatore utente = UtenteVisitatore.loggedUser;
             if (utente != null) {
                 CartaDiCreditoDao dao = new CartaDiCreditoDao();
                 dao.memorizzaCarta(carta, utente.getId_UtenteVisitatore());
-                // Inserisci la relazione in POSSIEDE solo se l'ID carta è stato generato
                 if (carta.getIdCarta() != null) {
                     UtenteVisitatoreDao utenteDao = new UtenteVisitatoreDao();
                     utenteDao.aggiungiCartaAPossiede(utente, carta);
@@ -81,7 +78,6 @@ public class UserCardsController {
         }
     }
     
-    // Metodo per gestire il dialog di successo
     private void showCardSaveSuccessDialog() {
         try {
             Stage parentStage = null; 
@@ -90,7 +86,6 @@ public class UserCardsController {
                 "La carta è stata aggiunta con successo al tuo account.");
         } catch (Exception e) {
             e.printStackTrace();
-            // Fallback al messaggio semplice
             boundary.showSuccessMessage("Carta salvata con successo!");
         }
     }
@@ -103,7 +98,6 @@ public class UserCardsController {
         String expiry = boundary.getExpiry();
         String cvv = boundary.getCvv();
 
-        // Validazione nome
         if (holder.isEmpty()) {
             boundary.showFieldError("cardHolder", "Il nome è obbligatorio");
             isValid = false;
@@ -121,7 +115,6 @@ public class UserCardsController {
             isValid = false;
         }
 
-        // Validazione numero carta
         if (number.isEmpty()) {
             boundary.showFieldError("cardNumber", "Il numero della carta è obbligatorio");
             isValid = false;
@@ -133,7 +126,6 @@ public class UserCardsController {
             isValid = false;
         }
 
-        // Validazione scadenza
         if (expiry.isEmpty()) {
             boundary.showFieldError("expiry", "La scadenza è obbligatoria");
             isValid = false;
@@ -145,7 +137,6 @@ public class UserCardsController {
             isValid = false;
         }
 
-        // Validazione CVC
         if (cvv.isEmpty()) {
             boundary.showFieldError("cvv", "Il CVC è obbligatorio");
             isValid = false;
@@ -157,7 +148,7 @@ public class UserCardsController {
         return isValid;
     }
     
-    public void deleteCard(com.progetto.Entity.EntityDto.CartaDiCredito carta) {
+    public void deleteCard(CartaDiCredito carta) {
         UtenteVisitatore utente = UtenteVisitatore.loggedUser;
         if (utente != null) {
             CartaDiCreditoDao dao = new CartaDiCreditoDao();

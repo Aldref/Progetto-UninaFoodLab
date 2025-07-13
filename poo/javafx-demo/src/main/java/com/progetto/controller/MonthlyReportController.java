@@ -10,6 +10,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import com.progetto.utils.SceneSwitcher;
+import com.progetto.boundary.LogoutDialogBoundary;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -39,8 +40,6 @@ public class MonthlyReportController {
     private final Label minRecipesLabel;
     private final Label totalRecipesLabel;
 
-    // private final LineChart<String, Number> earningsChart;
-
     private final Chef chef;
     private final GraficoChefDao graficoChefDao;
 
@@ -51,7 +50,6 @@ public class MonthlyReportController {
             Label totalCoursesLabel, Label onlineSessionsLabel, Label practicalSessionsLabel, Label monthlyEarningsLabel,
             PieChart sessionsChart, BarChart<String, Number> recipesChart,
             Label avgRecipesLabel, Label maxRecipesLabel, Label minRecipesLabel, Label totalRecipesLabel,
-            /*LineChart<String, Number> earningsChart,*/
             Chef chef) {
         this.monthYearLabel = monthYearLabel;
         this.monthComboBox = monthComboBox;
@@ -66,8 +64,6 @@ public class MonthlyReportController {
         this.maxRecipesLabel = maxRecipesLabel;
         this.minRecipesLabel = minRecipesLabel;
         this.totalRecipesLabel = totalRecipesLabel;
-        // this.earningsChart = earningsChart;
-        // Usa sempre lo chef loggato
         this.chef = Chef.loggedUser;
         this.graficoChefDao = new GraficoChefDao();
     }
@@ -106,7 +102,6 @@ public class MonthlyReportController {
     }
 
     private void loadReportData() {
-        // Recupera mese e anno selezionati
         Integer selectedYear = yearComboBox.getValue();
         int mese = monthComboBox.getSelectionModel().getSelectedIndex() + 1;
         int anno = (selectedYear != null) ? selectedYear : LocalDate.now().getYear();
@@ -137,7 +132,6 @@ public class MonthlyReportController {
     }
 
     private void updateChartsData(GraficoChef grafico, double monthlyEarnings) {
-        // PieChart: aggiorna dati senza ricreare l'oggetto
         ObservableList<PieChart.Data> sessionsData = sessionsChart.getData();
         if (sessionsData == null || sessionsData.size() != 2) {
             sessionsData = FXCollections.observableArrayList(
@@ -160,7 +154,6 @@ public class MonthlyReportController {
             recipesChart.getData().add(recipesSeries);
         } else {
             recipesSeries = recipesChart.getData().get(0);
-            // Aggiorna i valori esistenti
             if (recipesSeries.getData().size() == 3) {
                 recipesSeries.getData().get(0).setYValue(grafico.getNumeroMinimo());
                 recipesSeries.getData().get(1).setYValue(grafico.getMedia());
@@ -168,12 +161,50 @@ public class MonthlyReportController {
             }
         }
 
-        // Rimosso grafico dei guadagni mensili
     }
 
     public void updateReport() {
         updateMonthYearLabel();
         loadReportData();
+    }
+
+    public void goToHomepage(Label chefNameLabel) {
+        try {
+            Stage stage = (Stage) chefNameLabel.getScene().getWindow();
+            SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Dashboard Chef");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void goToCreateCourse(Label chefNameLabel) {
+        try {
+            Stage stage = (Stage) chefNameLabel.getScene().getWindow();
+            SceneSwitcher.switchScene(stage, "/fxml/createcourse.fxml", "UninaFoodLab - Crea Corso");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void goToAccountManagement(Label chefNameLabel) {
+        try {
+            Stage stage = (Stage) chefNameLabel.getScene().getWindow();
+            SceneSwitcher.switchScene(stage, "/fxml/accountmanagementchef.fxml", "UninaFoodLab - Gestione Account Chef");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void logout(Label chefNameLabel) {
+        try {
+            Stage stage = (Stage) chefNameLabel.getScene().getWindow();
+            LogoutDialogBoundary dialogBoundary = SceneSwitcher.showLogoutDialog(stage);
+            if (dialogBoundary.isConfirmed()) {
+                SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

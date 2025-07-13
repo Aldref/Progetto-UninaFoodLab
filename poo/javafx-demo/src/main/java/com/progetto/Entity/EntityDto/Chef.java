@@ -2,7 +2,6 @@ package com.progetto.Entity.EntityDto;
 import java.time.LocalDate;
 import java.util.ArrayList;
 public class Chef extends Utente {
-    // Utente chef loggato attuale (per sessione)
     public static Chef loggedUser = null;
     private com.progetto.Entity.entityDao.ChefDao chefDao = new com.progetto.Entity.entityDao.ChefDao();
     private int anniDiEsperienza;
@@ -22,9 +21,7 @@ public class Chef extends Utente {
     public Chef() {
         super();
         this.anniDiEsperienza = 0;
-   
     }
-    
     
     public String getDescrizione(){
         return Descrizione ;
@@ -39,7 +36,7 @@ public class Chef extends Utente {
         return anniDiEsperienza;
     }       
     public void setGrafico(GraficoChef Grafico){
-      grafico1=Grafico; 
+        grafico1=Grafico; 
     }
 
     public GraficoChef getGraficoChef(){
@@ -56,7 +53,7 @@ public class Chef extends Utente {
     public void setAnniDiEsperienza(int anniDiEsperienza) {
         this.anniDiEsperienza = anniDiEsperienza;
     }
-     
+
     public void recuperaCorsiChef(ArrayList<Corso> corsi) {
         this.corsi = corsi; 
     }

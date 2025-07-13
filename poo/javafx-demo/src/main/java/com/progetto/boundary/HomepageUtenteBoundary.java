@@ -6,11 +6,12 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.event.ActionEvent;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.ProgressIndicator;
 import java.io.File;
 import com.progetto.controller.HomepageUtenteController;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.utils.ImageClipUtils;
-
+import com.progetto.Entity.entityDao.BarraDiRicercaDao;
 
 public class HomepageUtenteBoundary {
 
@@ -19,10 +20,11 @@ public class HomepageUtenteBoundary {
     @FXML private ComboBox<String> categoryComboBox;
     @FXML private ComboBox<String> frequencyComboBox;
     @FXML private Label userNameLabel;
-    @FXML private javafx.scene.image.ImageView userProfileImage;
-    @FXML private javafx.scene.control.ProgressIndicator loadingIndicator;
+    @FXML private ImageView userProfileImage;
+    @FXML private ProgressIndicator loadingIndicator;
 
     private HomepageUtenteController controller;
+    private BarraDiRicercaDao dao = new BarraDiRicercaDao();
 
     @FXML
     public void initialize() {
@@ -32,14 +34,12 @@ public class HomepageUtenteBoundary {
         controller.loadCourses();
     }
 
-    // Mostra lo spinner di caricamento
     public void showLoadingIndicator() {
         if (loadingIndicator != null) {
             loadingIndicator.setVisible(true);
         }
     }
 
-    // Nasconde lo spinner di caricamento
     public void hideLoadingIndicator() {
         if (loadingIndicator != null) {
             loadingIndicator.setVisible(false);
@@ -47,17 +47,14 @@ public class HomepageUtenteBoundary {
     }
 
     private void initializeSearchFiltersFromDb() {
-        // Popola i ComboBox usando BarraDiRicercaDao
         com.progetto.Entity.entityDao.BarraDiRicercaDao dao = new com.progetto.Entity.entityDao.BarraDiRicercaDao();
         categoryComboBox.getItems().clear();
         frequencyComboBox.getItems().clear();
-        // Categoria
         categoryComboBox.getItems().add("Tutte le categorie");
         for (String cat : dao.Categorie()) {
             categoryComboBox.getItems().add(cat);
         }
         categoryComboBox.setValue("Tutte le categorie");
-        // Frequenza
         frequencyComboBox.getItems().add("Tutte le frequenze");
         for (String freq : dao.CeraEnumFrequenza()) {
             frequencyComboBox.getItems().add(freq);

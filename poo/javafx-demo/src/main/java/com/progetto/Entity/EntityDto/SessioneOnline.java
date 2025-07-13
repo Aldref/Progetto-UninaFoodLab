@@ -4,7 +4,6 @@ import java.time.LocalTime;
 
 public class SessioneOnline extends Sessione {
 
-    // No-arg constructor for DAO usage
     public SessioneOnline() {
         super(null, null, null, null, 0);
         this.Applicazione = null;

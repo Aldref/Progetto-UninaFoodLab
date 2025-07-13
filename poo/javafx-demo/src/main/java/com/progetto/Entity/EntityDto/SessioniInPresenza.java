@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 public class SessioniInPresenza extends Sessione {
 
-    // No-arg constructor for DAO usage
     public SessioniInPresenza() {
         super(null, null, null, null, 0);
         this.citta = null;

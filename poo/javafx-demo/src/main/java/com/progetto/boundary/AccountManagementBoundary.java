@@ -33,7 +33,6 @@ public class AccountManagementBoundary {
         controller.initialize();
     }
 
-    // Metodi per delegare al controller
     @FXML
     private void changePhoto(ActionEvent event) {
         controller.changePhoto();
@@ -112,7 +111,6 @@ public class AccountManagementBoundary {
         if (propicPath != null && !propicPath.isEmpty()) {
             File imgFile = new File("src/main/resources/" + propicPath);
             if (!imgFile.exists()) {
-                // Prova anche solo con il path passato (caso assoluto, fallback)
                 imgFile = new File(propicPath);
             }
             if (imgFile.exists()) {

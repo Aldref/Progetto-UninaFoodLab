@@ -10,12 +10,46 @@ public class GraficoChef {
     private int numeroSessioniInPresenza;
     private int numerosessionitelematiche;
 
+    public GraficoChef(int numeroMassimo,float Media,int NumeroMinimo,int NumeriCorsi,int numeroSessioniInPresenza,int numerosessionitelematiche){
+        this.numeroMassimo=numeroMassimo;
+        this.Media=(float) ((int) (Media * 10)) / 10;;
+        this.NumeroMinimo=NumeroMinimo;
+        this.NumeriCorsi=NumeriCorsi;
+        this.numeroSessioniInPresenza=numeroSessioniInPresenza;
+        this.numerosessionitelematiche=numerosessionitelematiche;
+        
+    }
+
     public GraficoChef(){
         numeroMassimo=0;
         Media=0;
         NumeroMinimo=0;
     }
-    // Getter e Setter aggiuntivi
+
+    public int getNumeroMassimo() {
+        return numeroMassimo;
+    }
+
+    public void setNumeroMassimo(int numeroMassimo) {
+        this.numeroMassimo = numeroMassimo;
+    }
+
+    public int getNumeroMinimo() {
+        return NumeroMinimo;
+    }
+
+    public void setNumeroMinimo(int numeroMinimo) {
+        this.NumeroMinimo = numeroMinimo;
+    }
+
+    public float getMedia() {
+        return Media;
+    }
+
+    public void setMedia(float media) {
+        this.Media = (float) ((int) (media * 10)) / 10;
+    }
+
     public int getNumeriCorsi() {
         return NumeriCorsi;
     }
@@ -34,39 +68,4 @@ public class GraficoChef {
     public void setNumerosessionitelematiche(int numerosessionitelematiche) {
         this.numerosessionitelematiche = numerosessionitelematiche;
     }
-
-public GraficoChef(int numeroMassimo,float Media,int NumeroMinimo,int NumeriCorsi,int numeroSessioniInPresenza,int numerosessionitelematiche){
-    this.numeroMassimo=numeroMassimo;
-    this.Media=(float) ((int) (Media * 10)) / 10;;
-    this.NumeroMinimo=NumeroMinimo;
-    this.NumeriCorsi=NumeriCorsi;
-    this.numeroSessioniInPresenza=numeroSessioniInPresenza;
-    this.numerosessionitelematiche=numerosessionitelematiche;
-    
-}
-
-
-public int getNumeroMassimo() {
-    return numeroMassimo;
-}
-
-public void setNumeroMassimo(int numeroMassimo) {
-    this.numeroMassimo = numeroMassimo;
-}
-
-public int getNumeroMinimo() {
-    return NumeroMinimo;
-}
-
-public void setNumeroMinimo(int numeroMinimo) {
-    this.NumeroMinimo = numeroMinimo;
-}
-
-public float getMedia() {
-    return Media;
-}
-
-public void setMedia(float media) {
-    this.Media = (float) ((int) (media * 10)) / 10;
-}
 }

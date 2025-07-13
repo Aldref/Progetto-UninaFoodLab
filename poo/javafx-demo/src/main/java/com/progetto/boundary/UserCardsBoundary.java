@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import com.progetto.Entity.EntityDto.CartaDiCredito;
+import java.util.List;
 
 public class UserCardsBoundary {
 
@@ -39,15 +40,11 @@ public class UserCardsBoundary {
     @FXML private Label expiryErrorLabel;
     @FXML private Label cvvErrorLabel;
 
-    // Flags per evitare ricorsione nei listener
     private boolean updatingCardNumber = false;
     private boolean updatingExpiry = false;
     private boolean updatingCvv = false;
 
-    // RIMUOVO IL SECONDO METODO initialize (duplicato) introdotto dalla patch precedente
-
-
-    public void setCards(java.util.List<CartaDiCredito> cardList) {
+    public void setCards(List<CartaDiCredito> cardList) {
         cards.setAll(cardList);
         updateCardsView();
     }
@@ -55,11 +52,10 @@ public class UserCardsBoundary {
     @FXML
     public void initialize() {
         controller = new UserCardsController(this);
-        controller.loadCardsFromDb(); // Carica sempre le carte dal DB all'apertura della pagina
+        controller.loadCardsFromDb(); 
         cardsListView.setItems(cards);
         updateCardsView();
         setupFieldListeners();
-        // Custom cell factory: bordo azzurro SOLO sulla carta selezionata, scompare se deselezionata
         cardsListView.setCellFactory(listView -> new ListCell<CartaDiCredito>() {
             private HBox row;
 
@@ -89,7 +85,6 @@ public class UserCardsBoundary {
                     row = new HBox(12, info, badge);
                     row.getStyleClass().add("saved-card-item");
 
-                    // Stato iniziale selezione
                     updateRowSelected(isSelected());
 
                     setGraphic(row);
@@ -132,6 +127,7 @@ public class UserCardsBoundary {
         cardNumberField.textProperty().addListener((obs, oldText, newText) -> {
             if (updatingCardNumber) return;
             updatingCardNumber = true;
+            int oldCaret = cardNumberField.getCaretPosition();
             String digits = newText.replaceAll("[^0-9]", "");
             if (digits.length() > 16) digits = digits.substring(0, 16);
             StringBuilder formatted = new StringBuilder();
@@ -139,11 +135,12 @@ public class UserCardsBoundary {
                 if (i > 0 && i % 4 == 0) formatted.append(" ");
                 formatted.append(digits.charAt(i));
             }
-            if (!cardNumberField.getText().equals(formatted.toString())) {
-                cardNumberField.setText(formatted.toString());
-                cardNumberField.positionCaret(formatted.length());
+            String formattedText = formatted.toString();
+            if (!newText.equals(formattedText)) {
+                cardNumberField.setText(formattedText);
+                int caretPos = Math.max(0, Math.min(formattedText.length(), oldCaret));
+                cardNumberField.positionCaret(caretPos);
             }
-            // Validazione tipo carta
             if (digits.length() >= 4 && !CardValidator.isValidCardType(digits)) {
                 showFieldError("cardNumber", "Tipo di carta non supportato. Accettiamo solo Visa e Mastercard");
             } else {
@@ -155,11 +152,13 @@ public class UserCardsBoundary {
         cvvField.textProperty().addListener((obs, oldText, newText) -> {
             if (updatingCvv) return;
             updatingCvv = true;
+            int oldCaret = cvvField.getCaretPosition();
             String filtered = newText.replaceAll("[^0-9]", "");
             if (filtered.length() > 4) filtered = filtered.substring(0, 4);
-            if (!cvvField.getText().equals(filtered)) {
+            if (!newText.equals(filtered)) {
                 cvvField.setText(filtered);
-                cvvField.positionCaret(filtered.length());
+                int caretPos = Math.max(0, Math.min(filtered.length(), oldCaret));
+                cvvField.positionCaret(caretPos);
             }
             updatingCvv = false;
         });
@@ -167,17 +166,29 @@ public class UserCardsBoundary {
         expiryField.textProperty().addListener((obs, oldText, newText) -> {
             if (updatingExpiry) return;
             updatingExpiry = true;
-            String filtered = newText.replaceAll("[^0-9]", "");
-            if (filtered.length() > 4) filtered = filtered.substring(0, 4);
-            StringBuilder formatted = new StringBuilder(filtered);
-            if (filtered.length() > 2) {
-                formatted.insert(2, "/");
+            String digits = newText.replaceAll("[^0-9]", "");
+            if (digits.length() > 4) digits = digits.substring(0, 4);
+
+            String formattedText;
+            if (digits.length() == 0) {
+                formattedText = "";
+            } else if (digits.length() <= 2) {
+                formattedText = digits;
+            } else {
+                formattedText = digits.substring(0, 2) + "/" + digits.substring(2);
             }
-            if (!expiryField.getText().equals(formatted.toString())) {
-                expiryField.setText(formatted.toString());
-                expiryField.positionCaret(formatted.length());
+
+            if (!newText.equals(formattedText)) {
+                expiryField.setText(formattedText);
+                int caretPos = expiryField.getText().length();
+                javafx.application.Platform.runLater(() -> {
+                    try {
+                        expiryField.positionCaret(caretPos);
+                    } catch (Exception ignored) {}
+                });
             }
-            if (formatted.length() == 5 && !CardValidator.isValidExpiryDate(formatted.toString())) {
+
+            if (formattedText.length() == 5 && !CardValidator.isValidExpiryDate(formattedText)) {
                 showFieldError("expiry", "Data di scadenza non valida");
             } else {
                 clearAllErrors();
@@ -193,15 +204,10 @@ public class UserCardsBoundary {
     }
 
     @FXML
-    private void showAddCardDialog() {
-        // ...come già presente...
-    }
-
-    @FXML
     private void deleteSelectedCard() {
         CartaDiCredito selected = cardsListView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            controller.deleteCard(selected); // Passa direttamente l'oggetto carta
+            controller.deleteCard(selected); 
         }
     }
 
@@ -219,19 +225,17 @@ public class UserCardsBoundary {
         clearAllErrors();
     }
 
-    // Utility methods
     public void clearAllErrors() {
         cardHolderErrorLabel.setVisible(false);
         cardNumberErrorLabel.setVisible(false);
         expiryErrorLabel.setVisible(false);
         cvvErrorLabel.setVisible(false);
     }
-    public void showSuccessMessage(String msg) {
-        // Implementa se vuoi mostrare un messaggio di successo
-    }
+
     public void clearFieldsFromController() {
         clearFields();
     }
+
     public void showFieldError(String field, String msg) {
         switch (field) {
             case "cardHolder":
@@ -251,6 +255,14 @@ public class UserCardsBoundary {
                 cvvErrorLabel.setVisible(true);
                 break;
         }
+    }
+
+    public void showSuccessMessage(String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Successo");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 
     public String getCardHolderName() {

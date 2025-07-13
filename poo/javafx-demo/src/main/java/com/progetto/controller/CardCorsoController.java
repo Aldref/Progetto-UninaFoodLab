@@ -2,6 +2,7 @@ package com.progetto.controller;
 
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.boundary.PaymentPageBoundary;
+import com.progetto.boundary.EditCourseBoundary;
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.Sessione;
 import com.progetto.Entity.entityDao.CorsoDao;
@@ -45,7 +46,6 @@ public class CardCorsoController {
     private boolean isEnrolledPage = false;
     private boolean isChefMode = false;
 
-    // Corso associato a questa card
     private Corso corso;
 
     public CardCorsoController(Button buyButton, Button editButton, HBox buttonsBox, VBox priceSection,
@@ -74,7 +74,6 @@ public class CardCorsoController {
 
     }
 
-    // Imposta il corso associato a questa card
     public void setCorso(Corso corso) {
         this.corso = corso;
     }
@@ -210,13 +209,12 @@ public class CardCorsoController {
         }
     }
 
-    public void handlePurchase(com.progetto.Entity.EntityDto.Corso corsoSelezionato) {
+    public void handlePurchase(Corso corsoSelezionato) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/paymentpage.fxml"));
             Parent root = loader.load();
             PaymentPageBoundary paymentBoundary = loader.getController();
-            paymentBoundary.setSelectedCorso(corsoSelezionato); // Passa il corso selezionato
-            // Usa lo stage corrente, non uno nuovo!
+            paymentBoundary.setSelectedCorso(corsoSelezionato);
             Stage stage = (Stage) buyButton.getScene().getWindow();
             stage.setScene(new javafx.scene.Scene(root));
             stage.setTitle("UninaFoodLab - Pagamento");
@@ -231,7 +229,7 @@ public class CardCorsoController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/editcourse.fxml"));
             Parent root = loader.load();
-            com.progetto.boundary.EditCourseBoundary boundary = loader.getController();
+            EditCourseBoundary boundary = loader.getController();
             if (corso != null) {
                 System.out.println("[DEBUG] CardCorsoController.handleEdit: corso.getId_Corso() = " + corso.getId_Corso());
                 boundary.setCourseId(corso.getId_Corso());
@@ -254,11 +252,9 @@ public class CardCorsoController {
                 showAlert("Errore", "Corso non impostato per questa card.");
                 return;
             }
-            // Recupera le sessioni reali dal DAO
             CorsoDao corsoDao = new CorsoDao();
             ArrayList<Sessione> sessioni = corsoDao.recuperoSessioniPerCorso(corso);
             Stage stage = (Stage) calendarButton.getScene().getWindow();
-            // Passa le sessioni reali al dialog del calendario
             SceneSwitcher.showCalendarDialog(stage, sessioni, isChefMode);
         } catch (Exception e) {
             e.printStackTrace();

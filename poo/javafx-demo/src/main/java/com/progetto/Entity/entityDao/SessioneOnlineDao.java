@@ -15,10 +15,7 @@ import com.progetto.jdbc.ConnectionJavaDb;
 import com.progetto.jdbc.SupportDb;
 
 public class SessioneOnlineDao extends SessioniDao {
-    /**
-     * Aggiorna una sessione telematica esistente nel database.
-     * Aggiorna applicazione, codicechiamata, orario, durata, giorno, descrizione per la sessione specificata.
-     */
+
     public void aggiornaSessione(SessioneOnline sessione) {
         String query = "UPDATE sessione_telematica SET applicazione = ?, codicechiamata = ?, orario = ?, durata = ?, giorno = ?::giorno, descrizione = ? WHERE idsessionetelematica = ?";
         Connection conn = null;
@@ -40,16 +37,13 @@ public class SessioneOnlineDao extends SessioniDao {
             ps.setInt(7, sessione.getId_Sessione());
             ps.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("[ERRORE] Errore SQL in aggiornaSessione (SessioneOnlineDao): " + e.getMessage());
+            e.printStackTrace();
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
         }
     }
 
-    /**
-     * Restituisce tutte le sessioni telematiche associate a un corso.
-     */
     public static ArrayList<SessioneOnline> getSessioniByCorso(int idCorso) {
         ArrayList<SessioneOnline> sessioni = new ArrayList<>();
         String query = "SELECT * FROM sessione_telematica WHERE idcorso = ? ORDER BY data, orario";
@@ -73,11 +67,10 @@ public class SessioneOnlineDao extends SessioniDao {
                 sessione.setCodicechiamata(rs.getString("codicechiamata"));
                 sessione.setDescrizione(rs.getString("descrizione"));
                 sessione.setGiorno(rs.getString("giorno"));
-                // Chef non caricato qui (richiedere join se necessario)
                 sessioni.add(sessione);
             }
         } catch (SQLException e) {
-            System.err.println("[ERRORE] Errore SQL in getSessioniByCorso: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
@@ -98,7 +91,6 @@ public class SessioneOnlineDao extends SessioniDao {
             ps.setString(2, ((SessioneOnline) sessione).getCodicechiamata());
             ps.setDate(3, java.sql.Date.valueOf(sessione.getData()));
             ps.setTime(4, java.sql.Time.valueOf(sessione.getOrario()));
-            // Calcola la durata in ore intere (1-8) e passa come interval
             LocalTime durata = sessione.getDurata();
             int durataOre = Math.max(1, Math.min(8, durata.getHour()));
             PGInterval interval = new PGInterval(0, 0, 0, durataOre, 0, 0);
@@ -110,7 +102,7 @@ public class SessioneOnlineDao extends SessioniDao {
             ps.setInt(9, sessione.getChef().getId_Chef());
             ps.executeUpdate();
         } catch (SQLException e) {
-            // Log error if needed (no debug print)
+            e.printStackTrace();
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);

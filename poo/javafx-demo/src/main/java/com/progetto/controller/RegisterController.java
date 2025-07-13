@@ -88,21 +88,15 @@ public class RegisterController {
         return valid ? null : messaggioErrore.toString();
     }
 
-    /**
-     * Registra un utente nel database in base al tipo selezionato.
-     * @return String messaggio di esito (null se tutto ok, altrimenti errore)
-     */
     public String registraUtente(
         String nome, String cognome, String email, String password, String genere,
         String descrizione, String anniEsperienza, boolean utenteSelezionato,
         boolean chefSelezionato, LocalDate dataNascita
     ) {
         if (chefSelezionato && utenteSelezionato) {
-            // Caso anomalo: entrambi selezionati
             return "Seleziona solo un tipo di account.";
         }
         if (chefSelezionato) {
-            // Registrazione Chef
             try {
                 int anniExp = Integer.parseInt(anniEsperienza);
                 Chef chef = new Chef(
@@ -130,13 +124,12 @@ public class RegisterController {
                 return "Errore durante la registrazione dello chef: " + (msg != null ? msg : "Errore sconosciuto");
             }
         } else if (utenteSelezionato) {
-            // Registrazione Utente Visitatore
             try {
                 UtenteVisitatore utente = new UtenteVisitatore(
                     nome, cognome, email, password, dataNascita
                 );
                 utenteVisitatoreDao.RegistrazioneUtente(utente);
-                return null; // Successo
+                return null; 
             } catch (Exception e) {
                 String msg = e.getMessage();
                 if (msg != null && msg.toLowerCase().contains("duplicate")) {
@@ -153,7 +146,6 @@ public class RegisterController {
         try {
             SceneSwitcher.switchScene((javafx.stage.Stage) window, "/fxml/loginpage.fxml", "UninaFoodLab - Login");
         } catch (IOException e) {
-            // TODO: handle exception appropriately (logging or user feedback)
         }
     }
 }

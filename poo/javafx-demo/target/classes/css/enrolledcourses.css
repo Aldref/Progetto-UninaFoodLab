@@ -21,4 +21,10 @@
     -fx-font-style: italic;
 }
 
+.no-courses-label {
+    -fx-font-size: 22px;
+    -fx-text-fill: #888;
+    -fx-font-weight: bold;
+}
+
 

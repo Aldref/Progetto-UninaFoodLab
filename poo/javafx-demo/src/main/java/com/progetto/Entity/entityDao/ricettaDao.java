@@ -13,7 +13,6 @@ import com.progetto.jdbc.SupportDb;
 
 public class ricettaDao {
 
-    // Rimuove l'associazione tra una ricetta e un ingrediente (tabella PREPARAZIONEINGREDIENTE)
     public void rimuoviAssociazioneIngrediente(Ricetta ricetta, Ingredienti ingrediente) {
         String query = "DELETE FROM PREPARAZIONEINGREDIENTE WHERE IdRicetta = ? AND IdIngrediente = ?";
         Connection conn = null;

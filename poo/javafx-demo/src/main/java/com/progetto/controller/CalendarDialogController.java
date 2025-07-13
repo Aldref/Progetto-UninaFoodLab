@@ -44,10 +44,8 @@ public class CalendarDialogController {
     private VBox selectedDayCell;
 
     private List<Sessione> userSessions = new ArrayList<>();
-    // Permette di impostare le sessioni reali dal boundary
     public void setSessioni(List<Sessione> sessioni) {
         this.userSessions = sessioni != null ? sessioni : new ArrayList<>();
-        // Aggiorna la mappa delle lezioni se già inizializzato
         if (lessonsMap != null) {
             lessonsMap.clear();
             if (userSessions != null && !userSessions.isEmpty()) {
@@ -80,15 +78,12 @@ public class CalendarDialogController {
         lessonsMap = new HashMap<>();
         if (userSessions != null && !userSessions.isEmpty()) {
             loadUserSessions();
-        } else {
-            loadSampleLessons();
         }
         updateCalendar();
         selectedDateLabel.setText("Clicca su un giorno per vedere le lezioni");
         lessonDetailsArea.setVisible(true);
     }
 
-    // Popola il calendario con le sessioni reali dell'utente
     private void loadUserSessions() {
         for (Sessione sessione : userSessions) {
             LocalDate data = null;
@@ -101,22 +96,15 @@ public class CalendarDialogController {
                 try {
                     data = LocalDate.parse((String) rawData);
                 } catch (Exception e) {
-                    System.out.println("Data sessione non parsabile: " + rawData);
                 }
             }
             if (data != null) {
                 lessonsMap.computeIfAbsent(data, k -> new ArrayList<>()).add(sessione);
             } else {
-                System.out.println("Sessione ignorata (data non valida): " + sessione);
             }
         }
     }
 
-    // Dati fittizi, facilmente sostituibili con dati da DB
-    private void loadSampleLessons() {
-        // Metodo placeholder: non aggiunge più lezioni fittizie, solo per compatibilità
-        // lessonsMap.clear();
-    }
 
     private void updateCalendar() {
         String monthYear = currentMonth.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN) + " " + currentMonth.getYear();
@@ -162,9 +150,9 @@ public class CalendarDialogController {
                 String tipo = "";
                 String orario = sessione.getOrario() != null ? sessione.getOrario().toString() : "";
                 if (sessione instanceof SessioniInPresenza) {
-                    tipo = "[P]"; // Presenza
+                    tipo = "[P]"; 
                 } else if (sessione instanceof SessioneOnline) {
-                    tipo = "[T]"; // Telematica
+                    tipo = "[T]";
                 }
                 Label lessonLabel = new Label(tipo + " " + orario);
                 lessonLabel.getStyleClass().add("lesson-indicator");
@@ -232,7 +220,6 @@ public class CalendarDialogController {
         durationLabel.getStyleClass().add("detail-label");
         durationBox.getChildren().addAll(durationIcon, durationLabel);
 
-        // Conferma presenza button logic
         Button confermaBtn = null;
         Label confermaMsg = null;
 
@@ -278,8 +265,6 @@ public class CalendarDialogController {
                 }
             }
 
-            // Conferma presenza button logic
-            // Only for UtenteVisitatore, not chef, and if not already confirmed
             UtenteVisitatore user = UtenteVisitatore.loggedUser;
             if (!isChef && user != null) {
                 boolean isIscritto = false;
@@ -345,7 +330,6 @@ public class CalendarDialogController {
             detailsContainer.getChildren().addAll(startTimeBox, durationBox, appBox, codeBox);
         }
 
-        // Titolo/descrizione in alto: tipo e nome ricetta o app
         String descrizione;
         if (sessione instanceof SessioniInPresenza) {
             SessioniInPresenza s = (SessioniInPresenza) sessione;

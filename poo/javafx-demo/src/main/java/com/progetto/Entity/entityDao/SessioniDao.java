@@ -29,15 +29,12 @@ abstract public class SessioniDao {
             rs = ps.executeQuery();
             return rs.next();
         } catch (SQLException e) {
-          // gestisci errore 
+            e.printStackTrace();
         } finally {
                 dbu.closeAll(conn, ps, rs); 
         }
         return false;
     }
 
-
-    
-
-        abstract public void  MemorizzaSessione(Sessione sessione);
-    }
+    abstract public void  MemorizzaSessione(Sessione sessione);
+}

@@ -27,16 +27,6 @@ public class CorsoDao{
         conn = ConnectionJavaDb.getConnection();
         ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
-        System.out.println("[DEBUG] Inserimento corso:");
-        System.out.println("  Nome: " + corso.getNome());
-        System.out.println("  Descrizione: " + corso.getDescrizione());
-        System.out.println("  DataInizio: " + corso.getDataInizio());
-        System.out.println("  DataFine: " + corso.getDataFine());
-        System.out.println("  Frequenza: " + corso.getFrequenzaDelleSessioni());
-        System.out.println("  MaxPersone: " + corso.getMaxPersone());
-        System.out.println("  Prezzo: " + corso.getPrezzo());
-        System.out.println("  Propic: " + corso.getUrl_Propic());
-
         ps.setString(1, corso.getNome());
         ps.setString(2, corso.getDescrizione());
         ps.setDate(3, java.sql.Date.valueOf(corso.getDataInizio()));
@@ -80,7 +70,7 @@ public class CorsoDao{
 
             if (rs.next()) {
                 corso = new Corso(rs.getString("Nome"), rs.getString("Descrizione"), rs.getDate("DataInizio").toLocalDate(), rs.getDate("DataFine").toLocalDate(), rs.getString("FrequenzaDelleSessioni"), rs.getInt("MaxPersone"), rs.getFloat("Prezzo"), rs.getString("Propic"));
-                corso.setId_Corso(rs.getInt("idCorso")); // nome corretto dal DB
+                corso.setId_Corso(rs.getInt("idCorso")); 
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -250,12 +240,8 @@ public class CorsoDao{
                   rs.getString("descrizione"),
                   rs.getInt("idsessionepresenza") 
               );
-              // FIX: Associa idCorso alla sessione recuperata
               sessione.setId_Corso(corso.getId_Corso());
-              // Carica le ricette collegate a questa sessione
               sessione.setRicette(new SessioneInPresenzaDao().recuperaRicetteSessione(sessione));
-              // Se vuoi anche i partecipanti, decommenta la riga sotto
-              // sessione.setCorsoList(new SessioneInPresenzaDao().recuperaPartecipantiSessione(sessione));
               sessioni.add(sessione);
           }
       } catch (SQLException e) {

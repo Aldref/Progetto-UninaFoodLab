@@ -16,7 +16,6 @@ public class UtenteVisitatore extends Utente {
     public void setCarte(List<CartaDiCredito> carte) {
         this.carte = carte;
     }
-    // Utente loggato attuale (per sessione)
     public static UtenteVisitatore loggedUser = null;
     private int id_UtenteVisitatore;
     private UtenteVisitatoreDao utenteVisitatoreDao;
@@ -30,10 +29,7 @@ public class UtenteVisitatore extends Utente {
         super("", "", "", "",  null);
         this.utenteVisitatoreDao = new UtenteVisitatoreDao();
     }
-   
     
-    
-
     public int getId_UtenteVisitatore() {
         return id_UtenteVisitatore;
     }

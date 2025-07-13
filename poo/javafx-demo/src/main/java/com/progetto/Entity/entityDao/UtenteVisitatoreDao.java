@@ -16,7 +16,7 @@ import com.progetto.jdbc.SupportDb;
 import com.progetto.utils.ErrorCaricamentoPropic;
 
 public class UtenteVisitatoreDao extends UtenteDao {
-   
+
     @Override
     public void RegistrazioneUtente(Utente utenteVisitatore) {
         String query = "INSERT INTO Partecipante (Nome, Cognome, Email, Password,  DataDiNascita) VALUES (?, ?, ?, ?, ?)";
@@ -41,7 +41,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
                 ((UtenteVisitatore)utenteVisitatore).setId_UtenteVisitatore(generatedKeys.getInt(1));
             }
         } catch (SQLException sqe) {
-            //gestire errore
+            sqe.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, generatedKeys);
         }
@@ -71,7 +71,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
                 ((UtenteVisitatore) utenteVisitatore).setUrl_Propic(rs.getString("Propic"));
             }
         } catch (SQLException sqe) {
-            //gestire errore
+            sqe.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
@@ -91,16 +91,13 @@ public class UtenteVisitatoreDao extends UtenteDao {
             java.sql.Date sqlData = java.sql.Date.valueOf(DataRichiesta);
             int idUtente = ((UtenteVisitatore) utente1).getId_UtenteVisitatore();
             int idCorso = corso.getId_Corso();
-            // DEBUG: stampa id utente e corso
             System.out.println("[DEBUG] AssegnaCorso - idUtente: " + idUtente + ", idCorso: " + idCorso);
             ps.setInt(1, idUtente);
             ps.setInt(2, idCorso);
             ps.setDate(3, sqlData);
             ps.setDouble(4, corso.getPrezzo());
             ps.execute();
-            // DEBUG: verifica inserimento
             boolean iscritto = isUtenteIscrittoAlCorso(idUtente, idCorso);
-            System.out.println("[DEBUG] Dopo inserimento, isUtenteIscrittoAlCorso: " + iscritto);
         } catch (SQLException sqe) {
             sqe.printStackTrace();
         } finally {
@@ -108,9 +105,8 @@ public class UtenteVisitatoreDao extends UtenteDao {
             dbu.closeConnection(conn);
         }
     }
-    // Verifica se l'utente ha già confermato la presenza a una sessione in presenza
+
     public boolean haGiaConfermatoPresenza(int idSessione, int idUtente) {
-        // Usa i nomi delle colonne corretti secondo lo schema reale
         String query = "SELECT 1 FROM ADESIONE_SESSIONEPRESENZA WHERE idsessionepresenza = ? AND idpartecipante = ? AND conferma = TRUE";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -131,9 +127,8 @@ public class UtenteVisitatoreDao extends UtenteDao {
         }
         return false;
     }
-     
+
     public void partecipaAllaSessioneDalVivo(SessioniInPresenza sessione,UtenteVisitatore UtenteVisitatore) {
-        // Correggi i nomi delle colonne secondo lo schema reale del database
         String query = "INSERT INTO ADESIONE_SESSIONEPRESENZA (idsessionepresenza, idpartecipante, conferma) VALUES (?, ?, TRUE)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
@@ -153,7 +148,6 @@ public class UtenteVisitatoreDao extends UtenteDao {
         }
     }
 
-    // Verifica se l'utente è iscritto al corso (pagamento effettuato)
     public boolean isUtenteIscrittoAlCorso(int idUtente, int idCorso) {
         String query = "SELECT 1 FROM RICHIESTAPAGAMENTO WHERE idpartecipante = ? AND idcorso = ? AND statopagamento = 'Pagato'";
         SupportDb dbu = new SupportDb();
@@ -169,7 +163,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
             boolean result = rs.next();
             return result;
         } catch (SQLException e) {
-            // gestire errore
+            e.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
@@ -201,13 +195,13 @@ public class UtenteVisitatoreDao extends UtenteDao {
 
         ps.executeUpdate();
     } catch (SQLException e) {
-       // Gestire l'errore
+       e.printStackTrace();
     } finally {
         dbu.closeStatement(ps);
         dbu.closeConnection(conn);
     }
 }
-    // Restituisce i corsi a cui l'utente NON è iscritto e che non sono pieni
+
     public void RecuperaCorsiNonIscritto(Utente utente) {
         String query = "SELECT C.*, CH.Nome AS chef_nome, CH.Cognome AS chef_cognome, CH.AnniDiEsperienza AS chef_esperienza " +
                 "FROM CORSO C " +
@@ -237,7 +231,6 @@ public class UtenteVisitatoreDao extends UtenteDao {
                         (float) rs.getDouble("Prezzo"),
                         rs.getString("Propic"));
                 corso.setId_Corso(rs.getInt("IdCorso"));
-                // Set info chef se disponibili
                 corso.setChefNome(rs.getString("chef_nome"));
                 corso.setChefCognome(rs.getString("chef_cognome"));
                 corso.setChefEsperienza(rs.getInt("chef_esperienza"));
@@ -246,7 +239,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
                 Corsi.add(corso);
             }
         } catch (SQLException sqe) {
-            //gestire errore
+            sqe.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
@@ -283,7 +276,6 @@ public class UtenteVisitatoreDao extends UtenteDao {
                     (float) rs.getDouble("Prezzo"),
                     rs.getString("Propic"));
                 corso.setId_Corso(rs.getInt("IdCorso"));
-                // Set info chef se disponibili
                 corso.setChefNome(rs.getString("chef_nome"));
                 corso.setChefCognome(rs.getString("chef_cognome"));
                 corso.setChefEsperienza(rs.getInt("chef_esperienza"));
@@ -292,7 +284,7 @@ public class UtenteVisitatoreDao extends UtenteDao {
                 Corsi.add(corso);
             }
         } catch (SQLException sqe) {
-            //gestire errore
+            sqe.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, rs);
         }
@@ -310,13 +302,13 @@ public class UtenteVisitatoreDao extends UtenteDao {
             ps.setInt(1, Integer.parseInt(carta.getIdCarta()));
             ps.executeUpdate();
         } catch (SQLException sqe) {
-            // gestire errore
+            sqe.printStackTrace();
         } finally {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
         }
     }
-       
+
     public void aggiungiCartaAPossiede(UtenteVisitatore utente, CartaDiCredito carta) {
         String query = "INSERT INTO POSSIEDE (IdUtente, IdCarta) VALUES (?, ?)";
         SupportDb dbu = new SupportDb();
@@ -335,7 +327,6 @@ public class UtenteVisitatoreDao extends UtenteDao {
             dbu.closeConnection(conn);
         }
     }
- 
 
     @Override
     public String caricaPropic(Utente utente) throws ErrorCaricamentoPropic {
@@ -359,14 +350,13 @@ public class UtenteVisitatoreDao extends UtenteDao {
                 return(RS.getString("Propic"));
             }
         } catch (SQLException e) {
-           //
+            e.printStackTrace();
         } finally {
             dbu.closeAll(conn, ps, RS);
         }
         return null;
     }
 
-    // Overload per login: determina tipo di account da email e password
     public String TipoDiAccount(String email, String password) {
         UtenteVisitatore utente = new UtenteVisitatore();
         utente.setEmail(email);

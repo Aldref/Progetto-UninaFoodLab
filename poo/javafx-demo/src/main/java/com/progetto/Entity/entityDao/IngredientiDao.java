@@ -11,7 +11,6 @@ import com.progetto.jdbc.SupportDb;
 
 public class IngredientiDao {
 
-    // Restituisce true se l'ingrediente è usato in almeno una ricetta (tabella PREPARAZIONEINGREDIENTE)
     public boolean isIngredienteUsatoAltrove(Ingredienti ingrediente) {
         String query = "SELECT COUNT(*) as cnt FROM PREPARAZIONEINGREDIENTE WHERE IdIngrediente = ?";
         Connection conn = null;
@@ -36,7 +35,6 @@ public class IngredientiDao {
         return usato;
     }
 
-    // Alias per cancellaingrediente (eliminaIngrediente)
     public void eliminaIngrediente(Ingredienti ingrediente) {
         cancellaingrediente(ingrediente);
     }
@@ -131,5 +129,4 @@ public class IngredientiDao {
             dbu.closeAll(conn, ps, rs);
         }
     }
-    // la quantita totale di un ingrediente si aggiorna in automatico quando si associa un ingrediente a una ricetta
 }

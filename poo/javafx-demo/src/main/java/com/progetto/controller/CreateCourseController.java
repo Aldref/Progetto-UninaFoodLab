@@ -1,5 +1,6 @@
 package com.progetto.controller;
 
+
 import com.progetto.Entity.entityDao.BarraDiRicercaDao;
 import com.progetto.Entity.entityDao.CorsoDao;
 import com.progetto.Entity.entityDao.ricettaDao;
@@ -12,12 +13,13 @@ import com.progetto.Entity.EntityDto.SessioneOnline;
 import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.Entity.entityDao.SessioneOnlineDao;
 import com.progetto.boundary.LogoutDialogBoundary;
+import com.progetto.boundary.CreateCourseBoundary;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
 import com.progetto.Entity.EntityDto.Chef;
+import javafx.scene.image.Image;
 import com.progetto.Entity.entityDao.ChefDao;
 import com.progetto.Entity.entityDao.SessioneInPresenzaDao;
-import com.progetto.boundary.CreateCourseBoundary;
 import com.progetto.jdbc.ConnectionJavaDb;
 
 import javafx.animation.KeyFrame;
@@ -60,52 +62,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import com.progetto.boundary.CreateCourseBoundary;
-import com.progetto.jdbc.ConnectionJavaDb;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.time.LocalDate;
+import java.util.function.Function;
 import java.util.*;
-import java.util.regex.Pattern;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.Files;
+import javafx.fxml.FXMLLoader;
 
 public class CreateCourseController {
-    // Lista delle sessioni (sia in presenza che online/ibride)
     private final List<Sessione> sessioni = new ArrayList<>();
-
-    // --- Hybrid validation binding for manual invalidation ---
     private BooleanBinding detailsValidBinding;
-    
-    // === RIFERIMENTO ALLA BOUNDARY ===
-    private com.progetto.boundary.CreateCourseBoundary boundary;
-    
-    // === CONSTANTS ===
+    private CreateCourseBoundary boundary;
     private static final Pattern DURATION_PATTERN = Pattern.compile("\\d+");
     private static final Pattern CAP_PATTERN = Pattern.compile("\\d{5}");
     private static final Pattern PRICE_PATTERN = Pattern.compile("\\d*(\\.\\d{0,2})?");
-    
-    // === UI COMPONENTS ===
-    // Basic fields
     private final TextField courseNameField, priceField;
-    private final TextArea descriptionArea; // Cambiato da TextField a TextArea
+    private final TextArea descriptionArea; 
     private final DatePicker startDatePicker, endDatePicker;
     private final ComboBox<String> frequencyComboBox, lessonTypeComboBox;
     private final Spinner<Integer> maxParticipantsSpinner;
@@ -113,42 +85,29 @@ public class CreateCourseController {
     private final ImageView chefProfileImageView;
     private final Label chefNameLabel;
     private final Button createButton;
-    
-    // Sections
     private final VBox presenceDetailsSection, onlineDetailsSection, recipesContainer;
-    
-    // Presence fields
     private final FlowPane dayOfWeekContainer;
     private final Spinner<Integer> presenceHourSpinner, presenceMinuteSpinner;
     private final TextField durationField, cityField, streetField, capField;
-    
-    // Online fields  
     private final ComboBox<String> applicationComboBox;
     private final TextField meetingCodeField;
     private final FlowPane onlineDayOfWeekContainer;
     private final Spinner<Integer> onlineHourSpinner, onlineMinuteSpinner;
     private final TextField onlineDurationField;
-    
-    // === HYBRID MODE SUPPORT ===
     private final VBox hybridDaysContainer;
     private final VBox hybridDetailsSection;
     private final Label hybridErrorLabel;
     private static final String[] WEEK_DAYS = {"Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"};
-
-    // === DATA ===
     private final Map<String, CheckBox> presenceDayCheckBoxes = new HashMap<>();
     private final Map<String, CheckBox> onlineDayCheckBoxes = new HashMap<>();
     private Label presenceDayInfoLabel, onlineDayInfoLabel;
-    // Per tenere traccia dell'ordine di selezione dei giorni
     private final List<String> presenceDaySelectionOrder = new ArrayList<>();
     private final List<String> onlineDaySelectionOrder = new ArrayList<>();
-    
-    // === CUISINE TYPE FIELDS ===
     private final ComboBox<String> cuisineTypeComboBox1;
     private final ComboBox<String> cuisineTypeComboBox2;
     private final Label cuisineTypeErrorLabel;
     
-    // === CONSTRUCTOR ===
+
     public CreateCourseController(
         TextField courseNameField, TextArea descriptionArea, 
         DatePicker startDatePicker, DatePicker endDatePicker,
@@ -201,57 +160,45 @@ public class CreateCourseController {
         this.cuisineTypeErrorLabel = cuisineTypeErrorLabel;
     }
 
-    // === INITIALIZATION ===
     public void initialize() {
         initializeData();
         setupUI();
         setupValidation();
-        // Non aggiungiamo ricette di default - verranno create quando necessario
     }
 
     private void initializeData() {
-        // Mostra nome e foto dello chef loggato
-        com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
+        Chef chef = Chef.loggedUser;
         if (chef != null && chefNameLabel != null) {
             chefNameLabel.setText(chef.getNome() + " " + chef.getCognome());
         }
         if (chef != null && chefProfileImageView != null && chef.getUrl_Propic() != null && !chef.getUrl_Propic().isEmpty()) {
             try {
-                javafx.scene.image.Image img = new javafx.scene.image.Image(chef.getUrl_Propic(), true);
+                Image img = new Image(chef.getUrl_Propic(), true);
                 chefProfileImageView.setImage(img);
             } catch (Exception e) {
-                // In caso di errore, lascia l'immagine di default
+                e.printStackTrace();
             }
         }
 
-        // Popola dropdown da database
         loadFrequencyOptions();
         loadLessonTypes();
         loadApplications();
 
-        // Popola giorni settimana da enum DB
         try {
             BarraDiRicercaDao dao = new BarraDiRicercaDao();
             java.util.List<String> giorni = dao.GiorniSettimanaEnum();
             ObservableList<String> giorniEnum = FXCollections.observableArrayList(giorni);
-            // Esempio: se hai ComboBox per i giorni, usali qui
-            // dayOfWeekComboBox.setItems(giorniEnum);
-            // onlineDayOfWeekComboBox.setItems(giorniEnum);
-            // Oppure aggiorna la UI dinamica dove serve
+
         } catch (Exception e) {
-            // debug print rimosso
+            e.printStackTrace();
         }
 
-        // Popola unità di misura da enum DB
         try {
             BarraDiRicercaDao dao = new BarraDiRicercaDao();
             java.util.List<String> unita = dao.GrandezzeDiMisura();
             ObservableList<String> unitaEnum = FXCollections.observableArrayList(unita);
-            // Esempio: se hai ComboBox per unità di misura ingredienti, usali qui
-            // ingredientUnitComboBox.setItems(unitaEnum);
-            // Oppure aggiorna la UI dinamica dove serve
         } catch (Exception e) {
-            // debug print rimosso
+            e.printStackTrace();
         }
     }
 
@@ -261,14 +208,12 @@ public class CreateCourseController {
         setupDatePickers();
         setupFieldValidators();
         setupEventListeners();
-        // Limite caratteri descrizione (min 1, max 60)
         descriptionArea.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal.length() > 60) {
                 descriptionArea.setText(newVal.substring(0, 60));
             }
         });
 
-        // Popola tipi di cucina dal DAO
         try {
             BarraDiRicercaDao dao = new BarraDiRicercaDao();
             java.util.List<String> categorie = dao.Categorie();
@@ -279,10 +224,9 @@ public class CreateCourseController {
             cuisineTypeComboBox2.setValue(null);
             cuisineTypeErrorLabel.setVisible(false);
         } catch (Exception e) {
-            // debug print rimosso
+            e.printStackTrace();
         }
 
-        // Limita durata presenza a 8 ore intere
         durationField.textProperty().addListener((obs, oldVal, newVal) -> {
             String filtered = newVal.replaceAll("[^\\d]", "");
             if (!filtered.equals(newVal)) durationField.setText(filtered);
@@ -294,7 +238,6 @@ public class CreateCourseController {
                 } catch (NumberFormatException e) { durationField.setText(""); }
             }
         });
-        // Limita durata telematica a 8 ore intere
         onlineDurationField.textProperty().addListener((obs, oldVal, newVal) -> {
             String filtered = newVal.replaceAll("[^\\d]", "");
             if (!filtered.equals(newVal)) onlineDurationField.setText(filtered);
@@ -307,32 +250,26 @@ public class CreateCourseController {
             }
         });
     }
-    // === DATABASE INTEGRATION METHODS ===
+
     private void loadFrequencyOptions() {
-        // Carica le frequenze dal DAO
         try {
             BarraDiRicercaDao dao = new BarraDiRicercaDao();
-            java.util.List<String> frequenze = dao.CeraEnumFrequenza();
+            List<String> frequenze = dao.CeraEnumFrequenza();
             frequencyComboBox.getItems().clear();
             frequencyComboBox.getItems().addAll(frequenze);
         } catch (Exception e) {
-            // debug print rimosso
+            e.printStackTrace();
         }
     }
     
     private void loadLessonTypes() {
-        // TODO: Sostituire con chiamata al DAO
         lessonTypeComboBox.getItems().addAll("In presenza", "Telematica", "Entrambi");
-        // Esempio: lessonTypeComboBox.setItems(LessonTypeDAO.getAllTypes());
     }
     
     private void loadApplications() {
-        // TODO: Sostituire con chiamata al DAO
         applicationComboBox.getItems().addAll("Zoom", "Microsoft Teams", "Google Meet");
-        // Esempio: applicationComboBox.setItems(ApplicationDAO.getAllApplications());
     }
     
-    // === UI SETUP METHODS ===
     private void setupSpinners() {
         maxParticipantsSpinner.setValueFactory(
             new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 10));
@@ -351,7 +288,7 @@ public class CreateCourseController {
     private void setupTimeSpinnerFormatter(Spinner<Integer> spinner, boolean isMinute) {
         spinner.setEditable(true);
         
-        spinner.getValueFactory().setConverter(new javafx.util.StringConverter<Integer>() {
+        spinner.getValueFactory().setConverter(new StringConverter<Integer>() {
             @Override
             public String toString(Integer value) {
                 return value == null ? "00" : String.format("%02d", value);
@@ -451,16 +388,13 @@ public class CreateCourseController {
         for (String day : days) {
             CheckBox checkBox = new CheckBox(day);
             checkBox.getStyleClass().add("day-checkbox");
-            // Listener migliorato che tiene traccia dell'ordine di selezione
             checkBox.setOnAction(e -> {
                 List<String> selectionOrder = isPresence ? presenceDaySelectionOrder : onlineDaySelectionOrder;
                 if (checkBox.isSelected()) {
-                    // Giorno selezionato: aggiungilo alla lista dell'ordine
                     if (!selectionOrder.contains(day)) {
                         selectionOrder.add(day);
                     }
                 } else {
-                    // Giorno deselezionato: rimuovilo dalla lista dell'ordine
                     selectionOrder.remove(day);
                 }
                 validateDaySelection(checkBoxMap, 
@@ -501,20 +435,12 @@ public class CreateCourseController {
     private void setupFieldValidators() {
         addTextValidator(capField, "[^\\d]", 5, null);
         addTextValidator(priceField, PRICE_PATTERN, null, null);
-        addTextValidator(durationField, "[^\\d]", 3, null); // max 3 cifre
+        addTextValidator(durationField, "[^\\d]", 3, null); 
         addTextValidator(onlineDurationField, "[^\\d]", 3, null);
-        // Solo lettere per città (presenza)
         addTextValidator(cityField, "[^a-zA-ZàèéìòùÀÈÉÌÒÙ' ]", null, null);
     }
     
-    /**
-     * Unificato: aggiunge un listener di validazione a un TextField.
-     * @param field il campo da validare
-     * @param regexOrPattern regex stringa (per replaceAll) oppure Pattern (per match)
-     * @param maxLength lunghezza massima (opzionale)
-     * @param customFilter filtro custom opzionale (può essere null)
-     */
-    private void addTextValidator(TextField field, Object regexOrPattern, Integer maxLength, java.util.function.Function<String, String> customFilter) {
+    private void addTextValidator(TextField field, Object regexOrPattern, Integer maxLength, Function<String, String> customFilter) {
         field.textProperty().addListener((obs, oldVal, newVal) -> {
             String filtered = newVal;
             if (customFilter != null) {
@@ -550,11 +476,9 @@ public class CreateCourseController {
                 setDayCheckBoxesEnabled(true);
                 updateDayInfoLabels(newVal);
                 updateSessioniPresenzaUI();
-                // Aggiorna anche la UI ibrida se necessario
                 if ("Entrambi".equals(lessonTypeComboBox.getValue()) && boundary != null) {
                     boundary.setupHybridUI(newVal, startDatePicker.getValue(), endDatePicker.getValue());
                 }
-                // Controlla se la modalità "Entrambi" è ancora supportata con la nuova frequenza
                 checkHybridModeSupport(newVal);
             } else {
                 setDayCheckBoxesEnabled(false);
@@ -563,17 +487,14 @@ public class CreateCourseController {
             }
         });
 
-        // Aggiorna le sessioni anche quando cambiano giorni o date
         startDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
             updateSessioniPresenzaUI();
-            // Aggiorna anche la UI ibrida se necessario
             if ("Entrambi".equals(lessonTypeComboBox.getValue()) && boundary != null) {
                 boundary.setupHybridUI(frequencyComboBox.getValue(), newVal, endDatePicker.getValue());
             }
         });
         endDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
             updateSessioniPresenzaUI();
-            // Aggiorna anche la UI ibrida se necessario
             if ("Entrambi".equals(lessonTypeComboBox.getValue()) && boundary != null) {
                 boundary.setupHybridUI(frequencyComboBox.getValue(), startDatePicker.getValue(), newVal);
             }
@@ -581,10 +502,6 @@ public class CreateCourseController {
         presenceDayCheckBoxes.values().forEach(cb -> cb.selectedProperty().addListener((obs, oldVal, newVal) -> updateSessioniPresenzaUI()));
     }
     
-    /**
-     * Controlla se la modalità "Entrambi" è supportata per la frequenza data
-     * e cambia automaticamente a "In presenza" se non supportata
-     */
     private void checkHybridModeSupport(String frequenza) {
         if ("Entrambi".equals(lessonTypeComboBox.getValue())) {
             boolean isHybridSupported = frequenza != null && 
@@ -592,12 +509,10 @@ public class CreateCourseController {
                  frequenza.toLowerCase().contains("giornaliera"));
             
             if (!isHybridSupported) {
-                // Cambia automaticamente a "In presenza" se "Entrambi" non è supportato
                 lessonTypeComboBox.setValue("In presenza");
                 hybridErrorLabel.setText("La modalità 'Entrambi' non è disponibile per questa frequenza. Modalità cambiata automaticamente a 'In presenza'.");
                 hybridErrorLabel.setVisible(true);
                 
-                // Nascondi il messaggio dopo 3 secondi
                 new javafx.animation.Timeline(
                     new javafx.animation.KeyFrame(javafx.util.Duration.seconds(3), e -> {
                         hybridErrorLabel.setVisible(false);
@@ -607,10 +522,6 @@ public class CreateCourseController {
         }
     }
 
-    /**
-     * Calcola le date delle sessioni in presenza in base a giorni selezionati, frequenza e intervallo date
-     * e delega alla Boundary l'aggiornamento della UI per le ricette.
-     */
     private void updateSessioniPresenzaUI() {
         String tipoLezione = lessonTypeComboBox.getValue();
         List<String> giorniSelezionati = getSelectedDays(presenceDayCheckBoxes);
@@ -618,11 +529,6 @@ public class CreateCourseController {
         LocalDate fine = endDatePicker.getValue();
         String frequenza = frequencyComboBox.getValue();
 
-        // Mostra la UI delle ricette solo se TUTTI i requisiti sono soddisfatti:
-        // - Modalità "In presenza" 
-        // - Frequenza selezionata
-        // - Data inizio e fine valide
-        // - Giorni selezionati correttamente in base alla frequenza
         boolean showSessioniPresenza = "In presenza".equals(tipoLezione)
             && frequenza != null
             && inizio != null && fine != null && !fine.isBefore(inizio)
@@ -630,14 +536,12 @@ public class CreateCourseController {
             && !giorniSelezionati.isEmpty();
 
         if (!showSessioniPresenza) {
-            // Delega alla Boundary la pulizia della UI
             if (boundary != null) {
                 boundary.clearRecipesUI();
             }
             return;
         }
         
-        // Gestione speciale per frequenza mensile: una ricetta per ogni mese
         if (frequenza != null && frequenza.toLowerCase().contains("mensile")) {
             List<LocalDate> dateSessioni = new ArrayList<>();
             if (inizio != null && fine != null && !fine.isAfter(inizio)) {
@@ -661,25 +565,17 @@ public class CreateCourseController {
             if (detailsValidBinding != null) detailsValidBinding.invalidate();
             return;
         }
-
-        // Calcola tutte le date delle sessioni in presenza (default)
         List<LocalDate> dateSessioni = calcolaDateSessioniPresenza(inizio, fine, giorniSelezionati);
-
-        // Se non ci sono date valide, pulisci
         if (dateSessioni.isEmpty()) {
             if (boundary != null) {
                 boundary.clearRecipesUI();
             }
             return;
         }
-
-        // Delega alla Boundary l'aggiornamento della UI delle ricette
         if (boundary != null) {
             if (dateSessioni.size() > 1) {
-                // Sessioni multiple con date specifiche
                 boundary.updatePresenceSessionsUI(dateSessioni);
             } else {
-                // Sessione singola o ricette generiche
                 boundary.setupGenericRecipes();
             }
         }
@@ -688,21 +584,16 @@ public class CreateCourseController {
     }
 
     private void clearSessioniPresenzaUI() {
-        // Delega alla Boundary la pulizia della UI
         if (boundary != null) {
             boundary.clearRecipesUI();
         }
         if (detailsValidBinding != null) detailsValidBinding.invalidate();
     }
 
-    /**
-     * Calcola tutte le date delle sessioni in presenza tra inizio e fine, solo per i giorni selezionati.
-     */
     private List<LocalDate> calcolaDateSessioniPresenza(LocalDate inizio, LocalDate fine, List<String> giorniSettimana) {
         List<LocalDate> result = new ArrayList<>();
         String frequenza = frequencyComboBox.getValue();
         if (frequenza != null && frequenza.toLowerCase().contains("mensile")) {
-            // Frequenza mensile: una data per ogni mese (primo giorno selezionato del mese, o primo giorno del mese se nessun giorno selezionato)
             Set<Integer> giorniTarget = new HashSet<>();
             for (String giorno : giorniSettimana) {
                 int dayOfWeek = giornoStringToDayOfWeek(giorno);
@@ -712,7 +603,6 @@ public class CreateCourseController {
             while (!current.isAfter(fine)) {
                 LocalDate meseFine = current.withDayOfMonth(current.lengthOfMonth());
                 LocalDate dataScelta = null;
-                // Cerca il primo giorno selezionato del mese
                 for (LocalDate d = current; !d.isAfter(meseFine) && !d.isAfter(fine); d = d.plusDays(1)) {
                     if (giorniTarget.isEmpty() || giorniTarget.contains(d.getDayOfWeek().getValue())) {
                         dataScelta = d;
@@ -726,7 +616,6 @@ public class CreateCourseController {
             }
             return result;
         } else {
-            // Default: tutte le date in base ai giorni selezionati
             Set<Integer> giorniTarget = new HashSet<>();
             for (String giorno : giorniSettimana) {
                 int dayOfWeek = giornoStringToDayOfWeek(giorno);
@@ -743,7 +632,6 @@ public class CreateCourseController {
         }
     }
 
-    // === GIORNI SETTIMANA: conversione bidirezionale con mappe statiche ===
     private static final Map<String, Integer> ITALIAN_DAY_TO_NUM = new HashMap<>();
     private static final Map<Integer, String> NUM_TO_ITALIAN_DAY = new HashMap<>();
     static {
@@ -765,18 +653,10 @@ public class CreateCourseController {
         return NUM_TO_ITALIAN_DAY.getOrDefault(date.getDayOfWeek().getValue(), "Lunedì");
     }
 
-    // === VALIDATION ===
     private void setupValidation() {
         BooleanBinding basicValid = createBasicValidation();
         detailsValidBinding = createDetailsValidation();
         addCheckboxValidationListeners(detailsValidBinding);
-        // DEBUG: aggiungi listener per capire quale validazione fallisce
-        basicValid.addListener((obs, oldVal, newVal) -> {
-            // debug print rimosso
-        });
-        detailsValidBinding.addListener((obs, oldVal, newVal) -> {
-            // debug print rimosso
-        });
         createButton.disableProperty().bind(basicValid.not().or(detailsValidBinding.not()));
     }
     
@@ -790,9 +670,6 @@ public class CreateCourseController {
                 lessonTypeComboBox.getValue() != null &&
                 isValidPrice(priceField.getText()) &&
                 isValidParticipants(maxParticipantsSpinner.getValue());
-            if (!valid) {
-                // debug print rimosso
-            }
             return valid;
         },
             courseNameField.textProperty(),
@@ -817,10 +694,8 @@ public class CreateCourseController {
             if ("In presenza".equals(lessonType)) {
                 result = validatePresenceDetails();
             } else if ("Telematica".equals(lessonType)) {
-                // Per la telematica NON validare le ricette
                 result = validateOnlineDetails();
             } else if ("Entrambi".equals(lessonType)) {
-                // Per l'ibrido: almeno una ricetta per ogni sessione in presenza, nessun obbligo per le telematiche
                 result = validateHybridSessions();
             }
             return result;
@@ -834,11 +709,9 @@ public class CreateCourseController {
         boolean street = isValidText(streetField.getText());
         boolean cap = isValidCAP(capField.getText());
         boolean ricette = true;
-        // L'obbligo delle ricette solo per "In presenza" e non per telematica
         if (boundary != null) {
             ricette = boundary.areAllPresenceRecipesValid();
         }
-        // Se la boundary non è impostata, non bloccare la validazione sulle ricette
         boolean result = days && duration && city && street && cap && ricette;
         return result;
     }
@@ -855,7 +728,7 @@ public class CreateCourseController {
 
     
     private Object[] getAllRelevantProperties() {
-        java.util.List<Object> props = new java.util.ArrayList<>();
+        List<Object> props = new ArrayList<>();
         props.add(lessonTypeComboBox.valueProperty());
         props.add(frequencyComboBox.valueProperty());
         props.add(durationField.textProperty());
@@ -865,9 +738,6 @@ public class CreateCourseController {
         props.add(applicationComboBox.valueProperty());
         props.add(meetingCodeField.textProperty());
         props.add(onlineDurationField.textProperty());
-
-        // Aggiorna: aggiungi tutte le property osservabili dei giorni ibridi
-        // HybridDayDTO non ha più property JavaFX, quindi non serve più aggiungere property qui
         return props.toArray();
     }
     
@@ -880,16 +750,13 @@ public class CreateCourseController {
         );
     }
     
-    // === UTILITY METHODS ===
     private void validateDaySelection(Map<String, CheckBox> checkBoxes, Label infoLabel, boolean isPresence) {
         if (frequencyComboBox.getValue() == null) return;
         
         int maxDays = getMaxDaysFromFrequency(frequencyComboBox.getValue());
         long selectedCount = checkBoxes.values().stream().mapToLong(cb -> cb.isSelected() ? 1 : 0).sum();
         
-        // Solo se il numero di giorni selezionati supera il massimo consentito
         if (selectedCount > maxDays) {
-            // Deseleziona l'ultimo giorno selezionato usando l'ordine di selezione
             deselectLastSelectedDay(checkBoxes, isPresence);
             showTemporaryError(infoLabel, maxDays);
         }
@@ -897,12 +764,10 @@ public class CreateCourseController {
     
     private void deselectLastSelectedDay(Map<String, CheckBox> checkBoxes, boolean isPresence) {
         List<String> selectionOrder = isPresence ? presenceDaySelectionOrder : onlineDaySelectionOrder;
-        // Deseleziona l'ultimo giorno nella lista dell'ordine di selezione
         if (!selectionOrder.isEmpty()) {
             String lastSelectedDay = selectionOrder.get(selectionOrder.size() - 1);
             CheckBox lastCheckBox = checkBoxes.get(lastSelectedDay);
             if (lastCheckBox != null) {
-                // Rimuovi temporaneamente il listener per evitare ricorsioni infinite
                 lastCheckBox.setSelected(false);
                 selectionOrder.remove(lastSelectedDay);
             }
@@ -927,20 +792,16 @@ public class CreateCourseController {
         
         frequency = frequency.toLowerCase();
         
-        // Frequenza giornaliera: permette di selezionare tutti i giorni (max 7)
         if (frequency.contains("giornaliera") || frequency.contains("tutti i giorni")) {
             return 7;
         }
-        // Tre volte a settimana
         if (frequency.contains("3 volte") || frequency.contains("tre volte")) {
             return 3;
         }
-        // Due volte a settimana (bisettimanale)
         if (frequency.contains("2 volte") || frequency.contains("due volte") || 
             frequency.contains("bisettimanale") || frequency.contains("bi-settimanale")) {
             return 2;
         }
-        // Una volta a settimana (settimanale) - default
         return 1;
     }
     
@@ -984,7 +845,6 @@ public class CreateCourseController {
         return selected;
     }
     
-    // === VALIDATION HELPERS ===
     private boolean isValidText(String text) {
         return text != null && !text.trim().isEmpty();
     }
@@ -1029,7 +889,6 @@ public class CreateCourseController {
         return selectedDays == expectedDays;
     }
     
-    // === PUBLIC ACTIONS ===
     public void onLessonTypeChanged() {
         String selectedType = lessonTypeComboBox.getValue();
         boolean isPresence = "In presenza".equals(selectedType);
@@ -1068,8 +927,6 @@ public class CreateCourseController {
             hybridDetailsSection.setManaged(false);
             hybridErrorLabel.setVisible(false);
         }
-
-        // Aggiorna la UI delle ricette per la modalità in presenza
         if (isPresence) {
             updateSessioniPresenzaUI();
         } else {
@@ -1083,38 +940,27 @@ public class CreateCourseController {
         int dayOfWeek = giornoStringToDayOfWeek(giornoSettimana);
         if (dayOfWeek == -1) return result;
         LocalDate data = inizio;
-        // Trova il primo giorno corrispondente
         while (data.getDayOfWeek().getValue() != dayOfWeek) {
             data = data.plusDays(1);
             if (data.isAfter(fine)) return result;
         }
-        // Aggiungi tutte le date corrispondenti
         while (!data.isAfter(fine)) {
             result.add(data);
             data = data.plusWeeks(1);
         }
         return result;
     }
-    // === SETTER PER LA BOUNDARY ===
-    public void setBoundary(com.progetto.boundary.CreateCourseBoundary boundary) {
+    public void setBoundary(CreateCourseBoundary boundary) {
         this.boundary = boundary;
     }
     
-    
-    /**
-     * Chiamato dalla Boundary quando la UI ibrida viene aggiornata
-     */
     public void onHybridUIUpdated() {
         if (detailsValidBinding != null) {
             detailsValidBinding.invalidate();
         }
     }
-    
-    /**
-     * Chiamato dalla Boundary quando cambia la frequenza
-     */
+
     public void onFrequencyChanged() {
-        // Aggiorna la visibilità della sezione ibrida come in onLessonTypeChanged
         String selectedType = lessonTypeComboBox.getValue();
         boolean isHybrid = "Entrambi".equals(selectedType);
         if (isHybrid) {
@@ -1148,15 +994,8 @@ public class CreateCourseController {
         updateSessioniPresenzaUI();
     }
     
-
-    
-    
-    /**
-     * Validazione per le sessioni ibride: delega alla Boundary
-     */
     private boolean validateHybridSessions() {
         if (boundary != null) {
-            // Ricette obbligatorie: per ogni sessione ibrida in presenza deve esserci almeno una ricetta valida
             List<Sessione> hybridSessions = boundary.getHybridSessions();
             Map<LocalDate, ObservableList<Ricetta>> hybridSessionRecipes = boundary.getHybridSessionRecipes();
             boolean ricetteOk = true;
@@ -1183,8 +1022,6 @@ public class CreateCourseController {
         }
         return false;
     }
-    // === PUBLIC API FOR BOUNDARY ===
-    // Variabili per gestire l'immagine selezionata
     private File selectedCourseImageFile = null;
     private String selectedCourseImageExtension = null;
     private boolean isDefaultCourseImage = true;
@@ -1207,7 +1044,7 @@ public class CreateCourseController {
                 javafx.scene.image.Image img = new javafx.scene.image.Image(file.toURI().toString(), 180, 180, true, true);
                 courseImageView.setImage(img);
             } catch (Exception e) {
-                // fallback: non cambiare immagine
+                e.printStackTrace();
             }
         } else {
             selectedCourseImageFile = null;
@@ -1215,11 +1052,8 @@ public class CreateCourseController {
             isDefaultCourseImage = true;
         }
     }
-    // Variabile di istanza per tenere traccia dell'ID del corso appena creato
     private int lastCreatedCourseId = -1;
-
     public void createCourse() {
-        // Validazione tipi di cucina: almeno uno selezionato
         String cucina1 = cuisineTypeComboBox1.getValue();
         String cucina2 = cuisineTypeComboBox2.getValue();
         if ((cucina1 == null || cucina1.trim().isEmpty()) && (cucina2 == null || cucina2.trim().isEmpty())) {
@@ -1230,7 +1064,6 @@ public class CreateCourseController {
             cuisineTypeErrorLabel.setVisible(false);
         }
 
-        // --- RACCOLTA DATI ---
         String nome = courseNameField.getText();
         String descrizione = descriptionArea.getText();
         LocalDate dataInizio = startDatePicker.getValue();
@@ -1240,15 +1073,12 @@ public class CreateCourseController {
         double prezzo = 0.0;
         try { prezzo = Double.parseDouble(priceField.getText().replace(",", ".")); } catch (Exception e) { prezzo = 0.0; }
 
-
-        // --- ASSOCIA CHEF LOGGATO ---
-        com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
+        Chef chef = Chef.loggedUser;
         if (chef == null) {
             SuccessDialogUtils.showGenericSuccessDialog((Stage) courseNameField.getScene().getWindow(), "Errore", "Chef non loggato!");
             return;
         }
 
-        // --- CREA OGGETTO CORSO (senza propic, la gestiamo dopo l'id) ---
         Corso corso = new Corso(
             nome, descrizione, dataInizio, dataFine, frequenza, maxPersone, (float) prezzo, null
         );
@@ -1256,23 +1086,17 @@ public class CreateCourseController {
         corso.setChefCognome(chef.getCognome());
         corso.setChefEsperienza(chef.getAnniDiEsperienza());
 
-        // --- SALVA NEL DB (così otteniamo l'id corso) ---
         CorsoDao corsoDao = new CorsoDao();
         corsoDao.memorizzaCorsoERicavaId(corso);
-        // Salva l'id del corso appena creato in una variabile di istanza
         this.lastCreatedCourseId = corso.getId_Corso();
 
-        // --- ASSOCIA IL CORSO ALLO CHEF (UPDATE FK) ---
-        // Usa ChefDao per aggiornare la FK IdChef nel corso appena creato
-        com.progetto.Entity.entityDao.ChefDao chefDao = new com.progetto.Entity.entityDao.ChefDao();
+        ChefDao chefDao = new ChefDao();
         chefDao.AssegnaCorso(corso, chef);
 
-        // --- AGGIORNA LA NAVBAR/UI CON IL NOME DELLO CHEF LOGGATO ---
         if (chefNameLabel != null) {
             chefNameLabel.setText(chef.getNome() + " " + chef.getCognome());
         }
 
-        // --- GESTIONE IMMAGINE CORSO ---
         String urlPropic;
         int idCorso = corso.getId_Corso();
         String resourcesDir = "src/main/resources/immagini/PropicCorso/";
@@ -1282,7 +1106,7 @@ public class CreateCourseController {
             String absolutePath = resourcesDir + fileName;
             String relativePath = "immagini/PropicCorso/" + fileName;
             try {
-                java.nio.file.Files.copy(selectedCourseImageFile.toPath(), new File(absolutePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(selectedCourseImageFile.toPath(), new File(absolutePath).toPath(), StandardCopyOption.REPLACE_EXISTING);
                 urlPropic = relativePath;
             } catch (Exception e) {
                 urlPropic = "immagini/corso_default.png";
@@ -1293,18 +1117,16 @@ public class CreateCourseController {
         corso.setUrl_Propic(urlPropic);
         corsoDao.aggiornaCorso(corso);
 
-        // --- AGGIORNA LA BOUNDARY PRIMA DI SALVARE LE SESSIONI ---
         String lessonType = lessonTypeComboBox.getValue();
         if (boundary != null) {
             if ("In presenza".equals(lessonType)) {
-                updateSessioniPresenzaUI(); // Assicura che la boundary sia aggiornata
+                updateSessioniPresenzaUI(); 
             } else if ("Telematica".equals(lessonType)) {
-                // Se hai un metodo simile per telematica, chiamalo qui (es: updateSessioniTelematica())
+
             } else if ("Entrambi".equals(lessonType)) {
                 boundary.updateHybridSessionsFromUI();
             }
         }
-        // --- SALVA SESSIONI IN BASE AL TIPO DI LEZIONE ---
         if ("In presenza".equals(lessonType)) {
             salvaSessioniPresenza();
         } else if ("Telematica".equals(lessonType)) {
@@ -1313,13 +1135,11 @@ public class CreateCourseController {
             salvaSessioniHybridSmistate(new ricettaDao(), new IngredientiDao());
         }
 
-        // --- ASSOCIA TIPO CUCINA ---
         ArrayList<String> tipiCucina = new ArrayList<>();
         if (cucina1 != null && !cucina1.trim().isEmpty()) tipiCucina.add(cucina1);
         if (cucina2 != null && !cucina2.trim().isEmpty() && !cucina2.equals(cucina1)) tipiCucina.add(cucina2);
-        // Salva tipi cucina nel db (tabella TIPODICICINA_CORSO)
         try {
-            Connection conn = com.progetto.jdbc.ConnectionJavaDb.getConnection();
+            Connection conn = ConnectionJavaDb.getConnection();
             for (String tipo : tipiCucina) {
                 // Recupera id tipo cucina
                 PreparedStatement ps = conn.prepareStatement("SELECT IDTipoCucina FROM TipoDiCucina WHERE Nome = ?");
@@ -1339,31 +1159,25 @@ public class CreateCourseController {
             }
             conn.close();
         } catch (Exception e) {
-            // Log error if needed (no debug print)
+            e.printStackTrace();
         }
 
-        // --- SALVA RICETTE E INGREDIENTI ---
         ricettaDao ricettaDao = new ricettaDao();
         IngredientiDao ingredientiDao = new IngredientiDao();
         if ("In presenza".equals(lessonType)) {
             salvaRicettePresenza(ricettaDao, ingredientiDao);
         }
-        // For "Entrambi", sessioni ibride are already saved above; no need to call again.
-
-        // --- FEEDBACK E NAVIGAZIONE ---
         Stage stage = (Stage) courseNameField.getScene().getWindow();
         SuccessDialogUtils.showGenericSuccessDialog(stage, "Corso creato con successo!", "Il corso è stato creato correttamente.");
-        // Aggiorna la homepage e forza il reload delle immagini dei corsi
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/homepagechef.fxml"));
-            javafx.scene.Parent root = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/homepagechef.fxml"));
+            Parent root = loader.load();
             stage.getScene().setRoot(root);
         } catch (Exception e) {
             e.printStackTrace();
             goToHomepage();
         }
     }
-    // --- SALVATAGGIO SESSIONI IN PRESENZA ---
     private void salvaSessioniPresenza() {
         if (boundary == null) {
             return;
@@ -1385,8 +1199,8 @@ public class CreateCourseController {
         for (Map.Entry<LocalDate, ObservableList<Ricetta>> entry : sessioniPresenza.entrySet()) {
             LocalDate data = entry.getKey();
             ObservableList<Ricetta> ricette = entry.getValue();
-            java.time.LocalTime orario = java.time.LocalTime.of(18, 0);
-            java.time.LocalTime durata = java.time.LocalTime.of(2, 0); // default 120 min = 2h 0m
+            LocalTime orario = LocalTime.of(18, 0);
+            LocalTime durata = LocalTime.of(2, 0); 
             String citta = null, via = null, cap = null;
             if ("In presenza".equals(lessonType)) {
                 orario = (presenceHourSpinner != null && presenceMinuteSpinner != null) ? java.time.LocalTime.of(presenceHourSpinner.getValue(), presenceMinuteSpinner.getValue()) : java.time.LocalTime.of(18, 0);
@@ -1410,59 +1224,51 @@ public class CreateCourseController {
                 citta,
                 via,
                 cap,
-                null, // attrezzatura
-                0 // id_Sessione (autoincrement)
+                null, 
+                0 
             );
             sessione.setId_Corso(this.lastCreatedCourseId);
             sessione.setChef(chef);
             sessione.setRicette(new ArrayList<>(ricette));
             try {
                 presenzaDao.MemorizzaSessione(sessione);
-                // --- COLLEGA OGNI RICETTA ALLA SESSIONE IN SESSIONE_PRESENZA_RICETTA ---
                 for (Ricetta ricetta : ricette) {
                     collegaRicettaASessionePresenza(sessione.getId_Sessione(), ricetta.getId_Ricetta());
                 }
             } catch (Exception ex) {
-                // Log error if necessario
+                ex.printStackTrace();
             }
         }
     }
 
-    // --- COLLEGA UNA RICETTA A UNA SESSIONE IN PRESENZA ---
     private void collegaRicettaASessionePresenza(int idSessione, int idRicetta) {
         String query = "INSERT INTO sessione_presenza_ricetta (IdSessionePresenza, IdRicetta) VALUES (?, ?)";
-        try (java.sql.Connection conn = com.progetto.jdbc.ConnectionJavaDb.getConnection();
-             java.sql.PreparedStatement ps = conn.prepareStatement(query)) {
+        try (Connection conn = ConnectionJavaDb.getConnection();
+            PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, idSessione);
             ps.setInt(2, idRicetta);
             ps.executeUpdate();
         } catch (Exception e) {
-            // Log error if necessario
+            e.printStackTrace();
         }
     }
 
-    // --- SALVATAGGIO SESSIONI TELEMATICA/IBRIDE ---
     private void salvaSessioniTelematica() {
         if (boundary == null) {
             // debug print rimosso
             return;
         }
-        // Se il corso è solo telematico, usa la lista delle sessioni telematiche pure
         List<SessioneOnline> telematicSessions = boundary.getSessioniTelematiche();
         try {
             telematicSessions = boundary.getSessioniTelematiche();
         } catch (Exception e) {
-            System.out.println("[DEBUG] salvaSessioniTelematica: errore nel recupero delle sessioni telematiche pure: " + e);
         }
         if (telematicSessions == null || telematicSessions.isEmpty()) {
-            System.out.println("[DEBUG] salvaSessioniTelematica: nessuna sessione telematica trovata (solo telematica).");
             return;
         }
-        com.progetto.Entity.entityDao.SessioneOnlineDao onlineDao = new com.progetto.Entity.entityDao.SessioneOnlineDao();
-        com.progetto.Entity.EntityDto.Chef chef = com.progetto.Entity.EntityDto.Chef.loggedUser;
+        SessioneOnlineDao onlineDao = new SessioneOnlineDao();
+        Chef chef = Chef.loggedUser;
         for (SessioneOnline session : telematicSessions) {
-            System.out.println("[DEBUG] salvaSessioniTelematica: session=" + session);
-            // Usa direttamente i dati dal DTO
             SessioneOnline online = new SessioneOnline(
                 session.getGiorno(),
                 session.getData(),
@@ -1470,8 +1276,8 @@ public class CreateCourseController {
                 session.getDurata(),
                 session.getApplicazione(),
                 session.getCodicechiamata(),
-                null, // descrizione
-                0 // id_Sessione (autoincrement)
+                null, 
+                0 
             );
             online.setId_Corso(this.lastCreatedCourseId);
             online.setChef(chef);
@@ -1483,8 +1289,6 @@ public class CreateCourseController {
         }
     }
 
-    // --- METODI DI SUPPORTO PER SALVATAGGIO ---
-    // === RICETTE/INGREDIENTI: validazione e salvataggio unificati ===
     private boolean isValidRicetta(Ricetta ricetta) {
         if (ricetta == null || !isValidText(ricetta.getNome())) return false;
         List<Ingredienti> ingredienti = ricetta.getIngredientiRicetta();
@@ -1499,20 +1303,17 @@ public class CreateCourseController {
 
     private void salvaRicettaCompleta(Ricetta ricetta, ricettaDao ricettaDao, IngredientiDao ingredientiDao) {
         if (!isValidRicetta(ricetta)) return;
-        // Reset id_Ricetta to force DB to generate a new one and avoid PK conflicts
         ricetta.setId_Ricetta(0);
         ricettaDao.memorizzaRicetta(ricetta);
         if (ricetta.getId_Ricetta() <= 0) {
             return;
         }
-        // Save each ingredient and update its ID before association
         for (Ingredienti ingrediente : ricetta.getIngredientiRicetta()) {
             if (ingrediente.getId_Ingrediente() == 0) {
-                ingrediente.setIdIngrediente(0); // Ensure DB generates a new ID
+                ingrediente.setIdIngrediente(0); 
                 ingredientiDao.memorizzaIngredienti(ingrediente);
             }
         }
-        // Now associate all ingredients (with correct IDs) to the recipe
         for (Ingredienti ingrediente : ricetta.getIngredientiRicetta()) {
             ricettaDao.associaIngredientiARicetta(ricetta, ingrediente);
         }
@@ -1532,7 +1333,6 @@ public class CreateCourseController {
         }
     }
 
-    // --- NUOVA LOGICA: SALVATAGGIO SESSIONI IBRIDE SMISTATE ---
     private void salvaSessioniHybridSmistate(ricettaDao ricettaDao, IngredientiDao ingredientiDao) {
         if (boundary == null) return;
         boundary.updateHybridSessionsFromUI();
@@ -1548,7 +1348,6 @@ public class CreateCourseController {
         }
         SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
         SessioneOnlineDao onlineDao = new SessioneOnlineDao();
-        // Prima salva tutte le sessioni telematiche
         for (Sessione session : hybridSessions) {
             if (session instanceof SessioneOnline) {
                 SessioneOnline s = (SessioneOnline) session;
@@ -1557,21 +1356,17 @@ public class CreateCourseController {
                 onlineDao.MemorizzaSessione(s);
             }
         }
-        // Poi salva tutte le sessioni in presenza e le relative ricette
         for (Sessione session : hybridSessions) {
             if (session instanceof SessioniInPresenza) {
                 SessioniInPresenza s = (SessioniInPresenza) session;
                 s.setId_Corso(idCorso);
                 s.setChef(chef);
-                // Salva la sessione in presenza nel DB
                 presenzaDao.MemorizzaSessione(s);
-                // Salva e collega le ricette a questa sessione
                 List<Ricetta> ricette = new ArrayList<>();
                 if (hybridSessionRecipes != null && hybridSessionRecipes.containsKey(s.getData())) {
                     ricette.addAll(hybridSessionRecipes.get(s.getData()));
                 }
                 for (Ricetta ricetta : ricette) {
-                    // Salva la ricetta e i suoi ingredienti se non già salvati
                     salvaRicettaCompleta(ricetta, ricettaDao, ingredientiDao);
                     collegaRicettaASessionePresenza(s.getId_Sessione(), ricetta.getId_Ricetta());
                 }
@@ -1617,7 +1412,6 @@ public class CreateCourseController {
         }
     }
 
-    // Conta le parole nella descrizione
     private int countWords(String text) {
         if (text == null || text.trim().isEmpty()) return 0;
         return text.trim().split("\\s+").length;

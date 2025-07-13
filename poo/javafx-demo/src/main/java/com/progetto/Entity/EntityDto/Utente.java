@@ -3,8 +3,8 @@ package com.progetto.Entity.EntityDto;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
- abstract public class Utente {
-   protected  LocalDate dataDiNascita;
+abstract public class Utente {
+    protected  LocalDate dataDiNascita;
     protected String nome;
     protected String cognome;
     protected  String email;
@@ -71,11 +71,3 @@ import java.util.ArrayList;
         this.dataDiNascita = dataDiNascita;
     } 
 }      
-
-    
-    
-
-
-
-
-    

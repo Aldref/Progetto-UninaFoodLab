@@ -15,6 +15,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 
 public class AccountManagementChefBoundary {
 
@@ -79,7 +80,6 @@ public class AccountManagementChefBoundary {
         controller.LogoutClick();
     }
 
-   
     public Label getUserNameLabel() { return userNameLabel; }
     public ImageView getUserProfileImage() { return userProfileImage; }
     public ImageView getProfileImageLarge() { return profileImageLarge; }
@@ -123,21 +123,17 @@ public class AccountManagementChefBoundary {
     
     public void setProfileImages(String propicPath) {
         if (propicPath != null && !propicPath.isEmpty()) {
-            javafx.scene.image.Image img = null;
+            Image img = null;
             try {
                 if (propicPath.startsWith("file:")) {
-                    // Path assoluto o URL file
                     img = new javafx.scene.image.Image(propicPath, 256, 256, true, true);
                 } else if (propicPath.startsWith("http") || propicPath.startsWith("jar:")) {
-                    // URL da risorse o da jar
                     img = new javafx.scene.image.Image(propicPath, 256, 256, true, true);
                 } else {
-                    // Prima prova come path assoluto (caso preview o salvataggio)
                     File absFile = new File(propicPath);
                     if (absFile.exists()) {
                         img = new javafx.scene.image.Image(absFile.toURI().toString(), 256, 256, true, true);
                     } else {
-                        // Path relativo: sviluppo locale
                         File imgFile = new File("src/main/resources/" + propicPath);
                         if (imgFile.exists()) {
                             img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
