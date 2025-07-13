@@ -1,4 +1,4 @@
-package com.progetto.controller;
+package com.progetto.controller.utente;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -10,8 +10,8 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.Period;
 
-import com.progetto.boundary.AccountManagementBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
+import com.progetto.boundary.utente.AccountManagementBoundary;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;

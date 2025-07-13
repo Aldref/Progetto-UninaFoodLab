@@ -1,7 +1,7 @@
-package com.progetto.controller;
+package com.progetto.controller.utente;
 
-import com.progetto.boundary.PaymentPageBoundary;
 import com.progetto.boundary.SuccessDialogBoundary;
+import com.progetto.boundary.utente.PaymentPageBoundary;
 import com.progetto.utils.CardValidator;
 import com.progetto.utils.SuccessDialogUtils;
 

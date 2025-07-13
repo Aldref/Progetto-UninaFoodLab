@@ -1,4 +1,4 @@
-package com.progetto.boundary;
+package com.progetto.boundary.utente;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,8 +11,9 @@ import javafx.event.ActionEvent;
 import javafx.scene.image.ImageView;
 import java.net.URL;
 import java.util.ResourceBundle;
-import com.progetto.controller.EnrolledCoursesController;
+
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
+import com.progetto.controller.utente.EnrolledCoursesController;
 import com.progetto.utils.ImageClipUtils;
 
 

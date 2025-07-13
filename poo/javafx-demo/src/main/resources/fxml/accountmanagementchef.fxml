@@ -8,7 +8,7 @@
 
 <BorderPane stylesheets="@../css/root.css,@../css/navbar.css,@../css/accountmanagement.css" 
     xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
-    fx:controller="com.progetto.boundary.AccountManagementChefBoundary">
+    fx:controller="com.progetto.boundary.chef.AccountManagementChefBoundary">
     
     <left>
         <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="280.0">

@@ -1,5 +1,5 @@
 
-package com.progetto.boundary;
+package com.progetto.boundary.chef;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -9,9 +9,10 @@ import javafx.event.ActionEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.io.File;
-import com.progetto.controller.HomepageChefController;
+
 import com.progetto.utils.ImageClipUtils;
 import com.progetto.Entity.EntityDto.Chef;
+import com.progetto.controller.chef.HomepageChefController;
 
 public class HomepageChefBoundary {
 

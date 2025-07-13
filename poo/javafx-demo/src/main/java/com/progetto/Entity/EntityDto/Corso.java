@@ -156,4 +156,8 @@ public class Corso {
     }
 
 
+
+    public ArrayList<String> getGiorniDellaSettimana() {
+        return new ArrayList<>();
+    }
 }

@@ -1,4 +1,4 @@
-package com.progetto.boundary;
+package com.progetto.boundary.utente;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -8,10 +8,11 @@ import javafx.event.ActionEvent;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.ProgressIndicator;
 import java.io.File;
-import com.progetto.controller.HomepageUtenteController;
+
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.utils.ImageClipUtils;
 import com.progetto.Entity.entityDao.BarraDiRicercaDao;
+import com.progetto.controller.utente.HomepageUtenteController;
 
 public class HomepageUtenteBoundary {
 

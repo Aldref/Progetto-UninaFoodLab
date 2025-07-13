@@ -14,7 +14,6 @@ import com.progetto.jdbc.SupportDb;
 
 
 public class CorsoDao{
-    
 
     public void  memorizzaCorsoERicavaId(Corso corso) {
     String query = "INSERT INTO Corso (Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, MaxPersone, Prezzo, Propic) VALUES (?, ?, ?, ?, ?::fds, ?, ?, ?)";
@@ -215,41 +214,69 @@ public class CorsoDao{
     }
 
     public ArrayList<SessioniInPresenza> recuperoSessionCorso(Corso corso){
-      ArrayList<SessioniInPresenza> sessioni = new ArrayList<>();
-      String query = "SELECT * FROM SESSIONE_PRESENZA WHERE idcorso = ?";
-      Connection conn = null;
-      PreparedStatement ps = null;
-      ResultSet rs = null;
-      SupportDb dbu = new SupportDb();
+        ArrayList<SessioniInPresenza> sessioni = new ArrayList<>();
+        String query = "SELECT * FROM SESSIONE_PRESENZA WHERE idcorso = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        SupportDb dbu = new SupportDb();
 
-      try {
-          conn = ConnectionJavaDb.getConnection();
-          ps = conn.prepareStatement(query);
-          ps.setInt(1, corso.getId_Corso());
-          rs = ps.executeQuery();
+        try {
+            conn = ConnectionJavaDb.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, corso.getId_Corso());
+            rs = ps.executeQuery();
 
-          while (rs.next()) {
-              SessioniInPresenza sessione = new SessioniInPresenza(
-                  rs.getString("giorno"),
-                  rs.getDate("data").toLocalDate(),
-                  rs.getTime("orario").toLocalTime(),
-                  rs.getTime("durata").toLocalTime(),
-                  rs.getString("citta"),
-                  rs.getString("via"),
-                  rs.getString("cap"),
-                  rs.getString("descrizione"),
-                  rs.getInt("idsessionepresenza") 
-              );
-              sessione.setId_Corso(corso.getId_Corso());
-              sessione.setRicette(new SessioneInPresenzaDao().recuperaRicetteSessione(sessione));
-              sessioni.add(sessione);
-          }
-      } catch (SQLException e) {
-          e.printStackTrace();
-      } finally {
-          dbu.closeAll(conn, ps, rs);
-      }
-      return sessioni;
-  }
+            while (rs.next()) {
+                SessioniInPresenza sessione = new SessioniInPresenza(
+                    rs.getString("giorno"),
+                    rs.getDate("data").toLocalDate(),
+                    rs.getTime("orario").toLocalTime(),
+                    rs.getTime("durata").toLocalTime(),
+                    rs.getString("citta"),
+                    rs.getString("via"),
+                    rs.getString("cap"),
+                    rs.getString("descrizione"),
+                    rs.getInt("idsessionepresenza") 
+                );
+                sessione.setId_Corso(corso.getId_Corso());
+                sessione.setRicette(new SessioneInPresenzaDao().recuperaRicetteSessione(sessione));
+                sessioni.add(sessione);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbu.closeAll(conn, ps, rs);
+        }
+        return sessioni;
+    }
+    public static int getIdTipoCucinaByNome(String nome) {
+        int idTipo = -1;
+        String query = "SELECT IDTipoCucina FROM TipoDiCucina WHERE Nome = ?";
+        try (Connection conn = ConnectionJavaDb.getConnection();
+            PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, nome);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    idTipo = rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return idTipo;
+    }
+
+    public static void inserisciTipoCucinaCorso(int idTipoCucina, int idCorso) {
+        String query = "INSERT INTO TipoDiCucina_Corso (IDTipoCucina, IDCorso) VALUES (?, ?)";
+        try (Connection conn = ConnectionJavaDb.getConnection();
+            PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, idTipoCucina);
+            ps.setInt(2, idCorso);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
     }

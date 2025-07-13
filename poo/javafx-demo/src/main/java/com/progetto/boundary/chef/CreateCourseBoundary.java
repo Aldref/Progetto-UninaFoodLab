@@ -1,4 +1,4 @@
-package com.progetto.boundary;
+package com.progetto.boundary.chef;
 
 import javafx.scene.Node;
 
@@ -21,13 +21,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.util.StringConverter;
-import com.progetto.controller.CreateCourseController;
+
 import com.progetto.Entity.EntityDto.Ricetta;
 import com.progetto.Entity.EntityDto.Ingredienti;
 import com.progetto.Entity.EntityDto.Chef;
 import java.io.File;
 import javafx.scene.image.Image;
 import com.progetto.Entity.entityDao.BarraDiRicercaDao;
+import com.progetto.controller.chef.CreateCourseController;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -549,10 +550,10 @@ public class CreateCourseBoundary {
             timeBox.getChildren().addAll(timeLabel, hourSpinner, colonLabel, minuteSpinner);
 
             HBox durationBox = new HBox(10);
-            Label durationLabel = new Label("Durata (minuti):");
+            Label durationLabel = new Label("Durata (ore):");
             TextField durationField = new TextField();
-            durationField.setPromptText("es. 120");
-            addTextValidator(durationField, "[^\\d]", 3);
+            durationField.setPromptText("es. 2");
+            addTextValidator(durationField, "[^\\d]", 1);
             durationField.textProperty().addListener((obs2, oldVal2, newVal2) -> notifyControllerOfChange());
             durationBox.getChildren().addAll(durationLabel, durationField);
 

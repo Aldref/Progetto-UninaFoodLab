@@ -1,8 +1,8 @@
 package com.progetto.controller;
 
 import com.progetto.utils.SceneSwitcher;
-import com.progetto.boundary.PaymentPageBoundary;
-import com.progetto.boundary.EditCourseBoundary;
+import com.progetto.boundary.chef.EditCourseBoundary;
+import com.progetto.boundary.utente.PaymentPageBoundary;
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.Sessione;
 import com.progetto.Entity.entityDao.CorsoDao;

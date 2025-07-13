@@ -1,9 +1,9 @@
-package com.progetto.boundary;
+package com.progetto.boundary.chef;
 
 import java.io.File;
 
 import com.progetto.Entity.EntityDto.Chef;
-import com.progetto.controller.MonthlyReportController;
+import com.progetto.controller.chef.MonthlyReportController;
 import com.progetto.utils.ImageClipUtils;
 import com.progetto.utils.SceneSwitcher;
 

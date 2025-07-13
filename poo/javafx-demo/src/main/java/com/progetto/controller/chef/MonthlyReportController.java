@@ -1,4 +1,4 @@
-package com.progetto.controller;
+package com.progetto.controller.chef;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

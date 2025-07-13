@@ -1,4 +1,4 @@
-package com.progetto.controller;
+package com.progetto.controller.chef;
 
 import java.time.LocalTime;
 import javafx.beans.binding.Bindings;
@@ -29,6 +29,7 @@ import com.progetto.Entity.entityDao.BarraDiRicercaDao;
 import com.progetto.Entity.entityDao.IngredientiDao;
 import com.progetto.Entity.entityDao.SessioneOnlineDao;
 import com.progetto.Entity.entityDao.ricettaDao;
+import com.progetto.boundary.chef.EditCourseBoundary;
 import com.progetto.Entity.EntityDto.Corso;
 import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.Entity.EntityDto.SessioneOnline;
@@ -41,7 +42,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.stream.Collectors;
-import com.progetto.boundary.EditCourseBoundary;
 
 public class EditCourseController {
     public void setHybridPresenzaSpinners(Spinner<Integer> hour, Spinner<Integer> min, Spinner<Double> durata) {

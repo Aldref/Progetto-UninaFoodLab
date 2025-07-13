@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane stylesheets="@../css/root.css,@../css/navbar.css,@../css/courses.css,@../css/pagination.css,@../css/scrollbar.css,@../css/searchisland.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.boundary.HomepageUtenteBoundary"
+<BorderPane stylesheets="@../css/root.css,@../css/navbar.css,@../css/courses.css,@../css/pagination.css,@../css/scrollbar.css,@../css/searchisland.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.boundary.utente.HomepageUtenteBoundary"
             prefHeight="700" prefWidth="1000" styleClass="homepage-container">
    <left>
       <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="280.0">

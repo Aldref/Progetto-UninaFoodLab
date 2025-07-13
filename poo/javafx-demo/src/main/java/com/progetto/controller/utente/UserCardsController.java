@@ -1,6 +1,5 @@
-package com.progetto.controller;
+package com.progetto.controller.utente;
 
-import com.progetto.boundary.UserCardsBoundary;
 import com.progetto.utils.CardValidator;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
@@ -8,6 +7,7 @@ import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.Entity.EntityDto.CartaDiCredito;
 import com.progetto.Entity.entityDao.CartaDiCreditoDao;
 import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
+import com.progetto.boundary.utente.UserCardsBoundary;
 
 import javafx.fxml.FXML;
 import javafx.stage.Stage;

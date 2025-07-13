@@ -1,7 +1,8 @@
-package com.progetto.controller;
+package com.progetto.controller.utente;
 
 import com.progetto.boundary.CardCorsoBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
+import com.progetto.boundary.utente.EnrolledCoursesBoundary;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.Entity.EntityDto.UtenteVisitatore;
 import com.progetto.Entity.EntityDto.Corso;
@@ -17,8 +18,6 @@ import java.util.ArrayList;
 import com.progetto.Entity.entityDao.BarraDiRicercaDao;
 import java.util.List;
 import java.io.IOException;
-
-import com.progetto.boundary.EnrolledCoursesBoundary;
 
 import javafx.stage.WindowEvent;
 

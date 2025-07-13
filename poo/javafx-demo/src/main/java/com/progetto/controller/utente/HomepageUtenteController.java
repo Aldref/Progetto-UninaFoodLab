@@ -1,7 +1,8 @@
-package com.progetto.controller;
+package com.progetto.controller.utente;
 
 import com.progetto.boundary.CardCorsoBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
+import com.progetto.boundary.utente.HomepageUtenteBoundary;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.Entity.entityDao.CorsoDao;
 import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
@@ -18,8 +19,6 @@ import java.util.List;
 import java.util.HashSet;
 import java.io.IOException;
 
-
-import com.progetto.boundary.HomepageUtenteBoundary;
 import javafx.concurrent.Task;
 
 public class HomepageUtenteController {

@@ -71,7 +71,7 @@ La piattaforma permette agli chef di creare, gestire e visualizzare corsi di cuc
 
 - Codice gruppo: **OOBD39**
 - D'Angelo Mario — [GitHub](https://github.com/Aldref27)
-- Francesco Calone - [GitHub] (https://github.com/FrancescoCalone)
+- Francesco Calone - [GitHub](https://github.com/FrancescoCalone)
 
 
 ---

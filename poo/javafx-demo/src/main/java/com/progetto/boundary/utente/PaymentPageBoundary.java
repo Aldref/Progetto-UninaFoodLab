@@ -1,10 +1,11 @@
-package com.progetto.boundary;
+package com.progetto.boundary.utente;
 
 
-import com.progetto.controller.PaymentPageController;
 import com.progetto.utils.CardValidator;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.Entity.EntityDto.Corso;
+import com.progetto.controller.utente.PaymentPageController;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

@@ -1,11 +1,11 @@
 
-package com.progetto.boundary;
-import com.progetto.controller.EditCourseController;
+package com.progetto.boundary.chef;
 import javafx.scene.layout.HBox;
 import javafx.scene.Node;
 import com.progetto.Entity.entityDao.BarraDiRicercaDao;
 import com.progetto.Entity.entityDao.SessioneInPresenzaDao;
 import com.progetto.Entity.entityDao.ricettaDao;
+import com.progetto.controller.chef.EditCourseController;
 import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.Entity.EntityDto.Ricetta;
 import javafx.stage.Stage;
@@ -507,7 +507,7 @@ public void addEndDateListener(Callback<LocalDate, Void> listener) {
         recipeBox.getStyleClass().add("recipe-container");
         boolean editable = sessionDate.isAfter(LocalDate.now());
         if (!editable) {
-            recipeBox.setStyle("-fx-background-color: #f0f0f0;");
+            recipeBox.getStyleClass().add("session-past");
         }
         HBox recipeHeader = new HBox(15);
         recipeHeader.setAlignment(javafx.geometry.Pos.CENTER_LEFT);

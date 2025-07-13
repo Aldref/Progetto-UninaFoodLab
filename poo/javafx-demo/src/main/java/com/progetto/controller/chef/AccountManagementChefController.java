@@ -1,4 +1,4 @@
-package com.progetto.controller;
+package com.progetto.controller.chef;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.time.Period;
 
 import com.progetto.Entity.EntityDto.Chef;
 import com.progetto.Entity.entityDao.ChefDao;
-import com.progetto.boundary.AccountManagementChefBoundary;
+import com.progetto.boundary.chef.AccountManagementChefBoundary;
 import com.progetto.boundary.LogoutDialogBoundary;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;

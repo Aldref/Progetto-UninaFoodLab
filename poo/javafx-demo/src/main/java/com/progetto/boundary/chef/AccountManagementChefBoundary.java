@@ -1,14 +1,23 @@
-package com.progetto.boundary;
+package com.progetto.boundary.chef;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.event.ActionEvent;
-import com.progetto.controller.AccountManagementController;
-import com.progetto.utils.ImageClipUtils;
 import java.io.File;
 
-public class AccountManagementBoundary {
+import com.progetto.controller.chef.AccountManagementChefController;
+import com.progetto.utils.ImageClipUtils;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+
+public class AccountManagementChefBoundary {
 
     @FXML private Label userNameLabel;
     @FXML private ImageView userProfileImage;
@@ -18,21 +27,23 @@ public class AccountManagementBoundary {
     @FXML private TextField surnameField;
     @FXML private TextField emailField;
     @FXML private DatePicker birthDatePicker;
+    @FXML private TextArea descriptionField;
+    @FXML private TextField experienceYearsField;
     @FXML private PasswordField currentPasswordField;
     @FXML private PasswordField newPasswordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
-    @FXML private Button viewUserCardsBtn;
 
-    private AccountManagementController controller;
+    private AccountManagementChefController controller;
 
     @FXML
     public void initialize() {
-        controller = new AccountManagementController(this);
+        controller = new AccountManagementChefController(this);
         controller.initialize();
     }
 
+    
     @FXML
     private void changePhoto(ActionEvent event) {
         controller.changePhoto();
@@ -48,24 +59,25 @@ public class AccountManagementBoundary {
         controller.cancelChanges();
     }
 
+    
     @FXML
     private void goToHomepage(ActionEvent event) {
-        controller.goToHomepage();
+        controller.goToHomepage(); 
     }
 
     @FXML
-    private void goToEnrolledCourses(ActionEvent event) {
-        controller.goToEnrolledCourses();
+    private void goToCreateCourse(ActionEvent event) {
+        controller.goToCreateCourse();
+    }
+
+    @FXML
+    private void goToMonthlyReport(ActionEvent event) {
+        controller.goToMonthlyReport();
     }
 
     @FXML
     private void LogoutClick(ActionEvent event) {
         controller.LogoutClick();
-    }
-    
-    @FXML
-    private void goToUserCards(ActionEvent event) {
-        controller.goToUserCards();
     }
 
     public Label getUserNameLabel() { return userNameLabel; }
@@ -76,13 +88,15 @@ public class AccountManagementBoundary {
     public TextField getSurnameField() { return surnameField; }
     public TextField getEmailField() { return emailField; }
     public DatePicker getBirthDatePicker() { return birthDatePicker; }
+    public TextArea getDescriptionField() { return descriptionField; }
+    public TextField getExperienceYearsField() { return experienceYearsField; }
     public PasswordField getCurrentPasswordField() { return currentPasswordField; }
     public PasswordField getNewPasswordField() { return newPasswordField; }
     public PasswordField getConfirmPasswordField() { return confirmPasswordField; }
     public Button getSaveBtn() { return saveBtn; }
     public Button getCancelBtn() { return cancelBtn; }
-    public Button getViewUserCardsBtn() { return viewUserCardsBtn; }
 
+    
     public void showErrorMessage(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Errore");
@@ -106,15 +120,30 @@ public class AccountManagementBoundary {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
+    
     public void setProfileImages(String propicPath) {
         if (propicPath != null && !propicPath.isEmpty()) {
-            File imgFile = new File("src/main/resources/" + propicPath);
-            if (!imgFile.exists()) {
-                imgFile = new File(propicPath);
+            Image img = null;
+            try {
+                if (propicPath.startsWith("file:")) {
+                    img = new javafx.scene.image.Image(propicPath, 256, 256, true, true);
+                } else if (propicPath.startsWith("http") || propicPath.startsWith("jar:")) {
+                    img = new javafx.scene.image.Image(propicPath, 256, 256, true, true);
+                } else {
+                    File absFile = new File(propicPath);
+                    if (absFile.exists()) {
+                        img = new javafx.scene.image.Image(absFile.toURI().toString(), 256, 256, true, true);
+                    } else {
+                        File imgFile = new File("src/main/resources/" + propicPath);
+                        if (imgFile.exists()) {
+                            img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                img = null;
             }
-            if (imgFile.exists()) {
-                javafx.scene.image.Image img = new javafx.scene.image.Image(imgFile.toURI().toString(), 256, 256, true, true);
+            if (img != null) {
                 if (userProfileImage != null) {
                     userProfileImage.setImage(img);
                     ImageClipUtils.setCircularClip(userProfileImage, 40);

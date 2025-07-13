@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.boundary.EditCourseBoundary" stylesheets="@../css/root.css,@../css/editcourse.css" prefHeight="700" prefWidth="1000" styleClass="edit-course-container">
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.boundary.chef.EditCourseBoundary" stylesheets="@../css/root.css,@../css/editcourse.css" prefHeight="700" prefWidth="1000" styleClass="edit-course-container">
    
    <top>
      <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="header-section">

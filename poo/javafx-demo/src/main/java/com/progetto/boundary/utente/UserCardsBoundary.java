@@ -1,6 +1,5 @@
-package com.progetto.boundary;
+package com.progetto.boundary.utente;
 
-import com.progetto.controller.UserCardsController;
 import com.progetto.utils.CardValidator;
 import com.progetto.utils.SceneSwitcher;
 
@@ -13,6 +12,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import com.progetto.Entity.EntityDto.CartaDiCredito;
+import com.progetto.controller.utente.UserCardsController;
+
 import java.util.List;
 
 public class UserCardsBoundary {

@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.chart.*?>
 
-<BorderPane stylesheets="@../css/root.css,@../css/navbar.css,@../css/monthlyreport.css,@../css/searchisland.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.boundary.MonthlyReportBoundary"
+<BorderPane stylesheets="@../css/root.css,@../css/navbar.css,@../css/monthlyreport.css,@../css/searchisland.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.progetto.boundary.chef.MonthlyReportBoundary"
          prefHeight="700" prefWidth="1000" styleClass="homepage-container">
    <left>
      <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="280.0">

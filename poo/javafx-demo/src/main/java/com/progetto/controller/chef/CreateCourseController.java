@@ -1,4 +1,4 @@
-package com.progetto.controller;
+package com.progetto.controller.chef;
 
 
 import com.progetto.Entity.entityDao.BarraDiRicercaDao;
@@ -13,7 +13,7 @@ import com.progetto.Entity.EntityDto.SessioneOnline;
 import com.progetto.Entity.EntityDto.SessioniInPresenza;
 import com.progetto.Entity.entityDao.SessioneOnlineDao;
 import com.progetto.boundary.LogoutDialogBoundary;
-import com.progetto.boundary.CreateCourseBoundary;
+import com.progetto.boundary.chef.CreateCourseBoundary;
 import com.progetto.utils.SceneSwitcher;
 import com.progetto.utils.SuccessDialogUtils;
 import com.progetto.Entity.EntityDto.Chef;
@@ -1138,28 +1138,11 @@ public class CreateCourseController {
         ArrayList<String> tipiCucina = new ArrayList<>();
         if (cucina1 != null && !cucina1.trim().isEmpty()) tipiCucina.add(cucina1);
         if (cucina2 != null && !cucina2.trim().isEmpty() && !cucina2.equals(cucina1)) tipiCucina.add(cucina2);
-        try {
-            Connection conn = ConnectionJavaDb.getConnection();
-            for (String tipo : tipiCucina) {
-                // Recupera id tipo cucina
-                PreparedStatement ps = conn.prepareStatement("SELECT IDTipoCucina FROM TipoDiCucina WHERE Nome = ?");
-                ps.setString(1, tipo);
-                ResultSet rs = ps.executeQuery();
-                int idTipo = -1;
-                if (rs.next()) idTipo = rs.getInt(1);
-                rs.close();
-                ps.close();
-                if (idTipo != -1) {
-                    PreparedStatement ps2 = conn.prepareStatement("INSERT INTO TipoDiCucina_Corso (IDTipoCucina, IDCorso) VALUES (?, ?)");
-                    ps2.setInt(1, idTipo);
-                    ps2.setInt(2, idCorso);
-                    ps2.executeUpdate();
-                    ps2.close();
-                }
+        for (String tipo : tipiCucina) {
+            int idTipo = CorsoDao.getIdTipoCucinaByNome(tipo);
+            if (idTipo != -1) {
+                CorsoDao.inserisciTipoCucinaCorso(idTipo, idCorso);
             }
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         ricettaDao ricettaDao = new ricettaDao();
