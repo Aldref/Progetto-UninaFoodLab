@@ -90,7 +90,6 @@ public class SessioneInPresenzaDao extends SessioniDao {
             int idCorso = ((SessioniInPresenza) sessione).getId_Corso();
             int idChef = ((SessioniInPresenza) sessione).getChef() != null ? ((SessioniInPresenza) sessione).getChef().getId_Chef() : 0;
             if (idCorso <= 0 || idChef <= 0) {
-                System.err.println("[ERRORE] id_Corso o id_Chef non valorizzati: idCorso=" + idCorso + ", idChef=" + idChef);
                 return;
             }
             ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -119,7 +118,7 @@ public class SessioneInPresenzaDao extends SessioniDao {
             dbu.closeStatement(ps);
             dbu.closeConnection(conn);
             if (generatedKeys != null) {
-                try { generatedKeys.close(); } catch (SQLException e) { /* no debug print */ }
+                try { generatedKeys.close(); } catch (SQLException e) { }
             }
         }
     }

@@ -6,11 +6,13 @@ com\progetto\boundary\LoginBoundary.class
 com\progetto\Entity\EntityDto\GraficoChef.class
 com\progetto\controller\utente\UserCardsController.class
 com\progetto\boundary\chef\EditCourseBoundary$1.class
+com\progetto\controller\chef\EditCourseController$9.class
 com\progetto\Entity\EntityDto\CartaDiCredito.class
 com\progetto\controller\utente\EnrolledCoursesController.class
 com\progetto\controller\chef\MonthlyReportController.class
 com\progetto\boundary\chef\CreateCourseBoundary$1.class
 com\progetto\jdbc\ConnectionJavaDb.class
+com\progetto\controller\chef\EditCourseController$6.class
 com\progetto\Entity\EntityDto\Corso.class
 com\progetto\boundary\chef\CreateCourseBoundary$4.class
 com\progetto\Entity\EntityDto\Utente.class
@@ -29,6 +31,7 @@ com\progetto\controller\chef\CreateCourseController.class
 com\progetto\Entity\entityDao\GraficoChefDao.class
 com\progetto\controller\chef\AccountManagementChefController.class
 com\progetto\controller\CardCorsoController.class
+com\progetto\controller\chef\EditCourseController$7.class
 com\progetto\Entity\entityDao\SessioniDao.class
 com\progetto\boundary\chef\EditCourseBoundary.class
 com\progetto\boundary\utente\AccountManagementBoundary.class
@@ -44,6 +47,7 @@ com\progetto\controller\chef\EditCourseController$5.class
 com\progetto\boundary\LogoutDialogBoundary.class
 com\progetto\controller\utente\HomepageUtenteController$1.class
 com\progetto\boundary\chef\CreateCourseBoundary$3.class
+com\progetto\controller\chef\EditCourseController$8.class
 com\progetto\utils\SceneSwitcher.class
 com\progetto\Entity\entityDao\SessioneOnlineDao.class
 com\progetto\boundary\chef\EditCourseBoundary$3.class
@@ -58,6 +62,7 @@ com\progetto\utils\UnifiedRecipeIngredientUI.class
 com\progetto\controller\chef\HomepageChefController.class
 com\progetto\boundary\chef\AccountManagementChefBoundary.class
 com\progetto\controller\LoginController.class
+com\progetto\controller\chef\EditCourseController$10.class
 com\progetto\controller\chef\EditCourseController$3.class
 com\progetto\boundary\utente\UserCardsBoundary$1.class
 com\progetto\Entity\EntityDto\Chef.class

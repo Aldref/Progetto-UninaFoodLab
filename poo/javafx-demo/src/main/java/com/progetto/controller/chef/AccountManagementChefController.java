@@ -125,25 +125,11 @@ public class AccountManagementChefController {
             String resourcesDir = "src/main/resources/immagini/PropicChef/";
             new File(resourcesDir).mkdirs();
             String absolutePath = resourcesDir + fileName;
-            tempSelectedPhoto = null;
-            tempAbsolutePhotoPath = null;
 
-            try {
-                Files.copy(selectedFile.toPath(), new File(absolutePath).toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (Exception e) {
-                boundary.showErrorMessage("Errore nel salvataggio della foto profilo: " + e.getMessage());
-                return;
-            }
+            tempSelectedPhoto = selectedFile;
+            tempAbsolutePhotoPath = absolutePath;
 
-            boundary.setProfileImages(relativePath);
-
-            loggedChef.setUrl_Propic(relativePath);
-            try {
-                chefDao.ModificaUtente(loggedChef);
-            } catch (Exception e) {
-                boundary.showErrorMessage("Errore nel salvataggio della foto profilo nel database: " + e.getMessage());
-                return;
-            }
+            boundary.setProfileImages(selectedFile.toURI().toString());
         }
     }
 
@@ -242,6 +228,7 @@ public class AccountManagementChefController {
                 String fileName = destFile.getName();
                 String relativePath = "immagini/PropicChef/" + fileName;
                 loggedChef.setUrl_Propic(relativePath);
+                boundary.setProfileImages(destFile.toURI().toString());
                 changed = true;
             } catch (Exception e) {
                 boundary.showErrorMessage("Errore nel salvataggio della foto profilo: " + e.getMessage());

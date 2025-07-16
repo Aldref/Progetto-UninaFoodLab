@@ -45,7 +45,7 @@ public ArrayList<String> Categorie() {
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
-    String query = "SELECT DISTINCT Nome as valore FROM TIPODICUCINA";
+    String query = "SELECT DISTINCT Nome as valore FROM TIPODICUCINA ORDER BY Nome";
     try {
         conn = ConnectionJavaDb.getConnection();
         ps = conn.prepareStatement(query);

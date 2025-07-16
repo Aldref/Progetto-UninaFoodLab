@@ -220,22 +220,27 @@ public class CalendarDialogController {
         durationLabel.getStyleClass().add("detail-label");
         durationBox.getChildren().addAll(durationIcon, durationLabel);
 
+
         Button confermaBtn = null;
         Label confermaMsg = null;
 
         if (sessione instanceof SessioniInPresenza) {
             SessioniInPresenza s = (SessioniInPresenza) sessione;
-            String nomeRicetta = "";
-            if (s.getRicette() != null && !s.getRicette().isEmpty() && s.getRicette().get(0) != null) {
-                nomeRicetta = s.getRicette().get(0).getNome();
-            }
             String indirizzo = s.getVia() != null ? s.getVia() : "";
             String cap = s.getCap() != null ? s.getCap() : "";
             String citta = s.getCitta() != null ? s.getCitta() : "";
 
-            Label ricettaLabel = new Label("Ricetta: " + nomeRicetta);
-            ricettaLabel.getStyleClass().add("detail-label");
-            ricettaLabel.setWrapText(true);
+            // Mostra tutti i nomi delle ricette
+            if (s.getRicette() != null && !s.getRicette().isEmpty()) {
+                for (Ricetta ricetta : s.getRicette()) {
+                    if (ricetta != null) {
+                        Label ricettaLabel = new Label("Ricetta: " + ricetta.getNome());
+                        ricettaLabel.getStyleClass().add("detail-label");
+                        ricettaLabel.setWrapText(true);
+                        detailsContainer.getChildren().add(ricettaLabel);
+                    }
+                }
+            }
 
             HBox addressBox = new HBox(8);
             Label addressIcon = new Label("📍");
@@ -245,25 +250,25 @@ public class CalendarDialogController {
             addressLabel.setWrapText(true);
             addressBox.getChildren().addAll(addressIcon, addressLabel);
 
-            detailsContainer.getChildren().addAll(startTimeBox, durationBox, ricettaLabel, addressBox);
+            detailsContainer.getChildren().addAll(startTimeBox, durationBox, addressBox);
 
-            if (s.getRicette() != null && !s.getRicette().isEmpty()) {
-                for (Ricetta ricetta : s.getRicette()) {
-                    if (ricetta != null && ricetta.getIngredientiRicetta() != null && !ricetta.getIngredientiRicetta().isEmpty()) {
-                        Label ingrTitle = new Label("Ingredienti per la sessione:");
-                        ingrTitle.getStyleClass().add("detail-label");
-                        detailsContainer.getChildren().add(ingrTitle);
-                        for (Ingredienti ingr : ricetta.getIngredientiRicetta()) {
-                            IngredientiDao ingrDao = new IngredientiDao();
-                            ingrDao.recuperaQuantitaTotale(ingr, ricetta);
-                            String ingrText = "- " + ingr.getNome() + ": " + ingr.getQuantitaTotale() + " " + ingr.getUnitaMisura();
-                            Label ingrLabel = new Label(ingrText);
-                            ingrLabel.getStyleClass().add("detail-label");
-                            detailsContainer.getChildren().add(ingrLabel);
-                        }
+        if (isChef && s.getRicette() != null && !s.getRicette().isEmpty()) {
+            for (Ricetta ricetta : s.getRicette()) {
+                if (ricetta != null && ricetta.getIngredientiRicetta() != null && !ricetta.getIngredientiRicetta().isEmpty()) {
+                    Label ingrTitle = new Label("Ingredienti totali per la sessione:");
+                    ingrTitle.getStyleClass().add("detail-label");
+                    detailsContainer.getChildren().add(ingrTitle);
+                    for (Ingredienti ingr : ricetta.getIngredientiRicetta()) {
+                        IngredientiDao ingrDao = new IngredientiDao();
+                        ingrDao.recuperaQuantitaTotale(ingr, ricetta);
+                        String ingrText = "- " + ingr.getNome() + ": " + ingr.getQuantitaTotale() + " " + ingr.getUnitaMisura();
+                        Label ingrLabel = new Label(ingrText);
+                        ingrLabel.getStyleClass().add("detail-label");
+                        detailsContainer.getChildren().add(ingrLabel);
                     }
                 }
             }
+        }
 
             UtenteVisitatore user = UtenteVisitatore.loggedUser;
             if (!isChef && user != null) {
@@ -333,11 +338,17 @@ public class CalendarDialogController {
         String descrizione;
         if (sessione instanceof SessioniInPresenza) {
             SessioniInPresenza s = (SessioniInPresenza) sessione;
-            String nomeRicetta = "";
-            if (s.getRicette() != null && !s.getRicette().isEmpty() && s.getRicette().get(0) != null) {
-                nomeRicetta = s.getRicette().get(0).getNome();
+            String nomiRicette = "";
+            if (s.getRicette() != null && !s.getRicette().isEmpty()) {
+                List<String> nomi = new ArrayList<>();
+                for (Ricetta ricetta : s.getRicette()) {
+                    if (ricetta != null) {
+                        nomi.add(ricetta.getNome());
+                    }
+                }
+                nomiRicette = String.join(", ", nomi);
             }
-            descrizione = "[PRESENZA] " + nomeRicetta;
+            descrizione = "[PRESENZA] " + nomiRicette;
         } else if (sessione instanceof SessioneOnline) {
             SessioneOnline s = (SessioneOnline) sessione;
             descrizione = "[TELEMATICA] " + (s.getApplicazione() != null ? s.getApplicazione() : "");

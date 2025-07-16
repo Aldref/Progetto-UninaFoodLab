@@ -328,6 +328,20 @@ public class CreateCourseBoundary {
             TextField durationField = new TextField();
             durationField.setPromptText("es. 2");
             addTextValidator(durationField, "[^\\d]", 1);
+            durationField.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (!newVal.isEmpty()) {
+                    try {
+                        int val = Integer.parseInt(newVal);
+                        if (val > 8) {
+                            durationField.setText("8");
+                        } else if (val < 1) {
+                            durationField.setText("1");
+                        }
+                    } catch (NumberFormatException e) {
+                        durationField.setText("");
+                    }
+                }
+            });
             durationBox.getChildren().addAll(durationLabel, durationField);
 
             sessionControls.put("durationField", durationField);
@@ -353,6 +367,7 @@ public class CreateCourseBoundary {
                                 String label = ((Label) fields.get(0)).getText().toLowerCase();
                                 if (label.contains("citt")) sessionControls.put("cityField", (TextField) fields.get(1));
                                 else if (label.contains("via")) sessionControls.put("streetField", (TextField) fields.get(1));
+                                else if (label.contains("cap")) sessionControls.put("capField", (TextField) fields.get(1));
                             }
                         }
                     }
@@ -514,6 +529,7 @@ public class CreateCourseBoundary {
         ComboBox<String> typeCombo = new ComboBox<>();
         typeCombo.getItems().addAll("In presenza", "Telematica");
         typeCombo.setPromptText("Seleziona tipo");
+        typeCombo.valueProperty().addListener((obs, oldVal, newVal) -> notifyControllerOfChange());
         typeBox.getChildren().addAll(typeLabel, typeCombo);
 
         HBox dateBox = new HBox(10);
@@ -530,6 +546,7 @@ public class CreateCourseBoundary {
                           (end != null && date.isAfter(end)));
             }
         });
+        datePicker.valueProperty().addListener((obs, oldVal, newVal) -> notifyControllerOfChange());
         dateBox.getChildren().addAll(dateLabel, datePicker);
 
         VBox detailsContainer = new VBox(10);
@@ -542,20 +559,22 @@ public class CreateCourseBoundary {
             recipesSectionBox.getChildren().clear();
             HBox timeBox = new HBox(10);
             Label timeLabel = new Label("Orario:");
-            Spinner<Integer> hourSpinner = new Spinner<>(6, 23, 18);
-            setupTimeSpinnerFormatter(hourSpinner, false);
-            Label colonLabel = new Label(":");
-            Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 0, 15);
-            setupTimeSpinnerFormatter(minuteSpinner, true);
-            timeBox.getChildren().addAll(timeLabel, hourSpinner, colonLabel, minuteSpinner);
+        Spinner<Integer> hourSpinner = new Spinner<>(6, 23, 18);
+        setupTimeSpinnerFormatter(hourSpinner, false);
+        hourSpinner.valueProperty().addListener((obsHour, oldHour, newHour) -> notifyControllerOfChange());
+        Label colonLabel = new Label(":");
+        Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 0, 15);
+        setupTimeSpinnerFormatter(minuteSpinner, true);
+        minuteSpinner.valueProperty().addListener((obsMinute, oldMinute, newMinute) -> notifyControllerOfChange());
+        timeBox.getChildren().addAll(timeLabel, hourSpinner, colonLabel, minuteSpinner);
 
-            HBox durationBox = new HBox(10);
-            Label durationLabel = new Label("Durata (ore):");
-            TextField durationField = new TextField();
-            durationField.setPromptText("es. 2");
-            addTextValidator(durationField, "[^\\d]", 1);
-            durationField.textProperty().addListener((obs2, oldVal2, newVal2) -> notifyControllerOfChange());
-            durationBox.getChildren().addAll(durationLabel, durationField);
+        HBox durationBox = new HBox(10);
+        Label durationLabel = new Label("Durata (ore):");
+        TextField durationField = new TextField();
+        durationField.setPromptText("es. 2");
+        addTextValidator(durationField, "[^\\d]", 1);
+        durationField.textProperty().addListener((obsDuration, oldDuration, newDuration) -> notifyControllerOfChange());
+        durationBox.getChildren().addAll(durationLabel, durationField);
 
             detailsContainer.getChildren().addAll(timeBox, durationBox);
 
@@ -882,92 +901,25 @@ public class CreateCourseBoundary {
     }
 
     public boolean areAllHybridSessionsValid() {
-        boolean atLeastOneSession = false;
-        StringBuilder errorBuilder = new StringBuilder();
-        int sessionIdx = 0;
-        for (Map<String, Control> controls : hybridSessionControlsList) {
-            ComboBox<String> typeCombo = (ComboBox<String>) controls.get("typeCombo");
-            ComboBox<String> dayCombo = (ComboBox<String>) controls.get("dayCombo");
-            Spinner<Integer> hourSpinner = (Spinner<Integer>) controls.get("hourSpinner");
-            Spinner<Integer> minuteSpinner = (Spinner<Integer>) controls.get("minuteSpinner");
-            TextField durationField = (TextField) controls.get("durationField");
-            DatePicker datePicker = null; 
-
-            boolean anyFieldFilled = false;
-            if ((typeCombo != null && typeCombo.getValue() != null) ||
-                (dayCombo != null && dayCombo.getValue() != null) ||
-                (hourSpinner != null) ||
-                (minuteSpinner != null) ||
-                (durationField != null && !durationField.getText().isEmpty())) {
-                anyFieldFilled = true;
-            }
-            if (!anyFieldFilled) {
-                sessionIdx++;
-                continue;
-            }
-            atLeastOneSession = true;
-            boolean valid = true;
-            StringBuilder sessionError = new StringBuilder();
-            if (typeCombo == null || typeCombo.getValue() == null) {
-                valid = false;
-                sessionError.append("- Seleziona il tipo di sessione.\n");
-            }
-            if (dayCombo == null || dayCombo.getValue() == null) {
-                valid = false;
-                sessionError.append("- Seleziona il giorno della settimana.\n");
-            }
-            if (hourSpinner == null || minuteSpinner == null) {
-                valid = false;
-                sessionError.append("- Inserisci l'orario della sessione.\n");
-            }
-            if (durationField == null || durationField.getText().isEmpty()) {
-                valid = false;
-                sessionError.append("- Inserisci la durata della sessione.\n");
-            }
-            String tipo = (typeCombo != null) ? typeCombo.getValue() : null;
-            if ("In presenza".equals(tipo)) {
-                TextField cityField = (TextField) controls.get("cityField");
-                TextField streetField = (TextField) controls.get("streetField");
-                TextField capField = (TextField) controls.get("capField");
-                if (cityField == null || cityField.getText().isEmpty()) {
-                    valid = false;
-                    sessionError.append("- Inserisci la città.\n");
-                }
-                if (streetField == null || streetField.getText().isEmpty()) {
-                    valid = false;
-                    sessionError.append("- Inserisci la via.\n");
-                }
-                if (capField == null || capField.getText().isEmpty() || !capField.getText().matches("\\d{5}")) {
-                    valid = false;
-                    sessionError.append("- Inserisci un CAP valido (5 cifre).\n");
-                }
-            } else if ("Telematica".equals(tipo)) {
-                ComboBox<?> applicationComboBox = (ComboBox<?>) controls.get("applicationComboBox");
-                TextField meetingCodeField = (TextField) controls.get("meetingCodeField");
-                if (applicationComboBox == null || applicationComboBox.getValue() == null || applicationComboBox.getValue().toString().isEmpty()) {
-                    valid = false;
-                    sessionError.append("- Seleziona l'applicazione.\n");
-                }
-                if (meetingCodeField == null || meetingCodeField.getText().isEmpty()) {
-                    valid = false;
-                    sessionError.append("- Inserisci il codice riunione.\n");
+        if (hybridSessions.isEmpty()) return false;
+        for (Sessione sessione : hybridSessions) {
+            if (sessione == null) return false;
+            if (sessione instanceof com.progetto.Entity.EntityDto.SessioniInPresenza) {
+                LocalDate data = sessione.getData();
+                Map<LocalDate, ObservableList<Ricetta>> ricetteMap = getHybridSessionRecipes();
+                ObservableList<Ricetta> ricette = ricetteMap.get(data);
+                if (ricette == null || ricette.isEmpty()) return false;
+                for (Ricetta ricetta : ricette) {
+                    if (ricetta == null || ricetta.getNome() == null || ricetta.getNome().trim().isEmpty()) return false;
+                    List<Ingredienti> ingredienti = ricetta.getIngredientiRicetta();
+                    if (ingredienti == null || ingredienti.isEmpty()) return false;
+                    for (Ingredienti ing : ingredienti) {
+                        if (ing == null || ing.getNome() == null || ing.getNome().trim().isEmpty()) return false;
+                        if (ing.getQuantita() <= 0) return false;
+                        if (ing.getUnitaMisura() == null || ing.getUnitaMisura().trim().isEmpty()) return false;
+                    }
                 }
             }
-            if (!valid) {
-                errorBuilder.append("Sessione ").append(sessionIdx + 1).append(":\n");
-                errorBuilder.append(sessionError);
-            }
-            sessionIdx++;
-        }
-        if (!atLeastOneSession) {
-            if (hybridErrorLabel != null) hybridErrorLabel.setText("Compila almeno una sessione ibrida.");
-            return false;
-        }
-        if (errorBuilder.length() > 0) {
-            if (hybridErrorLabel != null) hybridErrorLabel.setText(errorBuilder.toString());
-            return false;
-        } else {
-            if (hybridErrorLabel != null) hybridErrorLabel.setText("");
         }
         return true;
     }
@@ -1158,7 +1110,7 @@ public class CreateCourseBoundary {
                 VBox recipesBox = (VBox) node;
                 for (int i = recipesBox.getChildren().size() - 1; i >= 0; i--) {
                     if (recipesBox.getChildren().get(i) instanceof Button) {
-                        VBox recipeBox = createRecipeBox(nuova, genericRecipes, recipesBox);
+                        VBox recipeBox = UnifiedRecipeIngredientUI.createUnifiedRecipeBox(nuova, genericRecipes, recipesBox, false, this::notifyControllerOfChange, unitaDiMisuraEnum);
                         recipesBox.getChildren().add(i, recipeBox);
                         break;
                     }
@@ -1202,7 +1154,7 @@ public class CreateCourseBoundary {
         ricettaIniziale.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
         genericRecipes.add(ricettaIniziale);
         
-        VBox recipeBox = createRecipeBox(ricettaIniziale, genericRecipes, recipesBox);
+        VBox recipeBox = UnifiedRecipeIngredientUI.createUnifiedRecipeBox(ricettaIniziale, genericRecipes, recipesBox, false, this::notifyControllerOfChange, unitaDiMisuraEnum);
         recipesBox.getChildren().add(recipeBox);
         
         Button addRecipeBtn = new Button("+ Aggiungi ricetta");
@@ -1216,21 +1168,19 @@ public class CreateCourseBoundary {
     private VBox createSessionRecipeBox(LocalDate data) {
         VBox sessionBox = new VBox(10);
         sessionBox.getStyleClass().add("session-recipe-box");
-        HBox appBox = new HBox(10);
-        String dateString = data.getDayOfWeek().toString() + " " + data.toString();
+        String giornoItaliano = CreateCourseController.getItalianDayNameStatic(data);
+        String dateString = giornoItaliano + " " + data.toString();
         Label sessionLabel = new Label("Sessione del " + dateString);
-        sessionLabel.getStyleClass().add("session-title");
+        sessionLabel.getStyleClass().add("session-day-label");
         ObservableList<Ricetta> sessionRecipes = FXCollections.observableArrayList();
         sessionePresenzaRicette.put(data, sessionRecipes);
         Ricetta ricettaIniziale = new Ricetta("");
         ricettaIniziale.setIngredientiRicetta(new ArrayList<>());
         ricettaIniziale.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
         sessionRecipes.add(ricettaIniziale);
-        
         VBox recipesBox = new VBox(8);
-        VBox recipeBox = createRecipeBox(ricettaIniziale, sessionRecipes, recipesBox);
+        VBox recipeBox = UnifiedRecipeIngredientUI.createUnifiedRecipeBox(ricettaIniziale, sessionRecipes, recipesBox, false, this::notifyControllerOfChange, unitaDiMisuraEnum);
         recipesBox.getChildren().add(recipeBox);
-        
         Button addRecipeBtn = new Button("+ Aggiungi ricetta per questa sessione");
         addRecipeBtn.getStyleClass().add("add-recipe-button");
         addRecipeBtn.setOnAction(e -> {
@@ -1238,19 +1188,12 @@ public class CreateCourseBoundary {
             nuova.setIngredientiRicetta(new ArrayList<>());
             nuova.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
             sessionRecipes.add(nuova);
-            
-            VBox newRecipeBox = createRecipeBox(nuova, sessionRecipes, recipesBox);
+            VBox newRecipeBox = UnifiedRecipeIngredientUI.createUnifiedRecipeBox(nuova, sessionRecipes, recipesBox, false, this::notifyControllerOfChange, unitaDiMisuraEnum);
             recipesBox.getChildren().add(recipesBox.getChildren().size() - 1, newRecipeBox);
-            notifyControllerOfChange();
         });
         recipesBox.getChildren().add(addRecipeBtn);
-        
         sessionBox.getChildren().addAll(sessionLabel, recipesBox);
         return sessionBox;
-    }
-    
-    private VBox createRecipeBox(Ricetta ricetta, ObservableList<Ricetta> recipesList, VBox container) {
-        return UnifiedRecipeIngredientUI.createUnifiedRecipeBox(ricetta, recipesList, container, false, this::notifyControllerOfChange, unitaDiMisuraEnum);
     }
 
     private HBox createIngredientBox(Ingredienti ingrediente, Ricetta ricetta, VBox container) {

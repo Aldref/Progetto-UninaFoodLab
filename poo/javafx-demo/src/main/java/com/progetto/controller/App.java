@@ -21,5 +21,9 @@ public class App extends Application {
     public void start(Stage stage) throws Exception {
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/immagini/logo.png")));
         SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab Login");
-    }
+        stage.setOnCloseRequest(event -> {
+            javafx.application.Platform.exit();
+        System.exit(0);
+    });
+}
 }

@@ -12,10 +12,6 @@ import com.progetto.Entity.EntityDto.Chef;
 import com.progetto.Entity.entityDao.ChefDao;
 
 public class LoginController {
-
-    /**
-     * Gestisce il login. Restituisce null se login ok, oppure un messaggio di errore se fallito.
-     */
     public String handleLogin(ActionEvent event, String email, String password) {
         try {
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -27,7 +23,6 @@ public class LoginController {
             }
 
             if ("c".equals(tipo)) {
-                // Chef
                 ChefDao chefDao = new ChefDao();
                 Chef chef = new Chef();
                 chef.setEmail(email);
@@ -37,7 +32,6 @@ public class LoginController {
                 SceneSwitcher.switchToMainApp(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Homepage");
                 return null;
             } else if ("v".equals(tipo)) {
-                // Utente Visitatore
                 UtenteVisitatore utente = new UtenteVisitatore();
                 utente.setEmail(email);
                 utente.setPassword(password);
@@ -49,7 +43,6 @@ public class LoginController {
                 return "Email o password errati.";
             }
         } catch (IOException e) {
-            // TODO: handle exception appropriately (logging or user feedback)
             return "Errore interno. Riprova.";
         }
     }

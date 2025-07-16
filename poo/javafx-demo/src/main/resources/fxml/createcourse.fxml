@@ -207,7 +207,7 @@
                                     </VBox>
                                     <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                                        <children>
-                                          <Label styleClass="field-label" text="Durata (minuti) *" />
+                                          <Label styleClass="field-label" text="Durata (ore) *" />
                                           <TextField fx:id="durationField" promptText="es. 120" styleClass="form-field, duration-field" />
                                        </children>
                                     </VBox>
@@ -294,7 +294,7 @@
                                     </VBox>
                                     <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                                        <children>
-                                          <Label styleClass="field-label" text="Durata (minuti) *" />
+                                          <Label styleClass="field-label" text="Durata (ore) *" />
                                           <TextField fx:id="onlineDurationField" promptText="es. 120" styleClass="form-field, duration-field" />
                                        </children>
                                     </VBox>

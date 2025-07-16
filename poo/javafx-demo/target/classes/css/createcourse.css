@@ -1,3 +1,9 @@
+.session-day-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C56C9;
+    -fx-padding: 10 0 10 0;
+}
 .ingredient-name-field, .ingredient-quantity-field {
     -fx-background-color: #f8f9fa;
     -fx-border-color: #bfc9d1;

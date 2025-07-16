@@ -214,15 +214,30 @@ public class CreateCourseController {
             }
         });
 
+        durationField.setPromptText("es. 4");
+        onlineDurationField.setPromptText("es. 4");
         try {
             BarraDiRicercaDao dao = new BarraDiRicercaDao();
             java.util.List<String> categorie = dao.Categorie();
             ObservableList<String> cuisineTypes = FXCollections.observableArrayList(categorie);
-            cuisineTypeComboBox1.setItems(cuisineTypes);
-            cuisineTypeComboBox2.setItems(cuisineTypes);
-            cuisineTypeComboBox1.setValue(null);
-            cuisineTypeComboBox2.setValue(null);
+            ObservableList<String> cuisineTypesWithNone = FXCollections.observableArrayList();
+            cuisineTypesWithNone.add("Nessuna selezione");
+            cuisineTypesWithNone.addAll(cuisineTypes);
+            cuisineTypeComboBox1.setItems(cuisineTypesWithNone);
+            cuisineTypeComboBox2.setItems(cuisineTypesWithNone);
+            cuisineTypeComboBox1.setValue("Nessuna selezione");
+            cuisineTypeComboBox2.setValue("Nessuna selezione");
+            cuisineTypeComboBox1.setEditable(false);
+            cuisineTypeComboBox2.setEditable(false);
+            cuisineTypeComboBox1.setPromptText("Nessuna selezione");
+            cuisineTypeComboBox2.setPromptText("Nessuna selezione");
             cuisineTypeErrorLabel.setVisible(false);
+            cuisineTypeComboBox1.valueProperty().addListener((obs, oldVal, newVal) -> {
+                validateCuisineTypeSelectionAndUpdateButton();
+            });
+            cuisineTypeComboBox2.valueProperty().addListener((obs, oldVal, newVal) -> {
+                validateCuisineTypeSelectionAndUpdateButton();
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -378,7 +393,6 @@ public class CreateCourseController {
         container.getChildren().clear();
         checkBoxMap.clear();
         
-        // Pulisci anche l'ordine di selezione
         if (isPresence) {
             presenceDaySelectionOrder.clear();
         } else {
@@ -633,7 +647,7 @@ public class CreateCourseController {
     }
 
     private static final Map<String, Integer> ITALIAN_DAY_TO_NUM = new HashMap<>();
-    private static final Map<Integer, String> NUM_TO_ITALIAN_DAY = new HashMap<>();
+    public static final Map<Integer, String> NUM_TO_ITALIAN_DAY = new HashMap<>();
     static {
         ITALIAN_DAY_TO_NUM.put("lunedì", 1); NUM_TO_ITALIAN_DAY.put(1, "Lunedì");
         ITALIAN_DAY_TO_NUM.put("martedì", 2); NUM_TO_ITALIAN_DAY.put(2, "Martedì");
@@ -642,6 +656,11 @@ public class CreateCourseController {
         ITALIAN_DAY_TO_NUM.put("venerdì", 5); NUM_TO_ITALIAN_DAY.put(5, "Venerdì");
         ITALIAN_DAY_TO_NUM.put("sabato", 6); NUM_TO_ITALIAN_DAY.put(6, "Sabato");
         ITALIAN_DAY_TO_NUM.put("domenica", 7); NUM_TO_ITALIAN_DAY.put(7, "Domenica");
+    }
+
+    public static String getItalianDayNameStatic(LocalDate date) {
+        if (date == null || date.getDayOfWeek() == null) return "Lunedì";
+        return NUM_TO_ITALIAN_DAY.getOrDefault(date.getDayOfWeek().getValue(), "Lunedì");
     }
     private int giornoStringToDayOfWeek(String giorno) {
         if (giorno == null) return -1;
@@ -657,7 +676,18 @@ public class CreateCourseController {
         BooleanBinding basicValid = createBasicValidation();
         detailsValidBinding = createDetailsValidation();
         addCheckboxValidationListeners(detailsValidBinding);
-        createButton.disableProperty().bind(basicValid.not().or(detailsValidBinding.not()));
+        // Binding custom per includere la validazione dei tipi di cucina
+        BooleanBinding cuisineTypeValidBinding = Bindings.createBooleanBinding(() -> {
+            String cucina1 = cuisineTypeComboBox1.getValue();
+            String cucina2 = cuisineTypeComboBox2.getValue();
+            boolean validCucina1 = cucina1 != null && !cucina1.trim().isEmpty() && !"Nessuna selezione".equalsIgnoreCase(cucina1.trim());
+            boolean validCucina2 = cucina2 != null && !cucina2.trim().isEmpty() && !"Nessuna selezione".equalsIgnoreCase(cucina2.trim());
+            return validCucina1 || validCucina2;
+        }, cuisineTypeComboBox1.valueProperty(), cuisineTypeComboBox2.valueProperty());
+        createButton.disableProperty().bind(basicValid.not().or(detailsValidBinding.not()).or(cuisineTypeValidBinding.not()));
+    }
+
+    private void validateCuisineTypeSelectionAndUpdateButton() {
     }
     
     private BooleanBinding createBasicValidation() {
@@ -690,15 +720,14 @@ public class CreateCourseController {
 
         return Bindings.createBooleanBinding(() -> {
             String lessonType = lessonTypeComboBox.getValue();
-            boolean result = false;
-            if ("In presenza".equals(lessonType)) {
-                result = validatePresenceDetails();
+            if ("Entrambi".equals(lessonType) && boundary != null) {
+                return boundary.areAllHybridSessionsValid();
+            } else if ("In presenza".equals(lessonType)) {
+                return validatePresenceDetails();
             } else if ("Telematica".equals(lessonType)) {
-                result = validateOnlineDetails();
-            } else if ("Entrambi".equals(lessonType)) {
-                result = validateHybridSessions();
+                return validateOnlineDetails();
             }
-            return result;
+            return false;
         }, properties);
     }
     
@@ -723,10 +752,6 @@ public class CreateCourseController {
                 isValidDurationRange(onlineDurationField.getText());
     }
     
-
-
-
-    
     private Object[] getAllRelevantProperties() {
         List<Object> props = new ArrayList<>();
         props.add(lessonTypeComboBox.valueProperty());
@@ -738,6 +763,31 @@ public class CreateCourseController {
         props.add(applicationComboBox.valueProperty());
         props.add(meetingCodeField.textProperty());
         props.add(onlineDurationField.textProperty());
+        if (boundary != null) {
+            try {
+                java.lang.reflect.Field hybridSessionControlsListField = boundary.getClass().getDeclaredField("hybridSessionControlsList");
+                hybridSessionControlsListField.setAccessible(true);
+                Object controlsListObj = hybridSessionControlsListField.get(boundary);
+                if (controlsListObj instanceof java.util.List) {
+                    java.util.List<?> controlsList = (java.util.List<?>) controlsListObj;
+                    for (Object controlsMapObj : controlsList) {
+                        if (controlsMapObj instanceof java.util.Map) {
+                            java.util.Map<?, ?> controlsMap = (java.util.Map<?, ?>) controlsMapObj;
+                            for (Object controlObj : controlsMap.values()) {
+                                if (controlObj instanceof javafx.scene.control.TextField) {
+                                    props.add(((javafx.scene.control.TextField) controlObj).textProperty());
+                                } else if (controlObj instanceof javafx.scene.control.ComboBox) {
+                                    props.add(((javafx.scene.control.ComboBox<?>) controlObj).valueProperty());
+                                } else if (controlObj instanceof javafx.scene.control.Spinner) {
+                                    props.add(((javafx.scene.control.Spinner<?>) controlObj).valueProperty());
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+            }
+        }
         return props.toArray();
     }
     
@@ -1056,7 +1106,9 @@ public class CreateCourseController {
     public void createCourse() {
         String cucina1 = cuisineTypeComboBox1.getValue();
         String cucina2 = cuisineTypeComboBox2.getValue();
-        if ((cucina1 == null || cucina1.trim().isEmpty()) && (cucina2 == null || cucina2.trim().isEmpty())) {
+        boolean validCucina1 = cucina1 != null && !cucina1.trim().isEmpty() && !"Nessuna selezione".equalsIgnoreCase(cucina1.trim());
+        boolean validCucina2 = cucina2 != null && !cucina2.trim().isEmpty() && !"Nessuna selezione".equalsIgnoreCase(cucina2.trim());
+        if (!validCucina1 && !validCucina2) {
             cuisineTypeErrorLabel.setText("Seleziona almeno un tipo di cucina.");
             cuisineTypeErrorLabel.setVisible(true);
             return;
@@ -1120,9 +1172,9 @@ public class CreateCourseController {
         String lessonType = lessonTypeComboBox.getValue();
         if (boundary != null) {
             if ("In presenza".equals(lessonType)) {
-                updateSessioniPresenzaUI(); 
+                Map<LocalDate, ObservableList<Ricetta>> debugSessioni = boundary.getSessionePresenzaRicette();
             } else if ("Telematica".equals(lessonType)) {
-
+                
             } else if ("Entrambi".equals(lessonType)) {
                 boundary.updateHybridSessionsFromUI();
             }
@@ -1166,39 +1218,36 @@ public class CreateCourseController {
             return;
         }
         Map<LocalDate, ObservableList<Ricetta>> sessioniPresenza = boundary.getSessionePresenzaRicette();
-        if (sessioniPresenza == null || sessioniPresenza.isEmpty()) {
-            LocalDate today = LocalDate.now();
-            ObservableList<Ricetta> ricette = FXCollections.observableArrayList();
-            Ricetta ricetta = new Ricetta("Ricetta Test");
-            ricetta.setIngredientiRicetta(new ArrayList<>());
-            ricetta.getIngredientiRicetta().add(new Ingredienti("Ingrediente Test", 1, "g"));
-            ricette.add(ricetta);
-            sessioniPresenza = new HashMap<>();
-            sessioniPresenza.put(today, ricette);
+        if (sessioniPresenza == null) {
+            return;
+        }
+        if (sessioniPresenza.isEmpty()) {
+            return;
         }
         SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
         Chef chef = Chef.loggedUser;
-        String lessonType = lessonTypeComboBox.getValue();
+        int idCorso = this.lastCreatedCourseId;
+        ricettaDao ricettaDao = new ricettaDao();
+        IngredientiDao ingredientiDao = new IngredientiDao();
+        List<SessioniInPresenza> sessioniCreate = new ArrayList<>();
         for (Map.Entry<LocalDate, ObservableList<Ricetta>> entry : sessioniPresenza.entrySet()) {
             LocalDate data = entry.getKey();
             ObservableList<Ricetta> ricette = entry.getValue();
-            LocalTime orario = LocalTime.of(18, 0);
-            LocalTime durata = LocalTime.of(2, 0); 
-            String citta = null, via = null, cap = null;
-            if ("In presenza".equals(lessonType)) {
-                orario = (presenceHourSpinner != null && presenceMinuteSpinner != null) ? java.time.LocalTime.of(presenceHourSpinner.getValue(), presenceMinuteSpinner.getValue()) : java.time.LocalTime.of(18, 0);
-                try {
-                    int durataMinuti = (durationField != null && durationField.getText() != null && !durationField.getText().isEmpty()) ? Integer.parseInt(durationField.getText()) : 120;
-                    int hours = durataMinuti / 60;
-                    int minutes = durataMinuti % 60;
-                    durata = java.time.LocalTime.of(hours, minutes);
-                } catch (Exception e) {
-                    durata = java.time.LocalTime.of(2, 0);
-                }
-                citta = cityField != null ? cityField.getText() : null;
-                via = streetField != null ? streetField.getText() : null;
-                cap = capField != null ? capField.getText() : null;
+            LocalTime orario = (presenceHourSpinner != null && presenceMinuteSpinner != null)
+                ? java.time.LocalTime.of(presenceHourSpinner.getValue(), presenceMinuteSpinner.getValue())
+                : java.time.LocalTime.of(18, 0);
+            LocalTime durata = java.time.LocalTime.of(2, 0);
+            try {
+                int durataOre = (durationField != null && durationField.getText() != null && !durationField.getText().isEmpty())
+                    ? Integer.parseInt(durationField.getText())
+                    : 2;
+                durata = java.time.LocalTime.of(durataOre, 0);
+            } catch (Exception e) {
+                durata = java.time.LocalTime.of(2, 0);
             }
+            String citta = cityField != null ? cityField.getText() : null;
+            String via = streetField != null ? streetField.getText() : null;
+            String cap = capField != null ? capField.getText() : null;
             SessioniInPresenza sessione = new SessioniInPresenza(
                 getItalianDayName(data),
                 data,
@@ -1207,38 +1256,41 @@ public class CreateCourseController {
                 citta,
                 via,
                 cap,
-                null, 
-                0 
+                null,
+                0
             );
-            sessione.setId_Corso(this.lastCreatedCourseId);
+            sessione.setId_Corso(idCorso);
             sessione.setChef(chef);
-            sessione.setRicette(new ArrayList<>(ricette));
             try {
                 presenzaDao.MemorizzaSessione(sessione);
-                for (Ricetta ricetta : ricette) {
-                    collegaRicettaASessionePresenza(sessione.getId_Sessione(), ricetta.getId_Ricetta());
+                if (sessione.getId_Sessione() > 0) {
+                    sessioniCreate.add(sessione);
+                    for (Ricetta ricetta : ricette) {
+                        salvaRicettaCompleta(ricetta, ricettaDao, ingredientiDao);
+                        if (ricetta.getId_Ricetta() > 0) {
+                            presenzaDao.associaRicettaASessione(sessione, ricetta);
+                        }
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
-    }
-
-    private void collegaRicettaASessionePresenza(int idSessione, int idRicetta) {
-        String query = "INSERT INTO sessione_presenza_ricetta (IdSessionePresenza, IdRicetta) VALUES (?, ?)";
-        try (Connection conn = ConnectionJavaDb.getConnection();
-            PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setInt(1, idSessione);
-            ps.setInt(2, idRicetta);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
+        ObservableList<Ricetta> genericRecipes = boundary.getGenericRecipes();
+        if (genericRecipes != null && !genericRecipes.isEmpty()) {
+            for (Ricetta ricetta : genericRecipes) {
+                salvaRicettaCompleta(ricetta, ricettaDao, ingredientiDao);
+                if (ricetta.getId_Ricetta() > 0) {
+                    for (SessioniInPresenza sessione : sessioniCreate) {
+                        presenzaDao.associaRicettaASessione(sessione, ricetta);
+                    }
+                }
+            }
         }
     }
 
     private void salvaSessioniTelematica() {
         if (boundary == null) {
-            // debug print rimosso
             return;
         }
         List<SessioneOnline> telematicSessions = boundary.getSessioniTelematiche();
@@ -1285,7 +1337,23 @@ public class CreateCourseController {
     }
 
     private void salvaRicettaCompleta(Ricetta ricetta, ricettaDao ricettaDao, IngredientiDao ingredientiDao) {
-        if (!isValidRicetta(ricetta)) return;
+        if (!isValidRicetta(ricetta)) {
+            if (ricetta == null) {
+                return;
+            }
+            List<Ingredienti> ingredienti = ricetta.getIngredientiRicetta();
+            if (ingredienti == null) {
+            } else if (ingredienti.isEmpty()) {
+            } else {
+                for (int i = 0; i < ingredienti.size(); i++) {
+                    Ingredienti ing = ingredienti.get(i);
+                    if (ing == null) {
+                        continue;
+                    }
+                }
+            }
+            return;
+        }
         ricetta.setId_Ricetta(0);
         ricettaDao.memorizzaRicetta(ricetta);
         if (ricetta.getId_Ricetta() <= 0) {
@@ -1294,7 +1362,7 @@ public class CreateCourseController {
         for (Ingredienti ingrediente : ricetta.getIngredientiRicetta()) {
             if (ingrediente.getId_Ingrediente() == 0) {
                 ingrediente.setIdIngrediente(0); 
-                ingredientiDao.memorizzaIngredienti(ingrediente);
+                ingredientiDao.memorizzaIngredienti(ingrediente); 
             }
         }
         for (Ingredienti ingrediente : ricetta.getIngredientiRicetta()) {
@@ -1345,13 +1413,12 @@ public class CreateCourseController {
                 s.setId_Corso(idCorso);
                 s.setChef(chef);
                 presenzaDao.MemorizzaSessione(s);
-                List<Ricetta> ricette = new ArrayList<>();
-                if (hybridSessionRecipes != null && hybridSessionRecipes.containsKey(s.getData())) {
-                    ricette.addAll(hybridSessionRecipes.get(s.getData()));
-                }
-                for (Ricetta ricetta : ricette) {
-                    salvaRicettaCompleta(ricetta, ricettaDao, ingredientiDao);
-                    collegaRicettaASessionePresenza(s.getId_Sessione(), ricetta.getId_Ricetta());
+                if (s.getId_Sessione() > 0 && hybridSessionRecipes != null && hybridSessionRecipes.containsKey(s.getData())) {
+                    List<Ricetta> ricette = new ArrayList<>(hybridSessionRecipes.get(s.getData()));
+                    for (Ricetta ricetta : ricette) {
+                        salvaRicettaCompleta(ricetta, ricettaDao, ingredientiDao);
+                        presenzaDao.associaRicettaASessione(s, ricetta);
+                    }
                 }
             }
         }

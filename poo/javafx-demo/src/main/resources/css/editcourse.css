@@ -2,6 +2,13 @@
     -fx-background-color: #e0e0e0;
     -fx-text-fill: #888;
 }
+
+.session-day-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C56C9;
+    -fx-padding: 10 0 10 0;
+}
 .session-past {
     -fx-background-color: #f0f0f0;
 }
