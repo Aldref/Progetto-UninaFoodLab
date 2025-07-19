@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 public class CardValidator {
 
-    // Ritorna il tipo di carta: "Visa", "Mastercard" o "Unknown"
     public static String getCardType(String cardNumber) {
         if (cardNumber == null) return "Unknown";
         if (cardNumber.startsWith("4")) {

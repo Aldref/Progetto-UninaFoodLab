@@ -317,7 +317,18 @@ public class PaymentPageBoundary implements Initializable {
         } else {
             carta.setUltimeQuattroCifre(numero);
         }
-        carta.setCircuito(CardValidator.getCardType(numero).toLowerCase());
+        String tipo = CardValidator.getCardType(numero);
+        if (tipo != null) {
+            tipo = tipo.trim().toLowerCase();
+            if (tipo.equals("visa")) {
+                carta.setCircuito(Circuito.Visa);
+            } else if (tipo.equals("mastercard")) {
+                carta.setCircuito(Circuito.Mastercard);
+            } else {
+                showError("numerocarta", "Circuito carta non riconosciuto.");
+            }
+        }
+
         return carta;
     }
 }

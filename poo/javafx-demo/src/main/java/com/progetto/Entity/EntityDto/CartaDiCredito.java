@@ -47,7 +47,7 @@ public String getCircuito() {
     return Circuito;
 }
 
-public void setCircuito(String circuito) {
+public void setCircuito(Circuito circuito) {
     this.Circuito = circuito;
 }
 public String getIdCarta() {
