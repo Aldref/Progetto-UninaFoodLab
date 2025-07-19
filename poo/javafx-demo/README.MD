@@ -44,6 +44,7 @@ Si sviluppi un applicativo Java con interfaccia grafica (Swing o JavaFX) per la 
 - Tutte le operazioni di gestione corsi, chef, ricette e ingredienti sono gestite tramite interfaccia grafica.
 - Il progetto è pensato per essere facilmente estendibile e manutenibile.
 - Per dettagli su installazione, uso e struttura del database consultare la documentazione nella cartella `docs/`.
+- Creare un file in questa directory "db.proprieties" Con URL, RUOLO e PASSWORD per accedere al database.
 
 
 
