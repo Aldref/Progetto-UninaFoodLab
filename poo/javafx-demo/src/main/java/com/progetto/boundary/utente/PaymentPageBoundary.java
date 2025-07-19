@@ -318,22 +318,8 @@ public class PaymentPageBoundary implements Initializable {
             carta.setUltimeQuattroCifre(numero);
         }
         String circuito = CardValidator.getCardType(numero);
-        if (circuito != null) {
-            circuito = circuito.trim().toLowerCase();
-            switch (circuito) {
-                case "visa":
-                    circuito = "Visa";
-                    break;
-                case "mastercard":
-                    circuito = "Mastercard";
-                    break;
-                default:
-                    circuito = "Sconosciuto";
-                    showError("numerocarta", "Circuito carta non riconosciuto.");
-            }
-        }
+        System.out.println("DEBUG: Circuito che salvo: '" + circuito + "'");
         carta.setCircuito(circuito);
-
         return carta;
     }
 }
