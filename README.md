@@ -13,8 +13,7 @@ La piattaforma permette agli chef di creare, gestire e visualizzare corsi di cuc
 ## Componenti del Progetto
 
 ### 1. Database Relazionale
-- **Tecnologia:** MySQL/PostgreSQL/Derby (configurabile)
-- **Struttura:** Tabelle per chef, utenti, corsi, sessioni, ricette, ingredienti, adesioni
+- **Linguaggio:** PostgreSQL
 - **Funzionalità:**
   - Gestione chef e utenti
   - Corsi tematici con sessioni online/pratiche
