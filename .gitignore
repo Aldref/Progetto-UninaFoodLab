@@ -1,2 +1,3 @@
 *.DS_Store
 poo/javafx-demo/target/
+poo/javafx-demo/db.properties

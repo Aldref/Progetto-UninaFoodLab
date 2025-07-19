@@ -19,17 +19,17 @@ public class ConnectionJavaDb{
             String profile = props.getProperty("db.profile", "default").trim();
             if (profile.equals("default")) {
                 URL = props.getProperty("db.url", "jdbc:postgresql://localhost:5432/Uninafoodlab");
-                USER = props.getProperty("db.user", "Mario");
-                PASSWORD = props.getProperty("db.password", "PasswordMario1");
+                USER = props.getProperty("db.user", "INSERISCI_USERNAME");
+                PASSWORD = props.getProperty("db.password", "INSERISCI_PASSWORD");
             } else {
                 URL = props.getProperty(profile + ".db.url", "jdbc:postgresql://localhost:5432/Uninafoodlab");
-                USER = props.getProperty(profile + ".db.user", "Mario");
-                PASSWORD = props.getProperty(profile + ".db.password", "PasswordMario1");
+                USER = props.getProperty(profile + ".db.user", "INSERISCI_USERNAME");
+                PASSWORD = props.getProperty(profile + ".db.password", "INSERISCI_PASSWORD");
             }
         } catch (IOException e) {
             URL = "jdbc:postgresql://localhost:5432/Uninafoodlab";
-            USER = "Mario";
-            PASSWORD = "PasswordMario1";
+            USER = "INSERISCI_USERNAME";
+            PASSWORD = "INSERISCI_PASSWORD";
         }
     }
 

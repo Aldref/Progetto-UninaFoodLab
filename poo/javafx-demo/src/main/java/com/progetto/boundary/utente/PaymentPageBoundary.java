@@ -318,7 +318,6 @@ public class PaymentPageBoundary implements Initializable {
             carta.setUltimeQuattroCifre(numero);
         }
         String circuito = CardValidator.getCardType(numero);
-        System.out.println("DEBUG: Circuito che salvo: '" + circuito + "'");
         carta.setCircuito(circuito);
         return carta;
     }
