@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2025.6.30)  12 JUL 2025 17:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2025.6.30)  19 JUL 2025 17:16
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
-**/mnt/c/Users/mario/Desktop/prova/Progetto-UninaFoodLab/poo/docs/Documentazione-Programmazione-Object-Oriented-OOBD39.tex
-(/mnt/c/Users/mario/Desktop/prova/Progetto-UninaFoodLab/poo/docs/Documentazione-Programmazione-Object-Oriented-OOBD39.tex
+**Documentazione-Programmazione-Object-Oriented-OOBD39.tex
+(./Documentazione-Programmazione-Object-Oriented-OOBD39.tex
 LaTeX2e <2021-11-15> patch level 1
-L3 programming layer <2022-01-21> (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+L3 programming layer <2022-01-21>
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
 (/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo
 File: size11.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
@@ -22,33 +22,43 @@ File: size11.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
 \abovecaptionskip=\skip47
 \belowcaptionskip=\skip48
 \bibindent=\dimen138
-) (/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
 Package: inputenc 2021/02/14 v1.3d Input encoding file
 \inpenc@prehook=\toks16
 \inpenc@posthook=\toks17
-) (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
- (/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
 Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
 \KV@toks@=\toks18
-) (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
 Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
- (/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
 Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
-) (/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 107.
- (/usr/share/texlive/texmf-dist/tex/latex/graphics-def/pdftex.def
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/pdftex.def
 File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen139
 \Gin@req@width=\dimen140
-) (/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
 Package: geometry 2020/01/02 v5.9 Page Geometry
- (/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
+
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
 Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
- (/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty
+
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty
 Package: iftex 2020/03/06 v1.0d TeX engine tests
 ))
 \Gm@cnth=\count193
@@ -63,9 +73,11 @@ Package: iftex 2020/03/06 v1.0d TeX engine tests
 \Gm@layouthoffset=\dimen147
 \Gm@layoutvoffset=\dimen148
 \Gm@dimlist=\toks19
-) (/usr/share/texlive/texmf-dist/tex/latex/xcolor/xcolor.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/xcolor/xcolor.sty
 Package: xcolor 2021/10/31 v2.13 LaTeX color extensions (UK)
- (/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
 Package xcolor Info: Driver file: pdftex.def on input line 227.
@@ -78,7 +90,8 @@ Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1372.
 Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1373.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1374.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1375.
-) (/usr/share/texlive/texmf-dist/tex/latex/titlesec/titlesec.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/titlesec/titlesec.sty
 Package: titlesec 2021/07/05 v2.14 Sectioning titles
 \ttl@box=\box50
 \beforetitleunit=\skip49
@@ -89,8 +102,10 @@ Package: titlesec 2021/07/05 v2.14 Sectioning titles
 \titlewidth=\dimen151
 \titlewidthlast=\dimen152
 \titlewidthfirst=\dimen153
-) (/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
-Package: fancyhdr 2021/01/28 v4.0.1 Extensive control of page headers and footers
+)
+(/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+Package: fancyhdr 2021/01/28 v4.0.1 Extensive control of page headers and foote
+rs
 \f@nch@headwidth=\skip51
 \f@nch@O@elh=\skip52
 \f@nch@O@erh=\skip53
@@ -100,7 +115,8 @@ Package: fancyhdr 2021/01/28 v4.0.1 Extensive control of page headers and footer
 \f@nch@O@erf=\skip57
 \f@nch@O@olf=\skip58
 \f@nch@O@orf=\skip59
-) (/usr/share/texlive/texmf-dist/tex/latex/tocloft/tocloft.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tocloft/tocloft.sty
 Package: tocloft 2017/08/31 v2.3i parameterised ToC, etc., typesetting
 Package tocloft Info: The document has section divisions on input line 51.
 \cftparskip=\skip60
@@ -136,56 +152,75 @@ Package tocloft Info: The document has section divisions on input line 51.
 \cftbeforetabskip=\skip88
 \cfttabindent=\skip89
 \cfttabnumwidth=\skip90
-) (/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count198
 \float@exts=\toks21
 \float@box=\box51
 \@float@everytoks=\toks22
 \@floatcapt=\box52
-) (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
 Package: hyperref 2021-06-07 v7.00m Hypertext links for LaTeX
- (/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+
+(/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
 Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
-) (/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
-Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO)
- (/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
 Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
 )
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
 Package pdftexcmds Info: \pdfdraftmode found.
-) (/usr/share/texlive/texmf-dist/tex/generic/kvsetkeys/kvsetkeys.sty
+)
+(/usr/share/texlive/texmf-dist/tex/generic/kvsetkeys/kvsetkeys.sty
 Package: kvsetkeys 2019/12/15 v1.18 Key value parser (HO)
-) (/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+)
+(/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
 Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
-) (/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty
 Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
-) (/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty
 Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
-) (/usr/share/texlive/texmf-dist/tex/latex/letltxmacro/letltxmacro.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/letltxmacro/letltxmacro.sty
 Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
-) (/usr/share/texlive/texmf-dist/tex/latex/auxhook/auxhook.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/auxhook/auxhook.sty
 Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
-) (/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
 Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
 )
 \@linkdim=\dimen154
 \Hy@linkcounter=\count199
 \Hy@pagecounter=\count266
- (/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2021-06-07 v7.00m Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
 ... no UTF-8 mapping file for font encoding PD1
-) (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref-langpatches.def
-File: hyperref-langpatches.def 2021-06-07 v7.00m Hyperref: patches for babel languages
-) (/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref-langpatches.def
+File: hyperref-langpatches.def 2021-06-07 v7.00m Hyperref: patches for babel la
+nguages
+)
+(/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
-) (/usr/share/texlive/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+)
+(/usr/share/texlive/texmf-dist/tex/generic/etexcmds/etexcmds.sty
 Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 )
 \Hy@SavedSpaceFactor=\count267
- (/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def
 File: puenc.def 2021-06-07 v7.00m Hyperref: PDF Unicode definition (HO)
 Now handling font encoding PU ...
 ... no UTF-8 mapping file for font encoding PU
@@ -199,16 +234,20 @@ Package hyperref Info: Backreferencing OFF on input line 4212.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4445.
 \c@Hy@tempcnt=\count268
- (/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip16
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4804.
 \XeTeXLinkMargin=\dimen155
- (/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
+
+(/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
- (/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
-Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
 ))
 \Fld@menulength=\count269
 \Field@Width=\dimen156
@@ -222,7 +261,8 @@ Package hyperref Info: Link coloring with OCG OFF on input line 6101.
 Package hyperref Info: PDF/A mode OFF on input line 6106.
 LaTeX Info: Redefining \ref on input line 6146.
 LaTeX Info: Redefining \pageref on input line 6150.
- (/usr/share/texlive/texmf-dist/tex/latex/base/atbegshi-ltx.sty
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/atbegshi-ltx.sty
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
@@ -231,27 +271,35 @@ package with kernel methods
 \c@Hfootnote=\count272
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
- (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
 File: hpdftex.def 2021-06-07 v7.00m Hyperref driver for pdfTeX
- (/usr/share/texlive/texmf-dist/tex/latex/base/atveryend-ltx.sty
-Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend package
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/atveryend-ltx.sty
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
 with kernel methods
 )
 \Fld@listcount=\count273
 \c@bookmark@seq@number=\count274
- (/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+
+(/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
 Package: rerunfilecheck 2019/12/05 v1.9 Rerun checks for auxiliary files (HO)
- (/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+
+(/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
 Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
-Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 286.
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+86.
 )
 \Hy@SectionHShift=\skip91
-) (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count275
 \l__pdf_internal_box=\box53
-) (./Documentazione-Programmazione-Object-Oriented-OOBD39.aux)
+)
+(build/Documentazione-Programmazione-Object-Oriented-OOBD39.aux)
 \openout1 = `Documentazione-Programmazione-Object-Oriented-OOBD39.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 52.
@@ -272,7 +320,8 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 52.
 LaTeX Font Info:    ... okay on input line 52.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 52.
 LaTeX Font Info:    ... okay on input line 52.
- (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+
+(/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count276
 \scratchdimen=\dimen158
@@ -287,9 +336,12 @@ LaTeX Font Info:    ... okay on input line 52.
 \everyMPtoPDFconversion=\toks24
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
- (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
-File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
 ))
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -328,9 +380,11 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 Package hyperref Info: Link coloring ON on input line 52.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
- (/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
+
+(/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
 Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
-) (/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+)
+(/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count282
@@ -338,18 +392,22 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 52.
 LaTeX Info: Redefining \pageref on input line 52.
 LaTeX Info: Redefining \nameref on input line 52.
- (./Documentazione-Programmazione-Object-Oriented-OOBD39.out) (./Documentazione-Programmazione-Object-Oriented-OOBD39.out)
+
+(build/Documentazione-Programmazione-Object-Oriented-OOBD39.out)
+(build/Documentazione-Programmazione-Object-Oriented-OOBD39.out)
 \@outlinefile=\write3
 \openout3 = `Documentazione-Programmazione-Object-Oriented-OOBD39.out'.
 
-<latex/immagini/uni_logo.png, id=289, 200.75pt x 200.75pt>
+<latex/immagini/uni_logo.png, id=293, 200.75pt x 200.75pt>
 File: latex/immagini/uni_logo.png Graphic file (type png)
 <use latex/immagini/uni_logo.png>
 Package pdftex.def Info: latex/immagini/uni_logo.png  used on input line 60.
 (pdftex.def)             Requested size: 141.61081pt x 141.62065pt.
  [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./latex/immagini/uni_logo.png>] (./Documentazione-Programmazione-Object-Oriented-OOBD39.toc
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./latex/immagini/uni_logo.
+png>]
+(build/Documentazione-Programmazione-Object-Oriented-OOBD39.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <10.95> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -360,22 +418,26 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 \tf@toc=\write4
 \openout4 = `Documentazione-Programmazione-Object-Oriented-OOBD39.toc'.
 
- (./latex/Capitoli/Capitolo1.tex
+
+(./latex/Capitoli/Capitolo1.tex
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [3]) (./latex/Capitoli/capitolo2.tex
 Overfull \hbox (41.55067pt too wide) in paragraph at lines 16--17
-[]\OT1/cmr/m/n/10.95 Nel pro-getto Un-i-naFood-Lab, JavaFX ^^Re stato uti-liz-zato per re-al-iz-zare l'interfaccia grafica dell'applicazione.
+[]\OT1/cmr/m/n/10.95 Nel pro-getto Un-i-naFood-Lab, JavaFX ^^Re stato uti-liz-z
+ato per re-al-iz-zare l'interfaccia grafica dell'applicazione.
  []
 
 ) (./latex/Capitoli/capitolo3.tex
 Overfull \hbox (1.23701pt too wide) in paragraph at lines 7--8
-[]\OT1/cmr/bx/n/10.95 Boundary\OT1/cmr/m/n/10.95 : con-tiene le classi re-spon-s-abili dell'interfaccia grafica e dell'interazione con l'utente,
+[]\OT1/cmr/bx/n/10.95 Boundary\OT1/cmr/m/n/10.95 : con-tiene le classi re-spon-
+s-abili dell'interfaccia grafica e dell'interazione con l'utente,
  []
 
 
@@ -383,6 +445,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [4]) (./latex/Capitoli/capitolo4.tex
@@ -391,6 +454,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [5]
@@ -399,28 +463,28 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [6]
-Overfull \hbox (120.0836pt too wide) in paragraph at lines 98--98
-[]            \OT1/cmtt/m/n/10.95 SceneSwitcher.switchToMainApp(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Homepage");[] 
- []
-
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [7]
-Overfull \hbox (131.58098pt too wide) in paragraph at lines 98--98
-[]            \OT1/cmtt/m/n/10.95 SceneSwitcher.switchToMainApp(stage, "/fxml/homepageutente.fxml", "UninaFoodLab - Homepage");[] 
+Overfull \hbox (120.0836pt too wide) in paragraph at lines 98--98
+[]            \OT1/cmtt/m/n/10.95 SceneSwitcher.switchToMainApp(stage, "/fxml/h
+omepagechef.fxml", "UninaFoodLab - Homepage");[] 
  []
 
 
-Overfull \hbox (10.85854pt too wide) in paragraph at lines 170--170
-[]        \OT1/cmtt/m/n/10.95 descrizione, anniEsperienza, utenteSelezionato, chefSelezionato, dataNascita[] 
+Overfull \hbox (131.58098pt too wide) in paragraph at lines 98--98
+[]            \OT1/cmtt/m/n/10.95 SceneSwitcher.switchToMainApp(stage, "/fxml/h
+omepageutente.fxml", "UninaFoodLab - Homepage");[] 
  []
 
 
@@ -428,29 +492,34 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [8]
-Overfull \hbox (33.85329pt too wide) in paragraph at lines 170--170
-[]    \OT1/cmtt/m/n/10.95 String nome, String cognome, String email, String password, String confermaPassword,[] 
+Overfull \hbox (10.85854pt too wide) in paragraph at lines 170--170
+[]        \OT1/cmtt/m/n/10.95 descrizione, anniEsperienza, utenteSelezionato, c
+hefSelezionato, dataNascita[] 
  []
 
-)
+
+Overfull \hbox (33.85329pt too wide) in paragraph at lines 170--170
+[]    \OT1/cmtt/m/n/10.95 String nome, String cognome, String email, String pas
+sword, String confermaPassword,[] 
+ []
+
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
-[9] (./latex/Capitoli/capitolo4.2(utente).tex
+[9]) (./latex/Capitoli/capitolo4.2(utente).tex
 Overfull \hbox (37.89796pt too wide) in paragraph at lines 13--14
-[]\OT1/cmr/m/n/10.95 L'interazione ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 HomepageUtenteBoundary.java \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 HomepageUtenteController.java\OT1/cmr/m/n/10.95 ,
- []
-
-
-Overfull \hbox (49.39534pt too wide) in paragraph at lines 22--23
-[]\OT1/cmr/m/n/10.95 L'interazione ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 EnrolledCoursesBoundary.java \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 EnrolledCoursesController.java\OT1/cmr/m/n/10.95 .
+[]\OT1/cmr/m/n/10.95 L'interazione ^^Re gestita dalle classi \OT1/cmtt/m/n/10.9
+5 HomepageUtenteBoundary.java \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 Homepage
+UtenteController.java\OT1/cmr/m/n/10.95 ,
  []
 
 
@@ -458,16 +527,27 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [10]
+Overfull \hbox (49.39534pt too wide) in paragraph at lines 22--23
+[]\OT1/cmr/m/n/10.95 L'interazione ^^Re gestita dalle classi \OT1/cmtt/m/n/10.9
+5 EnrolledCoursesBoundary.java \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 Enrolle
+dCoursesController.java\OT1/cmr/m/n/10.95 .
+ []
+
+
 Overfull \hbox (33.15846pt too wide) in paragraph at lines 52--53
-\OT1/cmr/m/n/10.95 L'utente pu^^Ro con-sultare il cal-en-dario delle lezioni e ses-sioni di-ret-ta-mente dalla scena \OT1/cmtt/m/n/10.95 calendardialog.fxml\OT1/cmr/m/n/10.95 ,
+\OT1/cmr/m/n/10.95 L'utente pu^^Ro con-sultare il cal-en-dario delle lezioni e 
+ses-sioni di-ret-ta-mente dalla scena \OT1/cmtt/m/n/10.95 calendardialog.fxml\O
+T1/cmr/m/n/10.95 ,
  []
 
 
 Overfull \hbox (18.48691pt too wide) in paragraph at lines 52--53
-\OT1/cmr/m/n/10.95 tra i mesi. La log-ica di vi-su-al-iz-zazione e in-ter-azione ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 CalendarDialogBoundary.java
+\OT1/cmr/m/n/10.95 tra i mesi. La log-ica di vi-su-al-iz-zazione e in-ter-azion
+e ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 CalendarDialogBoundary.java
  []
 
 
@@ -475,21 +555,20 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [11]
 Overfull \hbox (22.1448pt too wide) in paragraph at lines 69--70
-[]\OT1/cmr/m/n/10.95 La val-i-dazione dei dati avviene sia tramite pat-tern re-go-lari che tramite la classe \OT1/cmtt/m/n/10.95 CardValidator.java\OT1/cmr/m/n/10.95 ,
+[]\OT1/cmr/m/n/10.95 La val-i-dazione dei dati avviene sia tramite pat-tern re-
+go-lari che tramite la classe \OT1/cmtt/m/n/10.95 CardValidator.java\OT1/cmr/m/
+n/10.95 ,
  []
 
 
 Overfull \hbox (28.1046pt too wide) in paragraph at lines 84--84
-[]        \OT1/cmtt/m/n/10.95 LocalDate expiryDate = LocalDate.of(year, month, 1).plusMonths(1).minusDays(1);[] 
- []
-
-
-Overfull \hbox (140.12811pt too wide) in paragraph at lines 91--92
-[]\OT1/cmr/m/n/10.95 La log-ica ap-plica-tiva ^^Re im-ple-men-tata nelle classi \OT1/cmtt/m/n/10.95 AccountManagementBoundary.java \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 AccountManagementController.java\OT1/cmr/m/n/10.95 .
+[]        \OT1/cmtt/m/n/10.95 LocalDate expiryDate = LocalDate.of(year, month, 
+1).plusMonths(1).minusDays(1);[] 
  []
 
 
@@ -497,16 +576,20 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [12]
-Overfull \hbox (11.46973pt too wide) in paragraph at lines 112--113
-[]\OT1/cmr/m/n/10.95 La ges-tione della foto pro-filo avviene tramite un file chooser che con-sente di se-lezionare un'immagine
+Overfull \hbox (140.12811pt too wide) in paragraph at lines 91--92
+[]\OT1/cmr/m/n/10.95 La log-ica ap-plica-tiva ^^Re im-ple-men-tata nelle classi
+ \OT1/cmtt/m/n/10.95 AccountManagementBoundary.java \OT1/cmr/m/n/10.95 e \OT1/c
+mtt/m/n/10.95 AccountManagementController.java\OT1/cmr/m/n/10.95 .
  []
 
 
-Overfull \hbox (15.05574pt too wide) in paragraph at lines 134--135
-[]\OT1/cmr/m/n/10.95 La log-ica ap-plica-tiva ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 UserCardsBoundary.java \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 UserCardsController.java\OT1/cmr/m/n/10.95 .
+Overfull \hbox (11.46973pt too wide) in paragraph at lines 112--113
+[]\OT1/cmr/m/n/10.95 La ges-tione della foto pro-filo avviene tramite un file c
+hooser che con-sente di se-lezionare un'immagine
  []
 
 
@@ -514,21 +597,33 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [13]
+Overfull \hbox (15.05574pt too wide) in paragraph at lines 134--135
+[]\OT1/cmr/m/n/10.95 La log-ica ap-plica-tiva ^^Re gestita dalle classi \OT1/cm
+tt/m/n/10.95 UserCardsBoundary.java \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 Us
+erCardsController.java\OT1/cmr/m/n/10.95 .
+ []
+
+
 Overfull \hbox (34.95317pt too wide) in paragraph at lines 136--137
-\OT1/cmr/m/n/10.95 CVV. La val-i-dazione dei dati avviene sia tramite pat-tern re-go-lari che tramite la classe \OT1/cmtt/m/n/10.95 CardValidator.java\OT1/cmr/m/n/10.95 ,
+\OT1/cmr/m/n/10.95 CVV. La val-i-dazione dei dati avviene sia tramite pat-tern 
+re-go-lari che tramite la classe \OT1/cmtt/m/n/10.95 CardValidator.java\OT1/cmr
+/m/n/10.95 ,
  []
 
 
 Overfull \hbox (154.57573pt too wide) in paragraph at lines 146--146
-[]    \OT1/cmtt/m/n/10.95 boundary.showFieldError("cardNumber", "Tipo di carta non supportato. Accettiamo solo Visa e Mastercard");[] 
+[]    \OT1/cmtt/m/n/10.95 boundary.showFieldError("cardNumber", "Tipo di carta 
+non supportato. Accettiamo solo Visa e Mastercard");[] 
  []
 
 
 Overfull \hbox (5.10985pt too wide) in paragraph at lines 146--146
-[]    \OT1/cmtt/m/n/10.95 boundary.showFieldError("expiry", "La carta ^^Re scaduta o la data non ^^Re valida");[] 
+[]    \OT1/cmtt/m/n/10.95 boundary.showFieldError("expiry", "La carta ^^Re scad
+uta o la data non ^^Re valida");[] 
  []
 
 
@@ -536,21 +631,20 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [14]) (./latex/Capitoli/capitolo4.3(chef).tex
 Overfull \hbox (0.34015pt too wide) in paragraph at lines 9--10
-\OT1/cmr/m/n/10.95 Questa in-ter-azione ^^Re fa-cil-i-tata da un'interfaccia grafica re-al-iz-zata con JavaFX, che of-fre un'esperienza
+\OT1/cmr/m/n/10.95 Questa in-ter-azione ^^Re fa-cil-i-tata da un'interfaccia gr
+afica re-al-iz-zata con JavaFX, che of-fre un'esperienza
  []
 
 
 Overfull \hbox (49.54787pt too wide) in paragraph at lines 17--18
-[]\OT1/cmr/m/n/10.95 La log-ica ap-plica-tiva ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 HomepageChefBoundary.java \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 HomepageChefController.java\OT1/cmr/m/n/10.95 .
- []
-
-
-Overfull \hbox (28.1046pt too wide) in paragraph at lines 33--33
-[]    \OT1/cmtt/m/n/10.95 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cardcorso.fxml"));[] 
+[]\OT1/cmr/m/n/10.95 La log-ica ap-plica-tiva ^^Re gestita dalle classi \OT1/cm
+tt/m/n/10.95 HomepageChefBoundary.java \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95
+ HomepageChefController.java\OT1/cmr/m/n/10.95 .
  []
 
 
@@ -558,11 +652,20 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [15]
+Overfull \hbox (28.1046pt too wide) in paragraph at lines 33--33
+[]    \OT1/cmtt/m/n/10.95 FXMLLoader loader = new FXMLLoader(getClass().getReso
+urce("/fxml/cardcorso.fxml"));[] 
+ []
+
+
 Overfull \hbox (42.00365pt too wide) in paragraph at lines 56--57
-[] []\OT1/cmr/bx/n/10.95 Log-ica ap-plica-tiva e flussi[] \OT1/cmr/m/n/10.95 La log-ica di creazione corso ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 CreateCourseBoundary.java
+[] []\OT1/cmr/bx/n/10.95 Log-ica ap-plica-tiva e flussi[] \OT1/cmr/m/n/10.95 La
+ log-ica di creazione corso ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 Creat
+eCourseBoundary.java
  []
 
 
@@ -570,16 +673,19 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [16]
 Overfull \hbox (200.56523pt too wide) in paragraph at lines 107--107
-[]\OT1/cmtt/m/n/10.95 private List<LocalDate> calcolaDateSessioniPresenza(LocalDate inizio, LocalDate fine, List<String> giorniSettimana) {[] 
+[]\OT1/cmtt/m/n/10.95 private List<LocalDate> calcolaDateSessioniPresenza(Local
+Date inizio, LocalDate fine, List<String> giorniSettimana) {[] 
  []
 
 
 Overfull \hbox (194.81654pt too wide) in paragraph at lines 107--107
-[]    \OT1/cmtt/m/n/10.95 if (inizio == null || fine == null || giorniSettimana == null || giorniSettimana.isEmpty()) return dateSessioni;[] 
+[]    \OT1/cmtt/m/n/10.95 if (inizio == null || fine == null || giorniSettimana
+ == null || giorniSettimana.isEmpty()) return dateSessioni;[] 
  []
 
 
@@ -587,16 +693,21 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [17]
 Overfull \hbox (269.54948pt too wide) in paragraph at lines 118--118
-[]\OT1/cmtt/m/n/10.95 private List<LocalDate> calcolaDateSessioniPresenza(LocalDate inizio, LocalDate fine, List<String> giorniSettimana) { /* ... */ }[] 
+[]\OT1/cmtt/m/n/10.95 private List<LocalDate> calcolaDateSessioniPresenza(Local
+Date inizio, LocalDate fine, List<String> giorniSettimana) { /* ... */ }[] 
  []
 
 
 Overfull \hbox (80.93843pt too wide) in paragraph at lines 136--137
-\OT1/cmr/m/n/10.95 I file prin-ci-pali coin-volti sono: \OT1/cmtt/m/n/10.95 createcourse.fxml\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 CreateCourseBoundary.java\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 CreateCourseController.java\OT1/cmr/m/n/10.95 ,
+\OT1/cmr/m/n/10.95 I file prin-ci-pali coin-volti sono: \OT1/cmtt/m/n/10.95 cre
+atecourse.fxml\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 CreateCourseBoundary.jav
+a\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 CreateCourseController.java\OT1/cmr/m
+/n/10.95 ,
  []
 
 
@@ -604,16 +715,19 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [18]
 Overfull \hbox (85.59148pt too wide) in paragraph at lines 162--162
-[]\OT1/cmtt/m/n/10.95 Map<LocalDate, ObservableList<Ricetta>> sessioniPresenza = boundary.getSessionePresenzaRicette();[] 
+[]\OT1/cmtt/m/n/10.95 Map<LocalDate, ObservableList<Ricetta>> sessioniPresenza 
+= boundary.getSessionePresenzaRicette();[] 
  []
 
 
 Overfull \hbox (39.60197pt too wide) in paragraph at lines 162--162
-[]\OT1/cmtt/m/n/10.95 for (Map.Entry<LocalDate, ObservableList<Ricetta>> entry : sessioniPresenza.entrySet()) {[] 
+[]\OT1/cmtt/m/n/10.95 for (Map.Entry<LocalDate, ObservableList<Ricetta>> entry 
+: sessioniPresenza.entrySet()) {[] 
  []
 
 
@@ -621,11 +735,14 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [19]
 Overfull \hbox (0.2721pt too wide) in paragraph at lines 190--191
-[] []\OT1/cmr/bx/n/10.95 Log-ica ap-plica-tiva e flussi[] \OT1/cmr/m/n/10.95 La log-ica di mod-i-fica ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 EditCourseBoundary.java
+[] []\OT1/cmr/bx/n/10.95 Log-ica ap-plica-tiva e flussi[] \OT1/cmr/m/n/10.95 La
+ log-ica di mod-i-fica ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 EditCourse
+Boundary.java
  []
 
 
@@ -633,16 +750,19 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [20]
 Overfull \hbox (114.33492pt too wide) in paragraph at lines 227--227
-[]\OT1/cmtt/m/n/10.95 Map<LocalDate, ObservableList<Ricetta>> sessioniPresenza = boundary.getSessioniPresenzaModificabili();[] 
+[]\OT1/cmtt/m/n/10.95 Map<LocalDate, ObservableList<Ricetta>> sessioniPresenza 
+= boundary.getSessioniPresenzaModificabili();[] 
  []
 
 
 Overfull \hbox (39.60197pt too wide) in paragraph at lines 227--227
-[]\OT1/cmtt/m/n/10.95 for (Map.Entry<LocalDate, ObservableList<Ricetta>> entry : sessioniPresenza.entrySet()) {[] 
+[]\OT1/cmtt/m/n/10.95 for (Map.Entry<LocalDate, ObservableList<Ricetta>> entry 
+: sessioniPresenza.entrySet()) {[] 
  []
 
 
@@ -650,31 +770,37 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [21]
 Overfull \hbox (68.34541pt too wide) in paragraph at lines 249--249
-[]                                 \OT1/cmtt/m/n/10.95 String[] quantities, String[] units, LocalDate sessionDate) {[] 
+[]                                 \OT1/cmtt/m/n/10.95 String[] quantities, Str
+ing[] units, LocalDate sessionDate) {[] 
  []
 
 
 Overfull \hbox (97.08885pt too wide) in paragraph at lines 305--305
-[]        \OT1/cmtt/m/n/10.95 boundary.showError(descriptionErrorLabel, "La descrizione deve essere tra 1 e 60 parole.");[] 
+[]        \OT1/cmtt/m/n/10.95 boundary.showError(descriptionErrorLabel, "La des
+crizione deve essere tra 1 e 60 parole.");[] 
  []
 
 
 Overfull \hbox (16.60722pt too wide) in paragraph at lines 305--305
-[]        \OT1/cmtt/m/n/10.95 boundary.showError(capErrorLabel, "Il CAP deve essere composto da 5 cifre.");[] 
+[]        \OT1/cmtt/m/n/10.95 boundary.showError(capErrorLabel, "Il CAP deve es
+sere composto da 5 cifre.");[] 
  []
 
 
 Overfull \hbox (16.60722pt too wide) in paragraph at lines 305--305
-[]    \OT1/cmtt/m/n/10.95 if (!Objects.equals(courseNameField.getText().trim(), currentCourse.getNome())) {[] 
+[]    \OT1/cmtt/m/n/10.95 if (!Objects.equals(courseNameField.getText().trim(),
+ currentCourse.getNome())) {[] 
  []
 
 
 Overfull \hbox (56.84804pt too wide) in paragraph at lines 305--305
-[]    \OT1/cmtt/m/n/10.95 if (!Objects.equals(descriptionArea.getText().trim(), currentCourse.getDescrizione())) {[] 
+[]    \OT1/cmtt/m/n/10.95 if (!Objects.equals(descriptionArea.getText().trim(),
+ currentCourse.getDescrizione())) {[] 
  []
 
 
@@ -682,16 +808,21 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [22]
 Overfull \hbox (56.84804pt too wide) in paragraph at lines 305--305
-[]        \OT1/cmtt/m/n/10.95 boundary.showAlert("Errore", "Impossibile salvare le modifiche: " + e.getMessage());[] 
+[]        \OT1/cmtt/m/n/10.95 boundary.showAlert("Errore", "Impossibile salvare
+ le modifiche: " + e.getMessage());[] 
  []
 
 
 Overfull \hbox (63.4463pt too wide) in paragraph at lines 316--317
-[]\OT1/cmr/m/n/10.95 I file prin-ci-pali coin-volti sono: \OT1/cmtt/m/n/10.95 editcourse.fxml\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 EditCourseBoundary.java\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 EditCourseController.java\OT1/cmr/m/n/10.95 ,
+[]\OT1/cmr/m/n/10.95 I file prin-ci-pali coin-volti sono: \OT1/cmtt/m/n/10.95 e
+ditcourse.fxml\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 EditCourseBoundary.java\
+OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 EditCourseController.java\OT1/cmr/m/n/1
+0.95 ,
  []
 
 
@@ -699,28 +830,36 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [23]
 Overfull \hbox (98.01888pt too wide) in paragraph at lines 335--336
-[] []\OT1/cmr/bx/n/10.95 Log-ica ap-plica-tiva[] \OT1/cmr/m/n/10.95 La log-ica ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 MonthlyReportBoundary.java \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 MonthlyReportController.java\OT1/cmr/m/n/10.95 .
+[] []\OT1/cmr/bx/n/10.95 Log-ica ap-plica-tiva[] \OT1/cmr/m/n/10.95 La log-ica 
+^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 MonthlyReportBoundary.java \OT1/c
+mr/m/n/10.95 e \OT1/cmtt/m/n/10.95 MonthlyReportController.java\OT1/cmr/m/n/10.
+95 .
  []
 
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 337.
 
 Overfull \hbox (131.58098pt too wide) in paragraph at lines 373--373
-[]    \OT1/cmtt/m/n/10.95 grafico.setNumeroSessioniInPresenza(graficoChefDao.RicavaNumeroSessioniInPresenza(chef, mese, anno));[] 
+[]    \OT1/cmtt/m/n/10.95 grafico.setNumeroSessioniInPresenza(graficoChefDao.Ri
+cavaNumeroSessioniInPresenza(chef, mese, anno));[] 
  []
 
 
 Overfull \hbox (148.82704pt too wide) in paragraph at lines 373--373
-[]    \OT1/cmtt/m/n/10.95 grafico.setNumerosessionitelematiche(graficoChefDao.RicavaNumeroSesssioniTelematiche(chef, mese, anno));[] 
+[]    \OT1/cmtt/m/n/10.95 grafico.setNumerosessionitelematiche(graficoChefDao.R
+icavaNumeroSesssioniTelematiche(chef, mese, anno));[] 
  []
 
 
 Overfull \hbox (350.03111pt too wide) in paragraph at lines 373--373
-[]    \OT1/cmtt/m/n/10.95 int totalRecipes = (int) Math.round((grafico.getNumeroSessioniInPresenza() + grafico.getNumerosessionitelematiche()) * grafico.getMedia());[] 
+[]    \OT1/cmtt/m/n/10.95 int totalRecipes = (int) Math.round((grafico.getNumer
+oSessioniInPresenza() + grafico.getNumerosessionitelematiche()) * grafico.getMe
+dia());[] 
  []
 
 
@@ -728,11 +867,15 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [24]
 Overfull \hbox (22.23451pt too wide) in paragraph at lines 384--385
-\OT1/cmtt/m/n/10.95 RicavaNumeroSesssioniTelematiche\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 ricavaGuadagno\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 RicavaMedia\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 RicavaMassimo\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 RicavaMinimo
+\OT1/cmtt/m/n/10.95 RicavaNumeroSesssioniTelematiche\OT1/cmr/m/n/10.95 , \OT1/c
+mtt/m/n/10.95 ricavaGuadagno\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 RicavaMedi
+a\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 RicavaMassimo\OT1/cmr/m/n/10.95 , \OT
+1/cmtt/m/n/10.95 RicavaMinimo
  []
 
 
@@ -740,16 +883,21 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [25]
 Overfull \hbox (46.92662pt too wide) in paragraph at lines 420--421
-\OT1/cmr/m/n/10.95 fi-care i pro-pri dati per-son-ali e pro-fes-sion-ali in modo si-curo e in-tu-itivo. La scena \OT1/cmtt/m/n/10.95 accountmanagementchef.fxml
+\OT1/cmr/m/n/10.95 fi-care i pro-pri dati per-son-ali e pro-fes-sion-ali in mod
+o si-curo e in-tu-itivo. La scena \OT1/cmtt/m/n/10.95 accountmanagementchef.fxm
+l
  []
 
 
 Overfull \hbox (41.97691pt too wide) in paragraph at lines 443--444
-[] []\OT1/cmr/bx/n/10.95 Log-ica ap-plica-tiva e val-i-dazione[] \OT1/cmr/m/n/10.95 La log-ica ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 AccountManagementChefBoundary.java
+[] []\OT1/cmr/bx/n/10.95 Log-ica ap-plica-tiva e val-i-dazione[] \OT1/cmr/m/n/1
+0.95 La log-ica ^^Re gestita dalle classi \OT1/cmtt/m/n/10.95 AccountManagement
+ChefBoundary.java
  []
 
 
@@ -757,6 +905,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [26]
@@ -765,26 +914,31 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [27]
 Overfull \hbox (5.10985pt too wide) in paragraph at lines 557--557
-[]    \OT1/cmtt/m/n/10.95 if (email != null && !email.equals(originalEmail) && !email.trim().isEmpty()) {[] 
+[]    \OT1/cmtt/m/n/10.95 if (email != null && !email.equals(originalEmail) && 
+!email.trim().isEmpty()) {[] 
  []
 
 
 Overfull \hbox (235.05736pt too wide) in paragraph at lines 557--557
-[]    \OT1/cmtt/m/n/10.95 if (experienceYears != null && !experienceYears.equals(originalExperienceYears) && !experienceYears.trim().isEmpty()) {[] 
+[]    \OT1/cmtt/m/n/10.95 if (experienceYears != null && !experienceYears.equal
+s(originalExperienceYears) && !experienceYears.trim().isEmpty()) {[] 
  []
 
 
 Overfull \hbox (68.34541pt too wide) in paragraph at lines 557--557
-[]                \OT1/cmtt/m/n/10.95 boundary.showErrorMessage("Gli anni di esperienza devono essere tra 0 e 50.");[] 
+[]                \OT1/cmtt/m/n/10.95 boundary.showErrorMessage("Gli anni di es
+perienza devono essere tra 0 e 50.");[] 
  []
 
 
 Overfull \hbox (79.84279pt too wide) in paragraph at lines 557--557
-[]            \OT1/cmtt/m/n/10.95 boundary.showErrorMessage("Gli anni di esperienza devono essere un numero valido.");[] 
+[]            \OT1/cmtt/m/n/10.95 boundary.showErrorMessage("Gli anni di esperi
+enza devono essere un numero valido.");[] 
  []
 
 
@@ -792,11 +946,13 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [28]
 Overfull \hbox (22.35591pt too wide) in paragraph at lines 557--557
-[]        \OT1/cmtt/m/n/10.95 boundary.showErrorMessage("Errore durante il salvataggio: " + e.getMessage());[] 
+[]        \OT1/cmtt/m/n/10.95 boundary.showErrorMessage("Errore durante il salv
+ataggio: " + e.getMessage());[] 
  []
 
 ) (./latex/Capitoli/capitolo5.tex
@@ -805,6 +961,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [29]
@@ -813,26 +970,34 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [30]
 Overfull \hbox (4.68541pt too wide) in paragraph at lines 42--43
-[]\OT1/cmtt/m/n/10.95 switchToLogin\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 switchToRegister\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 switchToMainApp\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 switchToTransaction\OT1/cmr/m/n/10.95 : metodi speci-
+[]\OT1/cmtt/m/n/10.95 switchToLogin\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 swi
+tchToRegister\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 switchToMainApp\OT1/cmr/m
+/n/10.95 , \OT1/cmtt/m/n/10.95 switchToTransaction\OT1/cmr/m/n/10.95 : metodi s
+peci-
  []
 
 
 Overfull \hbox (56.84804pt too wide) in paragraph at lines 58--58
-[]\OT1/cmtt/m/n/10.95 SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Homepage Chef");[] 
+[]\OT1/cmtt/m/n/10.95 SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml
+", "UninaFoodLab - Homepage Chef");[] 
  []
 
 
 Overfull \hbox (28.1046pt too wide) in paragraph at lines 58--58
-[]    \OT1/cmtt/m/n/10.95 SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.fxml", "UninaFoodLab - Login");[] 
+[]    \OT1/cmtt/m/n/10.95 SceneSwitcher.switchToLogin(stage, "/fxml/loginpage.f
+xml", "UninaFoodLab - Login");[] 
  []
 
 
 Overfull \hbox (32.76332pt too wide) in paragraph at lines 61--62
-[] []\OT1/cmr/bx/n/10.95 In-te-grazione e mod-u-larit^^Ra[] \OT1/cmr/m/n/10.95 SceneSwitcher ^^Re uti-liz-zata in tutte le bound-ary e con-troller dell'applicazione
+[] []\OT1/cmr/bx/n/10.95 In-te-grazione e mod-u-larit^^Ra[] \OT1/cmr/m/n/10.95 
+SceneSwitcher ^^Re uti-liz-zata in tutte le bound-ary e con-troller dell'applic
+azione
  []
 
 
@@ -840,6 +1005,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [31]
@@ -848,6 +1014,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [32]
@@ -856,6 +1023,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [33]
@@ -864,6 +1032,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [34]
@@ -872,11 +1041,14 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [35]
 Overfull \hbox (413.26668pt too wide) in paragraph at lines 217--217
-[]\OT1/cmtt/m/n/10.95 VBox recipeBox = UnifiedRecipeIngredientUI.createUnifiedRecipeBox(ricetta, recipesList, container, isHybrid, notifyControllerOfChange, unitaDiMisuraList);[] 
+[]\OT1/cmtt/m/n/10.95 VBox recipeBox = UnifiedRecipeIngredientUI.createUnifiedR
+ecipeBox(ricetta, recipesList, container, isHybrid, notifyControllerOfChange, u
+nitaDiMisuraList);[] 
  []
 
 )
@@ -885,6 +1057,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [36] (./latex/Capitoli/capitolo6.tex
@@ -893,6 +1066,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [37]) (./latex/Capitoli/capitolo6.2(dto).tex
@@ -901,6 +1075,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [38]
@@ -909,11 +1084,14 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [39]
 Overfull \hbox (482.25093pt too wide) in paragraph at lines 77--77
-[]\OT1/cmtt/m/n/10.95 Corso corso = new Corso("Corso Sushi", "Impara l'arte del sushi", LocalDate.of(2025, 9, 1), LocalDate.of(2025, 10, 1), "Settimanale", 20, 99.99f, "url_immagine.jpg");[] 
+[]\OT1/cmtt/m/n/10.95 Corso corso = new Corso("Corso Sushi", "Impara l'arte del
+ sushi", LocalDate.of(2025, 9, 1), LocalDate.of(2025, 10, 1), "Settimanale", 20
+, 99.99f, "url_immagine.jpg");[] 
  []
 
 
@@ -921,6 +1099,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [40]
@@ -929,6 +1108,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [41]
@@ -937,11 +1117,14 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [42]
 Overfull \hbox (8.71783pt too wide) in paragraph at lines 173--174
-[] []\OT1/cmr/bx/n/10.95 Ruolo[] \OT1/cmr/m/n/10.95 Il DTO \OT1/cmtt/m/n/10.95 GraficoChef \OT1/cmr/m/n/10.95 ^^Re uti-liz-zato per rac-cogliere e pre-sentare dati statis-tici rel-a-tivi all'attivit^^Ra
+[] []\OT1/cmr/bx/n/10.95 Ruolo[] \OT1/cmr/m/n/10.95 Il DTO \OT1/cmtt/m/n/10.95 
+GraficoChef \OT1/cmr/m/n/10.95 ^^Re uti-liz-zato per rac-cogliere e pre-sentare
+ dati statis-tici rel-a-tivi all'attivit^^Ra
  []
 
 
@@ -949,16 +1132,22 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [43])
 Overfull \hbox (45.21571pt too wide) in paragraph at lines 194--110
-[] []\OT1/cmr/bx/n/10.95 Re-lazione con al-tri DTO[] \OT1/cmr/m/n/10.95 La classe \OT1/cmtt/m/n/10.95 CartaDiCredito \OT1/cmr/m/n/10.95 ^^Re stret-ta-mente col-le-gata al DTO \OT1/cmtt/m/n/10.95 UtenteVisitatore\OT1/cmr/m/n/10.95 ,
+[] []\OT1/cmr/bx/n/10.95 Re-lazione con al-tri DTO[] \OT1/cmr/m/n/10.95 La clas
+se \OT1/cmtt/m/n/10.95 CartaDiCredito \OT1/cmr/m/n/10.95 ^^Re stret-ta-mente co
+l-le-gata al DTO \OT1/cmtt/m/n/10.95 UtenteVisitatore\OT1/cmr/m/n/10.95 ,
  []
 
 (./latex/Capitoli/capitolo6.3(dao).tex
 Overfull \hbox (5.38518pt too wide) in paragraph at lines 11--12
-[]\OT1/cmr/m/n/10.95 Metodi as-tratti: \OT1/cmtt/m/n/10.95 caricaPropic\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 AssegnaCorso\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 recuperaDatiUtente\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 RegistrazioneUtente\OT1/cmr/m/n/10.95 ,
+[]\OT1/cmr/m/n/10.95 Metodi as-tratti: \OT1/cmtt/m/n/10.95 caricaPropic\OT1/cmr
+/m/n/10.95 , \OT1/cmtt/m/n/10.95 AssegnaCorso\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n
+/10.95 recuperaDatiUtente\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 Registrazione
+Utente\OT1/cmr/m/n/10.95 ,
  []
 
 
@@ -966,16 +1155,20 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [44]
 Overfull \hbox (528.24043pt too wide) in paragraph at lines 60--60
-[]    \OT1/cmtt/m/n/10.95 String query = "SELECT EXISTS (SELECT 1 FROM Partecipante WHERE Email = ? AND Password = ?) OR EXISTS (SELECT 1 FROM Chef WHERE Email = ? AND Password = ?) AS Esistenza";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "SELECT EXISTS (SELECT 1 FROM Partecip
+ante WHERE Email = ? AND Password = ?) OR EXISTS (SELECT 1 FROM Chef WHERE Emai
+l = ? AND Password = ?) AS Esistenza";[] 
  []
 
 
 Overfull \hbox (62.59673pt too wide) in paragraph at lines 60--60
-[]    \OT1/cmtt/m/n/10.95 String queryPartecipante = "SELECT 1 FROM Partecipante WHERE Email = ? AND Password = ?";[] 
+[]    \OT1/cmtt/m/n/10.95 String queryPartecipante = "SELECT 1 FROM Partecipant
+e WHERE Email = ? AND Password = ?";[] 
  []
 
 
@@ -983,31 +1176,37 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [45]
 Overfull \hbox (9.96616pt too wide) in paragraph at lines 69--70
-[]\OT1/cmtt/m/n/10.95 AssegnaCorso\OT1/cmr/m/n/10.95 : reg-is-tra il paga-mento e l'iscrizione al corso tramite la tabella RICHI-ESTAPAGA-
+[]\OT1/cmtt/m/n/10.95 AssegnaCorso\OT1/cmr/m/n/10.95 : reg-is-tra il paga-mento
+ e l'iscrizione al corso tramite la tabella RICHI-ESTAPAGA-
  []
 
 
 Overfull \hbox (105.5074pt too wide) in paragraph at lines 70--71
-[]\OT1/cmtt/m/n/10.95 haGiaConfermatoPresenza\OT1/cmr/m/n/10.95 : ver-i-fica la con-ferma di pre-senza tramite la tabella ADE-SIONE[]SESSIONEPRESENZA. 
+[]\OT1/cmtt/m/n/10.95 haGiaConfermatoPresenza\OT1/cmr/m/n/10.95 : ver-i-fica la
+ con-ferma di pre-senza tramite la tabella ADE-SIONE[]SESSIONEPRESENZA. 
  []
 
 
 Overfull \hbox (4.73376pt too wide) in paragraph at lines 72--73
-[]\OT1/cmtt/m/n/10.95 isUtenteIscrittoAlCorso\OT1/cmr/m/n/10.95 : ver-i-fica l'iscrizione tramite la tabella RICHI-ESTAPAGA-MENTO. 
+[]\OT1/cmtt/m/n/10.95 isUtenteIscrittoAlCorso\OT1/cmr/m/n/10.95 : ver-i-fica l'
+iscrizione tramite la tabella RICHI-ESTAPAGA-MENTO. 
  []
 
 
 Overfull \hbox (206.31392pt too wide) in paragraph at lines 116--116
-[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO Partecipante (Nome, Cognome, Email, Password,  DataDiNascita) VALUES (?, ?, ?, ?, ?)";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO Partecipante (Nome, Cogno
+me, Email, Password,  DataDiNascita) VALUES (?, ?, ?, ?, ?)";[] 
  []
 
 
 Overfull \hbox (28.1046pt too wide) in paragraph at lines 116--116
-[]    \OT1/cmtt/m/n/10.95 java.sql.Date sqlData = java.sql.Date.valueOf(utenteVisitatore.getDataDiNascita());[] 
+[]    \OT1/cmtt/m/n/10.95 java.sql.Date sqlData = java.sql.Date.valueOf(utenteV
+isitatore.getDataDiNascita());[] 
  []
 
 
@@ -1015,16 +1214,20 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [46]
 Overfull \hbox (413.26668pt too wide) in paragraph at lines 116--116
-[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO RICHIESTAPAGAMENTO (idPartecipante, idCorso, DataRichiesta, ImportoPagato, StatoPagamento) VALUES (?, ?, ?, ?, 'Pagato')";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO RICHIESTAPAGAMENTO (idPar
+tecipante, idCorso, DataRichiesta, ImportoPagato, StatoPagamento) VALUES (?, ?,
+ ?, ?, 'Pagato')";[] 
  []
 
 
 Overfull \hbox (275.29817pt too wide) in paragraph at lines 163--163
-[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO Chef (Nome, Cognome, Email, Password, DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?)";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO Chef (Nome, Cognome, Emai
+l, Password, DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?)";[] 
  []
 
 
@@ -1032,6 +1235,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [47]
@@ -1040,16 +1244,21 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [48]
 Overfull \hbox (505.24568pt too wide) in paragraph at lines 269--269
-[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO Corso (Nome, Descrizione, DataInizio, DataFine, FrequenzaDelleSessioni, MaxPersone, Prezzo, Propic) VALUES (?, ?, ?, ?, ?::fds, ?, ?, ?)";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO Corso (Nome, Descrizione,
+ DataInizio, DataFine, FrequenzaDelleSessioni, MaxPersone, Prezzo, Propic) VALU
+ES (?, ?, ?, ?, ?::fds, ?, ?, ?)";[] 
  []
 
 
 Overfull \hbox (562.73256pt too wide) in paragraph at lines 269--269
-[]    \OT1/cmtt/m/n/10.95 String query = "SELECT c.*, ch.Nome AS chef\_nome, ch.Cognome AS chef\_cognome, ch.AnniDiEsperienza AS chef\_esperienza FROM corso c LEFT JOIN chef ch ON c.idchef = ch.idchef";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "SELECT c.*, ch.Nome AS chef\_nome, ch
+.Cognome AS chef\_cognome, ch.AnniDiEsperienza AS chef\_esperienza FROM corso c
+ LEFT JOIN chef ch ON c.idchef = ch.idchef";[] 
  []
 
 
@@ -1057,11 +1266,13 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [49]
 Overfull \hbox (171.8218pt too wide) in paragraph at lines 269--269
-[]    \OT1/cmtt/m/n/10.95 String query = "SELECT T.Nome FROM TIPODICUCINA\_CORSO TC NATURAL JOIN TIPODICUCINA T WHERE TC.idcorso = ?";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "SELECT T.Nome FROM TIPODICUCINA\_CORS
+O TC NATURAL JOIN TIPODICUCINA T WHERE TC.idcorso = ?";[] 
  []
 
 
@@ -1069,21 +1280,26 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [50]
 Overfull \hbox (22.35591pt too wide) in paragraph at lines 299--299
-[]\OT1/cmtt/m/n/10.95 public boolean ControllosSessioniAttiveLoStessoPeriodo(Sessione sessione, Chef chef) {[] 
+[]\OT1/cmtt/m/n/10.95 public boolean ControllosSessioniAttiveLoStessoPeriodo(Se
+ssione sessione, Chef chef) {[] 
  []
 
 
 Overfull \hbox (568.48125pt too wide) in paragraph at lines 299--299
-[]    \OT1/cmtt/m/n/10.95 String query = "Select count(*) as NumSessioni from SESSIONE\_PRESENZA\_CHEF natural join SESSIONE where id\_Chef = ? and Giorno = ? and Data = ? and Orario = ? and Durata = ?";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "Select count(*) as NumSessioni from S
+ESSIONE\_PRESENZA\_CHEF natural join SESSIONE where id\_Chef = ? and Giorno = ?
+ and Data = ? and Orario = ? and Durata = ?";[] 
  []
 
 
 Overfull \hbox (39.83809pt too wide) in paragraph at lines 306--307
-[]\OT1/cmtt/m/n/10.95 MemorizzaSessione\OT1/cmr/m/n/10.95 : in-serisce una nuova ses-sione telem-at-ica nella tabella SES-SIONE[]TELEMATICA. 
+[]\OT1/cmtt/m/n/10.95 MemorizzaSessione\OT1/cmr/m/n/10.95 : in-serisce una nuov
+a ses-sione telem-at-ica nella tabella SES-SIONE[]TELEMATICA. 
  []
 
 
@@ -1091,21 +1307,26 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [51]
 Overfull \hbox (608.72206pt too wide) in paragraph at lines 353--353
-[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO SESSIONE\_TELEMATICA (Applicazione, CodiceChiamata, Data, Orario, Durata, Giorno, Descrizione, IdCorso, IdChef) VALUES (?, ?, ?, ?, ?, ?::giorno, ?, ?, ?)";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO SESSIONE\_TELEMATICA (App
+licazione, CodiceChiamata, Data, Orario, Durata, Giorno, Descrizione, IdCorso, 
+IdChef) VALUES (?, ?, ?, ?, ?, ?::giorno, ?, ?, ?)";[] 
  []
 
 
 Overfull \hbox (79.84279pt too wide) in paragraph at lines 353--353
-[]    \OT1/cmtt/m/n/10.95 String query = "SELECT * FROM sessione\_telematica WHERE idcorso = ? ORDER BY data, orario";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "SELECT * FROM sessione\_telematica WH
+ERE idcorso = ? ORDER BY data, orario";[] 
  []
 
 
 Overfull \hbox (27.61058pt too wide) in paragraph at lines 360--361
-[]\OT1/cmtt/m/n/10.95 MemorizzaSessione\OT1/cmr/m/n/10.95 : in-serisce una nuova ses-sione in pre-senza nella tabella SES-SIONE[]PRESENZA. 
+[]\OT1/cmtt/m/n/10.95 MemorizzaSessione\OT1/cmr/m/n/10.95 : in-serisce una nuov
+a ses-sione in pre-senza nella tabella SES-SIONE[]PRESENZA. 
  []
 
 
@@ -1113,21 +1334,26 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [52]
 Overfull \hbox (539.73781pt too wide) in paragraph at lines 426--426
-[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO SESSIONE\_PRESENZA (giorno, Data, Orario, Durata, citta, via, cap, Descrizione, IDcorso, IdChef) VALUES (?::giorno, ?, ?, ?, ?, ?, ?, ?, ?, ?)";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO SESSIONE\_PRESENZA (giorn
+o, Data, Orario, Durata, citta, via, cap, Descrizione, IDcorso, IdChef) VALUES 
+(?::giorno, ?, ?, ?, ?, ?, ?, ?, ?, ?)";[] 
  []
 
 
 Overfull \hbox (5.10985pt too wide) in paragraph at lines 426--426
-[]\OT1/cmtt/m/n/10.95 public void associaRicettaASessione(SessioniInPresenza sessione, Ricetta ricetta) {[] 
+[]\OT1/cmtt/m/n/10.95 public void associaRicettaASessione(SessioniInPresenza se
+ssione, Ricetta ricetta) {[] 
  []
 
 
 Overfull \hbox (275.29817pt too wide) in paragraph at lines 426--426
-[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO sessione\_presenza\_ricetta (idsessionepresenza, idricetta) VALUES (?, ?) ON CONFLICT DO NOTHING";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO sessione\_presenza\_ricet
+ta (idsessionepresenza, idricetta) VALUES (?, ?) ON CONFLICT DO NOTHING";[] 
  []
 
 
@@ -1135,16 +1361,20 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [53]
 Overfull \hbox (68.34541pt too wide) in paragraph at lines 426--426
-[]\OT1/cmtt/m/n/10.95 public ArrayList<UtenteVisitatore> recuperaPartecipantiSessione(SessioniInPresenza sessione) {[] 
+[]\OT1/cmtt/m/n/10.95 public ArrayList<UtenteVisitatore> recuperaPartecipantiSe
+ssione(SessioniInPresenza sessione) {[] 
  []
 
 
 Overfull \hbox (424.76405pt too wide) in paragraph at lines 426--426
-[]    \OT1/cmtt/m/n/10.95 String query = "SELECT p.* FROM partecipante p JOIN adesione\_sessionepresenza a ON p.idpartecipante = a.idpartecipante WHERE a.idsessionepresenza = ?";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "SELECT p.* FROM partecipante p JOIN a
+desione\_sessionepresenza a ON p.idpartecipante = a.idpartecipante WHERE a.idse
+ssionepresenza = ?";[] 
  []
 
 
@@ -1152,16 +1382,21 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [54]
 Overfull \hbox (493.7483pt too wide) in paragraph at lines 473--473
-[]    \OT1/cmtt/m/n/10.95 String query = "Select I.Nome, I.UnitaDiMisura, I.IdIngrediente, P.QuanititaUnitaria from INGREDIENTE I Natural join PREPARAZIONEINGREDIENTE P where P.IdRicetta=?";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "Select I.Nome, I.UnitaDiMisura, I.IdI
+ngrediente, P.QuanititaUnitaria from INGREDIENTE I Natural join PREPARAZIONEING
+REDIENTE P where P.IdRicetta=?";[] 
  []
 
 
 Overfull \hbox (315.53899pt too wide) in paragraph at lines 473--473
-[]        \OT1/cmtt/m/n/10.95 Ingredienti ingrediente = new Ingredienti(rs.getString("Nome"), rs.getFloat("QuanititaUnitaria"), rs.getString("UnitaDiMisura"));[] 
+[]        \OT1/cmtt/m/n/10.95 Ingredienti ingrediente = new Ingredienti(rs.getS
+tring("Nome"), rs.getFloat("QuanititaUnitaria"), rs.getString("UnitaDiMisura"))
+;[] 
  []
 
 
@@ -1169,16 +1404,19 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [55]
 Overfull \hbox (79.84279pt too wide) in paragraph at lines 521--521
-[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO ingrediente (Nome, UnitaDiMisura) VALUES (?, ?::unitadimisura)";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "INSERT INTO ingrediente (Nome, UnitaD
+iMisura) VALUES (?, ?::unitadimisura)";[] 
  []
 
 
 Overfull \hbox (85.59148pt too wide) in paragraph at lines 521--521
-[]    \OT1/cmtt/m/n/10.95 String query = "SELECT COUNT(*) as cnt FROM PREPARAZIONEINGREDIENTE WHERE IdIngrediente = ?";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "SELECT COUNT(*) as cnt FROM PREPARAZI
+ONEINGREDIENTE WHERE IdIngrediente = ?";[] 
  []
 
 
@@ -1186,21 +1424,26 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [56]
 Overfull \hbox (3.92505pt too wide) in paragraph at lines 530--531
-[]\OT1/cmtt/m/n/10.95 RicavaNumeroSessioniInPresenza\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 RicavaNumeroSesssioniTelematiche\OT1/cmr/m/n/10.95 : re-cu-per-ano il nu-
+[]\OT1/cmtt/m/n/10.95 RicavaNumeroSessioniInPresenza\OT1/cmr/m/n/10.95 , \OT1/c
+mtt/m/n/10.95 RicavaNumeroSesssioniTelematiche\OT1/cmr/m/n/10.95 : re-cu-per-an
+o il nu-
  []
 
 
 Overfull \hbox (275.29817pt too wide) in paragraph at lines 562--562
-[]    \OT1/cmtt/m/n/10.95 String quarry="SELECT min\_ricette\_in\_sessione FROM vista\_statistiche\_mensili\_chef WHERE IdChef=? AND mese=? AND anno=?";[] 
+[]    \OT1/cmtt/m/n/10.95 String quarry="SELECT min\_ricette\_in\_sessione FROM
+ vista\_statistiche\_mensili\_chef WHERE IdChef=? AND mese=? AND anno=?";[] 
  []
 
 
 Overfull \hbox (286.79555pt too wide) in paragraph at lines 562--562
-[]    \OT1/cmtt/m/n/10.95 String quarry="SELECT media\_ricette\_in\_sessione FROM vista\_statistiche\_mensili\_chef WHERE IdChef=? AND mese=? AND anno=?";[] 
+[]    \OT1/cmtt/m/n/10.95 String quarry="SELECT media\_ricette\_in\_sessione FR
+OM vista\_statistiche\_mensili\_chef WHERE IdChef=? AND mese=? AND anno=?";[] 
  []
 
 
@@ -1208,16 +1451,20 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [57]
 Overfull \hbox (177.57048pt too wide) in paragraph at lines 601--601
-[]    \OT1/cmtt/m/n/10.95 String query = "SELECT c.* FROM POSSIEDE p JOIN Carta c ON p.IdCarta = c.IdCarta WHERE p.IdPartecipante = ?";[] 
+[]    \OT1/cmtt/m/n/10.95 String query = "SELECT c.* FROM POSSIEDE p JOIN Carta
+ c ON p.IdCarta = c.IdCarta WHERE p.IdPartecipante = ?";[] 
  []
 
 
 Overfull \hbox (551.23518pt too wide) in paragraph at lines 601--601
-[]    \OT1/cmtt/m/n/10.95 String selectId = "SELECT IdCarta FROM Carta WHERE Intestatario = ? AND DataScadenza = ? AND UltimeQuattroCifre = ? AND Circuito = ?::Circuito ORDER BY IdCarta DESC LIMIT 1";[] 
+[]    \OT1/cmtt/m/n/10.95 String selectId = "SELECT IdCarta FROM Carta WHERE In
+testatario = ? AND DataScadenza = ? AND UltimeQuattroCifre = ? AND Circuito = ?
+::Circuito ORDER BY IdCarta DESC LIMIT 1";[] 
  []
 
 
@@ -1225,6 +1472,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [58]
@@ -1233,26 +1481,36 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [59]) (./latex/Capitoli/capitolo7.tex
 Overfull \hbox (11.74393pt too wide) in paragraph at lines 8--9
-\OT1/cmr/m/n/10.95 La classe \OT1/cmtt/m/n/10.95 SupportDb \OT1/cmr/m/n/10.95 for-nisce metodi di utilit^^Ra per la chiusura si-cura di oggetti JDBC come \OT1/cmtt/m/n/10.95 Connection\OT1/cmr/m/n/10.95 ,
+\OT1/cmr/m/n/10.95 La classe \OT1/cmtt/m/n/10.95 SupportDb \OT1/cmr/m/n/10.95 f
+or-nisce metodi di utilit^^Ra per la chiusura si-cura di oggetti JDBC come \OT1
+/cmtt/m/n/10.95 Connection\OT1/cmr/m/n/10.95 ,
  []
 
 
 Overfull \hbox (4.25932pt too wide) in paragraph at lines 11--12
-\OT1/cmr/m/n/10.95 Il file \OT1/cmtt/m/n/10.95 pom.xml \OT1/cmr/m/n/10.95 in-clude la dipen-denza per il driver JDBC Post-greSQL (\OT1/cmtt/m/n/10.95 org.postgresql:postgresql\OT1/cmr/m/n/10.95 ),
+\OT1/cmr/m/n/10.95 Il file \OT1/cmtt/m/n/10.95 pom.xml \OT1/cmr/m/n/10.95 in-cl
+ude la dipen-denza per il driver JDBC Post-greSQL (\OT1/cmtt/m/n/10.95 org.post
+gresql:postgresql\OT1/cmr/m/n/10.95 ),
  []
 
 
 Overfull \hbox (13.93411pt too wide) in paragraph at lines 15--16
-[]\OT1/cmtt/m/n/10.95 ConnectionJavaDb.java\OT1/cmr/m/n/10.95 : gestisce la let-tura dei parametri di con-nes-sione dal file \OT1/cmtt/m/n/10.95 db.properties\OT1/cmr/m/n/10.95 ,
+[]\OT1/cmtt/m/n/10.95 ConnectionJavaDb.java\OT1/cmr/m/n/10.95 : gestisce la let
+-tura dei parametri di con-nes-sione dal file \OT1/cmtt/m/n/10.95 db.properties
+\OT1/cmr/m/n/10.95 ,
  []
 
 
 Overfull \hbox (10.25311pt too wide) in paragraph at lines 16--17
-[]\OT1/cmtt/m/n/10.95 SupportDb.java\OT1/cmr/m/n/10.95 : for-nisce metodi per la chiusura si-cura di \OT1/cmtt/m/n/10.95 Connection\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 Statement \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 ResultSet\OT1/cmr/m/n/10.95 ,
+[]\OT1/cmtt/m/n/10.95 SupportDb.java\OT1/cmr/m/n/10.95 : for-nisce metodi per l
+a chiusura si-cura di \OT1/cmtt/m/n/10.95 Connection\OT1/cmr/m/n/10.95 , \OT1/c
+mtt/m/n/10.95 Statement \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 ResultSet\OT1/
+cmr/m/n/10.95 ,
  []
 
 
@@ -1260,6 +1518,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
 [60])
@@ -1268,25 +1527,34 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                Make it at least 16.99998pt, for example:
 (fancyhdr)                \setlength{\headheight}{16.99998pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
+
 (fancyhdr)                \addtolength{\topmargin}{-4.99998pt}.
 
-[61] (./Documentazione-Programmazione-Object-Oriented-OOBD39.aux)
-Package rerunfilecheck Info: File `Documentazione-Programmazione-Object-Oriented-OOBD39.out' has not changed.
-(rerunfilecheck)             Checksum: AAFA50707BD9A0EC5819DE7D880845B1;10697.
+[61] (build/Documentazione-Programmazione-Object-Oriented-OOBD39.aux)
+Package rerunfilecheck Info: File `Documentazione-Programmazione-Object-Oriente
+d-OOBD39.out' has not changed.
+(rerunfilecheck)             Checksum: 42718096DBFCD7CBDA4A53192396B420;10823.
  ) 
 Here is how much of TeX's memory you used:
- 10354 strings out of 480236
- 162107 string characters out of 5895675
- 467059 words of memory out of 5000000
- 27868 multiletter control sequences out of 15000+600000
+ 10356 strings out of 480236
+ 162015 string characters out of 5895675
+ 468059 words of memory out of 5000000
+ 27869 multiletter control sequences out of 15000+600000
  475285 words of font info for 48 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,12n,63p,827b,473s stack positions out of 5000i,500n,10000p,200000b,80000s
- </home/aldref/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1095.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on Documentazione-Programmazione-Object-Oriented-OOBD39.pdf (61 pages, 331854 bytes).
+ 60i,12n,63p,763b,539s stack positions out of 5000i,500n,10000p,200000b,80000s
+ </home/aldref/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1095.60
+0pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/tex
+live/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on build/Documentazione-Programmazione-Object-Oriented-OOBD39.pd
+f (61 pages, 332749 bytes).
 PDF statistics:
- 877 PDF objects out of 1000 (max. 8388607)
- 791 compressed objects within 8 object streams
- 285 named destinations out of 1000 (max. 500000)
- 574 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 882 PDF objects out of 1000 (max. 8388607)
+ 796 compressed objects within 8 object streams
+ 286 named destinations out of 1000 (max. 500000)
+ 582 words of extra memory for PDF output out of 10000 (max. 10000000)
 

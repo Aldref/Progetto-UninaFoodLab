@@ -8,9 +8,11 @@ UninaFoodLab è una piattaforma per la gestione di corsi di cucina tematici, pen
 
 - [Descrizione Generale](#descrizione-generale)
 - [Componenti del Progetto](#componenti-del-progetto)
+  - [Database Relazionale](#1-database-relazionale)
+  - [Applicativo Java](#2-applicativo-java)
 - [Struttura delle Cartelle](#struttura-delle-cartelle)
 - [Requisiti](#requisiti)
-- [Strumenti Utilizzati](#strumenti-utilizzati)
+  - [Strumenti Utilizzati](#strumenti-utilizzati)
 - [Membri del Gruppo](#membri-del-gruppo)
 - [Comandi Utili](#comandi-utili)
 - [Note Finali](#note-finali)
