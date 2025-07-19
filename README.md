@@ -4,6 +4,17 @@ UninaFoodLab è una piattaforma per la gestione di corsi di cucina tematici, pen
 
 ---
 
+## Indice
+
+- [Descrizione Generale](#descrizione-generale)
+- [Componenti del Progetto](#componenti-del-progetto)
+- [Struttura delle Cartelle](#struttura-delle-cartelle)
+- [Requisiti](#requisiti)
+- [Strumenti Utilizzati](#strumenti-utilizzati)
+- [Membri del Gruppo](#membri-del-gruppo)
+- [Comandi Utili](#comandi-utili)
+- [Note Finali](#note-finali)
+
 ## Descrizione Generale
 
 La piattaforma permette agli chef di creare, gestire e visualizzare corsi di cucina su vari argomenti (es. cucina asiatica, pasticceria, panificazione). Gli utenti possono iscriversi ai corsi, partecipare a sessioni online o pratiche, e consultare ricette e ingredienti. Il sistema ottimizza la gestione delle adesioni e degli ingredienti, riducendo sprechi alimentari.
