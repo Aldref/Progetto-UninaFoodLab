@@ -66,7 +66,6 @@ public class CalendarDialogController {
         this.isChef = isChef;
     }
 
-    // Nuovo costruttore per passare le sessioni dell'utente
     public CalendarDialogController(Label monthYearLabel, GridPane calendarGrid, VBox lessonDetailsArea,
                                    Label selectedDateLabel, VBox lessonsContainer, Button closeBtn, boolean isChef, List<Sessione> userSessions) {
         this(monthYearLabel, calendarGrid, lessonDetailsArea, selectedDateLabel, lessonsContainer, closeBtn, isChef);

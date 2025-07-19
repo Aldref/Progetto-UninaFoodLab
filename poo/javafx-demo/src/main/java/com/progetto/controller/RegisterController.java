@@ -73,6 +73,14 @@ public class RegisterController {
                     messaggioErrore.append("• Gli anni di esperienza non possono superare 50\n");
                     valid = false;
                 }
+                if (dataNascita != null) {
+                    int eta = java.time.Period.between(dataNascita, java.time.LocalDate.now()).getYears();
+                    int maxEsperienza = Math.max(0, eta - 18);
+                    if (anni > maxEsperienza) {
+                        messaggioErrore.append("• Gli anni di esperienza non possono superare l'età");
+                        valid = false;
+                    }
+                }
             } catch (NumberFormatException e) {
                 messaggioErrore.append("• Gli anni di esperienza devono essere un numero valido\n");
                 valid = false;

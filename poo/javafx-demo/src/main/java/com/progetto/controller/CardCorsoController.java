@@ -174,41 +174,6 @@ public class CardCorsoController {
         });
     }
 
-    public void setCourseData(String title, String description, String start, String end, String freq, String price, String chef, String experience, String maxPeopleValue) {
-        if (courseTitle != null) courseTitle.setText(title);
-        if (courseDescription != null) courseDescription.setText(description);
-        if (startDate != null) startDate.setText(start);
-        if (endDate != null) endDate.setText(end);
-        if (frequency != null) frequency.setText(freq);
-        if (priceLabel != null && price != null) priceLabel.setText(price);
-        if (chefName != null && chef != null) chefName.setText(chef);
-        if (chefExperience != null && experience != null) chefExperience.setText(experience + " anni di esperienza");
-        if (maxPeople != null && maxPeopleValue != null) maxPeople.setText(maxPeopleValue);
-    }
-
-    public void setCuisineTypes(String... types) {
-        if (cuisineTypeLabel1 != null) {
-            if (types != null && types.length > 0 && types[0] != null && !types[0].trim().isEmpty()) {
-                cuisineTypeLabel1.setText(types[0]);
-                cuisineTypeLabel1.setVisible(true);
-                cuisineTypeLabel1.setManaged(true);
-            } else {
-                cuisineTypeLabel1.setVisible(false);
-                cuisineTypeLabel1.setManaged(false);
-            }
-        }
-        if (cuisineTypeLabel2 != null) {
-            if (types != null && types.length > 1 && types[1] != null && !types[1].trim().isEmpty()) {
-                cuisineTypeLabel2.setText(types[1]);
-                cuisineTypeLabel2.setVisible(true);
-                cuisineTypeLabel2.setManaged(true);
-            } else {
-                cuisineTypeLabel2.setVisible(false);
-                cuisineTypeLabel2.setManaged(false);
-            }
-        }
-    }
-
     public void handlePurchase(Corso corsoSelezionato) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/paymentpage.fxml"));
@@ -231,11 +196,8 @@ public class CardCorsoController {
             Parent root = loader.load();
             EditCourseBoundary boundary = loader.getController();
             if (corso != null) {
-                System.out.println("[DEBUG] CardCorsoController.handleEdit: corso.getId_Corso() = " + corso.getId_Corso());
                 boundary.setCourseId(corso.getId_Corso());
-            } else {
-                System.out.println("[DEBUG] CardCorsoController.handleEdit: corso è null!");
-            }
+            } 
             Stage stage = (Stage) editButton.getScene().getWindow();
             stage.setScene(new javafx.scene.Scene(root));
             stage.setTitle("UninaFoodLab - Modifica Corso");
@@ -282,5 +244,40 @@ public class CardCorsoController {
 
     public void setEnrolledPage(boolean isEnrolled) {
         setEnrolledMode(isEnrolled);
+    }
+
+    public void setCourseData(String title, String description, String start, String end, String freq, String price, String chef, String experience, String maxPeopleValue) {
+        if (courseTitle != null) courseTitle.setText(title);
+        if (courseDescription != null) courseDescription.setText(description);
+        if (startDate != null) startDate.setText(start);
+        if (endDate != null) endDate.setText(end);
+        if (frequency != null) frequency.setText(freq);
+        if (priceLabel != null && price != null) priceLabel.setText(price);
+        if (chefName != null && chef != null) chefName.setText(chef);
+        if (chefExperience != null && experience != null) chefExperience.setText(experience + " anni di esperienza");
+        if (maxPeople != null && maxPeopleValue != null) maxPeople.setText(maxPeopleValue);
+    }
+
+    public void setCuisineTypes(String... types) {
+        if (cuisineTypeLabel1 != null) {
+            if (types != null && types.length > 0 && types[0] != null && !types[0].trim().isEmpty()) {
+                cuisineTypeLabel1.setText(types[0]);
+                cuisineTypeLabel1.setVisible(true);
+                cuisineTypeLabel1.setManaged(true);
+            } else {
+                cuisineTypeLabel1.setVisible(false);
+                cuisineTypeLabel1.setManaged(false);
+            }
+        }
+        if (cuisineTypeLabel2 != null) {
+            if (types != null && types.length > 1 && types[1] != null && !types[1].trim().isEmpty()) {
+                cuisineTypeLabel2.setText(types[1]);
+                cuisineTypeLabel2.setVisible(true);
+                cuisineTypeLabel2.setManaged(true);
+            } else {
+                cuisineTypeLabel2.setVisible(false);
+                cuisineTypeLabel2.setManaged(false);
+            }
+        }
     }
 }

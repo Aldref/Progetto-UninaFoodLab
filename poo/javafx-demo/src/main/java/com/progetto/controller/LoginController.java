@@ -16,7 +16,6 @@ public class LoginController {
         try {
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             UtenteVisitatoreDao utenteDao = new UtenteVisitatoreDao();
-            // Prima verifica il tipo di account
             String tipo = utenteDao.TipoDiAccount(email, password);
             if (tipo == null) {
                 return "Tipo di account non riconosciuto.";

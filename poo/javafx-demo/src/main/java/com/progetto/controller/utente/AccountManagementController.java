@@ -158,7 +158,6 @@ public class AccountManagementController {
             loggedUser.setPassword(newPwd);
         }
 
-        // Aggiorna gli altri dati
         loggedUser.setNome(boundary.getNameField().getText());
         loggedUser.setCognome(boundary.getSurnameField().getText());
         loggedUser.setEmail(boundary.getEmailField().getText());

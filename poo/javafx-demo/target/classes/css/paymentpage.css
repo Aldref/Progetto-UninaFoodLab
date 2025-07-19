@@ -1,3 +1,6 @@
+.error-field {
+    -fx-border-color: #dc3545;
+}
 .list-cell {
     -fx-background-color: #f8f9fa;
 }

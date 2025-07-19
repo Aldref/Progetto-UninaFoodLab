@@ -18,7 +18,7 @@ public class ChefDao extends UtenteDao  {
    
     @Override
     public void RegistrazioneUtente(Utente chef1) {
-        String query = "INSERT INTO Chef (Nome, Cognome, Email, Password, DataDiNascita, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Chef (Nome, Cognome, Email, Password, DataDiNascita, Descrizione, AnniDiEsperienza) VALUES (?, ?, ?, ?, ?, ?, ?)";
         SupportDb dbu = new SupportDb();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -26,7 +26,7 @@ public class ChefDao extends UtenteDao  {
 
         try {
             conn = ConnectionJavaDb.getConnection();
-            ps = conn.prepareStatement(query);
+            ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             java.sql.Date sqlData = java.sql.Date.valueOf(chef1.getDataDiNascita());
 
@@ -35,8 +35,9 @@ public class ChefDao extends UtenteDao  {
             ps.setString(3, chef1.getEmail());
             ps.setString(4, chef1.getPassword());
             ps.setDate(5, sqlData);
-            ps.setInt(6, ((Chef)chef1).getAnniDiEsperienza());
-            ps.execute(); 
+            ps.setString(6, ((Chef)chef1).getDescrizione());
+            ps.setInt(7, ((Chef)chef1).getAnniDiEsperienza());
+            ps.execute();
             generatedKeys = ps.getGeneratedKeys();
             if (generatedKeys.next()) {
                 ((Chef)chef1).setId_Chef(generatedKeys.getInt(1));
@@ -92,6 +93,7 @@ public class ChefDao extends UtenteDao  {
                 ((Chef)chef).setAnniDiEsperienza(rs.getInt("AnniDiEsperienza"));
                 ((Chef)chef).setId_Chef(rs.getInt("IdChef"));
                 ((Chef)chef).setUrl_Propic(rs.getString("Propic"));
+                ((Chef)chef).setDescrizione(rs.getString("Descrizione"));
             }
         } catch (SQLException sqe) {
             sqe.printStackTrace();

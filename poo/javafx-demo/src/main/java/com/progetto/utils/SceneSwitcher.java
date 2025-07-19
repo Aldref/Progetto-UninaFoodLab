@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
 
 import java.io.IOException;
 import java.util.List;
@@ -108,7 +110,7 @@ public class SceneSwitcher {
                     stage.setHeight(stage.getHeight() - 1);
                 }
                 else if (os.contains("mac")) {
-                    javafx.geometry.Rectangle2D bounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+                    Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
                     stage.setX(bounds.getMinX());
                     stage.setY(bounds.getMinY());
                     stage.setWidth(bounds.getWidth());
@@ -279,7 +281,6 @@ public class SceneSwitcher {
         }
     }
 
-    // Nuova versione: accetta lista sessioni reali
     public static void showCalendarDialog(Stage owner, List<Sessione> sessioni, boolean isChef) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource("/fxml/calendardialog.fxml"));
         Parent dialogContent = loader.load();

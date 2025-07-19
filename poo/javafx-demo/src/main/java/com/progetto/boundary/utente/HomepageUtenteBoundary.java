@@ -48,7 +48,7 @@ public class HomepageUtenteBoundary {
     }
 
     private void initializeSearchFiltersFromDb() {
-        com.progetto.Entity.entityDao.BarraDiRicercaDao dao = new com.progetto.Entity.entityDao.BarraDiRicercaDao();
+        BarraDiRicercaDao dao = new BarraDiRicercaDao();
         categoryComboBox.getItems().clear();
         frequencyComboBox.getItems().clear();
         categoryComboBox.getItems().add("Tutte le categorie");

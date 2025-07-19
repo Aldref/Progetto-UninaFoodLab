@@ -48,7 +48,6 @@ public class SuccessDialogUtils {
             
             SuccessDialogBoundary dialogBoundary = loader.getController();
             
-            // Configura i messaggi
             dialogBoundary.setTitle(title);
             dialogBoundary.setMainMessage(mainMessage);
             
@@ -65,7 +64,6 @@ public class SuccessDialogUtils {
             Stage dialogStage = new Stage();
             dialogBoundary.setDialogStage(dialogStage);
             
-            // Configura il dialog
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.initStyle(StageStyle.UNDECORATED);
             dialogStage.setTitle(title);
@@ -75,7 +73,6 @@ public class SuccessDialogUtils {
             scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
             dialogStage.setScene(scene);
             
-            // Centra il dialog
             if (parentStage != null) {
                 dialogStage.initOwner(parentStage);
                 dialogStage.setOnShown(e -> {
@@ -89,7 +86,6 @@ public class SuccessDialogUtils {
             }
             
             dialogStage.showAndWait();
-            
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -131,7 +131,6 @@ public class EnrolledCoursesController {
                     });
                     return;
                 }
-                // Recupera i corsi dal database
                 utente.getUtenteVisitatoreDao().RecuperaCorsi(utente);
                 List<Corso> corsi = utente.getCorsi();
                 if (corsi != null && corsi.equals(cachedCorsi)) {

@@ -23,6 +23,17 @@ import com.progetto.Entity.entityDao.CartaDiCreditoDao;
 import com.progetto.Entity.entityDao.UtenteVisitatoreDao;
 
 public class PaymentPageController {
+    private PaymentPageBoundary boundary;
+    
+    private static final Pattern NOME_PATTERN = Pattern.compile("^[a-zA-ZÀ-ÿ]+(?:\\s+[a-zA-ZÀ-ÿ]+)*$");
+    private static final Pattern CARTA_PATTERN = Pattern.compile("^[0-9]{16}$");
+    private static final Pattern CVC_PATTERN = Pattern.compile("^[0-9]{3,4}$");
+    private static final Pattern SCADENZA_PATTERN = Pattern.compile("^(0[1-9]|1[0-2])/([0-9]{2})$");
+    
+    public PaymentPageController(PaymentPageBoundary boundary) {
+        this.boundary = boundary;
+    }
+
     public void loadSavedCardsForUser() {
         UtenteVisitatore utente = UtenteVisitatore.loggedUser;
         if (utente != null) {
@@ -35,17 +46,6 @@ public class PaymentPageController {
         CartaDiCreditoDao dao = new CartaDiCreditoDao();
         List<CartaDiCredito> carte = dao.getCarteByUtenteId(idUtente);
         boundary.setSavedCards(carte);
-    }
-    
-    private PaymentPageBoundary boundary;
-    
-    private static final Pattern NOME_PATTERN = Pattern.compile("^[a-zA-ZÀ-ÿ]+(?:\\s+[a-zA-ZÀ-ÿ]+)*$");
-    private static final Pattern CARTA_PATTERN = Pattern.compile("^[0-9]{16}$");
-    private static final Pattern CVC_PATTERN = Pattern.compile("^[0-9]{3,4}$");
-    private static final Pattern SCADENZA_PATTERN = Pattern.compile("^(0[1-9]|1[0-2])/([0-9]{2})$");
-    
-    public PaymentPageController(PaymentPageBoundary boundary) {
-        this.boundary = boundary;
     }
     
     public void processPaymentWithSavedCard(String cardId) {

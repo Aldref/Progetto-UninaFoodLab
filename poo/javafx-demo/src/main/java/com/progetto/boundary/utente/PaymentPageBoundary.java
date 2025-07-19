@@ -225,18 +225,21 @@ public class PaymentPageBoundary implements Initializable {
     private void setError(Label label, TextField field, String message) {
         label.setText(message);
         label.setVisible(true);
-        field.setStyle(field.getStyle() + "; -fx-border-color: #dc3545;");
+        if (!field.getStyleClass().contains("error-field")) {
+            field.getStyleClass().add("error-field");
+        }
     }
     
-    private void clearError(Label errorLabel) {
+    private void clearError(Label errorLabel, TextField field) {
         errorLabel.setVisible(false);
+        field.getStyleClass().remove("error-field");
     }
     
     public void clearAllErrors() {
-        clearError(nomeErrorLabel); clearError(numeroCartaErrorLabel);
-        clearError(scadenzaErrorLabel); clearError(cvcErrorLabel);
-        nomeField.setStyle(""); numeroCartaField.setStyle("");
-        scadenzaField.setStyle(""); cvcField.setStyle("");
+        clearError(nomeErrorLabel, nomeField);
+        clearError(numeroCartaErrorLabel, numeroCartaField);
+        clearError(scadenzaErrorLabel, scadenzaField);
+        clearError(cvcErrorLabel, cvcField);
     }
     
     public void setCourseDetails(String title, String details, String price) {
