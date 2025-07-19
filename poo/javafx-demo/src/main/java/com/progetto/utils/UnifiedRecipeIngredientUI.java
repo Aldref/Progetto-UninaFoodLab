@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UnifiedRecipeIngredientUI {
-    // Nuovi parametri: unitaDiMisuraList e giorniSettimanaList
     public static VBox createUnifiedRecipeBox(Ricetta ricetta, List<Ricetta> recipesList, VBox container, boolean isHybrid, Runnable notifyControllerOfChange, List<String> unitaDiMisuraList) {
         VBox recipeBox = new VBox(10);
         recipeBox.getStyleClass().add("recipe-box");
@@ -75,7 +74,6 @@ public class UnifiedRecipeIngredientUI {
         HBox ingredientBox = new HBox(15);
         ingredientBox.getStyleClass().addAll("ingredient-box", "ingredient-row");
 
-        // Nome ingrediente
         TextField nomeField = new TextField(ingrediente.getNome());
         nomeField.setPromptText("Nome ingrediente");
         nomeField.getStyleClass().add("ingredient-name-field");
@@ -84,7 +82,6 @@ public class UnifiedRecipeIngredientUI {
             notifyControllerOfChange.run();
         });
 
-        // Quantità
         TextField quantitaField = new TextField(ingrediente.getQuantita() == 0 ? "" : String.valueOf(ingrediente.getQuantita()));
         quantitaField.setPromptText("Quantità");
         quantitaField.getStyleClass().add("ingredient-quantity-field");
@@ -103,7 +100,6 @@ public class UnifiedRecipeIngredientUI {
                         ingrediente.setQuantita(0);
                     }
                 } catch (NumberFormatException e) {
-                    // Mantieni il valore precedente se non è valido
                 }
             }
         });

@@ -287,7 +287,7 @@ public class SceneSwitcher {
 
         com.progetto.boundary.CalendarDialogBoundary dialogBoundary = loader.getController();
         dialogBoundary.setChefMode(isChef);
-        dialogBoundary.setSessioni(sessioni); // nuovo metodo da implementare nel boundary
+        dialogBoundary.setSessioni(sessioni); 
         dialogBoundary.initialize();
 
         Stage dialogStage = new Stage();
