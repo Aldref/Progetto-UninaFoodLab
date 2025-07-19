@@ -317,7 +317,7 @@ public class PaymentPageBoundary implements Initializable {
         } else {
             carta.setUltimeQuattroCifre(numero);
         }
-        carta.setCircuito(CardValidator.getCardType(numero));
+        carta.setCircuito(CardValidator.getCardType(numero).toLowerCase());
         return carta;
     }
 }

@@ -427,12 +427,12 @@ public class CreateCourseController {
     }
     
     private void setupDatePickers() {
-        startDatePicker.setValue(LocalDate.now());
+        startDatePicker.setValue(LocalDate.now().plusDays(1));
         startDatePicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
-                setDisable(empty || date.isBefore(LocalDate.now()));
+                setDisable(empty || date.isBefore(LocalDate.now().plusDays(1)));
             }
         });
         
