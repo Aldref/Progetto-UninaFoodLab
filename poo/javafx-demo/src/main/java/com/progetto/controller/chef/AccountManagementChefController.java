@@ -286,7 +286,7 @@ public class AccountManagementChefController {
     public void goToHomepage() {
         try {
             Stage stage = (Stage) boundary.getNameField().getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Homepage Chef");
+            SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Homepage");
         } catch (IOException e) {
             System.err.println("Errore nel cambio pagina: " + e.getMessage());
             boundary.showErrorMessage("Errore durante la navigazione alla homepage chef.");

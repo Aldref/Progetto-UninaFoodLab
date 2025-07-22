@@ -68,6 +68,7 @@ import java.util.*;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.Files;
 import javafx.fxml.FXMLLoader;
+import java.lang.reflect.Field;
 
 public class CreateCourseController {
     private final List<Sessione> sessioni = new ArrayList<>();
@@ -186,7 +187,7 @@ public class CreateCourseController {
 
         try {
             BarraDiRicercaDao dao = new BarraDiRicercaDao();
-            java.util.List<String> giorni = dao.GiorniSettimanaEnum();
+            List<String> giorni = dao.GiorniSettimanaEnum();
             ObservableList<String> giorniEnum = FXCollections.observableArrayList(giorni);
 
         } catch (Exception e) {
@@ -195,7 +196,7 @@ public class CreateCourseController {
 
         try {
             BarraDiRicercaDao dao = new BarraDiRicercaDao();
-            java.util.List<String> unita = dao.GrandezzeDiMisura();
+            List<String> unita = dao.GrandezzeDiMisura();
             ObservableList<String> unitaEnum = FXCollections.observableArrayList(unita);
         } catch (Exception e) {
             e.printStackTrace();
@@ -676,7 +677,6 @@ public class CreateCourseController {
         BooleanBinding basicValid = createBasicValidation();
         detailsValidBinding = createDetailsValidation();
         addCheckboxValidationListeners(detailsValidBinding);
-        // Binding custom per includere la validazione dei tipi di cucina
         BooleanBinding cuisineTypeValidBinding = Bindings.createBooleanBinding(() -> {
             String cucina1 = cuisineTypeComboBox1.getValue();
             String cucina2 = cuisineTypeComboBox2.getValue();
@@ -765,14 +765,14 @@ public class CreateCourseController {
         props.add(onlineDurationField.textProperty());
         if (boundary != null) {
             try {
-                java.lang.reflect.Field hybridSessionControlsListField = boundary.getClass().getDeclaredField("hybridSessionControlsList");
+                Field hybridSessionControlsListField = boundary.getClass().getDeclaredField("hybridSessionControlsList");
                 hybridSessionControlsListField.setAccessible(true);
                 Object controlsListObj = hybridSessionControlsListField.get(boundary);
-                if (controlsListObj instanceof java.util.List) {
-                    java.util.List<?> controlsList = (java.util.List<?>) controlsListObj;
+                if (controlsListObj instanceof List) {
+                    List<?> controlsList = (List<?>) controlsListObj;
                     for (Object controlsMapObj : controlsList) {
-                        if (controlsMapObj instanceof java.util.Map) {
-                            java.util.Map<?, ?> controlsMap = (java.util.Map<?, ?>) controlsMapObj;
+                        if (controlsMapObj instanceof Map) {
+                            Map<?, ?> controlsMap = (Map<?, ?>) controlsMapObj;
                             for (Object controlObj : controlsMap.values()) {
                                 if (controlObj instanceof javafx.scene.control.TextField) {
                                     props.add(((javafx.scene.control.TextField) controlObj).textProperty());
@@ -826,7 +826,7 @@ public class CreateCourseController {
     
     private void showTemporaryError(Label label, int maxDays) {
         String originalText = label.getText();
-        label.setText("⚠️ Massimo " + maxDays + " giorni selezionabili!");
+        label.setText("Massimo " + maxDays + " giorni selezionabili!");
         label.getStyleClass().add("error-label");
         
         new javafx.animation.Timeline(
@@ -1426,7 +1426,7 @@ public class CreateCourseController {
     public void goToHomepage() {
         try {
             Stage stage = (Stage) courseNameField.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Home Chef");
+            SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Homepage");
         } catch (Exception e) {
             e.printStackTrace();
         }

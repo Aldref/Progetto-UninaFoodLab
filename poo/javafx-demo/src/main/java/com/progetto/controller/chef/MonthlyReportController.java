@@ -171,7 +171,7 @@ public class MonthlyReportController {
     public void goToHomepage(Label chefNameLabel) {
         try {
             Stage stage = (Stage) chefNameLabel.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Dashboard Chef");
+            SceneSwitcher.switchScene(stage, "/fxml/homepagechef.fxml", "UninaFoodLab - Homepage");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -189,7 +189,7 @@ public class MonthlyReportController {
     public void goToAccountManagement(Label chefNameLabel) {
         try {
             Stage stage = (Stage) chefNameLabel.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/accountmanagementchef.fxml", "UninaFoodLab - Gestione Account Chef");
+            SceneSwitcher.switchScene(stage, "/fxml/accountmanagementchef.fxml", "UninaFoodLab - Gestione Account");
         } catch (Exception e) {
             e.printStackTrace();
         }

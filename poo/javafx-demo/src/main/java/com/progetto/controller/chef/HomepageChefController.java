@@ -176,7 +176,7 @@ public class HomepageChefController {
     public void goToAccountManagement() {
         try {
             Stage stage = (Stage) mainContentArea.getScene().getWindow();
-            SceneSwitcher.switchScene(stage, "/fxml/accountmanagementchef.fxml", "UninaFoodLab - Gestione Account Chef");
+            SceneSwitcher.switchScene(stage, "/fxml/accountmanagementchef.fxml", "UninaFoodLab - Gestione Account");
         } catch (IOException e) {
             e.printStackTrace();
         }

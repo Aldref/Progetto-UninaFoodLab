@@ -13,7 +13,6 @@ public class UnifiedRecipeIngredientUI {
         VBox recipeBox = new VBox(10);
         recipeBox.getStyleClass().add("recipe-box");
 
-        // Nome ricetta
         HBox nameBox = new HBox(10);
         Label nameLabel = new Label("Nome ricetta:");
         TextField nameField = new TextField(ricetta.getNome());
@@ -33,18 +32,15 @@ public class UnifiedRecipeIngredientUI {
         });
         nameBox.getChildren().addAll(nameLabel, nameField, removeBtn);
 
-        // Container per ingredienti
         VBox ingredientsContainer = new VBox(5);
         Label ingredientsLabel = new Label("Ingredienti:");
         ingredientsLabel.getStyleClass().add("ingredients-title");
 
-        // Se la ricetta non ha ingredienti, aggiungine uno vuoto
         if (ricetta.getIngredientiRicetta() == null || ricetta.getIngredientiRicetta().isEmpty()) {
             ricetta.setIngredientiRicetta(new ArrayList<>());
             ricetta.getIngredientiRicetta().add(new Ingredienti("", 0, ""));
         }
 
-        // Crea la UI per ogni ingrediente
         for (Ingredienti ingrediente : ricetta.getIngredientiRicetta()) {
             HBox ingredientBox = createUnifiedIngredientBox(ingrediente, ricetta, ingredientsContainer, isHybrid, notifyControllerOfChange, unitaDiMisuraList);
             ingredientsContainer.getChildren().add(ingredientBox);
@@ -56,7 +52,6 @@ public class UnifiedRecipeIngredientUI {
             Ingredienti nuovo = new Ingredienti("", 0, "");
             ricetta.getIngredientiRicetta().add(nuovo);
             HBox ingredientBox = createUnifiedIngredientBox(nuovo, ricetta, ingredientsContainer, isHybrid, notifyControllerOfChange, unitaDiMisuraList);
-            // Always add before the button if present
             if (ingredientsContainer.getChildren().contains(addIngredientBtn)) {
                 ingredientsContainer.getChildren().add(ingredientsContainer.getChildren().size() - 1, ingredientBox);
             } else {
@@ -104,7 +99,6 @@ public class UnifiedRecipeIngredientUI {
             }
         });
 
-        // Unità di misura
         ComboBox<String> unitaCombo = new ComboBox<>();
         if (unitaDiMisuraList != null && !unitaDiMisuraList.isEmpty()) {
             unitaCombo.getItems().addAll(unitaDiMisuraList);

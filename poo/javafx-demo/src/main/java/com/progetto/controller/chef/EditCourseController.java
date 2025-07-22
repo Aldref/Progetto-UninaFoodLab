@@ -218,7 +218,6 @@ public class EditCourseController {
                 ((javafx.beans.property.Property<?>) obs).addListener((o, oldVal, newVal) -> debouncedUpdate.run());
             }
         }
-        // Listener su ingredienti/ricette
         for (Node sessionNode : recipesContainer.getChildren()) {
             if (sessionNode instanceof VBox) {
                 VBox sessionBox = (VBox) sessionNode;
@@ -262,6 +261,7 @@ public class EditCourseController {
         saveButton.disableProperty().bind(changed.not());
     }
     }
+
     private Runnable debounce(Runnable action, int delayMs) {
         final Timer timer = new Timer();
         final TimerTask[] lastTask = {null};
@@ -278,9 +278,7 @@ public class EditCourseController {
         for (Node sessionNode : recipesContainer.getChildren()) {
             if (sessionNode instanceof VBox) {
                 VBox sessionBox = (VBox) sessionNode;
-                // Salta la label e il pulsante di aggiunta
                 for (Node recipeNode : sessionBox.getChildren()) {
-                    // La label della sessione è sempre il primo figlio
                     if (recipeNode instanceof VBox && recipeNode != sessionBox.getChildren().get(0)) {
                         VBox recipeBox = (VBox) recipeNode;
                         if (!recipeBox.getChildren().isEmpty() && recipeBox.getChildren().get(0) instanceof HBox) {
@@ -316,177 +314,177 @@ public class EditCourseController {
         }
     }
 
-public boolean hasAnyFieldChanged() {
-        if (currentCourse == null) return false;
-        boolean changed = false;
-        if (!Objects.equals(courseNameField.getText().trim(), currentCourse.getNome())) changed = true;
-        if (!Objects.equals(descriptionArea.getText().trim(), currentCourse.getDescrizione())) changed = true;
-        if (!Objects.equals(frequencyCombo.getValue(), currentCourse.getFrequenzaDelleSessioni())) changed = true;
-        if (!Objects.equals(maxPersonsSpinner.getValue(), currentCourse.getMaxPersone())) changed = true;
-        String corsoVia = null;
-        String corsoCap = null;
-        try {
-            java.lang.reflect.Method viaMethod = currentCourse.getClass().getMethod("getVia");
-            corsoVia = (String) viaMethod.invoke(currentCourse);
-        } catch (Exception e) {
+    public boolean hasAnyFieldChanged() {
+            if (currentCourse == null) return false;
+            boolean changed = false;
+            if (!Objects.equals(courseNameField.getText().trim(), currentCourse.getNome())) changed = true;
+            if (!Objects.equals(descriptionArea.getText().trim(), currentCourse.getDescrizione())) changed = true;
+            if (!Objects.equals(frequencyCombo.getValue(), currentCourse.getFrequenzaDelleSessioni())) changed = true;
+            if (!Objects.equals(maxPersonsSpinner.getValue(), currentCourse.getMaxPersone())) changed = true;
+            String corsoVia = null;
+            String corsoCap = null;
             try {
-                java.lang.reflect.Method streetMethod = currentCourse.getClass().getMethod("getStreet");
-                corsoVia = (String) streetMethod.invoke(currentCourse);
-            } catch (Exception ex) {
-                corsoVia = "";
+                java.lang.reflect.Method viaMethod = currentCourse.getClass().getMethod("getVia");
+                corsoVia = (String) viaMethod.invoke(currentCourse);
+            } catch (Exception e) {
+                try {
+                    java.lang.reflect.Method streetMethod = currentCourse.getClass().getMethod("getStreet");
+                    corsoVia = (String) streetMethod.invoke(currentCourse);
+                } catch (Exception ex) {
+                    corsoVia = "";
+                }
             }
-        }
-        try {
-            java.lang.reflect.Method capMethod = currentCourse.getClass().getMethod("getCap");
-            corsoCap = (String) capMethod.invoke(currentCourse);
-        } catch (Exception e) {
-            corsoCap = "";
-        }
-        if (!Objects.equals(streetField.getText().trim(), corsoVia)) changed = true;
-        if (!Objects.equals(capField.getText().trim(), corsoCap)) changed = true;
+            try {
+                java.lang.reflect.Method capMethod = currentCourse.getClass().getMethod("getCap");
+                corsoCap = (String) capMethod.invoke(currentCourse);
+            } catch (Exception e) {
+                corsoCap = "";
+            }
+            if (!Objects.equals(streetField.getText().trim(), corsoVia)) changed = true;
+            if (!Objects.equals(capField.getText().trim(), corsoCap)) changed = true;
 
-        try {
-            SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
-            ricettaDao ricettaDao = new ricettaDao();
-            ArrayList<SessioniInPresenza> presenze = presenzaDao.getSessioniByCorso(courseId);
-            Map<LocalDate, List<Ricetta>> ricetteDB = new HashMap<>();
-            for (SessioniInPresenza sessione : presenze) {
-                ricetteDB.put(sessione.getData(), sessione.getRicette());
-            }
-            for (Node node : recipesContainer.getChildren()) {
-                if (!(node instanceof VBox)) continue;
-                VBox recipeBox = (VBox) node;
-                if (recipeBox.getChildren().isEmpty()) continue;
-                Node headerNode = recipeBox.getChildren().get(0);
-                if (!(headerNode instanceof HBox)) continue;
-                HBox header = (HBox) headerNode;
-                if (header.getChildren().size() < 4) continue;
-                if (!(header.getChildren().get(1) instanceof TextField)) continue;
-                if (!(header.getChildren().get(3) instanceof Label)) continue;
-                TextField recipeNameField = (TextField) header.getChildren().get(1);
-                Label sessionDateLabel = (Label) header.getChildren().get(3);
-                String labelText = sessionDateLabel.getText();
-                String dateStr = labelText.replace("Sessione: ", "").split(" ")[0];
-                LocalDate sessionDate = LocalDate.parse(dateStr);
-                String nomeRicettaUI = recipeNameField.getText().trim();
-                List<Ricetta> ricetteDbList = ricetteDB.get(sessionDate);
-                Ricetta ricettaDb = null;
-                if (ricetteDbList != null) {
-                    for (Ricetta r : ricetteDbList) {
-                        if (r.getNome().equals(nomeRicettaUI)) {
-                            ricettaDb = r;
-                            break;
-                        }
-                    }
+            try {
+                SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
+                ricettaDao ricettaDao = new ricettaDao();
+                ArrayList<SessioniInPresenza> presenze = presenzaDao.getSessioniByCorso(courseId);
+                Map<LocalDate, List<Ricetta>> ricetteDB = new HashMap<>();
+                for (SessioniInPresenza sessione : presenze) {
+                    ricetteDB.put(sessione.getData(), sessione.getRicette());
                 }
-                if (ricettaDb == null) { changed = true; continue; }
-                List<Ingredienti> ingredientiDb = ricettaDao.getIngredientiRicetta(ricettaDb);
-                List<Map<String, String>> ingredientiUI = new ArrayList<>();
-                if (recipeBox.getChildren().size() < 2) continue;
-                Node ingredientsBoxNode = recipeBox.getChildren().get(1);
-                if (!(ingredientsBoxNode instanceof VBox)) continue;
-                VBox ingredientsBox = (VBox) ingredientsBoxNode;
-                if (ingredientsBox.getChildren().size() < 2) continue;
-                Node ingredientsListNode = ingredientsBox.getChildren().get(1);
-                if (!(ingredientsListNode instanceof VBox)) continue;
-                VBox ingredientsList = (VBox) ingredientsListNode;
-                for (Node ingrNode : ingredientsList.getChildren()) {
-                    if (!(ingrNode instanceof HBox)) continue;
-                    HBox ingrRow = (HBox) ingrNode;
-                    if (ingrRow.getChildren().size() < 3) continue;
-                    if (!(ingrRow.getChildren().get(0) instanceof TextField)) continue;
-                    if (!(ingrRow.getChildren().get(1) instanceof TextField)) continue;
-                    if (!(ingrRow.getChildren().get(2) instanceof ComboBox)) continue;
-                    TextField nameField = (TextField) ingrRow.getChildren().get(0);
-                    TextField quantityField = (TextField) ingrRow.getChildren().get(1);
-                    ComboBox<?> unitCombo = (ComboBox<?>) ingrRow.getChildren().get(2);
-                    String ingrName = nameField.getText().trim();
-                    String ingrQuantity = quantityField.getText().trim();
-                    String ingrUnit = unitCombo.getValue() != null ? unitCombo.getValue().toString() : "g";
-                    Map<String, String> ingrMap = new HashMap<>();
-                    ingrMap.put("nome", ingrName);
-                    ingrMap.put("quantita", ingrQuantity);
-                    ingrMap.put("unita", ingrUnit);
-                    ingredientiUI.add(ingrMap);
-                }
-                if (ingredientiDb.size() != ingredientiUI.size()) { changed = true; continue; }
-                for (int i = 0; i < ingredientiDb.size(); i++) {
-                    Ingredienti ingrDb = ingredientiDb.get(i);
-                    Map<String, String> ingrUI = ingredientiUI.get(i);
-                    if (!ingrDb.getNome().equals(ingrUI.get("nome"))) { changed = true; break; }
-                    String quantDb = String.valueOf(ingrDb.getQuantita());
-                    if (!quantDb.equals(ingrUI.get("quantita"))) { changed = true; break; }
-                    if (!ingrDb.getUnitaMisura().equals(ingrUI.get("unita"))) { changed = true; break; }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            SessioneOnlineDao onlineDao = new SessioneOnlineDao();
-            List<SessioneOnline> telematiche = onlineDao.getSessioniByCorso(courseId);
-            String tipoCorso = courseTypeCombo.getValue();
-            boolean isTelematica = "Telematica".equals(tipoCorso);
-            boolean isEntrambi = "Entrambi".equals(tipoCorso);
-            if ((isTelematica || isEntrambi) && telematiche != null && !telematiche.isEmpty()) {
-                int sessionIndex = 0;
-                for (Node node : onlineSection.getChildren()) {
+                for (Node node : recipesContainer.getChildren()) {
                     if (!(node instanceof VBox)) continue;
-                    VBox sessionBox = (VBox) node;
-                    if (sessionBox.getChildren().isEmpty()) continue;
-                    Node headerNode = sessionBox.getChildren().get(0);
+                    VBox recipeBox = (VBox) node;
+                    if (recipeBox.getChildren().isEmpty()) continue;
+                    Node headerNode = recipeBox.getChildren().get(0);
                     if (!(headerNode instanceof HBox)) continue;
                     HBox header = (HBox) headerNode;
-                    ComboBox<?> appCombo = null;
-                    TextField codeField = null;
-                    Spinner<Integer> hourSpinner = null;
-                    Spinner<Integer> minuteSpinner = null;
-                    Spinner<Double> durataSpinner = null;
-                    for (Node hNode : header.getChildren()) {
-                        if (hNode instanceof ComboBox && appCombo == null) appCombo = (ComboBox<?>) hNode;
-                        if (hNode instanceof TextField && codeField == null) codeField = (TextField) hNode;
-                        if (hNode instanceof Spinner) {
-                            if (((Spinner<?>) hNode).getValueFactory() instanceof SpinnerValueFactory.IntegerSpinnerValueFactory) {
-                                if (hourSpinner == null) hourSpinner = (Spinner<Integer>) hNode;
-                                else if (minuteSpinner == null) minuteSpinner = (Spinner<Integer>) hNode;
-                            } else if (((Spinner<?>) hNode).getValueFactory() instanceof SpinnerValueFactory.DoubleSpinnerValueFactory) {
-                                durataSpinner = (Spinner<Double>) hNode;
+                    if (header.getChildren().size() < 4) continue;
+                    if (!(header.getChildren().get(1) instanceof TextField)) continue;
+                    if (!(header.getChildren().get(3) instanceof Label)) continue;
+                    TextField recipeNameField = (TextField) header.getChildren().get(1);
+                    Label sessionDateLabel = (Label) header.getChildren().get(3);
+                    String labelText = sessionDateLabel.getText();
+                    String dateStr = labelText.replace("Sessione: ", "").split(" ")[0];
+                    LocalDate sessionDate = LocalDate.parse(dateStr);
+                    String nomeRicettaUI = recipeNameField.getText().trim();
+                    List<Ricetta> ricetteDbList = ricetteDB.get(sessionDate);
+                    Ricetta ricettaDb = null;
+                    if (ricetteDbList != null) {
+                        for (Ricetta r : ricetteDbList) {
+                            if (r.getNome().equals(nomeRicettaUI)) {
+                                ricettaDb = r;
+                                break;
                             }
                         }
                     }
-                    if (sessionIndex < telematiche.size()) {
-                        SessioneOnline sessione = telematiche.get(sessionIndex);
-                        if (!sessione.getData().isAfter(java.time.LocalDate.now())) { sessionIndex++; continue; }
-                        boolean sessionChanged = false;
-                        if (appCombo != null) {
-                            String appUI = appCombo.getValue() != null ? appCombo.getValue().toString().trim() : "";
-                            String appDB = sessione.getApplicazione() != null ? sessione.getApplicazione().trim() : "";
-                            if (!appUI.equals(appDB)) sessionChanged = true;
-                        }
-                        if (codeField != null) {
-                            String codeUI = codeField.getText() != null ? codeField.getText().trim() : "";
-                            String codeDB = sessione.getCodicechiamata() != null ? sessione.getCodicechiamata().trim() : "";
-                            if (!codeUI.equals(codeDB)) sessionChanged = true;
-                        }
-                        if (hourSpinner != null && minuteSpinner != null && sessione.getOrario() != null) {
-                            int h = sessione.getOrario().getHour();
-                            int m = sessione.getOrario().getMinute();
-                            if (!Objects.equals(hourSpinner.getValue(), h) || !Objects.equals(minuteSpinner.getValue(), m)) sessionChanged = true;
-                        }
-                        if (durataSpinner != null && sessione.getDurata() != null) {
-                            double durataDb = sessione.getDurata().getHour() + sessione.getDurata().getMinute() / 60.0;
-                            if (!Objects.equals(durataSpinner.getValue(), durataDb)) sessionChanged = true;
-                        }
-                        if (sessionChanged) { changed = true; break; }
-                        sessionIndex++;
+                    if (ricettaDb == null) { changed = true; continue; }
+                    List<Ingredienti> ingredientiDb = ricettaDao.getIngredientiRicetta(ricettaDb);
+                    List<Map<String, String>> ingredientiUI = new ArrayList<>();
+                    if (recipeBox.getChildren().size() < 2) continue;
+                    Node ingredientsBoxNode = recipeBox.getChildren().get(1);
+                    if (!(ingredientsBoxNode instanceof VBox)) continue;
+                    VBox ingredientsBox = (VBox) ingredientsBoxNode;
+                    if (ingredientsBox.getChildren().size() < 2) continue;
+                    Node ingredientsListNode = ingredientsBox.getChildren().get(1);
+                    if (!(ingredientsListNode instanceof VBox)) continue;
+                    VBox ingredientsList = (VBox) ingredientsListNode;
+                    for (Node ingrNode : ingredientsList.getChildren()) {
+                        if (!(ingrNode instanceof HBox)) continue;
+                        HBox ingrRow = (HBox) ingrNode;
+                        if (ingrRow.getChildren().size() < 3) continue;
+                        if (!(ingrRow.getChildren().get(0) instanceof TextField)) continue;
+                        if (!(ingrRow.getChildren().get(1) instanceof TextField)) continue;
+                        if (!(ingrRow.getChildren().get(2) instanceof ComboBox)) continue;
+                        TextField nameField = (TextField) ingrRow.getChildren().get(0);
+                        TextField quantityField = (TextField) ingrRow.getChildren().get(1);
+                        ComboBox<?> unitCombo = (ComboBox<?>) ingrRow.getChildren().get(2);
+                        String ingrName = nameField.getText().trim();
+                        String ingrQuantity = quantityField.getText().trim();
+                        String ingrUnit = unitCombo.getValue() != null ? unitCombo.getValue().toString() : "g";
+                        Map<String, String> ingrMap = new HashMap<>();
+                        ingrMap.put("nome", ingrName);
+                        ingrMap.put("quantita", ingrQuantity);
+                        ingrMap.put("unita", ingrUnit);
+                        ingredientiUI.add(ingrMap);
+                    }
+                    if (ingredientiDb.size() != ingredientiUI.size()) { changed = true; continue; }
+                    for (int i = 0; i < ingredientiDb.size(); i++) {
+                        Ingredienti ingrDb = ingredientiDb.get(i);
+                        Map<String, String> ingrUI = ingredientiUI.get(i);
+                        if (!ingrDb.getNome().equals(ingrUI.get("nome"))) { changed = true; break; }
+                        String quantDb = String.valueOf(ingrDb.getQuantita());
+                        if (!quantDb.equals(ingrUI.get("quantita"))) { changed = true; break; }
+                        if (!ingrDb.getUnitaMisura().equals(ingrUI.get("unita"))) { changed = true; break; }
                     }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                SessioneOnlineDao onlineDao = new SessioneOnlineDao();
+                List<SessioneOnline> telematiche = onlineDao.getSessioniByCorso(courseId);
+                String tipoCorso = courseTypeCombo.getValue();
+                boolean isTelematica = "Telematica".equals(tipoCorso);
+                boolean isEntrambi = "Entrambi".equals(tipoCorso);
+                if ((isTelematica || isEntrambi) && telematiche != null && !telematiche.isEmpty()) {
+                    int sessionIndex = 0;
+                    for (Node node : onlineSection.getChildren()) {
+                        if (!(node instanceof VBox)) continue;
+                        VBox sessionBox = (VBox) node;
+                        if (sessionBox.getChildren().isEmpty()) continue;
+                        Node headerNode = sessionBox.getChildren().get(0);
+                        if (!(headerNode instanceof HBox)) continue;
+                        HBox header = (HBox) headerNode;
+                        ComboBox<?> appCombo = null;
+                        TextField codeField = null;
+                        Spinner<Integer> hourSpinner = null;
+                        Spinner<Integer> minuteSpinner = null;
+                        Spinner<Double> durataSpinner = null;
+                        for (Node hNode : header.getChildren()) {
+                            if (hNode instanceof ComboBox && appCombo == null) appCombo = (ComboBox<?>) hNode;
+                            if (hNode instanceof TextField && codeField == null) codeField = (TextField) hNode;
+                            if (hNode instanceof Spinner) {
+                                if (((Spinner<?>) hNode).getValueFactory() instanceof SpinnerValueFactory.IntegerSpinnerValueFactory) {
+                                    if (hourSpinner == null) hourSpinner = (Spinner<Integer>) hNode;
+                                    else if (minuteSpinner == null) minuteSpinner = (Spinner<Integer>) hNode;
+                                } else if (((Spinner<?>) hNode).getValueFactory() instanceof SpinnerValueFactory.DoubleSpinnerValueFactory) {
+                                    durataSpinner = (Spinner<Double>) hNode;
+                                }
+                            }
+                        }
+                        if (sessionIndex < telematiche.size()) {
+                            SessioneOnline sessione = telematiche.get(sessionIndex);
+                            if (!sessione.getData().isAfter(java.time.LocalDate.now())) { sessionIndex++; continue; }
+                            boolean sessionChanged = false;
+                            if (appCombo != null) {
+                                String appUI = appCombo.getValue() != null ? appCombo.getValue().toString().trim() : "";
+                                String appDB = sessione.getApplicazione() != null ? sessione.getApplicazione().trim() : "";
+                                if (!appUI.equals(appDB)) sessionChanged = true;
+                            }
+                            if (codeField != null) {
+                                String codeUI = codeField.getText() != null ? codeField.getText().trim() : "";
+                                String codeDB = sessione.getCodicechiamata() != null ? sessione.getCodicechiamata().trim() : "";
+                                if (!codeUI.equals(codeDB)) sessionChanged = true;
+                            }
+                            if (hourSpinner != null && minuteSpinner != null && sessione.getOrario() != null) {
+                                int h = sessione.getOrario().getHour();
+                                int m = sessione.getOrario().getMinute();
+                                if (!Objects.equals(hourSpinner.getValue(), h) || !Objects.equals(minuteSpinner.getValue(), m)) sessionChanged = true;
+                            }
+                            if (durataSpinner != null && sessione.getDurata() != null) {
+                                double durataDb = sessione.getDurata().getHour() + sessione.getDurata().getMinute() / 60.0;
+                                if (!Objects.equals(durataSpinner.getValue(), durataDb)) sessionChanged = true;
+                            }
+                            if (sessionChanged) { changed = true; break; }
+                            sessionIndex++;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return changed;
         }
-        return changed;
-    }
 
     private void updateTimeAndDurationVisibility() {
         String type = courseTypeCombo.getValue();
@@ -577,43 +575,43 @@ public boolean hasAnyFieldChanged() {
         this.courseId = courseId;
     }
 
-private void loadCourseData() {
-    if (courseId <= 0) {
-        boundary.showAlert("Errore", "ID corso non valido. Impossibile caricare i dati.");
-        return;
-    }
-    try {
-        CorsoDao corsoDao = new CorsoDao();
-        Corso corsoDto = corsoDao.getCorsoById(courseId);
-        if (corsoDto == null) {
-            boundary.showAlert("Errore", "Corso non trovato nel database.");
+    private void loadCourseData() {
+        if (courseId <= 0) {
+            boundary.showAlert("Errore", "ID corso non valido. Impossibile caricare i dati.");
             return;
         }
-        currentCourse = corsoDto;
-        SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
-        SessioneOnlineDao onlineDao = new SessioneOnlineDao();
-        List<SessioniInPresenza> presenze = presenzaDao.getSessioniByCorso(courseId);
-        List<SessioneOnline> telematiche = onlineDao.getSessioniByCorso(courseId);
+        try {
+            CorsoDao corsoDao = new CorsoDao();
+            Corso corsoDto = corsoDao.getCorsoById(courseId);
+            if (corsoDto == null) {
+                boundary.showAlert("Errore", "Corso non trovato nel database.");
+                return;
+            }
+            currentCourse = corsoDto;
+            SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
+            SessioneOnlineDao onlineDao = new SessioneOnlineDao();
+            List<SessioniInPresenza> presenze = presenzaDao.getSessioniByCorso(courseId);
+            List<SessioneOnline> telematiche = onlineDao.getSessioniByCorso(courseId);
 
-        boolean hasPresenza = presenze != null && !presenze.isEmpty();
-        boolean hasTelematica = telematiche != null && !telematiche.isEmpty();
+            boolean hasPresenza = presenze != null && !presenze.isEmpty();
+            boolean hasTelematica = telematiche != null && !telematiche.isEmpty();
 
-        String tipoCorso;
-        if (hasPresenza && hasTelematica) {
-            tipoCorso = "Entrambi";
-        } else if (hasPresenza) {
-            tipoCorso = "In presenza";
-        } else if (hasTelematica) {
-            tipoCorso = "Telematica";
-        } else {
-            tipoCorso = "In presenza";
+            String tipoCorso;
+            if (hasPresenza && hasTelematica) {
+                tipoCorso = "Entrambi";
+            } else if (hasPresenza) {
+                tipoCorso = "In presenza";
+            } else if (hasTelematica) {
+                tipoCorso = "Telematica";
+            } else {
+                tipoCorso = "In presenza";
+            }
+            populateUIFromCourseData(tipoCorso, presenze);
+            updateDynamicSections(hasPresenza, hasTelematica);
+        } catch (Exception e) {
+            boundary.showAlert("Errore", "Errore durante il caricamento dei dati del corso: " + e.getMessage());
         }
-        populateUIFromCourseData(tipoCorso, presenze);
-        updateDynamicSections(hasPresenza, hasTelematica);
-    } catch (Exception e) {
-        boundary.showAlert("Errore", "Errore durante il caricamento dei dati del corso: " + e.getMessage());
     }
-}
 
     private void updateDynamicSections(boolean hasPresenza, boolean hasTelematica) {
         String tipoCorso = courseTypeCombo.getValue();
@@ -809,6 +807,7 @@ private void loadCourseData() {
         }
         setupChangeListenersForSave();
     }
+
     private void loadAllSessionsAndRecipes() {
         recipesContainer.getChildren().clear();
         onlineSection.getChildren().clear();
@@ -961,6 +960,7 @@ private void loadCourseData() {
             e.printStackTrace();
         }
     }
+    
     public void updatePresenzaSessionsFromHybridUI(Spinner<Integer> hourSpinner, Spinner<Integer> minuteSpinner, Spinner<Double> durataSpinner) {
         try {
             SessioneInPresenzaDao presenzaDao = new SessioneInPresenzaDao();
@@ -1339,7 +1339,6 @@ private void loadCourseData() {
             LocalDate sessionDate = LocalDate.parse(dateStr);
             SessioniInPresenza sessione = presenzaByDate.get(sessionDate);
             if (sessione == null || !sessionDate.isAfter(LocalDate.now())) continue;
-            // Rimuovi tutte le ricette associate a questa sessione
             ArrayList<Ricetta> ricetteEsistenti = presenzaDao.recuperaRicetteSessione(sessione);
             if (ricetteEsistenti != null) {
                 for (Ricetta ricettaOld : ricetteEsistenti) {
