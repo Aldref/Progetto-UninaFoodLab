@@ -1,4 +1,4 @@
-# Progetto UninaFoodLab
+# Progetto UninaFoodLab - demo
 
 UninaFoodLab è una piattaforma per la gestione di corsi di cucina tematici, pensata per chef e appassionati. Il progetto comprende sia la parte di database relazionale che un applicativo Java con interfaccia grafica moderna.
 
